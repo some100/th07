@@ -176,7 +176,8 @@ struct AnmManager {
   UpdateTrail(AnmVm *vm, VertexTex1DiffuseXyzrwh *vertices,
                            i32 count);
 
-  inline void ReleaseSurfaces()
+  // FUNCTION: TH07 0x00433f20
+  void ReleaseSurfaces()
 
   {
     for (i32 i = 0; i < 0x20; i = i + 1) {
@@ -184,7 +185,8 @@ struct AnmManager {
     }
   }
 
-  inline void ExecuteAnmIdx(AnmVm *vm, i32 anmFileIdx)
+  // FUNCTION: TH07 0x00404f30
+  void ExecuteAnmIdx(AnmVm *vm, i32 anmFileIdx)
 
   {
     vm->anmFileIdx = anmFileIdx;

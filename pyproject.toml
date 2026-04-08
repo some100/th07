@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "icoextract>=0.2.0",
+    "reccmp>=0.1.0",
     "requests>=2.33.1",
 ]
 

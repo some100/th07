@@ -16,29 +16,35 @@
 #include "Supervisor.hpp"
 #include "ZunResult.hpp"
 #include "dxutil.hpp"
-#include "utils.hpp"
 
+// GLOBAL: TH07 0x0049f474
 i16 g_LastJoystickInput;
 
+// GLOBAL: TH07 0x0049f40c
 const char *g_StagePracticeStrings[6] = {
     "Stage1", "Stage2", "Stage3", "Stage4", "Stage5", "Stage6",
 };
 
+// GLOBAL: TH07 0x0049f424
 const char *g_StageReplayStrings[7] = {
     "Stage1  ", "Stage2  ", "Stage3  ", "Stage4  ",
     "Stage5  ", "Stage6  ", "Extra   ",
 };
 
+// GLOBAL: TH07 0x0049f440
 const char *g_PhantasmReplayString = "Phantasm";
 
+// GLOBAL: TH07 0x0049f444
 const char *g_DifficultyStrings[6] = {
     "Easy    ", "Normal  ", "Hard    ", "Lunatic ", "Extra   ", "Phantasm",
 };
 
+// GLOBAL: TH07 0x0049f45c
 const char *g_CharacterAndShottypeReplayStrings[6] = {
     "ReimuA ", "ReimuB ", "MarisaA", "MarisaB", "SakuyaA", "SakuyaB"};
 
 // TODO: use shift_jis encoding at some point cuz these look like GARBAGE ingame
+// GLOBAL: TH07 0x0049f478
 const char *g_KeyConfigStrings[12] = {
     "ショット、決定ボタンを設定します",
     "ボム、キャンセルボタンを設定します",
@@ -54,6 +60,7 @@ const char *g_KeyConfigStrings[12] = {
     "おおよそ終了します",
 };
 
+// GLOBAL: TH07 0x0049f4a8
 const char *g_OptionsStrings[9] = {
     "プレイヤーの初期数を変更します。（初期設定　３）",
     "画面の色数を変更します。３２ＢＩＴだと最も綺麗に表示されます。",
@@ -66,6 +73,7 @@ const char *g_OptionsStrings[9] = {
     "おいそれと終了します",
 };
 
+// GLOBAL: TH07 0x0049f4cc
 const char *g_MainMenuStrings[8] = {
     "ゲームを開始します",
     "エキストラステージを開始します",
@@ -77,11 +85,13 @@ const char *g_MainMenuStrings[8] = {
     "いろいろと終了します",
 };
 
+// GLOBAL: TH07 0x0049ea7c
 const char *g_DemoReplayPaths[3] = {"data/demo/demorpy0.rpy",
                                     "data/demo/demorpy1.rpy",
                                     "data/demo/demorpy2.rpy"};
 
-void MainMenu::InitializeTimingVars(Supervisor *arg)
+// FUNCTION: TH07 0x004553fa
+void InitializeTimingVars(Supervisor *arg)
 
 {
   arg->timingErrorCount = 0;
@@ -91,6 +101,7 @@ void MainMenu::InitializeTimingVars(Supervisor *arg)
   arg->timingBadCount = 0;
 }
 
+// FUNCTION: TH07 0x00455435
 void MainMenu::SetGameState(GameState gameState)
 
 {
@@ -102,9 +113,13 @@ void MainMenu::SetGameState(GameState gameState)
   this->idleFrames = 0;
 }
 
+// FUNCTION: TH07 0x0045547d
 MainMenu::MainMenu() { memset(this, 0, sizeof(MainMenu)); }
 
-u32 MainMenu::OnUpdate(MainMenu *arg) {
+// FUNCTION: TH07 0x004554d6
+u32 MainMenu::OnUpdate(MainMenu *arg)
+
+{
   u32 result;
 
   switch (arg->gameState) {
@@ -146,6 +161,7 @@ u32 MainMenu::OnUpdate(MainMenu *arg) {
   return result;
 }
 
+// FUNCTION: TH07 0x004555dd
 u32 MainMenu::OnUpdatePreInput()
 
 {
@@ -407,6 +423,7 @@ LAB_0045599d:
   }
 }
 
+// FUNCTION: TH07 0x0045624d
 u32 MainMenu::OnUpdateOptionsMenu()
 
 {
@@ -644,6 +661,7 @@ LAB_00456cc0:
   return CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR;
 }
 
+// FUNCTION: TH07 0x00456e40
 void MainMenu::SwapMapping(i16 btnPressed, i16 oldMapping)
 
 {
@@ -676,6 +694,7 @@ void MainMenu::SwapMapping(i16 btnPressed, i16 oldMapping)
   }
 }
 
+// FUNCTION: TH07 0x00456f6b
 u32 MainMenu::OnUpdateKeyConfig()
 
 {
@@ -863,6 +882,7 @@ LAB_0045782a:
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x004578cc
 ZunResult MainMenu::UpdateMenuDigits(AnmVm *param_1, i16 param_2)
 
 {
@@ -880,6 +900,7 @@ ZunResult MainMenu::UpdateMenuDigits(AnmVm *param_1, i16 param_2)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0045798b
 u32 MainMenu::OnUpdateSelectDifficulty()
 
 {
@@ -1023,6 +1044,7 @@ u32 MainMenu::OnUpdateSelectDifficulty()
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x00457fe5
 u32 MainMenu::OnUpdateSelectCharacter()
 
 {
@@ -1261,6 +1283,7 @@ u32 MainMenu::OnUpdateSelectCharacter()
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x00459518
 u32 MainMenu::OnUpdateSelectShotType()
 
 {
@@ -1456,6 +1479,7 @@ u32 MainMenu::OnUpdateSelectShotType()
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x0045a1dd
 u32 MainMenu::OnUpdateSelectPracticeStage()
 
 {
@@ -1555,6 +1579,7 @@ u32 MainMenu::OnUpdateSelectPracticeStage()
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x0045a924
 u32 MainMenu::OnUpdateSelectReplay()
 
 {
@@ -1797,6 +1822,7 @@ u32 MainMenu::OnUpdateSelectReplay()
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x0045b5ef
 i32 MainMenu::DrawReplayMenu()
 
 {
@@ -1879,6 +1905,7 @@ i32 MainMenu::DrawReplayMenu()
   return 1;
 }
 
+// FUNCTION: TH07 0x0045b9ad
 i32 MainMenu::DrawPracticeMenu()
 
 {
@@ -1923,6 +1950,7 @@ i32 MainMenu::DrawPracticeMenu()
   return 1;
 }
 
+// FUNCTION: TH07 0x0045bb4a
 i32 MainMenu::MoveCursorVertical(i32 param_1)
 
 {
@@ -1963,6 +1991,7 @@ i32 MainMenu::MoveCursorVertical(i32 param_1)
   }
 }
 
+// FUNCTION: TH07 0x0045bc63
 i32 MainMenu::MoveCursorHorizontal(i32 param_1)
 
 {
@@ -1997,6 +2026,7 @@ i32 MainMenu::MoveCursorHorizontal(i32 param_1)
   }
 }
 
+// FUNCTION: TH07 0x0045bd6c
 u32 MainMenu::OnDraw(MainMenu *arg)
 
 {
@@ -2044,6 +2074,7 @@ u32 MainMenu::OnDraw(MainMenu *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x0045bf15
 ZunResult MainMenu::ActualAddedCallback()
 
 {
@@ -2189,10 +2220,14 @@ LAB_0045c348:
   }
 }
 
-ZunResult MainMenu::AddedCallback(MainMenu *arg) {
+// FUNCTION: TH07 0x0045c4c8
+ZunResult MainMenu::AddedCallback(MainMenu *arg)
+
+{
   return arg->ActualAddedCallback();
 }
 
+// FUNCTION: TH07 0x0045c4d9
 ZunResult MainMenu::Release()
 
 {
@@ -2201,6 +2236,7 @@ ZunResult MainMenu::Release()
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0045c546
 ZunResult MainMenu::DeletedCallback(MainMenu *arg)
 
 {
@@ -2216,7 +2252,10 @@ ZunResult MainMenu::DeletedCallback(MainMenu *arg)
   return ZUN_SUCCESS;
 }
 
-ZunResult MainMenu::RegisterChain() {
+// FUNCTION: TH07 0x0045c5d0
+ZunResult MainMenu::RegisterChain()
+
+{
   MainMenu *mainMenu = new MainMenu;
 
   // memset it twice just for good measure i guess

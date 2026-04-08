@@ -2,10 +2,16 @@
 
 #include <windows.h>
 
-u8 g_LzssDictionary[8196];
+// GLOBAL: TH07 0x0049fe30
 Lzss::LzssNode g_LzssTree[0x2000 + 1];
 
-u8 *Lzss::Compress(u8 *src, i32 dstLen, i32 *outSize) {
+// GLOBAL: TH07 0x004b7e40
+u8 g_LzssDictionary[8196];
+
+// FUNCTION: TH07 0x0045ead0
+u8 *Lzss::Compress(u8 *src, i32 dstLen, i32 *outSize)
+
+{
   u32 local_3c;
   u32 local_38;
   u32 local_34;
@@ -146,7 +152,10 @@ u8 *Lzss::Compress(u8 *src, i32 dstLen, i32 *outSize) {
   return local_c;
 }
 
-u8 *Lzss::Decompress(u8 *src, i32 srcLen, u8 *dst, u32 dstLen) {
+// FUNCTION: TH07 0x0045ef00
+u8 *Lzss::Decompress(u8 *src, i32 srcLen, u8 *dst, u32 dstLen)
+
+{
   u8 bVar1;
   u32 uVar2;
   u8 bVar3;
@@ -272,14 +281,20 @@ u8 *Lzss::Decompress(u8 *src, i32 srcLen, u8 *dst, u32 dstLen) {
   return dst;
 }
 
-void Lzss::InitializeTree(i32 root) {
+// FUNCTION: TH07 0x0045f270
+void Lzss::InitializeTree(i32 root)
+
+{
   g_LzssTree[0x2000].rightChild = root;
   g_LzssTree[root].parent = 0x2000;
   g_LzssTree[root].rightChild = 0;
   g_LzssTree[root].leftChild = 0;
 }
 
-void Lzss::InitializeDictionary() {
+// FUNCTION: TH07 0x0045f2c0
+void Lzss::InitializeDictionary()
+
+{
   for (i32 i = 0; i < 0x2000; i = i + 1) {
     g_LzssDictionary[i] = 0;
   }
@@ -290,7 +305,10 @@ void Lzss::InitializeDictionary() {
   }
 }
 
-i32 Lzss::InsertNode(i32 node, i32 *matchPosition) {
+// FUNCTION: TH07 0x0045f340
+i32 Lzss::InsertNode(i32 node, i32 *matchPosition)
+
+{
   i32 local_18;
   i32 local_14;
   i32 local_10;
@@ -335,6 +353,7 @@ i32 Lzss::InsertNode(i32 node, i32 *matchPosition) {
   return local_14;
 }
 
+// FUNCTION: TH07 0x0045f460
 void Lzss::DeleteNode(i32 node)
 
 {
@@ -351,7 +370,10 @@ void Lzss::DeleteNode(i32 node)
   }
 }
 
-void Lzss::ContractNode(i32 firstNode, i32 secondNode) {
+// FUNCTION: TH07 0x0045f4f0
+void Lzss::ContractNode(i32 firstNode, i32 secondNode)
+
+{
   g_LzssTree[secondNode].parent = g_LzssTree[firstNode].parent;
   if (g_LzssTree[g_LzssTree[firstNode].parent].rightChild == firstNode) {
     g_LzssTree[g_LzssTree[firstNode].parent].rightChild = secondNode;
@@ -361,7 +383,10 @@ void Lzss::ContractNode(i32 firstNode, i32 secondNode) {
   g_LzssTree[firstNode].parent = 0;
 }
 
-void Lzss::ReplaceNode(i32 oldNode, i32 newNode) {
+// FUNCTION: TH07 0x0045f580
+void Lzss::ReplaceNode(i32 oldNode, i32 newNode)
+
+{
   i32 parent = g_LzssTree[oldNode].parent;
 
   if (g_LzssTree[parent].leftChild == oldNode) {
@@ -377,7 +402,10 @@ void Lzss::ReplaceNode(i32 oldNode, i32 newNode) {
   g_LzssTree[oldNode].parent = 0;
 }
 
-i32 Lzss::FindMinNode(i32 startNode) {
+// FUNCTION: TH07 0x0045f640
+i32 Lzss::FindMinNode(i32 startNode)
+
+{
   i32 i;
 
   for (i = g_LzssTree[startNode].leftChild; g_LzssTree[i].rightChild != 0;

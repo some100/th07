@@ -4,8 +4,10 @@
 #include "pbg4/Pbg4Archive.hpp"
 #include "dsutil.hpp"
 
+// GLOBAL: TH07 0x004b9e64
 u32 g_LastFileSize;
 
+// FUNCTION: TH07 0x00431330
 u8 *FileSystem::OpenFile(const char *filepath, i32 isExternalResource)
 
 {
@@ -63,6 +65,7 @@ u8 *FileSystem::OpenFile(const char *filepath, i32 isExternalResource)
   return buf;
 }
 
+// FUNCTION: TH07 0x004314f0
 i32 FileSystem::CheckFileExists(const char *file)
 
 {
@@ -75,6 +78,7 @@ i32 FileSystem::CheckFileExists(const char *file)
   return (u32)(hObject != INVALID_HANDLE_VALUE);
 }
 
+// FUNCTION: TH07 0x00431540
 i32 FileSystem::WriteDataToFile(const char *filename, const void *out,
                                 DWORD bytesToWrite)
 

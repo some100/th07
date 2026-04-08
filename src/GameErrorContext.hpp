@@ -16,7 +16,9 @@ struct GameErrorContext {
 
   const char *Fatal(const char *fmt, ...);
   const char *Log(const char *fmt, ...);
-  inline void Flush() {
+
+  // FUNCTION: TH07 0x00433e90
+  void Flush() {
     if ((GameErrorContext *)this->m_BufferEnd != this) {
       this->Log(
           "---------------------------------------------------------- \r\n");

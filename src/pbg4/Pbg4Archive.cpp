@@ -5,11 +5,13 @@
 #include "Lzss.hpp"
 #include "Pbg4File.hpp"
 
+// GLOBAL: TH07 0x00626258
 Pbg4Archive g_Pbg4Archive;
 
 // would it really not have been simpler to just type the letter where its used
 static const char *g_AccessModes[3] = {"r", "w", "a"};
 
+// FUNCTION: TH07 0x0045f6b0
 Pbg4Archive::Pbg4Archive() {
   this->entries = NULL;
   this->numOfEntries = 0;
@@ -17,9 +19,13 @@ Pbg4Archive::Pbg4Archive() {
   this->fileAbstraction = NULL;
 }
 
+// FUNCTION: TH07 0x0045f6f0
 Pbg4Archive::~Pbg4Archive() { Release(); }
 
-bool Pbg4Archive::Load(const char *filename) {
+// FUNCTION: TH07 0x0045f710
+bool Pbg4Archive::Load(const char *filename)
+
+{
   Release();
   DebugPrint("info : %s open arcfile\r\n", filename);
 
@@ -38,7 +44,10 @@ bool Pbg4Archive::Load(const char *filename) {
   return false;
 }
 
-void Pbg4Archive::Release() {
+// FUNCTION: TH07 0x0045f800
+void Pbg4Archive::Release()
+
+{
   DebugPrint("info : %s close arcfile\r\n", this->filename);
   if (this->filename != NULL) {
     GlobalFree(this->filename);
@@ -49,6 +58,7 @@ void Pbg4Archive::Release() {
   this->numOfEntries = 0;
 }
 
+// FUNCTION: TH07 0x0045f960
 u8 *Pbg4Archive::ReadDecompressEntry(const char *filename, u8 *buf)
 
 {
@@ -90,6 +100,7 @@ u8 *Pbg4Archive::ReadDecompressEntry(const char *filename, u8 *buf)
   return NULL;
 }
 
+// FUNCTION: TH07 0x0045fab0
 u32 Pbg4Archive::GetEntrySize(const char *filename)
 
 {
@@ -102,6 +113,7 @@ u32 Pbg4Archive::GetEntrySize(const char *filename)
   }
 }
 
+// FUNCTION: TH07 0x0045fae0
 Pbg4Entry *Pbg4Archive::FindEntry(const char *filename)
 
 {
@@ -117,7 +129,10 @@ Pbg4Entry *Pbg4Archive::FindEntry(const char *filename)
   return NULL;
 }
 
-bool Pbg4Archive::OpenArchive(const char *path) {
+// FUNCTION: TH07 0x0045fb50
+bool Pbg4Archive::OpenArchive(const char *path)
+
+{
   u32 uVar1;
   DWORD DVar2;
   Pbg4Entry *pPVar3;
@@ -179,8 +194,11 @@ bool Pbg4Archive::OpenArchive(const char *path) {
   return false;
 }
 
+// FUNCTION: TH07 0x0045fde0
 Pbg4Entry *Pbg4Archive::AllocEntries(LPVOID param_1, i32 count,
-                                     u32 dataOffset) {
+                                     u32 dataOffset)
+
+{
   u8 *local_3c;
   Pbg4Entry *buffer = NULL;
 
@@ -206,6 +224,7 @@ Pbg4Entry *Pbg4Archive::AllocEntries(LPVOID param_1, i32 count,
   return buffer;
 }
 
+// FUNCTION: TH07 0x0045ffc0
 char *Pbg4Archive::CopyFileName(const char *filename)
 
 {

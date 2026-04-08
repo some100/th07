@@ -10,18 +10,25 @@
 #include "Player.hpp"
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
-#include "utils.hpp"
 
+// GLOBAL: TH07 0x00575c70
 ItemManager g_ItemManager;
+
+// GLOBAL: TH07 0x0049efa0
 u8 g_ItemDropTable[32] = {
     0, 0, 1, 0, 1, 0, 0, 7, 1, 1, 0, 0, 7, 1, 1, 0,
     1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 7, 1, 1, 1, 0, 2,
 };
+
+// GLOBAL: TH07 0x0049ecf8
 i32 g_CherryBonusFullPower[30] = {
     10,  20,  30,   50,   60,   70,   90,   100,  200,  400,   500,  600,
     800, 900, 1000, 3000, 4000, 5000, 7000, 8000, 9000, 11000, 12000};
+
+// GLOBAL: TH07 0x0049ed74
 i32 g_PowerLevels[9] = {8, 16, 32, 48, 64, 80, 96, 128, 999};
 
+// FUNCTION: TH07 0x004325c0
 void AngleToVector(D3DXVECTOR3 *out, f32 angle, f32 speed)
 
 {
@@ -39,6 +46,7 @@ void AngleToVector(D3DXVECTOR3 *out, f32 angle, f32 speed)
   }
 }
 
+// FUNCTION: TH07 0x004325e0
 void GameManager::AddCurrentPower(i32 amount)
 
 {
@@ -49,10 +57,13 @@ void GameManager::AddCurrentPower(i32 amount)
   RegenerateGameIntegrityCsum();
 }
 
+// FUNCTION: TH07 0x00432630
 ItemManager::ItemManager() {}
 
+// FUNCTION: TH07 0x00432690
 Item::Item() {}
 
+// FUNCTION: TH07 0x004326f0
 void ItemManager::SpawnItem(D3DXVECTOR3 *heading, i32 itemType, i32 state)
 
 {
@@ -109,6 +120,7 @@ void ItemManager::SpawnItem(D3DXVECTOR3 *heading, i32 itemType, i32 state)
   item->isArrowSprite = 1;
 }
 
+// FUNCTION: TH07 0x00432990
 void ItemManager::OnUpdate()
 
 {
@@ -489,6 +501,7 @@ void ItemManager::OnUpdate()
   }
 }
 
+// FUNCTION: TH07 0x00433a90
 void ItemManager::RemoveAllItems()
 
 {
@@ -504,6 +517,7 @@ void ItemManager::RemoveAllItems()
   }
 }
 
+// FUNCTION: TH07 0x00433b20
 void ItemManager::DespawnAllItems(i32 param_1)
 
 {
@@ -526,6 +540,7 @@ void ItemManager::DespawnAllItems(i32 param_1)
   }
 }
 
+// FUNCTION: TH07 0x00433c40
 void ItemManager::ActivateAllItems()
 
 {
@@ -541,6 +556,7 @@ void ItemManager::ActivateAllItems()
   }
 }
 
+// FUNCTION: TH07 0x00433cd0
 void ItemManager::OnDraw()
 
 {

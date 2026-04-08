@@ -2,14 +2,26 @@
 
 #include "../inttypes.hpp"
 
-Pbg4File::Pbg4File() {
+// FUNCTION: TH07 0x0045e550
+Pbg4File::Pbg4File()
+
+{
   this->handle = INVALID_HANDLE_VALUE;
   this->access = 0;
 }
 
-Pbg4File::~Pbg4File() { Close(); }
+// SYNTHETIC: TH07 0x0045e590
+// Pbg4File::`scalar deleting destructor'
 
-bool Pbg4File::Open(const char *path, const char *mode) {
+// FUNCTION: TH07 0x0045e5c0
+Pbg4File::~Pbg4File()
+
+{ Close(); }
+
+// FUNCTION: TH07 0x0045e620
+bool Pbg4File::Open(const char *path, const char *mode)
+
+{
   DWORD local_118;
   char local_114[264];
   i32 local_c;
@@ -53,7 +65,10 @@ bool Pbg4File::Open(const char *path, const char *mode) {
   }
 }
 
-void Pbg4File::Close() {
+// FUNCTION: TH07 0x0045e770
+void Pbg4File::Close()
+
+{
   if (this->handle != INVALID_HANDLE_VALUE) {
     CloseHandle(this->handle);
     this->handle = INVALID_HANDLE_VALUE;
@@ -61,7 +76,10 @@ void Pbg4File::Close() {
   }
 }
 
-DWORD Pbg4File::Read(void *data, u32 len) {
+// FUNCTION: TH07 0x0045e7b0
+DWORD Pbg4File::Read(void *data, u32 len)
+
+{
   DWORD local_8;
 
   local_8 = 0;
@@ -73,7 +91,10 @@ DWORD Pbg4File::Read(void *data, u32 len) {
   return local_8;
 }
 
-bool Pbg4File::Write(void *data, u32 len) {
+// FUNCTION: TH07 0x0045e800
+bool Pbg4File::Write(void *data, u32 len)
+
+{
   DWORD local_8;
 
   local_8 = 0;
@@ -85,7 +106,10 @@ bool Pbg4File::Write(void *data, u32 len) {
   }
 }
 
-DWORD Pbg4File::Tell() {
+// FUNCTION: TH07 0x0045e850
+DWORD Pbg4File::Tell()
+
+{
   if (this->handle == INVALID_HANDLE_VALUE) {
     return 0;
   } else {
@@ -93,7 +117,10 @@ DWORD Pbg4File::Tell() {
   }
 }
 
-DWORD Pbg4File::GetSize() {
+// FUNCTION: TH07 0x0045e880
+DWORD Pbg4File::GetSize()
+
+{
   if (this->handle == INVALID_HANDLE_VALUE) {
     return 0;
   } else {
@@ -101,7 +128,10 @@ DWORD Pbg4File::GetSize() {
   }
 }
 
-bool Pbg4File::Seek(u32 offset, DWORD seekFrom) {
+// FUNCTION: TH07 0x0045e8b0
+bool Pbg4File::Seek(u32 offset, DWORD seekFrom)
+
+{
   bool bVar1 = this->handle != INVALID_HANDLE_VALUE;
   if (bVar1) {
     SetFilePointer(this->handle, (LONG)offset, NULL, seekFrom);
@@ -109,7 +139,10 @@ bool Pbg4File::Seek(u32 offset, DWORD seekFrom) {
   return bVar1;
 }
 
-HGLOBAL Pbg4File::ReadRemaining(u32 max) {
+// FUNCTION: TH07 0x0045e8f0
+HGLOBAL Pbg4File::ReadRemaining(u32 max)
+
+{
   bool bVar1;
   HGLOBAL hMem;
   DWORD DVar2;
@@ -147,7 +180,10 @@ HGLOBAL Pbg4File::ReadRemaining(u32 max) {
   return hMem;
 }
 
-void Pbg4File::GetFullPath(char *out, const char *filename) {
+// FUNCTION: TH07 0x0045e9d0
+void Pbg4File::GetFullPath(char *out, const char *filename)
+
+{
   char *pcVar2;
 
   pcVar2 = strchr((char *)filename, ':');

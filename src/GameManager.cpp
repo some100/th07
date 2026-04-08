@@ -9,7 +9,6 @@
 #include "EnemyManager.hpp"
 #include "GameErrorContext.hpp"
 #include "Gui.hpp"
-#include "MainMenu.hpp"
 #include "Player.hpp"
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
@@ -17,17 +16,23 @@
 #include "Supervisor.hpp"
 #include "ZunResult.hpp"
 #include "dxutil.hpp"
-#include "utils.hpp"
 
+// GLOBAL: TH07 0x00626270
 GameManager g_GameManager;
+
+// GLOBAL: TH07 0x0062f8b4
 ChainElem g_GameManagerCalcChain;
+
+// GLOBAL: TH07 0x0062f8d4
 ChainElem g_GameManagerDrawChain;
 
+// GLOBAL: TH07 0x0049f5d0
 i32 g_RankArray[6][3] = {
     {16, 12, 20}, {16, 10, 32}, {16, 10, 32},
     {16, 10, 32}, {16, 15, 16}, {16, 15, 16},
 };
 
+// FUNCTION: TH07 0x0042d560
 GameManager::GameManager()
 
 {
@@ -40,6 +45,7 @@ GameManager::GameManager()
   this->isGameComplete = 1;
 }
 
+// FUNCTION: TH07 0x0042d5cd
 void GameManager::AddLivesRemaining(i32 amount)
 
 {
@@ -50,6 +56,7 @@ void GameManager::AddLivesRemaining(i32 amount)
   RegenerateGameIntegrityCsum();
 }
 
+// FUNCTION: TH07 0x0042d612
 void GameManager::AddBombsRemaining(i32 amount)
 
 {
@@ -60,6 +67,7 @@ void GameManager::AddBombsRemaining(i32 amount)
   RegenerateGameIntegrityCsum();
 }
 
+// FUNCTION: TH07 0x0042d657
 void GameManager::ResetRegionsPos()
 
 {
@@ -73,6 +81,7 @@ void GameManager::ResetRegionsPos()
   this->playerMovementAreaSize.y = 416.0f;
 }
 
+// FUNCTION: TH07 0x0042d6d8
 i32 GameManager::IsInBounds(f32 x, f32 y, f32 widthPx, f32 heightPx)
 
 {
@@ -95,6 +104,7 @@ i32 GameManager::IsInBounds(f32 x, f32 y, f32 widthPx, f32 heightPx)
   }
 }
 
+// FUNCTION: TH07 0x0042d75a
 i32 GameManager::ByteCsumAccumulator(u8 *param_1, i32 param_2)
 
 {
@@ -111,6 +121,7 @@ i32 GameManager::ByteCsumAccumulator(u8 *param_1, i32 param_2)
   return local_c;
 }
 
+// FUNCTION: TH07 0x0042d7be
 i32 GameManager::ComputeGameIntegrityCsum()
 
 {
@@ -125,6 +136,7 @@ i32 GameManager::ComputeGameIntegrityCsum()
                              sizeof(GameConfiguration));
 }
 
+// FUNCTION: TH07 0x0042d83a
 void GameManager::ExtendFromPoints()
 
 {
@@ -143,6 +155,7 @@ void GameManager::ExtendFromPoints()
   }
 }
 
+// FUNCTION: TH07 0x0042d8d5
 u32 GameManager::OnUpdate(GameManager *arg)
 
 {
@@ -316,6 +329,7 @@ u32 GameManager::OnUpdate(GameManager *arg)
   }
 }
 
+// FUNCTION: TH07 0x0042e1d4
 u32 GameManager::OnDraw(GameManager *arg)
 
 {
@@ -325,6 +339,7 @@ u32 GameManager::OnDraw(GameManager *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x0042e1f8
 void GameManager::DrawLoadingSprite()
 
 {
@@ -358,6 +373,7 @@ void GameManager::DrawLoadingSprite()
   }
 }
 
+// FUNCTION: TH07 0x0042e38c
 void GameManager::InitializeRank()
 
 {
@@ -366,6 +382,7 @@ void GameManager::InitializeRank()
   this->rank.maxRank = g_RankArray[g_GameManager.difficulty][2];
 }
 
+// FUNCTION: TH07 0x0042e3da
 void GameManager::InitializeRngAndCsum()
 
 {
@@ -411,6 +428,7 @@ void GameManager::InitializeRngAndCsum()
                             (f32)g_GameManager.globals->rng2[3];
 }
 
+// FUNCTION: TH07 0x0042e634
 ZunResult ResultScreen::ParseScores()
 
 {
@@ -468,12 +486,16 @@ ZunResult ResultScreen::ParseScores()
   }
 }
 
-void IncrementCappedAgain(u32 *param) {
+// FUNCTION: TH07 0x0042e81b
+void IncrementCappedAgain(u32 *param)
+
+{
   if (*param < 999999) {
     *param = *param + 1; // duplicate of incrementcapped from asciimanager
   }
 }
 
+// FUNCTION: TH07 0x0042e83e
 ZunResult GameManager::AddedCallback(GameManager *arg)
 
 {
@@ -724,6 +746,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
   }
 }
 
+// FUNCTION: TH07 0x0042f2e4
 ZunResult GameManager::DeletedCallback(GameManager *arg)
 
 {
@@ -756,6 +779,7 @@ ZunResult GameManager::DeletedCallback(GameManager *arg)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0042f3c5
 ZunResult GameManager::RegisterChain()
 
 {
@@ -777,7 +801,10 @@ ZunResult GameManager::RegisterChain()
   }
 }
 
-void GameManager::CutChain() {
+// FUNCTION: TH07 0x0042f45d
+void GameManager::CutChain()
+
+{
   g_Chain.Cut(&g_GameManagerCalcChain);
   g_Chain.Cut(&g_GameManagerDrawChain);
   if (999999999 < g_GameManager.globals->score) {
@@ -786,6 +813,7 @@ void GameManager::CutChain() {
   g_GameManager.globals->guiScore = g_GameManager.globals->score;
 }
 
+// FUNCTION: TH07 0x0042f4aa
 void GameManager::IncreaseSubrank(i32 amount)
 
 {
@@ -799,6 +827,7 @@ void GameManager::IncreaseSubrank(i32 amount)
   }
 }
 
+// FUNCTION: TH07 0x0042f526
 void GameManager::DecreaseSubrank(i32 amount)
 
 {
@@ -812,6 +841,7 @@ void GameManager::DecreaseSubrank(i32 amount)
   }
 }
 
+// FUNCTION: TH07 0x0042f5a2
 void GameManager::AddCherryPlus(i32 amount)
 
 {
@@ -831,6 +861,7 @@ void GameManager::AddCherryPlus(i32 amount)
   }
 }
 
+// FUNCTION: TH07 0x0042f69f
 void GameManager::AddCherry(i32 amount)
 
 {
@@ -844,6 +875,7 @@ void GameManager::AddCherry(i32 amount)
   }
 }
 
+// FUNCTION: TH07 0x0042f736
 void GameManager::IncreaseCherry(i32 amount)
 
 {
@@ -853,6 +885,7 @@ void GameManager::IncreaseCherry(i32 amount)
   }
 }
 
+// FUNCTION: TH07 0x0042f789
 void GameManager::IncreaseCherryMax(i32 amount)
 
 {
@@ -862,6 +895,7 @@ void GameManager::IncreaseCherryMax(i32 amount)
   }
 }
 
+// FUNCTION: TH07 0x0042f7df
 i32 GameManager::HasReachedMaxClears(i32 shotType)
 
 {
@@ -875,6 +909,7 @@ i32 GameManager::HasReachedMaxClears(i32 shotType)
   }
 }
 
+// FUNCTION: TH07 0x0042f853
 i32 GameManager::HasUnlockedPhantom(i32 shotType)
 
 {
@@ -891,6 +926,7 @@ i32 GameManager::HasUnlockedPhantom(i32 shotType)
   return this->clrd[shotType].difficultyClearedWithRetries[5] == 99;
 }
 
+// FUNCTION: TH07 0x0042f8de
 i32 GameManager::HasReachedMaxClearsAllShotTypes()
 
 {
@@ -903,6 +939,7 @@ i32 GameManager::HasReachedMaxClearsAllShotTypes()
   return 1;
 }
 
+// FUNCTION: TH07 0x0042f94c
 i32 GameManager::HasUnlockedPhantomAndMaxClears()
 
 {

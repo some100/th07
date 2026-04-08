@@ -5,6 +5,7 @@
 #include "Rng.hpp"
 #include "Supervisor.hpp"
 
+// FUNCTION: TH07 0x0044a460
 void ScreenEffect::Clear(D3DCOLOR color)
 
 {
@@ -18,7 +19,10 @@ void ScreenEffect::Clear(D3DCOLOR color)
   }
 }
 
-void ScreenEffect::SetViewport(D3DCOLOR color) {
+// FUNCTION: TH07 0x0044a520
+void ScreenEffect::SetViewport(D3DCOLOR color)
+
+{
   if (g_AnmManager != NULL) {
     g_AnmManager->Flush();
   }
@@ -32,7 +36,10 @@ void ScreenEffect::SetViewport(D3DCOLOR color) {
   Clear(color);
 }
 
-u32 BombEffects::OnUpdateFadeOut(BombEffects *arg) {
+// FUNCTION: TH07 0x0044a5a0
+u32 BombEffects::OnUpdateFadeOut(BombEffects *arg)
+
+{
   if (arg->duration != 0) {
     arg->alpha =
         (f32)(u32)(255.0f -
@@ -50,7 +57,10 @@ u32 BombEffects::OnUpdateFadeOut(BombEffects *arg) {
   return bVar1;
 }
 
-void ScreenEffect::DrawSquare(ZunRect *rect, D3DCOLOR color) {
+// FUNCTION: TH07 0x0044a650
+void ScreenEffect::DrawSquare(ZunRect *rect, D3DCOLOR color)
+
+{
   VertexDiffuseXyzrhw vertices[4];
 
   g_AnmManager->Flush();
@@ -102,6 +112,7 @@ void ScreenEffect::DrawSquare(ZunRect *rect, D3DCOLOR color) {
   g_Supervisor.d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, 2);
 }
 
+// FUNCTION: TH07 0x0044aa20
 void ScreenEffect::DrawColoredQuad(ZunRect *rect, D3DCOLOR param_2,
                                    D3DCOLOR param_3, D3DCOLOR param_4,
                                    D3DCOLOR param_5)
@@ -157,7 +168,10 @@ void ScreenEffect::DrawColoredQuad(ZunRect *rect, D3DCOLOR param_2,
   g_Supervisor.d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, 2);
 }
 
-u32 BombEffects::OnDrawFullScreenColor(BombEffects *arg) {
+// FUNCTION: TH07 0x0044adf0
+u32 BombEffects::OnDrawFullScreenColor(BombEffects *arg)
+
+{
   ZunRect rect;
 
   rect.left = 0.0f;
@@ -174,7 +188,10 @@ u32 BombEffects::OnDrawFullScreenColor(BombEffects *arg) {
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
-u32 BombEffects::OnUpdateFadeIn(BombEffects *arg) {
+// FUNCTION: TH07 0x0044ae90
+u32 BombEffects::OnUpdateFadeIn(BombEffects *arg)
+
+{
   if (arg->duration != 0) {
     arg->alpha =
         (f32)(u32)((((f32)arg->timer.current + arg->timer.subFrame) * 255.0f) /
@@ -191,7 +208,10 @@ u32 BombEffects::OnUpdateFadeIn(BombEffects *arg) {
   return bVar1;
 }
 
-u32 BombEffects::OnDrawPlayAreaColor(BombEffects *arg) {
+// FUNCTION: TH07 0x0044af30
+u32 BombEffects::OnDrawPlayAreaColor(BombEffects *arg)
+
+{
   ZunRect rect;
 
   rect.left = 32.0f;
@@ -202,7 +222,10 @@ u32 BombEffects::OnDrawPlayAreaColor(BombEffects *arg) {
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
-u32 BombEffects::OnUpdatePulse(BombEffects *arg) {
+// FUNCTION: TH07 0x0044af80
+u32 BombEffects::OnUpdatePulse(BombEffects *arg)
+
+{
   if (arg->timer.current < arg->duration) {
     arg->alpha =
         (f32)((u32)((arg->args[1] >> 0x18) -
@@ -225,7 +248,10 @@ u32 BombEffects::OnUpdatePulse(BombEffects *arg) {
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
-u32 BombEffects::OnDrawPlayAreaPulseColor(BombEffects *arg) {
+// FUNCTION: TH07 0x0044b090
+u32 BombEffects::OnDrawPlayAreaPulseColor(BombEffects *arg)
+
+{
   ZunRect rect;
 
   rect.left = 32.0f;
@@ -237,7 +263,10 @@ u32 BombEffects::OnDrawPlayAreaPulseColor(BombEffects *arg) {
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
-u32 BombEffects::OnUpdateScreenShake(BombEffects *arg) {
+// FUNCTION: TH07 0x0044b0e0
+u32 BombEffects::OnUpdateScreenShake(BombEffects *arg)
+
+{
   if (g_GameManager.isTimeStopped == 0) {
     if (g_GameManager.framesThisStage < 2) {
       return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
@@ -275,12 +304,18 @@ u32 BombEffects::OnUpdateScreenShake(BombEffects *arg) {
   }
 }
 
-ZunResult BombEffects::AddedCallback(BombEffects *arg) {
+// FUNCTION: TH07 0x0044b280
+ZunResult BombEffects::AddedCallback(BombEffects *arg)
+
+{
   arg->timer.Initialize(0);
   return ZUN_SUCCESS;
 }
 
-ZunResult BombEffects::DeletedCallback(BombEffects *arg) {
+// FUNCTION: TH07 0x0044b2c0
+ZunResult BombEffects::DeletedCallback(BombEffects *arg)
+
+{
   arg->calcChain->deletedCallback = NULL;
   g_Chain.Cut(arg->drawChain);
   arg->drawChain = NULL;
@@ -288,8 +323,11 @@ ZunResult BombEffects::DeletedCallback(BombEffects *arg) {
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0044b310
 void BombEffects::RegisterChain(i32 type, i32 duration, u32 arg1, u32 arg2,
-                                u32 arg3) {
+                                u32 arg3)
+
+{
   ChainElem *local_c = NULL;
   ChainElem *local_8;
 

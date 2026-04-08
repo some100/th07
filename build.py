@@ -12,12 +12,15 @@ import requests
 
 SCRIPT_PATH = Path(os.path.abspath(__file__))
 SCRIPT_DIR = Path(os.path.dirname(SCRIPT_PATH))
+
+os.chdir(SCRIPT_DIR)
+
 SRC_DIR = SCRIPT_DIR / "src"
 BUILD_DIR = SCRIPT_DIR / "build"
 OBJ_DIR = BUILD_DIR / "objects"
 MSVC_PATH = SCRIPT_DIR / "thirdparty" / "msvc"
 DX8_PATH = SCRIPT_DIR / "thirdparty" / "dx8"
-EXE_PATH = SCRIPT_DIR / "exe" / "th07.exe"
+EXE_PATH = SCRIPT_DIR / "th07.exe"
 BUILD_PATH = BUILD_DIR / "th07.exe"
 
 VS_PATH = MSVC_PATH / "PROGRAM FILES" / "MICROSOFT VISUAL STUDIO .NET"
@@ -300,6 +303,7 @@ cflags = [
     "/Gr",
     "/GL",
     "/Gy",
+    "/Zi",
     "/DNDEBUG",
     f"-I{conv_path(DX8_PATH / 'include')}",
 ]
@@ -309,7 +313,9 @@ lflags = [
     "/LTCG",
     "/INCREMENTAL:NO",
     "/MAP",
+    "/OPT:REF",
     "/OPT:NOICF",
+    "/DEBUG",
 ]
 
 libs = [
@@ -342,5 +348,3 @@ _ = run_program(
     f"/OUT:{out}",
     env=env,
 )
-
-_ = shutil.copy2(BUILD_PATH, SCRIPT_DIR / "th07.exe")

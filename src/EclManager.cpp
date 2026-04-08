@@ -18,7 +18,10 @@
 #include "ZunMath.hpp"
 #include "dsutil.hpp"
 
+// GLOBAL: TH07 0x01347938
 EclManager g_EclManager;
+
+// GLOBAL: TH07 0x0049f560
 const char *g_EclPaths[10] = {"dummy",
                               "data/ecldata1.ecl",
                               "data/ecldata2.ecl",
@@ -29,8 +32,11 @@ const char *g_EclPaths[10] = {"dummy",
                               "data/ecldata7.ecl",
                               "data/ecldata8.ecl",
                               NULL};
+
+// GLOBAL: TH07 0x01347aa0
 EclGlobalVars g_GlobalEclVars = {{0}};
 
+// FUNCTION: TH07 0x0040e420
 ZunResult EclManager::Load(const char *path)
 
 {
@@ -54,6 +60,7 @@ ZunResult EclManager::Load(const char *path)
   }
 }
 
+// FUNCTION: TH07 0x0040e4f0
 void EclManager::Unload()
 
 {
@@ -63,6 +70,7 @@ void EclManager::Unload()
   this->eclFile = NULL;
 }
 
+// FUNCTION: TH07 0x0040e530
 ZunResult EclManager::CallEclSub(EnemyEclContext *param_1, i16 subId)
 
 {
@@ -73,6 +81,7 @@ ZunResult EclManager::CallEclSub(EnemyEclContext *param_1, i16 subId)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0040e5b0
 i32 EclManager::GetVarValue(Enemy *enemy, i32 eclVar)
 
 {
@@ -306,6 +315,7 @@ i32 EclManager::GetVarValue(Enemy *enemy, i32 eclVar)
   return eclVar;
 }
 
+// FUNCTION: TH07 0x0040ec00
 i32 *EclManager::GetVar(Enemy *enemy, i32 *eclVar, u16 paramMask, i32 param_4)
 
 {
@@ -386,6 +396,7 @@ i32 *EclManager::GetVar(Enemy *enemy, i32 *eclVar, u16 paramMask, i32 param_4)
   return eclVar;
 }
 
+// FUNCTION: TH07 0x0040edf0
 f32 EclManager::GetFloatVarValue(Enemy *enemy, f32 eclVar)
 
 {
@@ -622,6 +633,7 @@ f32 EclManager::GetFloatVarValue(Enemy *enemy, f32 eclVar)
   return eclVar;
 }
 
+// FUNCTION: TH07 0x0040f3c0
 f32 *EclManager::GetFloatVar(Enemy *enemy, f32 *eclVar, u16 paramMask,
                              i32 param_4)
 
@@ -748,6 +760,8 @@ f32 *EclManager::GetFloatVar(Enemy *enemy, f32 *eclVar, u16 paramMask,
   return eclVar;
 }
 
+
+// FUNCTION: TH07 0x0040f6b0
 void EclManager::MoveDirTime(Enemy *enemy, EclRawInstr *instr)
 
 {
@@ -809,6 +823,7 @@ void EclManager::MoveDirTime(Enemy *enemy, EclRawInstr *instr)
   }
 }
 
+// FUNCTION: TH07 0x0040f8f0
 void EclManager::MovePosTime(Enemy *enemy, EclRawInstr *instr)
 
 {
@@ -859,6 +874,7 @@ void EclManager::MovePosTime(Enemy *enemy, EclRawInstr *instr)
   }
 }
 
+// FUNCTION: TH07 0x0040fb30
 void EclManager::MathLerp(Enemy *enemy, EclInterp *interp, f32 t)
 
 {
@@ -869,6 +885,7 @@ void EclManager::MathLerp(Enemy *enemy, EclInterp *interp, f32 t)
       GetFloatVarValue(enemy, interp->args[3].f);
 }
 
+// FUNCTION: TH07 0x0040fb90
 void EclManager::MathCubicInterp(Enemy *enemy, EclInterp *interp, f32 t)
 
 {
@@ -880,6 +897,7 @@ void EclManager::MathCubicInterp(Enemy *enemy, EclInterp *interp, f32 t)
           GetFloatVarValue(enemy, interp->args[3].f);
 }
 
+// FUNCTION: TH07 0x0040fc90
 void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
 
 {
@@ -982,6 +1000,7 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
   }
 }
 
+// FUNCTION: TH07 0x004101a0
 void EclManager::EndSpellcard()
 
 {
@@ -1098,6 +1117,7 @@ void EclManager::EndSpellcard()
   g_Stage.spellCardState = 0;
 }
 
+// FUNCTION: TH07 0x00410520
 ZunResult EclManager::RunEcl(Enemy *enemy)
 
 {

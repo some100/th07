@@ -1,0 +1,14 @@
+targets:
+  TH07:
+    filename: th07.exe
+    source_root: src
+    hash:
+      sha256: 35467eaf8dc7fc85f024f16fb2037255f151cefda33cf4867bc9122aaa2e80ca
+    data_sources: []
+    ghidra:
+      ignore_types: []
+      ignore_functions: []
+      name_substitutions: []
+      allow_hash_mismatch: false
+    report:
+      ignore_functions: []

@@ -2,11 +2,16 @@
 
 #include <stddef.h>
 
+// GLOBAL: TH07 0x00626218
 Chain g_Chain;
 
+// FUNCTION: TH07 0x0042fa60
 Chain::~Chain() {}
 
-ChainElem::ChainElem() {
+// FUNCTION: TH07 0x0042fab0
+ChainElem::ChainElem()
+
+{
   this->prev = NULL;
   this->next = NULL;
   this->callback = NULL;
@@ -17,7 +22,10 @@ ChainElem::ChainElem() {
   this->flags &= ~1;
 }
 
-ChainElem::~ChainElem() {
+// FUNCTION: TH07 0x0042fb20
+ChainElem::~ChainElem()
+
+{
   if (this->deletedCallback != NULL) {
     (*this->deletedCallback)(this->arg);
   }
@@ -28,9 +36,13 @@ ChainElem::~ChainElem() {
   this->deletedCallback = NULL;
 }
 
+// FUNCTION: TH07 0x0042fb80
 Chain::Chain() {}
 
-ZunResult Chain::AddToCalcChain(ChainElem *elem, i32 priority) {
+// FUNCTION: TH07 0x0042fbd0
+ZunResult Chain::AddToCalcChain(ChainElem *elem, i32 priority)
+
+{
   ZunResult uVar1;
   ChainElem *calcChain;
 
@@ -60,7 +72,10 @@ ZunResult Chain::AddToCalcChain(ChainElem *elem, i32 priority) {
   return uVar1;
 }
 
-ZunResult Chain::AddToDrawChain(ChainElem *elem, i32 priority) {
+// FUNCTION: TH07 0x0042fca0
+ZunResult Chain::AddToDrawChain(ChainElem *elem, i32 priority)
+
+{
   ZunResult uVar1;
   ChainElem *drawChain;
 
@@ -90,6 +105,7 @@ ZunResult Chain::AddToDrawChain(ChainElem *elem, i32 priority) {
   return uVar1;
 }
 
+// FUNCTION: TH07 0x0042fd60
 i32 Chain::RunCalcChain()
 
 {
@@ -137,6 +153,7 @@ switchD_0042fd9d_caseD_0:
   goto LAB_0042fd76;
 }
 
+// FUNCTION: TH07 0x0042fe20
 i32 Chain::RunDrawChain()
 
 {
@@ -181,6 +198,7 @@ switchD_0042fe60_caseD_0:
   goto LAB_0042fe39;
 }
 
+// FUNCTION: TH07 0x0042fee0
 void Chain::ReleaseSingleChain(ChainElem *root)
 
 {
@@ -208,6 +226,7 @@ void Chain::ReleaseSingleChain(ChainElem *root)
   }
 }
 
+// FUNCTION: TH07 0x00430060
 void Chain::Release()
 
 {
@@ -215,7 +234,10 @@ void Chain::Release()
   ReleaseSingleChain(&this->drawChain);
 }
 
-ChainElem *Chain::CreateElem(ChainCallback callback) {
+// FUNCTION: TH07 0x00430090
+ChainElem *Chain::CreateElem(ChainCallback callback)
+
+{
   ChainElem *elem = new ChainElem;
   elem->callback = callback;
   elem->addedCallback = NULL;
@@ -224,7 +246,10 @@ ChainElem *Chain::CreateElem(ChainCallback callback) {
   return elem;
 }
 
-void Chain::Cut(ChainElem *toRemove) {
+// FUNCTION: TH07 0x00430140
+void Chain::Cut(ChainElem *toRemove)
+
+{
   ChainElem *curElem = &this->calcChain;
   if (toRemove != NULL) {
     while (curElem != NULL) {

@@ -5,8 +5,10 @@
 #include "Supervisor.hpp"
 #include "dxutil.hpp"
 
+// GLOBAL: TH07 0x004ba0d8
 SoundPlayer g_SoundPlayer;
 
+// GLOBAL: TH07 0x0049ea88
 SoundBufferIdxVolume SOUND_BUFFER_IDX_VOL[38] = {
     {0, -2000, 0},   {0, -2500, 0},   {1, -1200, 5},   {1, -1500, 5},
     {2, -1000, 100}, {3, -400, 100},  {4, -400, 100},  {5, -1500, 50},
@@ -19,6 +21,7 @@ SoundBufferIdxVolume SOUND_BUFFER_IDX_VOL[38] = {
     {26, -300, 100}, {27, -300, 100}, {24, -300, 20},  {19, 0, 50},
     {28, -300, 100}, {29, -300, 100}};
 
+// GLOBAL: TH07 0x0049ebb8
 const char *g_SFXList[30] = {
     "data/wav/se_plst00.wav",   "data/wav/se_enep00.wav",
     "data/wav/se_pldead00.wav", "data/wav/se_power0.wav",
@@ -36,12 +39,16 @@ const char *g_SFXList[30] = {
     "data/wav/se_border.wav",   "data/wav/se_bonus.wav",
     "data/wav/se_bonus2.wav",   "data/wav/se_pause.wav"};
 
-SoundPlayer::SoundPlayer() {
+// FUNCTION: TH07 0x0044b510
+SoundPlayer::SoundPlayer()
+
+{
   memset(this, 0, sizeof(SoundPlayer));
   for (i32 i = 0; i < 0x80; ++i)
     this->unusedSoundVolRelated[i] = -1;
 }
 
+// FUNCTION: TH07 0x0044b560
 ZunResult SoundPlayer::InitializeDSound(HWND gameWindow)
 
 {
@@ -98,7 +105,10 @@ ZunResult SoundPlayer::InitializeDSound(HWND gameWindow)
   }
 }
 
-ZunResult SoundPlayer::Release() {
+// FUNCTION: TH07 0x0044b830
+ZunResult SoundPlayer::Release()
+
+{
   if (this->manager != NULL) {
     for (i32 i = 0; i < 0x80; i = i + 1) {
       SAFE_RELEASE(this->duplicateSoundBuffers[i]);
@@ -121,6 +131,7 @@ ZunResult SoundPlayer::Release() {
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0044ba80
 WAVEFORMATEX *
 SoundPlayer::GetWavFormatData(u8 *soundData, const char *formatString,
                               i32 *formatSize, i32 fileSizeExcludingFormat)
@@ -142,7 +153,10 @@ SoundPlayer::GetWavFormatData(u8 *soundData, const char *formatString,
   return (WAVEFORMATEX *)(tmpSoundData + 8);
 }
 
-i32 SoundPlayer::GetFmtIndexByName(const char *param_1) {
+// FUNCTION: TH07 0x0044baf0
+i32 SoundPlayer::GetFmtIndexByName(const char *param_1)
+
+{
   char local_8c[128];
   i32 local_c;
   const char *local_8;
@@ -168,6 +182,7 @@ i32 SoundPlayer::GetFmtIndexByName(const char *param_1) {
   return local_c;
 }
 
+// FUNCTION: TH07 0x0044bd00
 ZunResult SoundPlayer::LoadSound(i32 idx, const char *path)
 
 {
@@ -256,11 +271,15 @@ ZunResult SoundPlayer::LoadSound(i32 idx, const char *path)
   }
 }
 
-i32 SoundPlayer::LoadFmt(const char *param_1) {
+// FUNCTION: TH07 0x0044bff0
+i32 SoundPlayer::LoadFmt(const char *param_1)
+
+{
   this->bgmFmtData = (ThBgmFormat *)FileSystem::OpenFile(param_1, 0);
   return (this->bgmFmtData != NULL) - 1;
 }
 
+// FUNCTION: TH07 0x0044c020
 ZunResult SoundPlayer::StartBGM(const char *path)
 
 {
@@ -295,7 +314,10 @@ ZunResult SoundPlayer::StartBGM(const char *path)
   }
 }
 
-ZunResult SoundPlayer::ReopenBGM(const char *name) {
+// FUNCTION: TH07 0x0044c1b0
+ZunResult SoundPlayer::ReopenBGM(const char *name)
+
+{
   if (this->backgroundMusic == NULL) {
     return ZUN_ERROR;
   } else {
@@ -306,6 +328,7 @@ ZunResult SoundPlayer::ReopenBGM(const char *name) {
   }
 }
 
+// FUNCTION: TH07 0x0044c220
 ZunResult SoundPlayer::PreloadBGM(i32 idx, const char *path)
 
 {
@@ -358,7 +381,10 @@ ZunResult SoundPlayer::PreloadBGM(i32 idx, const char *path)
   }
 }
 
-i32 SoundPlayer::LoadBGM(i32 idx) {
+// FUNCTION: TH07 0x0044c4d0
+i32 SoundPlayer::LoadBGM(i32 idx)
+
+{
   u32 bufferSize;
   u32 blockAlign;
 
@@ -398,7 +424,10 @@ i32 SoundPlayer::LoadBGM(i32 idx) {
   }
 }
 
-void SoundPlayer::StopBGM() {
+// FUNCTION: TH07 0x0044c6b0
+void SoundPlayer::StopBGM()
+
+{
   if (this->backgroundMusic != NULL) {
     DebugPrint("Streming BGM stop\r\n");
     this->backgroundMusic->Stop();
@@ -418,6 +447,7 @@ void SoundPlayer::StopBGM() {
   }
 }
 
+// FUNCTION: TH07 0x0044c7d0
 ZunResult SoundPlayer::InitSoundBuffers()
 
 {
@@ -449,7 +479,10 @@ ZunResult SoundPlayer::InitSoundBuffers()
   }
 }
 
-void SoundPlayer::PlaySoundByIdx(i32 idx) {
+// FUNCTION: TH07 0x0044c930
+void SoundPlayer::PlaySoundByIdx(i32 idx)
+
+{
   i16 sVar1;
   i32 i;
 
@@ -465,7 +498,10 @@ void SoundPlayer::PlaySoundByIdx(i32 idx) {
   }
 }
 
-i32 SoundPlayer::ProcessQueues() {
+// FUNCTION: TH07 0x0044c9c0
+i32 SoundPlayer::ProcessQueues()
+
+{
   LPDIRECTSOUNDBUFFER buffer;
   i32 tmp;
   LPDIRECTSOUNDBUFFER buffer2;
@@ -681,6 +717,7 @@ loop:
   goto loop;
 }
 
+// FUNCTION: TH07 0x0044d200
 DWORD __stdcall SoundPlayer::BackgroundMusicPlayerThread(
     LPVOID lpThreadParameter)
 
@@ -715,7 +752,10 @@ DWORD __stdcall SoundPlayer::BackgroundMusicPlayerThread(
   return 0;
 }
 
-void SoundPlayer::PushCommand(AudioOpcode opcode, i32 arg1, const char *arg2) {
+// FUNCTION: TH07 0x0044d2f0
+void SoundPlayer::PushCommand(AudioOpcode opcode, i32 arg1, const char *arg2)
+
+{
   i32 queueIdx = 0;
   while (true) {
     if (0x1e < queueIdx)

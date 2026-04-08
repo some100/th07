@@ -8,17 +8,20 @@
 #include "GameManager.hpp"
 #include "ScreenEffect.hpp"
 
+// GLOBAL: TH07 0x0049f628
 const char *g_BadEndingPaths[3] = {
     "data/end00b.end",
     "data/end10b.end",
     "data/end20b.end",
 };
 
+// GLOBAL: TH07 0x0049f634
 const char *g_NormalEndingPaths[6] = {
     "data/end00.end", "data/end01.end", "data/end10.end",
     "data/end11.end", "data/end20.end", "data/end21.end",
 };
 
+// FUNCTION: TH07 0x0041d180
 Ending::Ending()
 
 {
@@ -31,6 +34,7 @@ Ending::Ending()
   this->backgroundScrollSpeed = 0.0f;
 }
 
+// FUNCTION: TH07 0x0041d2f0
 u32 Ending::OnUpdate(Ending *arg)
 
 {
@@ -54,6 +58,7 @@ u32 Ending::OnUpdate(Ending *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x0041d380
 u32 Ending::OnDraw(Ending *arg)
 
 {
@@ -71,6 +76,7 @@ u32 Ending::OnDraw(Ending *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x0041d410
 i32 Ending::ReadEndFileParameter()
 
 {
@@ -84,6 +90,7 @@ i32 Ending::ReadEndFileParameter()
   return cur;
 }
 
+// FUNCTION: TH07 0x0041d490
 void Ending::FadingEffect()
 
 {
@@ -141,6 +148,7 @@ void Ending::FadingEffect()
   }
 }
 
+// FUNCTION: TH07 0x0041d700
 ZunResult Ending::ParseEndFile()
 
 {
@@ -380,6 +388,7 @@ LAB_0041e331:
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0041e4b0
 ZunResult Ending::LoadEnding(const char *endFilePath)
 
 {
@@ -404,6 +413,7 @@ ZunResult Ending::LoadEnding(const char *endFilePath)
   }
 }
 
+// FUNCTION: TH07 0x0041e590
 ZunResult Ending::AddedCallback(Ending *arg)
 
 {
@@ -454,6 +464,7 @@ ZunResult Ending::AddedCallback(Ending *arg)
   }
 }
 
+// FUNCTION: TH07 0x0041e790
 ZunResult Ending::DeletedCallback(Ending *arg)
 
 {
@@ -468,6 +479,7 @@ ZunResult Ending::DeletedCallback(Ending *arg)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0041e820
 ZunResult Ending::RegisterChain()
 
 {

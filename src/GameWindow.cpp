@@ -20,14 +20,23 @@ typedef __w64 long SHANDLE_PTR; // i dont know anymore bro
 #include "Stage.hpp"
 #include "Supervisor.hpp"
 #include "dxutil.hpp"
-#include "utils.hpp"
 
+// GLOBAL: TH07 0x00575c20
 GameWindow g_GameWindow;
+
+// GLOBAL: TH07 0x0135e1f4
 HANDLE g_Mutex;
+
+// GLOBAL: TH07 0x0135e1f8
 i32 g_TickCountToEffectiveFramerate;
+
+// GLOBAL: TH07 0x0135e200
 f64 g_LastFrameTime;
+
+// GLOBAL: TH07 0x0135e208
 LARGE_INTEGER g_LastPerfCounter;
 
+// FUNCTION: TH07 0x00434490
 LRESULT __stdcall GameWindow::WindowProc(HWND hWnd, u32 uMsg, WPARAM wParam,
                                          LPARAM lParam)
 
@@ -68,6 +77,7 @@ LRESULT __stdcall GameWindow::WindowProc(HWND hWnd, u32 uMsg, WPARAM wParam,
   return DefWindowProcA(hWnd, uMsg, wParam, lParam);
 }
 
+// FUNCTION: TH07 0x004345c0
 void GameWindow::Present()
 
 {
@@ -99,6 +109,7 @@ void GameWindow::Present()
   }
 }
 
+// FUNCTION: TH07 0x004346e0
 RenderResult GameWindow::Render()
 
 {
@@ -197,6 +208,7 @@ RenderResult GameWindow::Render()
   return RENDER_RESULT_KEEP_RUNNING;
 }
 
+// FUNCTION: TH07 0x00434a40
 i32 GameWindow::InitD3dInterface()
 
 {
@@ -211,6 +223,7 @@ i32 GameWindow::InitD3dInterface()
   return bVar1;
 }
 
+// FUNCTION: TH07 0x00434a80
 i32 GameWindow::CreateGameWindow(HINSTANCE hInstance)
 
 {
@@ -251,6 +264,7 @@ i32 GameWindow::CreateGameWindow(HINSTANCE hInstance)
   return (u32)!bVar4;
 }
 
+// FUNCTION: TH07 0x00434bd0
 i32 GameWindow::InitD3dRendering()
 
 {
@@ -434,6 +448,7 @@ i32 GameWindow::InitD3dRendering()
   }
 }
 
+// FUNCTION: TH07 0x004351c0
 char *GameWindow::FormatCapability(const char *capabilityName,
                                    u32 capabilityFlags, u32 mask, char *buf)
 
@@ -447,6 +462,7 @@ char *GameWindow::FormatCapability(const char *capabilityName,
   return buf;
 }
 
+// FUNCTION: TH07 0x00435230
 void GameWindow::FormatD3DCapabilities(D3DCAPS8 *caps, char *buf)
 
 {
@@ -547,6 +563,7 @@ void GameWindow::FormatD3DCapabilities(D3DCAPS8 *caps, char *buf)
   sprintf(strPos, "--------------------------------------------\r\n");
 }
 
+// FUNCTION: TH07 0x004356a0
 void GameWindow::ResetRenderState()
 
 {
@@ -624,6 +641,7 @@ void GameWindow::ResetRenderState()
   g_Stage.renderStateWasReset = 1;
 }
 
+// FUNCTION: TH07 0x00435bd0
 i32 GameWindow::CheckForRunningGameInstance()
 
 {
@@ -670,6 +688,7 @@ i32 GameWindow::CheckForRunningGameInstance()
   return ret;
 }
 
+// FUNCTION: TH07 0x00435e30
 void GameWindow::SetWindowActive(HWND window)
 
 {
@@ -687,6 +706,7 @@ void GameWindow::SetWindowActive(HWND window)
   AttachThreadInput(local_8, idAttachTo, 0);
 }
 
+// FUNCTION: TH07 0x00435ec0
 i32 GameWindow::ChecksumExecutable()
 
 {
@@ -717,6 +737,7 @@ i32 GameWindow::ChecksumExecutable()
   return checksum;
 }
 
+// FUNCTION: TH07 0x00435fc0
 i32 GameWindow::ResolveIt(const char *shortcutPath, char *dstPath,
                           i32 maxPathLen)
 

@@ -12,8 +12,10 @@
 #include "pbg4/Lzss.hpp"
 #include "dsutil.hpp"
 
+// GLOBAL: TH07 0x004b9e48
 ReplayManager *g_ReplayManager;
 
+// FUNCTION: TH07 0x00442c60
 u32 ReplayManager::OnUpdateRng(ReplayManager *arg)
 
 {
@@ -27,6 +29,7 @@ u32 ReplayManager::OnUpdateRng(ReplayManager *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x00442cd0
 u32 ReplayManager::OnUpdate(ReplayManager *arg)
 
 {
@@ -62,6 +65,7 @@ u32 ReplayManager::OnUpdate(ReplayManager *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x00442e50
 u32 ReplayManager::OnUpdateDemoLowPrio(ReplayManager *arg)
 
 {
@@ -80,6 +84,7 @@ u32 ReplayManager::OnUpdateDemoLowPrio(ReplayManager *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x00442ee0
 u32 ReplayManager::OnUpdateDemoHighPrio(ReplayManager *arg)
 
 {
@@ -114,6 +119,7 @@ u32 ReplayManager::OnUpdateDemoHighPrio(ReplayManager *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x00443040
 ZunResult ReplayManager::AddedCallback(ReplayManager *arg)
 
 {
@@ -193,6 +199,7 @@ ZunResult ReplayManager::AddedCallback(ReplayManager *arg)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x004433b0
 ReplayHeaderAndData *
 ReplayManager::ValidateReplayData(ReplayHeaderAndData *data, i32 size)
 
@@ -238,6 +245,7 @@ ReplayManager::ValidateReplayData(ReplayHeaderAndData *data, i32 size)
   return NULL;
 }
 
+// FUNCTION: TH07 0x00443550
 ZunResult ReplayManager::AddedCallbackDemo(ReplayManager *arg)
 
 {
@@ -351,6 +359,7 @@ ZunResult ReplayManager::AddedCallbackDemo(ReplayManager *arg)
   }
 }
 
+// FUNCTION: TH07 0x004439b0
 ZunResult ReplayManager::DeletedCallback(ReplayManager *arg)
 
 {
@@ -373,6 +382,7 @@ ZunResult ReplayManager::DeletedCallback(ReplayManager *arg)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x00443aa0
 ZunResult ReplayManager::RegisterChain(i32 isDemo, const char *replayFilename)
 
 {
@@ -430,6 +440,7 @@ ZunResult ReplayManager::RegisterChain(i32 isDemo, const char *replayFilename)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x00443d30
 void ReplayManager::StopRecording()
 
 {
@@ -445,6 +456,7 @@ void ReplayManager::StopRecording()
   }
 }
 
+// FUNCTION: TH07 0x00443da0
 void ReplayManager::SaveReplay(const char *param_1, char *param_2)
 
 {
@@ -601,6 +613,7 @@ LAB_004444a9:
   g_Chain.Cut(g_ReplayManager->calcChain);
 }
 
+// FUNCTION: TH07 0x004444d0
 void ReplayManager::SaveReplay2(const char *param_1)
 
 {

@@ -17,6 +17,7 @@
 #include "dxutil.hpp"
 #include "utils.hpp"
 
+// GLOBAL: TH07 0x0049ecb0
 ShtFunc1 g_ShtFireFuncs[6] = {
     NULL,
     ShtData::FireBulletDefault,
@@ -26,6 +27,7 @@ ShtFunc1 g_ShtFireFuncs[6] = {
     ShtData::FireRotatingOrbBullet,
 };
 
+// GLOBAL: TH07 0x0049ecc8
 ShtFunc2 g_ShtUpdateFuncs[6] = {
     NULL,
     ShtData::UpdateHomingBullet,
@@ -35,11 +37,13 @@ ShtFunc2 g_ShtUpdateFuncs[6] = {
     ShtData::UpdatePlayerLaser,
 };
 
+// GLOBAL: TH07 0x0049ece0
 ShtFunc3 g_ShtDrawFuncs[2] = {
     NULL,
     ShtData::DrawBulletWithTrail,
 };
 
+// GLOBAL: TH07 0x0049ece8
 ShtFunc4 g_ShtHitFuncs[4] = {
     NULL,
     ShtData::OnMissileHit,
@@ -47,26 +51,34 @@ ShtFunc4 g_ShtHitFuncs[4] = {
     (ShtFunc4)0x00000001, // i guess bro
 };
 
+// GLOBAL: TH07 0x0049f530
 const char *g_ShooterTable[6] = {
     "data/ply00a.sht", "data/ply00b.sht", "data/ply01a.sht",
     "data/ply01b.sht", "data/ply02a.sht", "data/ply02b.sht",
 };
 
+// GLOBAL: TH07 0x0049f548
 const char *g_ShooterTable2[6] = {
     "data/ply00as.sht", "data/ply00bs.sht", "data/ply01as.sht",
     "data/ply01bs.sht", "data/ply02as.sht", "data/ply02bs.sht",
 };
 
+// GLOBAL: TH07 0x004bdad8
 Player g_Player;
 
+// FUNCTION: TH07 0x0043b7f0
 Player::Player() {}
 
+// FUNCTION: TH07 0x0043ba10
 PlayerBullet::PlayerBullet() {}
 
+// FUNCTION: TH07 0x0043baa0
 PlayerBombInfo::PlayerBombInfo() {}
 
+// FUNCTION: TH07 0x0043bb10
 PlayerBombSubInfo::PlayerBombSubInfo() {}
 
+// FUNCTION: TH07 0x0043bbd0
 void DefaultFireBulletCallback(Player *player, PlayerBullet *bullet,
                                ShtEntry *shtEntry)
 
@@ -97,6 +109,7 @@ void DefaultFireBulletCallback(Player *player, PlayerBullet *bullet,
       &bullet->vm, g_AnmManager->scripts[shtEntry->anmFileIdx]);
 }
 
+// FUNCTION: TH07 0x0043bdc0
 i32 ShtData::FireBulletDefault(Player *player, PlayerBullet *bullet,
                                i32 fireTime, ShtEntry *shtEntry)
 
@@ -110,6 +123,7 @@ i32 ShtData::FireBulletDefault(Player *player, PlayerBullet *bullet,
   return bVar1;
 }
 
+// FUNCTION: TH07 0x0043be10
 i32 ShtData::FireOrbBulletUnfocused(Player *player, PlayerBullet *bullet,
                                     i32 fireTime, ShtEntry *shtEntry)
 
@@ -137,6 +151,7 @@ i32 ShtData::FireOrbBulletUnfocused(Player *player, PlayerBullet *bullet,
   }
 }
 
+// FUNCTION: TH07 0x0043bf50
 i32 ShtData::FireOrbBulletFocused(Player *player, PlayerBullet *bullet,
                                   i32 fireTime, ShtEntry *shtEntry)
 
@@ -169,6 +184,7 @@ i32 ShtData::FireOrbBulletFocused(Player *player, PlayerBullet *bullet,
   }
 }
 
+// FUNCTION: TH07 0x0043c0d0
 i32 ShtData::FireHomingBullet(Player *player, PlayerBullet *bullet,
                               i32 fireTime, ShtEntry *shtEntry)
 
@@ -183,7 +199,7 @@ i32 ShtData::FireHomingBullet(Player *player, PlayerBullet *bullet,
                  ((player->sakuyaTargetPosition).x - bullet->pos.x)),
           shtEntry->angle + 1.5707964f);
       AngleToVector((D3DXVECTOR3 *)&bullet->velocity, fVar2,
-                           shtEntry->speed * 1.5f);
+                    shtEntry->speed * 1.5f);
       bullet->angle = fVar2;
     }
     return 1;
@@ -192,6 +208,7 @@ i32 ShtData::FireHomingBullet(Player *player, PlayerBullet *bullet,
   }
 }
 
+// FUNCTION: TH07 0x0043c1c0
 i32 ShtData::FireRotatingOrbBullet(Player *player, PlayerBullet *bullet,
                                    i32 fireTime, ShtEntry *shtEntry)
 
@@ -204,13 +221,13 @@ i32 ShtData::FireRotatingOrbBullet(Player *player, PlayerBullet *bullet,
     DefaultFireBulletCallback(player, bullet, shtEntry);
     angle = utils::AddNormalizeAngle(player->orbAngle,
                                      shtEntry->angle + 1.5707964f);
-    AngleToVector((D3DXVECTOR3 *)&bullet->velocity, angle,
-                         shtEntry->speed);
+    AngleToVector((D3DXVECTOR3 *)&bullet->velocity, angle, shtEntry->speed);
     bullet->angle = angle;
   }
   return bVar1;
 }
 
+// FUNCTION: TH07 0x0043c250
 i32 ShtData::UpdateHomingBullet(Player *player, PlayerBullet *bullet)
 
 {
@@ -258,6 +275,7 @@ i32 ShtData::UpdateHomingBullet(Player *player, PlayerBullet *bullet)
   return 0;
 }
 
+// FUNCTION: TH07 0x0043c480
 i32 ShtData::UpdateHomingBulletFocused(Player *player, PlayerBullet *bullet)
 
 {
@@ -305,6 +323,7 @@ i32 ShtData::UpdateHomingBulletFocused(Player *player, PlayerBullet *bullet)
   return 0;
 }
 
+// FUNCTION: TH07 0x0043c6b0
 i32 ShtData::UpdateUpwardAcceleratingBullet(Player *player,
                                             PlayerBullet *bullet)
 
@@ -316,6 +335,7 @@ i32 ShtData::UpdateUpwardAcceleratingBullet(Player *player,
   return 0;
 }
 
+// FUNCTION: TH07 0x0043c700
 i32 ShtData::UpdateOrbLaser(Player *player, PlayerBullet *bullet)
 
 {
@@ -351,6 +371,7 @@ i32 ShtData::UpdateOrbLaser(Player *player, PlayerBullet *bullet)
   }
 }
 
+// FUNCTION: TH07 0x0043c940
 i32 ShtData::UpdatePlayerLaser(Player *player, PlayerBullet *bullet)
 
 {
@@ -397,6 +418,7 @@ i32 ShtData::UpdatePlayerLaser(Player *player, PlayerBullet *bullet)
   }
 }
 
+// FUNCTION: TH07 0x0043ccb0
 i32 ShtData::DrawBulletWithTrail(Player *player, PlayerBullet *bullet)
 
 {
@@ -419,6 +441,7 @@ i32 ShtData::DrawBulletWithTrail(Player *player, PlayerBullet *bullet)
   return 0;
 }
 
+// FUNCTION: TH07 0x0043cde0
 i32 ShtData::OnMissileHit(Player *player, PlayerBullet *bullet,
                           D3DXVECTOR3 *pos)
 
@@ -485,6 +508,7 @@ i32 ShtData::OnMissileHit(Player *player, PlayerBullet *bullet,
   return 0;
 }
 
+// FUNCTION: TH07 0x0043d0e0
 i32 ShtData::SpawnHitParticles(Player *player, PlayerBullet *bullet,
                                D3DXVECTOR3 *pos)
 
@@ -501,6 +525,7 @@ i32 ShtData::SpawnHitParticles(Player *player, PlayerBullet *bullet,
   return 0;
 }
 
+// FUNCTION: TH07 0x0043d160
 void Player::SpawnBullets(Player *player, u32 timer)
 
 {
@@ -552,6 +577,7 @@ void Player::SpawnBullets(Player *player, u32 timer)
   }
 }
 
+// FUNCTION: TH07 0x0043d2f0
 void Player::UpdateShots()
 
 {
@@ -602,13 +628,13 @@ void Player::UpdateShots()
       if ((bullet->updateCallback == NULL) ||
           (bullet->updateCallback(this, bullet) == 0)) {
         bullet->pos.x +=
-            g_Supervisor.effectiveFramerateMultiplier * (bullet->velocity).x;
+            g_Supervisor.effectiveFramerateMultiplier * bullet->velocity.x;
         bullet->pos.y +=
-            g_Supervisor.effectiveFramerateMultiplier * (bullet->velocity).y;
+            g_Supervisor.effectiveFramerateMultiplier * bullet->velocity.y;
         if (((bullet->bulletState2 != 4) && (bullet->bulletState2 != 5)) &&
             (GameManager::IsInBounds(bullet->pos.x, bullet->pos.y,
-                                     (bullet->vm.sprite)->widthPx,
-                                     (bullet->vm.sprite)->heightPx) == 0)) {
+                                     bullet->vm.sprite->widthPx,
+                                     bullet->vm.sprite->heightPx) == 0)) {
           bullet->bulletState = 0;
         }
         if (g_AnmManager->ExecuteScript(&bullet->vm) != 0) {
@@ -624,6 +650,7 @@ void Player::UpdateShots()
   }
 }
 
+// FUNCTION: TH07 0x0043d690
 void Player::DrawBullets()
 
 {
@@ -647,6 +674,7 @@ void Player::DrawBullets()
   }
 }
 
+// FUNCTION: TH07 0x0043d790
 void Player::DrawBulletExplosions()
 
 {
@@ -667,6 +695,7 @@ void Player::DrawBulletExplosions()
   }
 }
 
+// FUNCTION: TH07 0x0043d880
 void Player::UpdateFireBulletTimer()
 
 {
@@ -689,6 +718,7 @@ void Player::UpdateFireBulletTimer()
   }
 }
 
+// FUNCTION: TH07 0x0043d990
 void Player::StartFireBulletTimer()
 
 {
@@ -697,6 +727,7 @@ void Player::StartFireBulletTimer()
   }
 }
 
+// FUNCTION: TH07 0x0043d9e0
 i32 Player::CheckCollisionWithEnemy(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
                                     i32 *param_3)
 
@@ -761,8 +792,8 @@ i32 Player::CheckCollisionWithEnemy(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
               }
               bullet->bulletState = 2;
               if (bullet->bulletState2 != 3) {
-                (bullet->velocity).x /= 8.0f;
-                (bullet->velocity).y /= 8.0f;
+                bullet->velocity.x /= 8.0f;
+                bullet->velocity.y /= 8.0f;
               }
             }
           }
@@ -802,6 +833,7 @@ i32 Player::CheckCollisionWithEnemy(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
   return local_34;
 }
 
+// FUNCTION: TH07 0x0043e0a0
 i32 Player::CheckBombGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
 
 {
@@ -841,6 +873,7 @@ i32 Player::CheckBombGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
   }
 }
 
+// FUNCTION: TH07 0x0043e260
 i32 Player::CalcKillboxCollision(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2)
 
 {
@@ -869,31 +902,31 @@ i32 Player::CalcKillboxCollision(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2)
   }
 }
 
-i32 Player::CheckGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
-
-{
+// FUNCTION: TH07 0x0043e3b0
+i32 Player::CheckGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size) {
   this->itemType = ITEM_POINT_BULLET;
-  if (CheckBombGraze(center, size) == 0) {
-    if ((this->playerState == PLAYER_STATE_DEAD) ||
-        (this->playerState == PLAYER_STATE_SPAWNING)) {
-      return 0;
-    } else if ((size->x / 2.0f + center->x + 20.0f < this->grazeTopLeft.x) ||
-               (((this->grazeBottomRight.x <
-                      (center->x - size->x / 2.0f) - 20.0f ||
-                  (size->y / 2.0f + center->y + 20.0f <
-                   this->grazeTopLeft.y)) ||
-                 (this->grazeBottomRight.y <
-                  (center->y - size->y / 2.0f) - 20.0f)))) {
-      return 0;
-    } else {
-      ScoreGraze(center);
-      return 1;
-    }
-  } else {
+
+  if (CheckBombGraze(center, size) != 0)
     return 2;
-  }
+
+  f32 left = center->x - size->x / 2.0f - 20.0f;
+  f32 top = center->y - size->x / 2.0f - 20.0f;
+  f32 right = center->x + size->y / 2.0f + 20.0f;
+  f32 bottom = center->y + size->y / 2.0f + 20.0f;
+
+  if (this->playerState == PLAYER_STATE_DEAD ||
+      this->playerState == PLAYER_STATE_SPAWNING)
+    return 0;
+
+  if (this->grazeTopLeft.x <= right || this->grazeBottomRight.x >= left ||
+      this->grazeTopLeft.y <= bottom)
+    return 0;
+
+  ScoreGraze(center);
+  return 1;
 }
 
+// FUNCTION: TH07 0x0043e4e0
 i32 Player::CalcItemBoxCollision(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2)
 
 {
@@ -913,6 +946,7 @@ i32 Player::CalcItemBoxCollision(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2)
   }
 }
 
+// FUNCTION: TH07 0x0043e6b0
 i32 Player::CalcLaserHitbox(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
                             D3DXVECTOR3 *param_3, f32 param_4, i32 canGraze)
 
@@ -978,6 +1012,7 @@ i32 Player::CalcLaserHitbox(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
   }
 }
 
+// FUNCTION: TH07 0x0043eb90
 void Player::ScoreGraze(D3DXVECTOR3 *param_1)
 
 {
@@ -1023,6 +1058,7 @@ void Player::ScoreGraze(D3DXVECTOR3 *param_1)
   }
 }
 
+// FUNCTION: TH07 0x0043edc0
 void Player::Die()
 
 {
@@ -1034,6 +1070,7 @@ void Player::Die()
   g_SoundPlayer.PlaySoundByIdx(SOUND_PICHUN);
 }
 
+// FUNCTION: TH07 0x0043ee50
 void Player::HandlePlayerInputs()
 
 {
@@ -1409,6 +1446,7 @@ switchD_0043fe16_default:
   }
 }
 
+// FUNCTION: TH07 0x00440940
 void Player::UpdateBombProjectiles()
 
 {
@@ -1428,6 +1466,7 @@ void Player::UpdateBombProjectiles()
   }
 }
 
+// FUNCTION: TH07 0x004409f0
 void Player::UpdateBorderAndBombState()
 
 {
@@ -1496,6 +1535,7 @@ void Player::UpdateBorderAndBombState()
   }
 }
 
+// FUNCTION: TH07 0x00440cf0
 i32 Player::UpdateDeath()
 
 {
@@ -1594,6 +1634,7 @@ i32 Player::UpdateDeath()
   return 0;
 }
 
+// FUNCTION: TH07 0x004411c0
 void Player::Respawn()
 
 {
@@ -1620,6 +1661,7 @@ void Player::Respawn()
   }
 }
 
+// FUNCTION: TH07 0x00441330
 void Player::UpdateState()
 
 {
@@ -1698,6 +1740,7 @@ void Player::UpdateState()
   }
 }
 
+// FUNCTION: TH07 0x00441670
 void Player::BreakBorderNaturally()
 
 {
@@ -1728,6 +1771,7 @@ void Player::BreakBorderNaturally()
   }
 }
 
+// FUNCTION: TH07 0x00441800
 BombProjectile *Player::SpawnBombProjectile(D3DXVECTOR3 *centerPosition,
                                             f32 posZ, f32 size, i32 payload)
 
@@ -1751,6 +1795,7 @@ BombProjectile *Player::SpawnBombProjectile(D3DXVECTOR3 *centerPosition,
   return local_c;
 }
 
+// FUNCTION: TH07 0x004418b0
 BombProjectile *Player::SpawnBombEffect(D3DXVECTOR3 *pos, f32 sizeY, f32 sizeZ,
                                         i32 lifetime, i32 payload)
 
@@ -1773,6 +1818,7 @@ BombProjectile *Player::SpawnBombEffect(D3DXVECTOR3 *pos, f32 sizeY, f32 sizeZ,
   return bomb;
 }
 
+// FUNCTION: TH07 0x00441960
 void Player::ActivateBorder()
 
 {
@@ -1808,9 +1854,8 @@ void Player::ActivateBorder()
       pEVar3 = g_EffectManager.SpawnEffect(0x1c, &this->positionCenter, 4, 1,
                                            0xffffffff);
       pEVar3->vm.interpStartTimes[4].Initialize(0);
-      pEVar3->vm
-          .interpEndTimes[4]
-          .Initialize(this->invulnerabilityTimer.current);
+      pEVar3->vm.interpEndTimes[4].Initialize(
+          this->invulnerabilityTimer.current);
       pEVar3->vm.interpModes[4] = 0;
       pEVar3->vm.scaleInterpInitial.y = 1.0f;
       pEVar3->vm.scaleInterpInitial.x = 1.0f;
@@ -1829,6 +1874,7 @@ void Player::ActivateBorder()
   this->hasBorder = BORDER_READY;
 }
 
+// FUNCTION: TH07 0x00441bd0
 void Player::BreakBorder()
 
 {
@@ -1877,6 +1923,7 @@ void Player::BreakBorder()
   g_ReplayManager->replayEventFlags = g_ReplayManager->replayEventFlags | 0x10;
 }
 
+// FUNCTION: TH07 0x00441e80
 void Player::UpdateUI()
 
 {
@@ -1905,6 +1952,7 @@ void Player::UpdateUI()
   }
 }
 
+// FUNCTION: TH07 0x00441fb0
 u32 Player::OnUpdate(Player *arg)
 
 {
@@ -1936,6 +1984,7 @@ LAB_00442012:
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x004420b0
 u32 Player::OnDrawHighPrio(Player *arg)
 
 {
@@ -2006,6 +2055,7 @@ u32 Player::OnDrawHighPrio(Player *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x00442350
 u32 Player::OnDrawLowPrio(Player *arg)
 
 {
@@ -2013,6 +2063,7 @@ u32 Player::OnDrawLowPrio(Player *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x00442370
 f32 Player::AngleToPlayer(D3DXVECTOR3 *param_2)
 
 {
@@ -2028,6 +2079,7 @@ f32 Player::AngleToPlayer(D3DXVECTOR3 *param_2)
   }
 }
 
+// FUNCTION: TH07 0x004423e0
 ZunResult Player::AddedCallback(Player *arg)
 
 {
@@ -2140,6 +2192,7 @@ ZunResult Player::AddedCallback(Player *arg)
   }
 }
 
+// FUNCTION: TH07 0x004428e0
 ZunResult Player::DeletedCallback(Player *arg)
 
 {
@@ -2164,6 +2217,7 @@ ZunResult Player::DeletedCallback(Player *arg)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x004429d0
 ZunResult Player::RegisterChain(u8 param_1)
 
 {
@@ -2188,6 +2242,7 @@ ZunResult Player::RegisterChain(u8 param_1)
   }
 }
 
+// FUNCTION: TH07 0x00442b10
 void Player::CutChain()
 
 {
@@ -2199,6 +2254,7 @@ void Player::CutChain()
   g_Player.drawChain2 = NULL;
 }
 
+// FUNCTION: TH07 0x00442b70
 ZunResult ShtData::LoadShtData(ShtData **data, const char *shtPath)
 
 {

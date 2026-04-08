@@ -9,13 +9,17 @@
 #include "inttypes.hpp"
 #include "dsutil.hpp"
 
+// GLOBAL: TH07 0x0049fc88
 static JOYCAPSA g_JoystickCaps;
+
+// GLOBAL: TH07 0x0049fe1c
 static u16 g_FocusButtonConflictState;
 
 #define KEY_PRESSED(scancode, thButton)                                        \
   ((keyboardState[scancode] & 0x80) != 0 ? thButton : 0)
 #define JOYSTICK_MIDPOINT(min, max) ((min + max) / 2)
 
+// FUNCTION: TH07 0x00430290
 bool Controller::GetJoystickCaps()
 
 {
@@ -33,6 +37,7 @@ bool Controller::GetJoystickCaps()
   return MVar1 != 0;
 }
 
+// FUNCTION: TH07 0x004302f0
 u32 Controller::SetButtonFromDirectInputJoystate(u16 *outButtons,
                                                  i16 controllerButtonToTest,
                                                  u32 touhouButton,
@@ -60,6 +65,7 @@ u32 Controller::SetButtonFromDirectInputJoystate(u16 *outButtons,
   return local_14;
 }
 
+// FUNCTION: TH07 0x00430370
 u32 Controller::SetButtonFromControllerInputs(u16 *outButtons,
                                               i16 controllerButtonToTest,
                                               u32 touhouButton,
@@ -89,6 +95,7 @@ u32 Controller::SetButtonFromControllerInputs(u16 *outButtons,
   return local_18;
 }
 
+// FUNCTION: TH07 0x004303f0
 u16 Controller::GetControllerInput(u16 buttons)
 
 {
@@ -249,6 +256,7 @@ u16 Controller::GetControllerInput(u16 buttons)
 
 static u8 g_ControllerData[32 * 4];
 
+// FUNCTION: TH07 0x004309c0
 u8 *Controller::GetControllerState()
 
 {
@@ -299,6 +307,7 @@ LAB_00430b42:
   return g_ControllerData;
 }
 
+// FUNCTION: TH07 0x00430b50
 u16 Controller::GetInput()
 
 {
@@ -364,6 +373,7 @@ u16 Controller::GetInput()
   return GetControllerInput(buttons);
 }
 
+// FUNCTION: TH07 0x004312c0
 void Controller::ResetKeyboard()
 
 {

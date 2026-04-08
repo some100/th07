@@ -13,10 +13,19 @@
 #include "dxutil.hpp"
 #include "utils.hpp"
 
+// GLOBAL: TH07 0x01347b00
 Stage g_Stage;
+
+// GLOBAL: TH07 0x0134cdb4
 ChainElem g_StageOnDrawLowPrioChain;
+
+// GLOBAL: TH07 0x0134cdd4
 ChainElem g_StageCalcChain;
+
+// GLOBAL: TH07 0x01347ae0
 ChainElem g_StageOnDrawHighPrioChain;
+
+// GLOBAL: TH07 0x0049f588
 StageAnms g_AnmStageFiles[9] = {
     {"dummy", "dummy"},         {"data/stg1enm.anm", NULL},
     {"data/stg2enm.anm", NULL}, {"data/stg3enm.anm", NULL},
@@ -24,12 +33,15 @@ StageAnms g_AnmStageFiles[9] = {
     {"data/stg6enm.anm", NULL}, {"data/stg7enm.anm", NULL},
     {"data/stg8enm.anm", NULL},
 };
+
+// GLOBAL: TH07 0x0049f64c
 const char *g_StageFiles[9] = {
     "dummy",           "data/stage1.std", "data/stage2.std",
     "data/stage3.std", "data/stage4.std", "data/stage5.std",
     "data/stage6.std", "data/stage7.std", "data/stage8.std",
 };
 
+// FUNCTION: TH07 0x00405080
 Stage::Stage()
 
 {
@@ -48,6 +60,7 @@ Stage::Stage()
   this->camPosStart = this->camPos;
 }
 
+// FUNCTION: TH07 0x004052d0
 f32 InterpCubic(f32 p0, f32 p1, f32 p2, f32 p3, f32 t)
 
 {
@@ -56,6 +69,7 @@ f32 InterpCubic(f32 p0, f32 p1, f32 p2, f32 p3, f32 t)
          (t * 2.0f + 1.0f) * (t - 1.0f) * (t - 1.0f) * p0;
 }
 
+// FUNCTION: TH07 0x00405370
 void Stage::UpdateScriptAndCamera(Stage *stage, i32 param_2,
                                   D3DXVECTOR3 *param_3, D3DXVECTOR3 *param_4,
                                   D3DXVECTOR3 *param_5, D3DXVECTOR3 *param_6,
@@ -114,6 +128,7 @@ void Stage::UpdateScriptAndCamera(Stage *stage, i32 param_2,
   }
 }
 
+// FUNCTION: TH07 0x00405690
 u32 Stage::OnUpdate(Stage *arg)
 
 {
@@ -440,6 +455,7 @@ switchD_004057f2_caseD_4:
   goto LAB_0040578a;
 }
 
+// FUNCTION: TH07 0x00406930
 void Stage::SmoothBlendColor(ZunColor param_1)
 
 {
@@ -457,6 +473,7 @@ void Stage::SmoothBlendColor(ZunColor param_1)
   }
 }
 
+// FUNCTION: TH07 0x004069d0
 u32 Stage::OnDrawHighPrio(Stage *arg)
 
 {
@@ -556,6 +573,7 @@ u32 Stage::OnDrawHighPrio(Stage *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x00406de0
 u32 Stage::OnDrawLowPrio(Stage *arg)
 
 {
@@ -608,6 +626,7 @@ u32 Stage::OnDrawLowPrio(Stage *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x00407000
 ZunResult Stage::AddedCallback(Stage *arg)
 
 {
@@ -713,6 +732,7 @@ ZunResult Stage::AddedCallback(Stage *arg)
   }
 }
 
+// FUNCTION: TH07 0x00407410
 ZunResult Stage::DeletedCallback(Stage *arg)
 
 {
@@ -726,6 +746,7 @@ ZunResult Stage::DeletedCallback(Stage *arg)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x004074c0
 ZunResult Stage::RegisterChain(i32 stage)
 
 {
@@ -753,6 +774,7 @@ ZunResult Stage::RegisterChain(i32 stage)
   }
 }
 
+// FUNCTION: TH07 0x004075d0
 void Stage::CutChain()
 
 {
@@ -761,6 +783,7 @@ void Stage::CutChain()
   g_Chain.Cut(&g_StageOnDrawLowPrioChain);
 }
 
+// FUNCTION: TH07 0x00407610
 ZunResult Stage::LoadStageData(const char *stdPath)
 
 {
@@ -802,6 +825,7 @@ ZunResult Stage::LoadStageData(const char *stdPath)
   }
 }
 
+// FUNCTION: TH07 0x004077f0
 ZunResult Stage::UpdateObjects()
 
 {
@@ -836,6 +860,7 @@ ZunResult Stage::UpdateObjects()
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x00407900
 i32 Stage::RenderObjects(i32 param_1)
 
 {
@@ -994,6 +1019,7 @@ i32 Stage::RenderObjects(i32 param_1)
   return 0;
 }
 
+// FUNCTION: TH07 0x00408180
 void Stage::SetupCameraStageBackground()
 
 {
@@ -1020,7 +1046,10 @@ void Stage::SetupCameraStageBackground()
                                        &g_Supervisor.projectionMatrix);
 }
 
-void Stage::UpdateCamera() {
+// FUNCTION: TH07 0x004082b0
+void Stage::UpdateCamera()
+
+{
   D3DXVECTOR3 local_10;
 
   local_10.z = this->camLookAt.z + this->camPos.z;

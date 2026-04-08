@@ -96,6 +96,7 @@ struct GameManager {
         (f32)(i32)(this->globals->csumAsSum + this->globals->rng2[3]);
   }
 
+  // FUNCTION: TH07 0x00404fe0
   i32 CheckGameIntegrity()
 
   {
@@ -112,6 +113,7 @@ struct GameManager {
 
   void AddCurrentPower(i32 amount);
 
+  // FUNCTION: TH07 0x0043b5c0
   void RerollRng()
 
   {
@@ -136,6 +138,7 @@ struct GameManager {
     this->globals->rngFloat3[2] = g_Rng.GetRandomFloat() * 100000.0f + 6543.0f;
   }
 
+  // FUNCTION: TH07 0x0043b750
   void CheckGameIntegrityOnDeath(i32 amount)
 
   {
@@ -146,6 +149,7 @@ struct GameManager {
     RegenerateGameIntegrityCsum();
   }
 
+  // FUNCTION: TH07 0x0043b7a0
   void AddBombsUsed(i32 amount)
 
   {

@@ -9,33 +9,40 @@
 #include "Chain.hpp"
 #include "Controller.hpp"
 #include "FileSystem.hpp"
-#include "GameErrorContext.hpp"
 #include "GameManager.hpp"
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
 #include "ZunResult.hpp"
 #include "pbg4/Lzss.hpp"
-#include "dsutil.hpp"
 
+// GLOBAL: TH07 0x0049ec34
 const char *g_CharacterList[6] = {"博麗 霊夢 (霊)　", "博麗 霊夢 (夢)　",
                                   "霧雨 魔理沙 (魔)", "霧雨 魔理沙 (恋",
                                   "十六夜 咲夜 (幻)", "十六夜 咲夜 (時)"};
+
+// GLOBAL: TH07 0x0049ec30
 const char *g_AlphabetList =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,:;_@abcdefghijklmnopqrstuvwxyz+-/"
     "*=%0123456789#!?'\"$(){}[]<>&\\|~^ --";
+
+// GLOBAL: TH07 0x0049f4ec
 const char *g_CharactersAndShotTypesStrings[6] = {
     "ReimuA ", "ReimuB ", "MarisaA", "MarisaB", "SakuyaA", "SakuyaB",
 };
+
+// GLOBAL: TH07 0x0049f518
 const char *g_DifficultyNameTable[6] = {
     "      Easy", "    Normal", "      Hard",
     "   Lunatic", "     Extra", "  Phantasm",
 };
 
+// FUNCTION: TH07 0x00444a5b
 ResultScreen::ResultScreen() {
   memset(this, 0, sizeof(ResultScreen));
   this->cursor = 1;
 }
 
+// FUNCTION: TH07 0x00444b56
 i32 ResultScreen::LinkScore(ScoreListNode *prevNode, Hscr *hscr)
 
 {
@@ -59,6 +66,7 @@ i32 ResultScreen::LinkScore(ScoreListNode *prevNode, Hscr *hscr)
   return local_8;
 }
 
+// FUNCTION: TH07 0x00444bed
 void ResultScreen::FreeAllScores(ScoreListNode *scores)
 
 {
@@ -73,6 +81,7 @@ void ResultScreen::FreeAllScores(ScoreListNode *scores)
   }
 }
 
+// FUNCTION: TH07 0x00444c20
 ScoreDat *ResultScreen::OpenScore(const char *path)
 
 {
@@ -179,6 +188,7 @@ LAB_00444ed5:
   return local_c;
 }
 
+// FUNCTION: TH07 0x00444f0d
 u32 ResultScreen::GetHighScore(ScoreDat *scoreDat, ScoreListNode *node,
                                u32 character, u32 difficulty, u8 *noClue)
 
@@ -232,6 +242,7 @@ u32 ResultScreen::GetHighScore(ScoreDat *scoreDat, ScoreListNode *node,
   return local_24;
 }
 
+// FUNCTION: TH07 0x00445069
 ZunResult ResultScreen::ParseCatk(ScoreDat *scoreDat, Catk *catk)
 
 {
@@ -257,6 +268,7 @@ ZunResult ResultScreen::ParseCatk(ScoreDat *scoreDat, Catk *catk)
   }
 }
 
+// FUNCTION: TH07 0x00445110
 ZunResult ResultScreen::ParseLsnm(ScoreDat *scoreDat, Lsnm *param_2)
 
 {
@@ -278,6 +290,7 @@ ZunResult ResultScreen::ParseLsnm(ScoreDat *scoreDat, Lsnm *param_2)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x00445192
 ZunResult ResultScreen::ParseClrd(ScoreDat *scoreDat, Clrd *clrd)
 
 {
@@ -317,6 +330,7 @@ ZunResult ResultScreen::ParseClrd(ScoreDat *scoreDat, Clrd *clrd)
   }
 }
 
+// FUNCTION: TH07 0x004452f4
 ZunResult ResultScreen::ParsePscr(ScoreDat *scoreDat, Pscr *pscr)
 
 {
@@ -365,6 +379,7 @@ ZunResult ResultScreen::ParsePscr(ScoreDat *scoreDat, Pscr *pscr)
   }
 }
 
+// FUNCTION: TH07 0x0044547f
 ZunResult ResultScreen::ParsePlst(ScoreDat *scoreDat, Plst *param_2)
 
 {
@@ -384,6 +399,7 @@ ZunResult ResultScreen::ParsePlst(ScoreDat *scoreDat, Plst *param_2)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x004454fc
 void ResultScreen::ReleaseScoreDat(ScoreDat *scoreDat)
 
 {
@@ -392,6 +408,7 @@ void ResultScreen::ReleaseScoreDat(ScoreDat *scoreDat)
   free(scoreDat);
 }
 
+// FUNCTION: TH07 0x0044552c
 void ResultScreen::WriteScore()
 
 {
@@ -536,6 +553,7 @@ void ResultScreen::WriteScore()
   }
 }
 
+// FUNCTION: TH07 0x00445a57
 i32 ResultScreen::MoveCursor(ResultScreen *screen, i32 param_2)
 
 {
@@ -568,6 +586,7 @@ i32 ResultScreen::MoveCursor(ResultScreen *screen, i32 param_2)
   }
 }
 
+// FUNCTION: TH07 0x00445b56
 i32 ResultScreen::MoveCursor2(ResultScreen *screen, i32 param_2)
 
 {
@@ -600,6 +619,7 @@ i32 ResultScreen::MoveCursor2(ResultScreen *screen, i32 param_2)
   }
 }
 
+// FUNCTION: TH07 0x00445c55
 i32 ResultScreen::MoveCursorHorizontally(ResultScreen *screen, i32 param_2)
 
 {
@@ -632,18 +652,21 @@ i32 ResultScreen::MoveCursorHorizontally(ResultScreen *screen, i32 param_2)
   }
 }
 
+// FUNCTION: TH07 0x00445d60
 i32 ResultScreen::LinkScoreEx(Hscr *out, i32 difficulty, i32 character)
 
 {
   return LinkScore(this->scoreLists[difficulty] + character, out);
 }
 
+// FUNCTION: TH07 0x00445d8b
 void ResultScreen::FreeScore(i32 param_1, i32 param_2)
 
 {
   FreeAllScores(this->scoreLists[param_1] + param_2);
 }
 
+// FUNCTION: TH07 0x00445db3
 u32 ResultScreen::OnUpdate(ResultScreen *arg)
 
 {
@@ -986,6 +1009,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x00446a66
 ZunResult ResultScreen::HandleResultKeyboard()
 
 {
@@ -1170,6 +1194,7 @@ LAB_004470e9:
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x00447161
 void ResultScreen::GetDate(char *out)
 
 {
@@ -1181,6 +1206,7 @@ void ResultScreen::GetDate(char *out)
   strftime(out, 6, "%m/%d", timeinfo);
 }
 
+// FUNCTION: TH07 0x00447198
 ZunResult ResultScreen::HandleReplaySaveKeyboard()
 
 {
@@ -1532,6 +1558,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x00447fd0
 ZunResult ResultScreen::CheckConfirmButton()
 
 {
@@ -1554,6 +1581,7 @@ ZunResult ResultScreen::CheckConfirmButton()
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x00448098
 i32 ResultScreen::DrawStats()
 
 {
@@ -1822,6 +1850,7 @@ i32 ResultScreen::DrawStats()
   return 0;
 }
 
+// FUNCTION: TH07 0x004488a9
 ZunResult ResultScreen::DrawFinalStats()
 
 {
@@ -1899,7 +1928,10 @@ ZunResult ResultScreen::DrawFinalStats()
   return ZUN_SUCCESS;
 }
 
-u32 ResultScreen::OnDraw(ResultScreen *arg) {
+// FUNCTION: TH07 0x00448d40
+u32 ResultScreen::OnDraw(ResultScreen *arg)
+
+{
   i32 cursor2;
   i32 cursor;
   char local_58[16];
@@ -2171,7 +2203,10 @@ u32 ResultScreen::OnDraw(ResultScreen *arg) {
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
-ZunResult ResultScreen::AddedCallback(ResultScreen *arg) {
+// FUNCTION: TH07 0x00449b05
+ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
+
+{
   i16 local_44;
   i32 local_1c;
   Catk *local_18;
@@ -2290,7 +2325,10 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg) {
   }
 }
 
-ZunResult ResultScreen::DeletedCallback(ResultScreen *arg) {
+// FUNCTION: TH07 0x0044a1f9
+ZunResult ResultScreen::DeletedCallback(ResultScreen *arg)
+
+{
   if (arg->scoreDat != NULL) {
     arg->WriteScore();
     ReleaseScoreDat(arg->scoreDat);
@@ -2315,7 +2353,10 @@ ZunResult ResultScreen::DeletedCallback(ResultScreen *arg) {
   return ZUN_SUCCESS;
 }
 
-ZunResult ResultScreen::RegisterChain(u32 param_1) {
+// FUNCTION: TH07 0x0044a302
+ZunResult ResultScreen::RegisterChain(u32 param_1)
+
+{
   ResultScreen *resultScreen = new ResultScreen;
   Supervisor::DebugPrint2("Stg.PlayTimeAll = %d\r\n",
                      g_GameManager.activeFrameCounter);

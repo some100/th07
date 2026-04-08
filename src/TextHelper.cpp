@@ -8,7 +8,10 @@
 #include "dxutil.hpp"
 #include "inttypes.hpp"
 
+// GLOBAL: TH07 0x0049fe28
 IDirect3DSurface8 *g_TextBufferSurface;
+
+// GLOBAL: TH07 0x0049ed98
 FormatInfo g_FormatInfoArray[7] = {
     {
         D3DFMT_X8R8G8B8,
@@ -68,6 +71,7 @@ FormatInfo g_FormatInfoArray[7] = {
     },
 };
 
+// FUNCTION: TH07 0x00431a0f
 TextHelper::TextHelper()
 
 {
@@ -80,8 +84,10 @@ TextHelper::TextHelper()
   this->buffer = NULL;
 }
 
+// FUNCTION: TH07 0x00431a4b
 TextHelper::~TextHelper() { ReleaseBuffer(); }
 
+// FUNCTION: TH07 0x00431a5c
 bool TextHelper::ReleaseBuffer()
 
 {
@@ -101,6 +107,7 @@ bool TextHelper::ReleaseBuffer()
   return isNotNull;
 }
 
+// FUNCTION: TH07 0x00431ace
 bool TextHelper::AllocateBufferWithFallback(i32 width, i32 height,
                                             D3DFORMAT format)
 
@@ -125,6 +132,7 @@ struct ThBitmapInfo {
   RGBQUAD bmiColors[17];
 };
 
+// FUNCTION: TH07 0x00431b2d
 bool TextHelper::TryAllocateBuffer(i32 width, i32 height, D3DFORMAT format)
 
 {
@@ -180,6 +188,7 @@ bool TextHelper::TryAllocateBuffer(i32 width, i32 height, D3DFORMAT format)
   return bVar1;
 }
 
+// FUNCTION: TH07 0x00431cec
 FormatInfo *TextHelper::GetFormatInfo(D3DFORMAT format)
 
 {
@@ -205,6 +214,7 @@ struct A1R5G5B5 {
   u16 alpha : 1;
 };
 
+// FUNCTION: TH07 0x00431d3c
 bool TextHelper::InvertAlpha(i32 x, i32 y, i32 spriteWidth, i32 fontHeight,
                              i32 param5)
 
@@ -284,6 +294,7 @@ bool TextHelper::InvertAlpha(i32 x, i32 y, i32 spriteWidth, i32 fontHeight,
   return true;
 }
 
+// FUNCTION: TH07 0x00432164
 bool TextHelper::CopyTextToSurface(IDirect3DSurface8 *surface)
 
 {
@@ -324,6 +335,7 @@ bool TextHelper::CopyTextToSurface(IDirect3DSurface8 *surface)
   }
 }
 
+// FUNCTION: TH07 0x0043225b
 void TextHelper::CreateTextBuffer()
 
 {
@@ -331,12 +343,14 @@ void TextHelper::CreateTextBuffer()
                                              &g_TextBufferSurface);
 }
 
+// FUNCTION: TH07 0x0043227e
 void TextHelper::ReleaseTextBuffer()
 
 {
   SAFE_RELEASE(g_TextBufferSurface);
 }
 
+// FUNCTION: TH07 0x004322a3
 void TextHelper::RenderTextToTextureBold(i32 xPos, i32 yPos, i32 spriteWidth,
                                          i32 spriteHeight, i32 fontHeight,
                                          i32 fontWidth, D3DCOLOR textColor,

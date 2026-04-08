@@ -12,6 +12,7 @@
 #include "ZunMath.hpp"
 #include "utils.hpp"
 
+// GLOBAL: TH07 0x0049ec50
 BombData g_BombData[6] = {
     {BombData::BombReimuACalc, BombData::BombReimuADraw,
      BombData::BombReimuACalcFocus, BombData::BombReimuADrawFocus},
@@ -26,7 +27,10 @@ BombData g_BombData[6] = {
     {BombData::BombSakuyaBCalc, BombData::BombSakuyaBDraw,
      BombData::BombSakuyaBCalcFocus, BombData::BombSakuyaBDrawFocus}};
 
-void BombData::DarkenViewport(Player *player) {
+// FUNCTION: TH07 0x004083f0
+void BombData::DarkenViewport(Player *player)
+
+{
   ZunColor local_8;
   if (player->bombInfo.bombTimer.current < 0x3c) {
     local_8.bytes.g =
@@ -52,6 +56,7 @@ void BombData::DarkenViewport(Player *player) {
   g_Stage.isDarkening = 1;
 }
 
+// FUNCTION: TH07 0x004084f0
 void BombData::SpawnBombInvulnEffect(Player *player)
 
 {
@@ -76,6 +81,8 @@ void BombData::SpawnBombInvulnEffect(Player *player)
   player->effect = effect;
 }
 
+
+// FUNCTION: TH07 0x00408610
 void BombData::ComputeBombCherryDrain(Player *player, i32 minCost, f32 scale)
 
 {
@@ -104,6 +111,7 @@ void BombData::ComputeBombCherryDrain(Player *player, i32 minCost, f32 scale)
   player->bombInfo.bombCherryDrain = local_1c;
 }
 
+// FUNCTION: TH07 0x00408710
 void BombData::BombReimuACalc(Player *player)
 
 {
@@ -237,6 +245,7 @@ void BombData::BombReimuACalc(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x00408e10
 void BombData::BombReimuADraw(Player *player)
 
 {
@@ -276,7 +285,10 @@ void BombData::BombReimuADraw(Player *player)
   }
 }
 
-void BombData::BombReimuACalcFocus(Player *player) {
+// FUNCTION: TH07 0x004091b0
+void BombData::BombReimuACalcFocus(Player *player)
+
+{
   PlayerBombSubInfo *pPVar1;
   BombProjectile *pBVar2;
   f32 fVar3;
@@ -431,6 +443,7 @@ void BombData::BombReimuACalcFocus(Player *player) {
   }
 }
 
+// FUNCTION: TH07 0x00409990
 void BombData::BombReimuADrawFocus(Player *player)
 
 {
@@ -468,6 +481,7 @@ void BombData::BombReimuADrawFocus(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x00409dd0
 void BombData::BombReimuBCalc(Player *player)
 
 {
@@ -552,6 +566,7 @@ void BombData::BombReimuBCalc(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040a280
 void BombData::BombReimuBDraw(Player *player)
 
 {
@@ -569,6 +584,7 @@ void BombData::BombReimuBDraw(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040a3a0
 void BombData::BombReimuBCalcFocus(Player *player)
 
 {
@@ -629,6 +645,7 @@ void BombData::BombReimuBCalcFocus(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040a6b0
 void BombData::BombReimuBDrawFocus(Player *player)
 
 {
@@ -646,7 +663,10 @@ void BombData::BombReimuBDrawFocus(Player *player)
   }
 }
 
-void BombData::BombMarisaACalc(Player *player) {
+// FUNCTION: TH07 0x0040a7c0
+void BombData::BombMarisaACalc(Player *player)
+
+{
   i32 i;
 
   if (player->bombInfo.bombTimer.current < player->bombInfo.bombDuration) {
@@ -700,7 +720,10 @@ void BombData::BombMarisaACalc(Player *player) {
   }
 }
 
-void BombData::BombMarisaADraw(Player *player) {
+// FUNCTION: TH07 0x0040aba0
+void BombData::BombMarisaADraw(Player *player)
+
+{
   AnmVm *vm;
   i32 i;
 
@@ -737,6 +760,7 @@ void BombData::BombMarisaADraw(Player *player) {
   }
 }
 
+// FUNCTION: TH07 0x0040af10
 void BombData::BombMarisaACalcFocus(Player *player)
 
 {
@@ -830,6 +854,7 @@ void BombData::BombMarisaACalcFocus(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040b5d0
 void BombData::BombMarisaADrawFocus(Player *player)
 
 {
@@ -868,6 +893,7 @@ void BombData::BombMarisaADrawFocus(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040b7d0
 void BombData::BombMarisaBCalc(Player *player)
 
 {
@@ -963,6 +989,7 @@ void BombData::BombMarisaBCalc(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040bca0
 void BombData::BombMarisaBDraw(Player *player)
 
 {
@@ -989,6 +1016,7 @@ void BombData::BombMarisaBDraw(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040be20
 void BombData::BombMarisaBCalcFocus(Player *player)
 
 {
@@ -1050,6 +1078,7 @@ void BombData::BombMarisaBCalcFocus(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040c160
 void BombData::BombMarisaBDrawFocus(Player *player)
 
 {
@@ -1076,6 +1105,7 @@ void BombData::BombMarisaBDrawFocus(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040c2e0
 void BombData::BombSakuyaACalc(Player *player)
 
 {
@@ -1172,6 +1202,7 @@ void BombData::BombSakuyaACalc(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040c970
 void BombData::BombSakuyaADraw(Player *player)
 
 {
@@ -1193,6 +1224,7 @@ void BombData::BombSakuyaADraw(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040ca50
 void BombData::BombSakuyaACalcFocus(Player *player)
 
 {
@@ -1335,6 +1367,7 @@ void BombData::BombSakuyaACalcFocus(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040d3b0
 void BombData::BombSakuyaADrawFocus(Player *player)
 
 {
@@ -1358,6 +1391,7 @@ void BombData::BombSakuyaADrawFocus(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040d4c0
 void BombData::BombSakuyaBCalc(Player *player)
 
 {
@@ -1493,6 +1527,7 @@ void BombData::BombSakuyaBCalc(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040d9a0
 void BombData::BombSakuyaBDraw(Player *player)
 
 {
@@ -1514,6 +1549,7 @@ void BombData::BombSakuyaBDraw(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040da80
 void BombData::BombSakuyaBCalcFocus(Player *player)
 
 {
@@ -1629,6 +1665,7 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
   }
 }
 
+// FUNCTION: TH07 0x0040e280
 void BombData::BombSakuyaBDrawFocus(Player *player)
 
 {

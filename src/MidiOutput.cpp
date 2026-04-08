@@ -7,8 +7,10 @@
 #include "dsutil.hpp"
 #include "inttypes.hpp"
 
+// GLOBAL: TH07 0x0135e210
 LARGE_INTEGER g_PerfCounter;
 
+// FUNCTION: TH07 0x00436110
 MidiDevice::MidiDevice()
 
 {
@@ -16,8 +18,10 @@ MidiDevice::MidiDevice()
   this->deviceID = 0;
 }
 
+// FUNCTION: TH07 0x00436140
 MidiDevice::~MidiDevice() { Close(); }
 
+// FUNCTION: TH07 0x00436160
 bool MidiDevice::OpenDevice(u32 deviceID)
 
 {
@@ -33,6 +37,7 @@ bool MidiDevice::OpenDevice(u32 deviceID)
                      CALLBACK_WINDOW) != MMSYSERR_NOERROR;
 }
 
+// FUNCTION: TH07 0x004361c0
 ZunResult MidiDevice::Close()
 
 {
@@ -46,6 +51,7 @@ ZunResult MidiDevice::Close()
   }
 }
 
+// FUNCTION: TH07 0x00436200
 i32 MidiDevice::SendLongMsg(LPMIDIHDR pmh)
 
 {
@@ -70,6 +76,7 @@ union MidiShortMsg {
   u32 dwMsg;
 };
 
+// FUNCTION: TH07 0x00436250
 i32 MidiDevice::SendShortMsg(u8 midiStatus, u8 firstByte, u8 secondByte)
 
 {
@@ -85,6 +92,7 @@ i32 MidiDevice::SendShortMsg(u8 midiStatus, u8 firstByte, u8 secondByte)
   }
 }
 
+// FUNCTION: TH07 0x004362a0
 MidiTimer::MidiTimer()
 
 {
@@ -92,6 +100,7 @@ MidiTimer::MidiTimer()
   this->timerId = 0;
 }
 
+// FUNCTION: TH07 0x004362d0
 MidiTimer::~MidiTimer()
 
 {
@@ -99,6 +108,7 @@ MidiTimer::~MidiTimer()
   timeEndPeriod(this->timeCaps.wPeriodMin);
 }
 
+// FUNCTION: TH07 0x00436300
 u32 MidiTimer::StartTimer(u32 delay, LPTIMECALLBACK cb, DWORD_PTR data)
 
 {
@@ -119,6 +129,7 @@ u32 MidiTimer::StartTimer(u32 delay, LPTIMECALLBACK cb, DWORD_PTR data)
   return this->timerId;
 }
 
+// FUNCTION: TH07 0x00436380
 i32 MidiTimer::StopTimer()
 
 {
@@ -130,6 +141,7 @@ i32 MidiTimer::StopTimer()
   return 1;
 }
 
+// FUNCTION: TH07 0x004363c0
 void CALLBACK MidiTimer::DefaultTimerCallback(u32 delay, u32 wPeriodMin,
                                               DWORD_PTR dwUser, DWORD_PTR dw1,
                                               DWORD_PTR dw2)
@@ -140,6 +152,7 @@ void CALLBACK MidiTimer::DefaultTimerCallback(u32 delay, u32 wPeriodMin,
   timer->OnTimerElapsed();
 }
 
+// FUNCTION: TH07 0x004363e0
 u16 MidiOutput::Ntohs(u16 x)
 
 {
@@ -149,6 +162,7 @@ u16 MidiOutput::Ntohs(u16 x)
   return ((u16)low << 8) | high;
 }
 
+// FUNCTION: TH07 0x00436400
 i32 MidiOutput::SkipVariableLength(u8 **curTrackDataCursor)
 
 {
@@ -163,6 +177,7 @@ i32 MidiOutput::SkipVariableLength(u8 **curTrackDataCursor)
   return length;
 }
 
+// FUNCTION: TH07 0x00436450
 MidiOutput::MidiOutput()
 
 {
@@ -191,6 +206,7 @@ MidiOutput::MidiOutput()
   this->midiHeadersCursor = 0;
 }
 
+// FUNCTION: TH07 0x004365b0
 MidiOutput::~MidiOutput()
 
 {
@@ -201,6 +217,7 @@ MidiOutput::~MidiOutput()
   }
 }
 
+// FUNCTION: TH07 0x00436650
 ZunResult MidiOutput::ReadFileData(i32 fileIdx, const char *path)
 
 {
@@ -217,6 +234,7 @@ ZunResult MidiOutput::ReadFileData(i32 fileIdx, const char *path)
   }
 }
 
+// FUNCTION: TH07 0x004366c0
 void MidiOutput::ReleaseFileData(u32 idx)
 
 {
@@ -224,6 +242,7 @@ void MidiOutput::ReleaseFileData(u32 idx)
   this->midiFileData[idx] = NULL;
 }
 
+// FUNCTION: TH07 0x00436700
 void MidiOutput::ClearTracks()
 
 {
@@ -237,6 +256,7 @@ void MidiOutput::ClearTracks()
   this->numTracks = 0;
 }
 
+// FUNCTION: TH07 0x00436790
 ZunResult MidiOutput::ParseFile(i32 fileIdx)
 
 {
@@ -275,6 +295,7 @@ ZunResult MidiOutput::ParseFile(i32 fileIdx)
   }
 }
 
+// FUNCTION: TH07 0x004369c0
 ZunResult MidiOutput::LoadFile(const char *path)
 
 {
@@ -287,6 +308,7 @@ ZunResult MidiOutput::LoadFile(const char *path)
   }
 }
 
+// FUNCTION: TH07 0x00436a00
 void MidiOutput::LoadTracks()
 
 {
@@ -307,6 +329,7 @@ void MidiOutput::LoadTracks()
   }
 }
 
+// FUNCTION: TH07 0x00436ad0
 ZunResult MidiOutput::Play()
 
 {
@@ -321,6 +344,7 @@ ZunResult MidiOutput::Play()
   }
 }
 
+// FUNCTION: TH07 0x00436b30
 ZunResult MidiOutput::StopPlayback()
 
 {
@@ -339,6 +363,7 @@ ZunResult MidiOutput::StopPlayback()
   }
 }
 
+// FUNCTION: TH07 0x00436bc0
 ZunResult MidiOutput::UnprepareHeader(LPMIDIHDR pmh)
 
 {
@@ -369,6 +394,7 @@ ZunResult MidiOutput::UnprepareHeader(LPMIDIHDR pmh)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x00436c90
 ZunResult MidiOutput::SetFadeOut(i32 interval)
 
 {
@@ -380,6 +406,7 @@ ZunResult MidiOutput::SetFadeOut(i32 interval)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x00436ce0
 void MidiOutput::OnTimerElapsed()
 
 {
@@ -429,6 +456,7 @@ void MidiOutput::OnTimerElapsed()
   }
 }
 
+// FUNCTION: TH07 0x00436f50
 void MidiOutput::ProcessMsg(MidiTrack *track)
 
 {
@@ -588,6 +616,7 @@ void MidiOutput::ProcessMsg(MidiTrack *track)
       track->trackLengthOther + SkipVariableLength(&track->curTrackDataCursor);
 }
 
+// FUNCTION: TH07 0x004377f0
 void MidiOutput::FadeOutSetVolume(i32 vol)
 
 {
@@ -612,6 +641,11 @@ void MidiOutput::FadeOutSetVolume(i32 vol)
 
 void MidiTimer::OnTimerElapsed() { UpdatePerfCounter(); }
 
+// FUNCTION: TH07 0x004378b0
 void MidiTimer::UpdatePerfCounter() { QueryPerformanceCounter(&g_PerfCounter); }
 
+// FUNCTION: TH07 0x004378d0
 void MidiTimer::StartTimerDefault() { StartTimer(6, NULL, 0); }
+
+// FUNCTION: TH07 0x004378f0
+void Supervisor::StopMidiTimer(MidiTimer *timer) { timer->StopTimer(); }

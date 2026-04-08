@@ -8,11 +8,16 @@
 #include "SoundPlayer.hpp"
 #include "Supervisor.hpp"
 
+// GLOBAL: TH07 0x0135e2a8
 MusicRoom g_MusicRoom;
+
+// GLOBAL: TH07 0x01363eac
 i32 g_MusicRoomExists = 0;
 
+// FUNCTION: TH07 0x0043a69b
 MusicRoom::MusicRoom() { memset(this, 0, sizeof(MusicRoom)); }
 
+// FUNCTION: TH07 0x0043a760
 ZunResult MusicRoom::CheckInputEnable()
 
 {
@@ -36,6 +41,7 @@ ZunResult MusicRoom::CheckInputEnable()
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0043a801
 i32 MusicRoom::ProcessInput()
 
 {
@@ -119,6 +125,7 @@ i32 MusicRoom::ProcessInput()
   }
 }
 
+// FUNCTION: TH07 0x0043ab60
 u32 MusicRoom::OnUpdate(MusicRoom *arg)
 
 {
@@ -149,6 +156,7 @@ u32 MusicRoom::OnUpdate(MusicRoom *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x0043ac4c
 u32 MusicRoom::OnDraw(MusicRoom *arg)
 
 {
@@ -187,6 +195,7 @@ u32 MusicRoom::OnDraw(MusicRoom *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x0043ae20
 ZunResult MusicRoom::AddedCallback(MusicRoom *arg)
 
 {
@@ -316,6 +325,7 @@ ZunResult MusicRoom::AddedCallback(MusicRoom *arg)
   }
 }
 
+// FUNCTION: TH07 0x0043b478
 ZunResult MusicRoom::DeletedCallback(MusicRoom *arg)
 
 {
@@ -329,6 +339,7 @@ ZunResult MusicRoom::DeletedCallback(MusicRoom *arg)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0043b4db
 ZunResult MusicRoom::RegisterChain() {
   if ((g_MusicRoomExists & 1) == 0) {
     g_MusicRoomExists |= 1;

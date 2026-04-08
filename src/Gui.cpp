@@ -12,7 +12,6 @@
 #include "GameErrorContext.hpp"
 #include "GameManager.hpp"
 #include "ItemManager.hpp"
-#include "MainMenu.hpp"
 #include "Player.hpp"
 #include "SoundPlayer.hpp"
 #include "Stage.hpp"
@@ -20,10 +19,16 @@
 #include "ZunResult.hpp"
 #include "dxutil.hpp"
 
+// GLOBAL: TH07 0x0049fbf0
 Gui g_Gui;
+
+// GLOBAL: TH07 0x0062f914
 ChainElem g_GuiCalcChain;
+
+// GLOBAL: TH07 0x0062f8f4
 ChainElem g_GuiDrawChain;
 
+// GLOBAL: TH07 0x0049f618
 D3DCOLOR g_SpellcardTimeColors[4] = {
     0xa0d0ff,
     0xa080ff,
@@ -31,6 +36,7 @@ D3DCOLOR g_SpellcardTimeColors[4] = {
     0xff4040,
 };
 
+// FUNCTION: TH07 0x00427ae0
 i32 Gui::IsStageFinished()
 
 {
@@ -45,6 +51,7 @@ i32 Gui::IsStageFinished()
   return local_c;
 }
 
+// FUNCTION: TH07 0x00427b21
 void Gui::EndPlayerSpellcard()
 
 {
@@ -52,6 +59,7 @@ void Gui::EndPlayerSpellcard()
   this->impl->bombSpellcardNameBg.pendingInterrupt = 2;
 }
 
+// FUNCTION: TH07 0x00427b54
 void Gui::EndEnemySpellcard()
 
 {
@@ -60,6 +68,7 @@ void Gui::EndEnemySpellcard()
   this->impl->spellcardBonusIndicator.pendingInterrupt = 2;
 }
 
+// FUNCTION: TH07 0x00427ba2
 void Gui::ClearActiveSprites()
 
 {
@@ -69,12 +78,14 @@ void Gui::ClearActiveSprites()
   this->impl->activeTransitionQuads = 0;
 }
 
+// FUNCTION: TH07 0x00427be2
 i32 Gui::IsDialogueSkippable()
 
 {
   return this->impl->msg.dialogueSkippable;
 }
 
+// FUNCTION: TH07 0x00427bf8
 void Gui::ShowBonusScore(i32 score)
 
 {
@@ -87,6 +98,7 @@ void Gui::ShowBonusScore(i32 score)
   g_Supervisor.renderSkipFrames = 2;
 }
 
+// FUNCTION: TH07 0x00427c81
 void Gui::ShowFullPowerMode(i32 fmtArg, i32 isShown)
 
 {
@@ -99,6 +111,7 @@ void Gui::ShowFullPowerMode(i32 fmtArg, i32 isShown)
   g_Supervisor.renderSkipFrames = 2;
 }
 
+// FUNCTION: TH07 0x00427d09
 void Gui::ShowSpellcardBonus(i32 fmtArg)
 
 {
@@ -111,6 +124,7 @@ void Gui::ShowSpellcardBonus(i32 fmtArg)
   g_Supervisor.renderSkipFrames = 2;
 }
 
+// FUNCTION: TH07 0x00427d92
 void Gui::CopyTemplateSpriteToSpriteProbably(i32 spriteIdx)
 
 {
@@ -128,6 +142,7 @@ void Gui::CopyTemplateSpriteToSpriteProbably(i32 spriteIdx)
   g_AnmManager->CopyTexture(0x15, 0x16, &local_24, &local_14);
 }
 
+// FUNCTION: TH07 0x00427e7c
 u32 Gui::OnUpdate(Gui *arg)
 
 {
@@ -150,6 +165,7 @@ u32 Gui::OnUpdate(Gui *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x00427f22
 u32 Gui::OnDraw(Gui *arg)
 
 {
@@ -313,6 +329,7 @@ u32 Gui::OnDraw(Gui *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x0042868d
 void Gui::ShowBombNamePortrait(i32 sprite, const char *name)
 
 {
@@ -339,6 +356,7 @@ void Gui::ShowBombNamePortrait(i32 sprite, const char *name)
   g_Supervisor.renderSkipFrames = 2;
 }
 
+// FUNCTION: TH07 0x00428887
 void Gui::ShowSpellcard(i32 spellcardSprite, const char *spellcardName)
 
 {
@@ -379,6 +397,7 @@ void Gui::ShowSpellcard(i32 spellcardSprite, const char *spellcardName)
   g_Supervisor.renderSkipFrames = 2;
 }
 
+// FUNCTION: TH07 0x00428b19
 ZunResult Gui::ActualAddedCallback()
 
 {
@@ -681,6 +700,7 @@ ZunResult Gui::ActualAddedCallback()
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x00429935
 ZunResult Gui::LoadMsg(const char *param_1)
 
 {
@@ -704,18 +724,21 @@ ZunResult Gui::LoadMsg(const char *param_1)
   }
 }
 
+// FUNCTION: TH07 0x004299f8
 void Gui::FreeMsgFile()
 
 {
   SAFE_FREE(this->impl->msg.msgFile);
 }
 
+// FUNCTION: TH07 0x00429a36
 void Gui::MsgRead(i32 param_1)
 
 {
   this->impl->MsgRead(param_1);
 }
 
+// FUNCTION: TH07 0x00429a4f
 void GuiImpl::MsgRead(i32 msgIdx)
 
 {
@@ -775,6 +798,7 @@ void GuiImpl::MsgRead(i32 msgIdx)
   }
 }
 
+// FUNCTION: TH07 0x00429c42
 ZunResult GuiImpl::RunMsg()
 
 {
@@ -1067,6 +1091,7 @@ ZunResult GuiImpl::RunMsg()
   }
 }
 
+// FUNCTION: TH07 0x0042a876
 ZunResult GuiImpl::DrawDialogue()
 
 {
@@ -1154,6 +1179,7 @@ ZunResult GuiImpl::DrawDialogue()
   }
 }
 
+// FUNCTION: TH07 0x0042ad29
 i32 Gui::MsgWait()
 
 {
@@ -1166,6 +1192,7 @@ i32 Gui::MsgWait()
   }
 }
 
+// FUNCTION: TH07 0x0042ad66
 i32 Gui::HasCurrentMsgIdx()
 
 {
@@ -1179,6 +1206,7 @@ i32 Gui::HasCurrentMsgIdx()
   }
 }
 
+// FUNCTION: TH07 0x0042adab
 void Gui::UpdateGui()
 
 {
@@ -1346,6 +1374,7 @@ void Gui::UpdateGui()
   }
 }
 
+// FUNCTION: TH07 0x0042b603
 void Gui::DrawGameScene()
 
 {
@@ -1645,6 +1674,7 @@ void Gui::DrawGameScene()
   }
 }
 
+// FUNCTION: TH07 0x0042c577
 void Gui::DrawStageElements()
 
 {
@@ -1857,12 +1887,14 @@ void Gui::DrawStageElements()
   }
 }
 
+// FUNCTION: TH07 0x0042d03a
 ZunResult Gui::AddedCallback(Gui *arg)
 
 {
   return arg->ActualAddedCallback();
 }
 
+// FUNCTION: TH07 0x0042d04b
 ZunResult Gui::DeletedCallback(Gui *arg)
 
 {
@@ -1893,6 +1925,7 @@ ZunResult Gui::DeletedCallback(Gui *arg)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0042d136
 ZunResult Gui::RegisterChain()
 
 {
@@ -1925,10 +1958,13 @@ ZunResult Gui::RegisterChain()
   }
 }
 
+// FUNCTION: TH07 0x0042d24d
 GuiImpl::GuiImpl() {}
 
+// FUNCTION: TH07 0x0042d465
 GuiMsgVm::GuiMsgVm() {}
 
+// FUNCTION: TH07 0x0042d53d
 void Gui::CutChain()
 
 {

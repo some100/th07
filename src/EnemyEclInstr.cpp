@@ -10,6 +10,7 @@
 #include "ZunMath.hpp"
 #include "utils.hpp"
 
+// GLOBAL: TH07 0x0049f158
 EclExInstr g_EclExInstr[24] = {
     EnemyEclInstr::ExInsSetPosToBoss,
     EnemyEclInstr::ExInsAliceCurveBullets,
@@ -37,12 +38,14 @@ EclExInstr g_EclExInstr[24] = {
     EnemyEclInstr::ExInsSpawnBulletsWithDirChange2,
 };
 
+// GLOBAL: TH07 0x0049f3ec
 EclInterpFn g_EclInterpFuncs[8] = {
     EclManager::MathLerp, EclManager::MathLerp,        EclManager::MathLerp,
     EclManager::MathLerp, EclManager::MathLerp,        EclManager::MathLerp,
     EclManager::MathLerp, EclManager::MathCubicInterp,
 };
 
+// FUNCTION: TH07 0x00417b90
 void EnemyEclInstr::ExInsSetPosToBoss(Enemy *enemy, EclRawInstr *instr)
 
 {
@@ -52,6 +55,7 @@ void EnemyEclInstr::ExInsSetPosToBoss(Enemy *enemy, EclRawInstr *instr)
   enemy->flags4 = enemy->flags4 | 1;
 }
 
+// FUNCTION: TH07 0x00417c30
 void EnemyEclInstr::ExInsAliceCurveBullets(Enemy *enemy, EclRawInstr *instr)
 
 {
@@ -91,6 +95,7 @@ void EnemyEclInstr::ExInsAliceCurveBullets(Enemy *enemy, EclRawInstr *instr)
   }
 }
 
+// FUNCTION: TH07 0x00417e50
 void EnemyEclInstr::ExInsTurnBulletsIntoOtherBullets(Enemy *enemy,
                                                      EclRawInstr *instr)
 
@@ -148,10 +153,12 @@ void EnemyEclInstr::ExInsTurnBulletsIntoOtherBullets(Enemy *enemy,
   }
 }
 
+// FUNCTION: TH07 0x00418110
 void EnemyEclInstr::ExInsNoOp(Enemy *enemy, EclRawInstr *instr)
 
 {}
 
+// FUNCTION: TH07 0x00418120
 void EnemyEclInstr::ExInsDespawnLargeBulletAndSavePos(Enemy *enemy,
                                                       EclRawInstr *instr)
 
@@ -182,6 +189,7 @@ void EnemyEclInstr::ExInsDespawnLargeBulletAndSavePos(Enemy *enemy,
   bullet->Initialize();
 }
 
+// FUNCTION: TH07 0x00418260
 void EnemyEclInstr::ExInsCopyMainBossMovement(Enemy *enemy, EclRawInstr *instr)
 
 {
@@ -190,6 +198,7 @@ void EnemyEclInstr::ExInsCopyMainBossMovement(Enemy *enemy, EclRawInstr *instr)
   enemy->moveAngularVelocity = g_EnemyManager.bosses[0]->moveAngularVelocity;
 }
 
+// FUNCTION: TH07 0x004182d0
 void EnemyEclInstr::ExInsSplitBulletsOrShootBackwards(Enemy *enemy,
                                                       EclRawInstr *instr)
 
@@ -262,6 +271,8 @@ void EnemyEclInstr::ExInsSplitBulletsOrShootBackwards(Enemy *enemy,
   }
 }
 
+
+// FUNCTION: TH07 0x004185d0
 i32 IsPointInRotatedRect(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
                          D3DXVECTOR3 *param_3, D3DXVECTOR3 *param_4,
                          f32 param_5, f32 param_6)
@@ -285,6 +296,7 @@ i32 IsPointInRotatedRect(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
   }
 }
 
+// FUNCTION: TH07 0x00418880
 void EnemyEclInstr::ExInsReflectBulletsFromLasers(Enemy *enemy,
                                                   EclRawInstr *instr)
 
@@ -351,6 +363,7 @@ void EnemyEclInstr::ExInsReflectBulletsFromLasers(Enemy *enemy,
   }
 }
 
+// FUNCTION: TH07 0x00418b40
 void EnemyEclInstr::ExInsShootBulletsAlongLaser(Enemy *enemy,
                                                 EclRawInstr *instr)
 
@@ -425,6 +438,7 @@ void EnemyEclInstr::ExInsShootBulletsAlongLaser(Enemy *enemy,
   }
 }
 
+// FUNCTION: TH07 0x00418e80
 void EnemyEclInstr::ExInsEffect1eAccel(Enemy *enemy, EclRawInstr *instr)
 
 {
@@ -432,6 +446,7 @@ void EnemyEclInstr::ExInsEffect1eAccel(Enemy *enemy, EclRawInstr *instr)
   EffectManager::ModifyEffect1eAcceleration();
 }
 
+// FUNCTION: TH07 0x00418eb0
 void EnemyEclInstr::ExInsYoumuSetGameSpeed(Enemy *enemy, EclRawInstr *instr)
 
 {
@@ -456,6 +471,7 @@ void EnemyEclInstr::ExInsYoumuSetGameSpeed(Enemy *enemy, EclRawInstr *instr)
   }
 }
 
+// FUNCTION: TH07 0x00418fc0
 void EnemyEclInstr::ExInsYoumuRestoreGameSpeed(Enemy *enemy, EclRawInstr *instr)
 
 {
@@ -483,6 +499,7 @@ void EnemyEclInstr::ExInsYoumuRestoreGameSpeed(Enemy *enemy, EclRawInstr *instr)
   g_Stage.spellcardVms[1].pendingInterrupt = 1;
 }
 
+// FUNCTION: TH07 0x004190f0
 void EnemyEclInstr::ExInsBurstLargeBullets(Enemy *enemy, EclRawInstr *instr)
 
 {
@@ -558,6 +575,7 @@ void EnemyEclInstr::ExInsBurstLargeBullets(Enemy *enemy, EclRawInstr *instr)
   }
 }
 
+// FUNCTION: TH07 0x004194e0
 void EnemyEclInstr::ExInsYoumuCurveBulletsBelow(Enemy *enemy,
                                                 EclRawInstr *instr)
 
@@ -586,6 +604,7 @@ void EnemyEclInstr::ExInsYoumuCurveBulletsBelow(Enemy *enemy,
   }
 }
 
+// FUNCTION: TH07 0x00419610
 void EnemyEclInstr::ExInsYoumuRedirectBulletsToPlayer(Enemy *enemy,
                                                       EclRawInstr *instr)
 
@@ -606,12 +625,14 @@ void EnemyEclInstr::ExInsYoumuRedirectBulletsToPlayer(Enemy *enemy,
   }
 }
 
+// FUNCTION: TH07 0x004196e0
 void EnemyEclInstr::ExInsFlashScreen(Enemy *enemy, EclRawInstr *instr)
 
 {
   BombEffects::RegisterChain(3, instr->args[1].i, 1, 0xd0cfcfff, 0);
 }
 
+// FUNCTION: TH07 0x00419710
 void EnemyEclInstr::ExInsYuyukoTransformButterflyBullets(Enemy *enemy,
                                                          EclRawInstr *instr)
 
@@ -643,6 +664,7 @@ void EnemyEclInstr::ExInsYuyukoTransformButterflyBullets(Enemy *enemy,
   }
 }
 
+// FUNCTION: TH07 0x00419880
 void EnemyEclInstr::ExInsYuyukoButterflySpawnEnemy(Enemy *enemy,
                                                    EclRawInstr *instr)
 
@@ -675,6 +697,7 @@ void EnemyEclInstr::ExInsYuyukoButterflySpawnEnemy(Enemy *enemy,
   }
 }
 
+// FUNCTION: TH07 0x004199c0
 void EnemyEclInstr::ExInsYuyukoCountButterflyBullets(Enemy *enemy,
                                                      EclRawInstr *instr)
 
@@ -694,6 +717,7 @@ void EnemyEclInstr::ExInsYuyukoCountButterflyBullets(Enemy *enemy,
   }
 }
 
+// FUNCTION: TH07 0x00419a50
 void EnemyEclInstr::ExInsBurstLargeBullets2(Enemy *enemy, EclRawInstr *instr)
 
 {
@@ -757,12 +781,14 @@ void EnemyEclInstr::ExInsBurstLargeBullets2(Enemy *enemy, EclRawInstr *instr)
   }
 }
 
+// FUNCTION: TH07 0x00419d70
 void EnemyEclInstr::ExInsYuyukoFadeOutMusic(Enemy *enemy, EclRawInstr *instr)
 
 {
   g_Supervisor.FadeOutMusic(3.0f);
 }
 
+// FUNCTION: TH07 0x00419d90
 void EnemyEclInstr::ExInsYuyukoPlayResurrectionButterflyBgm(Enemy *enemy,
                                                             EclRawInstr *instr)
 
@@ -772,6 +798,7 @@ void EnemyEclInstr::ExInsYuyukoPlayResurrectionButterflyBgm(Enemy *enemy,
   }
 }
 
+// FUNCTION: TH07 0x00419dc0
 void EnemyEclInstr::ExInsSpawnBulletsWithDirChange(Enemy *enemy,
                                                    EclRawInstr *instr)
 
@@ -820,6 +847,7 @@ void EnemyEclInstr::ExInsSpawnBulletsWithDirChange(Enemy *enemy,
   }
 }
 
+// FUNCTION: TH07 0x00419ff0
 void EnemyEclInstr::ExInsSpawnBulletsWithDirChange2(Enemy *enemy,
                                                     EclRawInstr *instr)
 

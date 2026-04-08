@@ -101,7 +101,7 @@ struct SoundPlayer {
   CStreamingSound *backgroundMusic;
   HANDLE backgroundMusicUpdateEvent;
   i32 unused_39c4;
-  i32 unused_39c8;
+  i32 bgmSeekOffset;
 };
 C_ASSERT(sizeof(SoundPlayer) == 0x39cc);
 

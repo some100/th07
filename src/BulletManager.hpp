@@ -160,7 +160,8 @@ struct Bullet {
 
   void Draw();
 
-  inline void Initialize()
+  // FUNCTION: TH07 0x00417b20
+  void Initialize()
 
   {
     this->state = BULLET_INACTIVE;

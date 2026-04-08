@@ -159,5 +159,3 @@ public:
 };
 
 void DebugPrint(const char *fmt, ...);
-
-extern u32 g_BgmSeekOffset;

@@ -9,9 +9,16 @@
 #include "ZunResult.hpp"
 #include "utils.hpp"
 
+// GLOBAL: TH07 0x012fe250
 EffectManager g_EffectManager;
+
+// GLOBAL: TH07 0x013478f8
 ChainElem g_EffectManagerCalcChain;
+
+// GLOBAL: TH07 0x01347918
 ChainElem g_EffectManagerDrawChain;
+
+// GLOBAL: TH07 0x0049efc0
 EffectTypeInfo g_EffectMapping[34] = {
     {0x2ab, NULL, NULL},
     {0x2ac, NULL, NULL},
@@ -57,6 +64,7 @@ EffectTypeInfo g_EffectMapping[34] = {
     {0x2b1, EffectManager::UpdateGather60Frames, EffectManager::InitRandomDir},
 };
 
+// FUNCTION: TH07 0x0041a210
 EffectManager::EffectManager()
 
 {
@@ -67,14 +75,17 @@ EffectManager::EffectManager()
   this->globalColorMultiplierA = 1.0;
 }
 
+// FUNCTION: TH07 0x0041a2f0
 Effect::Effect() {}
 
+// FUNCTION: TH07 0x0041a350
 void EffectManager::Reset()
 
 {
   memset(this, 0, sizeof(EffectManager));
 }
 
+// FUNCTION: TH07 0x0041a370
 i32 EffectManager::InitDeceleratingBurstFast(Effect *effect)
 
 {
@@ -87,6 +98,7 @@ i32 EffectManager::InitDeceleratingBurstFast(Effect *effect)
   return 0;
 }
 
+// FUNCTION: TH07 0x0041a4f0
 i32 EffectManager::UpdatePhysics(Effect *effect)
 
 {
@@ -95,6 +107,7 @@ i32 EffectManager::UpdatePhysics(Effect *effect)
   return 1;
 }
 
+// FUNCTION: TH07 0x0041a5a0
 i32 EffectManager::InitDeceleratingBurst(Effect *effect)
 
 {
@@ -109,6 +122,7 @@ i32 EffectManager::InitDeceleratingBurst(Effect *effect)
   return 0;
 }
 
+// FUNCTION: TH07 0x0041a730
 i32 EffectManager::Init2dEffect(Effect *effect)
 
 {
@@ -116,6 +130,7 @@ i32 EffectManager::Init2dEffect(Effect *effect)
   return 0;
 }
 
+// FUNCTION: TH07 0x0041a750
 i32 EffectManager::UpdateOrbitEffect(Effect *effect)
 
 {
@@ -162,6 +177,7 @@ i32 EffectManager::UpdateOrbitEffect(Effect *effect)
   return 1;
 }
 
+// FUNCTION: TH07 0x0041aa60
 i32 EffectManager::InitRandomDir(Effect *effect)
 
 {
@@ -176,6 +192,7 @@ i32 EffectManager::InitRandomDir(Effect *effect)
   return 0;
 }
 
+// FUNCTION: TH07 0x0041aaf0
 i32 EffectManager::UpdateGather60Frames(Effect *effect)
 
 {
@@ -189,6 +206,7 @@ i32 EffectManager::UpdateGather60Frames(Effect *effect)
   return 1;
 }
 
+// FUNCTION: TH07 0x0041abe0
 i32 EffectManager::UpdateAttachToPlayer(Effect *effect)
 
 {
@@ -199,6 +217,7 @@ i32 EffectManager::UpdateAttachToPlayer(Effect *effect)
   return bVar1;
 }
 
+// FUNCTION: TH07 0x0041ac30
 i32 EffectManager::UpdateGather240Frames(Effect *effect)
 
 {
@@ -211,6 +230,7 @@ i32 EffectManager::UpdateGather240Frames(Effect *effect)
   return 1;
 }
 
+// FUNCTION: TH07 0x0041ad10
 i32 EffectManager::UpdateBurst30Frames(Effect *effect)
 
 {
@@ -222,6 +242,7 @@ i32 EffectManager::UpdateBurst30Frames(Effect *effect)
   return 1;
 }
 
+// FUNCTION: TH07 0x0041adf0
 void EffectManager::DoSomethingWithEffects(D3DXVECTOR3 *param_1)
 
 {
@@ -237,6 +258,7 @@ void EffectManager::DoSomethingWithEffects(D3DXVECTOR3 *param_1)
   }
 }
 
+// FUNCTION: TH07 0x0041ae90
 void EffectManager::ModifyEffect1eAcceleration()
 
 {
@@ -252,6 +274,7 @@ void EffectManager::ModifyEffect1eAcceleration()
   }
 }
 
+// FUNCTION: TH07 0x0041aef0
 i32 EffectManager::UpdateWeatherPhysics(Effect *effect)
 
 {
@@ -280,6 +303,7 @@ i32 EffectManager::UpdateWeatherPhysics(Effect *effect)
   }
 }
 
+// FUNCTION: TH07 0x0041b0b0
 i32 EffectManager::InitWeatherForward(Effect *effect)
 
 {
@@ -321,6 +345,7 @@ i32 EffectManager::InitWeatherForward(Effect *effect)
   return 0;
 }
 
+// FUNCTION: TH07 0x0041b4a0
 i32 EffectManager::InitWeatherVortex(Effect *effect)
 
 {
@@ -355,6 +380,7 @@ i32 EffectManager::InitWeatherVortex(Effect *effect)
   return 0;
 }
 
+// FUNCTION: TH07 0x0041b770
 i32 EffectManager::InitWeatherBackward(Effect *effect)
 
 {
@@ -379,6 +405,7 @@ i32 EffectManager::InitWeatherBackward(Effect *effect)
   return 0;
 }
 
+// FUNCTION: TH07 0x0041b9f0
 i32 EffectManager::InitWeatherSlow(Effect *effect)
 
 {
@@ -405,6 +432,7 @@ i32 EffectManager::InitWeatherSlow(Effect *effect)
   return 0;
 }
 
+// FUNCTION: TH07 0x0041bc20
 i32 EffectManager::InitWeatherFalling(Effect *effect)
 
 {
@@ -432,6 +460,7 @@ i32 EffectManager::InitWeatherFalling(Effect *effect)
   return 0;
 }
 
+// FUNCTION: TH07 0x0041bec0
 i32 EffectManager::InitRandomDirWithSpeed(Effect *effect)
 
 {
@@ -452,6 +481,7 @@ i32 EffectManager::InitRandomDirWithSpeed(Effect *effect)
   return 0;
 }
 
+// FUNCTION: TH07 0x0041bfd0
 i32 EffectManager::UpdateBurstEaseOut30Frames(Effect *effect)
 
 {
@@ -465,6 +495,7 @@ i32 EffectManager::UpdateBurstEaseOut30Frames(Effect *effect)
   return 1;
 }
 
+// FUNCTION: TH07 0x0041c100
 i32 EffectManager::UpdateAttachToCamera(Effect *effect)
 
 {
@@ -476,12 +507,14 @@ i32 EffectManager::UpdateAttachToCamera(Effect *effect)
   return 1;
 }
 
+// FUNCTION: TH07 0x0041c1b0
 i32 EffectManager::UpdateNoOp(Effect *effect)
 
 {
   return 1;
 }
 
+// FUNCTION: TH07 0x0041c1c0
 Effect *EffectManager::SpawnParticles(i32 effectId, D3DXVECTOR3 *pos,
                                       i32 numParticles, D3DCOLOR color)
 
@@ -542,6 +575,7 @@ Effect *EffectManager::SpawnParticles(i32 effectId, D3DXVECTOR3 *pos,
   }
 }
 
+// FUNCTION: TH07 0x0041c400
 Effect *EffectManager::SpawnMovingParticles(i32 effectId, D3DXVECTOR3 *pos,
                                             D3DXVECTOR3 *velocity,
                                             i32 numParticles, D3DCOLOR color)
@@ -599,6 +633,7 @@ Effect *EffectManager::SpawnMovingParticles(i32 effectId, D3DXVECTOR3 *pos,
   return local_20;
 }
 
+// FUNCTION: TH07 0x0041c610
 Effect *EffectManager::SpawnEffect(i32 effectId, D3DXVECTOR3 *pos, i32 param_3,
                                    i32 param_4, D3DCOLOR color)
 
@@ -633,6 +668,7 @@ Effect *EffectManager::SpawnEffect(i32 effectId, D3DXVECTOR3 *pos, i32 param_3,
   return effect;
 }
 
+// FUNCTION: TH07 0x0041c790
 u32 EffectManager::OnUpdate(EffectManager *arg)
 
 {
@@ -691,6 +727,7 @@ u32 EffectManager::OnUpdate(EffectManager *arg)
   }
 }
 
+// FUNCTION: TH07 0x0041ca10
 u32 EffectManager::OnDraw(EffectManager *arg)
 
 {
@@ -718,6 +755,7 @@ u32 EffectManager::OnDraw(EffectManager *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x0041cb80
 i32 EffectManager::UpdateSpecialEffect()
 
 {
@@ -782,6 +820,7 @@ i32 EffectManager::UpdateSpecialEffect()
   return 1;
 }
 
+// FUNCTION: TH07 0x0041cde0
 ZunResult EffectManager::AddedCallback(EffectManager *arg)
 
 {
@@ -852,6 +891,7 @@ ZunResult EffectManager::AddedCallback(EffectManager *arg)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0041d050
 ZunResult EffectManager::DeletedCallback(EffectManager *arg)
 
 {
@@ -862,6 +902,7 @@ ZunResult EffectManager::DeletedCallback(EffectManager *arg)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0041d0a0
 ZunResult EffectManager::RegisterChain()
 
 {
@@ -884,6 +925,7 @@ ZunResult EffectManager::RegisterChain()
   }
 }
 
+// FUNCTION: TH07 0x0041d150
 void EffectManager::CutChain()
 
 {

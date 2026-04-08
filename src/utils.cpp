@@ -2,6 +2,7 @@
 
 #include "ZunMath.hpp"
 
+// FUNCTION: TH07 0x00431930
 f32 utils::AddNormalizeAngle(f32 param_1, f32 param_2)
 
 {
@@ -30,6 +31,7 @@ f32 utils::AddNormalizeAngle(f32 param_1, f32 param_2)
   return param_1;
 }
 
+// FUNCTION: TH07 0x004319b0
 void utils::Rotate(D3DXVECTOR3 *out, D3DXVECTOR3 *point, f32 angle)
 
 {

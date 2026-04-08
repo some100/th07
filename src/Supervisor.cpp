@@ -21,30 +21,56 @@
 #include "ZunResult.hpp"
 #include "dxutil.hpp"
 #include "pbg4/Pbg4Archive.hpp"
-#include "utils.hpp"
 
+// GLOBAL: TH07 0x00575950
 Supervisor g_Supervisor;
+
+// GLOBAL: TH07 0x0049ee40
 ControllerMapping g_ControllerMapping = {0, 1, 2, 4, -1, -1, -1, -1, 3};
+
+// GLOBAL: TH07 0x004b9e4c
 u16 g_CurFrameRawInput;
+
+// GLOBAL: TH07 0x004b9e50
 u16 g_CurFrameGameInput;
+
+// GLOBAL: TH07 0x004b9e54
 u16 g_LastFrameInput;
+
+// GLOBAL: TH07 0x004b9e58
 u16 g_LastFrameGameInput;
+
+// GLOBAL: TH07 0x004b9e5c
 u16 g_IsEighthFrameOfHeldInput;
+
+// GLOBAL: TH07 0x004b9e60
 u16 g_NumOfFramesInputsWereHeld;
 
+// GLOBAL: TH07 0x0135e298
 LARGE_INTEGER g_PerformanceCounter;
+
+// GLOBAL: TH07 0x0135e2a0
 u32 g_LastTime;
+
+// GLOBAL: TH07 0x0135e2a4
 u32 g_LastTimeIsSet;
 
+// GLOBAL: TH07 0x0135dfec
 u32 g_FpsUpdateCounter;
+
+// GLOBAL: TH07 0x0135dff0
 char g_FpsCounterBuffer2[256];
+
+// GLOBAL: TH07 0x0135e0f0
 char g_FpsCounterBuffer[256];
+
+// GLOBAL: TH07 0x0135e1f0
 u32 g_NumFramesSinceLastTime;
 
-void Supervisor::StopMidiTimer(MidiTimer *timer) { timer->StopTimer(); }
-
+// FUNCTION: TH07 0x00437903
 void Supervisor::DebugPrint2(const char *fmt, ...) {}
 
+// FUNCTION: TH07 0x00437908
 void Supervisor::CheckTiming()
 
 {
@@ -106,12 +132,14 @@ void Supervisor::CheckTiming()
   }
 }
 
+// FUNCTION: TH07 0x00437c39
 void AnmManager::ReleaseVertexBuffer()
 
 {
   SAFE_RELEASE(this->vertexBuffer);
 }
 
+// FUNCTION: TH07 0x00437c70
 u32 Supervisor::OnUpdate(Supervisor *arg)
 
 {
@@ -321,6 +349,7 @@ LAB_004382b4:
   }
 }
 
+// FUNCTION: TH07 0x0043831b
 u32 Supervisor::OnDraw(Supervisor *arg)
 
 {
@@ -328,6 +357,7 @@ u32 Supervisor::OnDraw(Supervisor *arg)
   return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+// FUNCTION: TH07 0x0043832f
 i32 __stdcall Supervisor::EnumGameControllersCb(LPCDIDEVICEINSTANCEA param_1,
                                                 void *param_2)
 
@@ -340,6 +370,7 @@ i32 __stdcall Supervisor::EnumGameControllersCb(LPCDIDEVICEINSTANCEA param_1,
   return 0;
 }
 
+// FUNCTION: TH07 0x0043836e
 i32 __stdcall Supervisor::ControllerCallback(LPCDIDEVICEOBJECTINSTANCE param_1,
                                              void *param_2)
 
@@ -361,6 +392,7 @@ i32 __stdcall Supervisor::ControllerCallback(LPCDIDEVICEOBJECTINSTANCE param_1,
   return 1;
 }
 
+// FUNCTION: TH07 0x004383d8
 ZunResult Supervisor::SetupDInput()
 
 {
@@ -415,6 +447,7 @@ ZunResult Supervisor::SetupDInput()
   }
 }
 
+// FUNCTION: TH07 0x00438668
 ZunResult Supervisor::LoadGameData()
 
 {
@@ -436,6 +469,7 @@ ZunResult Supervisor::LoadGameData()
   }
 }
 
+// FUNCTION: TH07 0x004386f3
 i32 Supervisor::CheckVSync()
 
 {
@@ -513,6 +547,7 @@ i32 Supervisor::CheckVSync()
   return 0;
 }
 
+// FUNCTION: TH07 0x00438986
 ZunResult Supervisor::AddedCallback(Supervisor *arg)
 
 {
@@ -568,7 +603,7 @@ ZunResult Supervisor::AddedCallback(Supervisor *arg)
         g_AnmManager->SetupVertexBuffer();
         TextHelper::CreateTextBuffer();
         if (g_SoundPlayer.LoadFmt("bgm/thbgm.fmt") == 0) {
-          if (g_BgmSeekOffset == 0) {
+          if (g_SoundPlayer.bgmSeekOffset == 0) {
             if ((g_Supervisor.cfg.opts >> 0xd & 1) == 0) {
               g_SoundPlayer.StartBGM("thbgm.dat");
             } else {
@@ -609,6 +644,7 @@ ZunResult Supervisor::AddedCallback(Supervisor *arg)
   }
 }
 
+// FUNCTION: TH07 0x00438de2
 ZunResult Supervisor::DeletedCallback(Supervisor *arg)
 
 {
@@ -650,12 +686,14 @@ ZunResult Supervisor::DeletedCallback(Supervisor *arg)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x00438fef
 void Supervisor::DestroyMidiTimer(MidiTimer *timer)
 
 {
   timer->MidiTimer::~MidiTimer();
 }
 
+// FUNCTION: TH07 0x00439000
 ZunResult Supervisor::RegisterChain()
 
 {
@@ -678,6 +716,7 @@ ZunResult Supervisor::RegisterChain()
   return ZVar2;
 }
 
+// FUNCTION: TH07 0x004390a5
 void Supervisor::DrawFpsCounter(i32 param_1)
 
 {
@@ -777,6 +816,7 @@ LAB_00439350:
   }
 }
 
+// FUNCTION: TH07 0x00439401
 void ZunTimer::Increment(i32 value)
 
 {
@@ -800,6 +840,7 @@ void ZunTimer::Increment(i32 value)
   }
 }
 
+// FUNCTION: TH07 0x004394c7
 void ZunTimer::Decrement(i32 value)
 
 {
@@ -823,6 +864,7 @@ void ZunTimer::Decrement(i32 value)
   }
 }
 
+// FUNCTION: TH07 0x0043958d
 void Supervisor::TickTimer(i32 *frames, f32 *subframes)
 
 {
@@ -838,6 +880,7 @@ void Supervisor::TickTimer(i32 *frames, f32 *subframes)
   }
 }
 
+// FUNCTION: TH07 0x004395fb
 i32 Supervisor::SnapshotScreen(const char *param_1)
 
 {
@@ -919,6 +962,7 @@ i32 Supervisor::SnapshotScreen(const char *param_1)
   return 0;
 }
 
+// FUNCTION: TH07 0x004398b6
 ZunResult Supervisor::LoadConfig(const char *configFilename)
 
 {
@@ -1073,6 +1117,7 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
   }
 }
 
+// FUNCTION: TH07 0x00439dd0
 i32 Supervisor::LoadAudio(i32 idx, const char *path)
 
 {
@@ -1097,6 +1142,7 @@ i32 Supervisor::LoadAudio(i32 idx, const char *path)
   }
 }
 
+// FUNCTION: TH07 0x00439ec1
 ZunResult Supervisor::PlayLoadedAudio(i32 idx)
 
 {
@@ -1115,6 +1161,7 @@ ZunResult Supervisor::PlayLoadedAudio(i32 idx)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x00439f4d
 ZunResult Supervisor::PlayAudio(const char *path)
 
 {
@@ -1141,6 +1188,7 @@ ZunResult Supervisor::PlayAudio(const char *path)
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0043a05f
 ZunResult Supervisor::StopAudio()
 
 {
@@ -1161,6 +1209,7 @@ ZunResult Supervisor::StopAudio()
   return ZUN_SUCCESS;
 }
 
+// FUNCTION: TH07 0x0043a0d6
 i32 Supervisor::FadeOutMusic(f32 musicFadeFrames)
 
 {
@@ -1188,6 +1237,7 @@ i32 Supervisor::FadeOutMusic(f32 musicFadeFrames)
   return 0;
 }
 
+// FUNCTION: TH07 0x0043a18d
 i32 Supervisor::CanSaveReplay()
 
 {
@@ -1199,6 +1249,7 @@ i32 Supervisor::CanSaveReplay()
   }
 }
 
+// FUNCTION: TH07 0x0043a1bd
 HRESULT Supervisor::EnableFog()
 
 {
@@ -1211,6 +1262,7 @@ HRESULT Supervisor::EnableFog()
   }
 }
 
+// FUNCTION: TH07 0x0043a207
 HRESULT Supervisor::DisableFog()
 
 {
@@ -1223,6 +1275,7 @@ HRESULT Supervisor::DisableFog()
   }
 }
 
+// FUNCTION: TH07 0x0043a24e
 void Supervisor::SetRenderState(D3DRENDERSTATETYPE stateType, DWORD param_2)
 
 {
@@ -1230,6 +1283,7 @@ void Supervisor::SetRenderState(D3DRENDERSTATETYPE stateType, DWORD param_2)
   this->d3dDevice->SetRenderState(stateType, param_2);
 }
 
+// FUNCTION: TH07 0x0043a27f
 void Supervisor::UpdateStartupTime()
 
 {
@@ -1260,6 +1314,7 @@ void Supervisor::UpdateStartupTime()
   this->startupTimeForMenuMusic = time;
 }
 
+// FUNCTION: TH07 0x0043a3f4
 void Supervisor::UpdateTime()
 
 {
@@ -1290,6 +1345,7 @@ void Supervisor::UpdateTime()
   this->currentTime = time;
 }
 
+// FUNCTION: TH07 0x0043a569
 ZunResult Supervisor::CheckIntegrity(const char *version, i32 exeSize,
                                      i32 exeChecksum)
 

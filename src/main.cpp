@@ -15,6 +15,7 @@
 #include "Supervisor.hpp"
 #include "dxutil.hpp"
 
+// FUNCTION: TH07 0x00433f90
 void AnmManager::TakeScreenshotIfRequested()
 
 {
@@ -28,6 +29,7 @@ void AnmManager::TakeScreenshotIfRequested()
   }
 }
 
+// FUNCTION: TH07 0x00434020
 i32 WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpCmdline, i32 nCmdShow) {
   ZunResult chainResult;
