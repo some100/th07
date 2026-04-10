@@ -174,7 +174,7 @@ Enemy *EnemyManager::SpawnEnemy(i16 eclSubId, D3DXVECTOR3 *pos, i32 life,
   }
   enemy->position = *pos;
   g_EclManager.CallEclSub(&enemy->currentContext, eclSubId);
-  if (EclManager::RunEcl(enemy) == ZUN_ERROR) {
+  if (g_EclManager.RunEcl(enemy) == ZUN_ERROR) {
     enemy->flags1 &= 0x7f;
   } else {
     enemy->color = (enemy->primaryVm).color;
@@ -213,7 +213,7 @@ Enemy *EnemyManager::SpawnEnemyEx(i32 eclSubId, D3DXVECTOR3 *pos, i32 life,
   enemy->position = *pos;
   g_EclManager.CallEclSub(&enemy->currentContext, eclSubId);
   enemy->currentContext.eclContextArgs = *args;
-  if (EclManager::RunEcl(enemy) == ZUN_ERROR) {
+  if (g_EclManager.RunEcl(enemy) == ZUN_ERROR) {
     enemy->flags1 &= 0x7f;
   } else {
     enemy->color = (enemy->primaryVm).color;
@@ -706,7 +706,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
       goto LAB_00421da7;
     }
     do {
-      if (EclManager::RunEcl(enemy) == ZUN_ERROR) {
+      if (g_EclManager.RunEcl(enemy) == ZUN_ERROR) {
         enemy->flags1 &= 0x7f;
         enemy->Despawn();
         goto LAB_004207d0;

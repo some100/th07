@@ -58,6 +58,9 @@ void Pbg4Archive::Release()
   this->numOfEntries = 0;
 }
 
+// SYNTHETIC: TH07 0x0045f8d0
+// Pbg4Entry::`vector deleting destructor'
+
 // FUNCTION: TH07 0x0045f960
 u8 *Pbg4Archive::ReadDecompressEntry(const char *filename, u8 *buf)
 
@@ -188,15 +191,14 @@ bool Pbg4Archive::OpenArchive(const char *path)
       local_8 = NULL;
     }
     SAFE_DELETE(this->fileAbstraction);
-    DebugPrint("繝輔ぃ繧､繝ｫ %s 縺ｮ繧ｪ繝ｼ繝励Φ荳ｭ縺ｫ繧ｨ繝ｩ繝ｼ縺檎匱逕溘＠縺ｾ縺励◆\r\n",
+    DebugPrint("ファイル %s のオープン中にエラーが発生しました\r\n",
                       path);
   }
   return false;
 }
 
 // FUNCTION: TH07 0x0045fde0
-Pbg4Entry *Pbg4Archive::AllocEntries(LPVOID param_1, i32 count,
-                                     u32 dataOffset)
+Pbg4Entry *Pbg4Archive::AllocEntries(LPVOID param_1, i32 count, u32 dataOffset)
 
 {
   u8 *local_3c;
@@ -230,8 +232,7 @@ char *Pbg4Archive::CopyFileName(const char *filename)
 {
   char *pcVar2;
 
-  pcVar2 =
-      (char *)GlobalAlloc(0, strlen(filename) + 1);
+  pcVar2 = (char *)GlobalAlloc(0, strlen(filename) + 1);
   if (pcVar2 != NULL) {
     strcpy(pcVar2, filename);
   }

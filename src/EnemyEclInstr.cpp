@@ -156,7 +156,9 @@ void EnemyEclInstr::ExInsTurnBulletsIntoOtherBullets(Enemy *enemy,
 // FUNCTION: TH07 0x00418110
 void EnemyEclInstr::ExInsNoOp(Enemy *enemy, EclRawInstr *instr)
 
-{}
+{
+  return;
+}
 
 // FUNCTION: TH07 0x00418120
 void EnemyEclInstr::ExInsDespawnLargeBulletAndSavePos(Enemy *enemy,
@@ -271,7 +273,6 @@ void EnemyEclInstr::ExInsSplitBulletsOrShootBackwards(Enemy *enemy,
   }
 }
 
-
 // FUNCTION: TH07 0x004185d0
 i32 IsPointInRotatedRect(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
                          D3DXVECTOR3 *param_3, D3DXVECTOR3 *param_4,
@@ -345,8 +346,8 @@ void EnemyEclInstr::ExInsReflectBulletsFromLasers(Enemy *enemy,
                     utils::AddNormalizeAngle(laser->angle, 1.5707964f);
               }
               AngleToVector(&bullet->velocity, bullet->angle,
-                                   g_Supervisor.effectiveFramerateMultiplier *
-                                       bullet->speed);
+                            g_Supervisor.effectiveFramerateMultiplier *
+                                bullet->speed);
               bullet->state2 = 10;
               bullet->sprites = g_BulletManager.bulletTypeTemplates[5];
               g_AnmManager->SetActiveSprite(

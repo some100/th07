@@ -11,7 +11,7 @@ struct GameErrorContext {
     m_BufferEnd = m_Buffer;
     m_Buffer[0] = '\0';
     m_ShowMessageBox = false;
-    Log("æ±æ–¹å‹•ä½œè¨˜éŒ² --------------------------------------------- \r\n");
+    Log("“Œ•û“®ì‹L˜^ --------------------------------------------- \r\n");
   }
 
   const char *Fatal(const char *fmt, ...);
@@ -19,13 +19,13 @@ struct GameErrorContext {
 
   // FUNCTION: TH07 0x00433e90
   void Flush() {
-    if ((GameErrorContext *)this->m_BufferEnd != this) {
+    if (this->m_BufferEnd != this->m_Buffer) {
       this->Log(
           "---------------------------------------------------------- \r\n");
-      if (this->m_ShowMessageBox != false) {
+      if (this->m_ShowMessageBox) {
         MessageBoxA(NULL, this->m_Buffer, "log", 0x10);
       }
-      FileSystem::WriteDataToFile("./log.txt", this, strlen(this->m_Buffer));
+      FileSystem::WriteDataToFile("./log.txt", this->m_Buffer, strlen(this->m_Buffer));
     }
   }
 };

@@ -31,6 +31,7 @@ RC_PATH = VC_PATH / "BIN" / "RC.EXE"
 
 DX8_URL = "https://archive.org/download/dx8sdk/dx8sdk.exe"
 MSVC_URL = "https://archive.org/download/en_vs.net_pro_full/en_vs.net_pro_full.exe"
+HACKERY_URL = "https://gist.githubusercontent.com/EstexNT/e98a1384b906a3eedaaa3eeb7e58cd9d/raw/822536a26025f0df8763f1112d89bb1514f6209c/hackery.cpp"
 DX8_CSUM = "9106e17618a531ca9ec2533984fd1c78"
 MSVC_CSUM = "473bf79735139292c8f6eb7c6af000bc"
 
@@ -151,6 +152,28 @@ def download_dx8():
     # these happen to be valid zips, too
     with ZipFile(archive_path, "r") as zip:
         zip.extractall(DX8_PATH)
+
+
+# provides pragma var_order
+def install_hackery(env: Dict[str, str]):
+    c1xx_path = VC_PATH / "BIN" / "C1XX.DLL"
+    orig_path = VC_PATH / "BIN" / "C1XXOrig.dll"
+
+    if orig_path.exists() and c1xx_path.exists():
+        return
+    os.chdir(MSVC_PATH)
+    download(HACKERY_URL, MSVC_PATH / "hackery.cpp")
+    if not orig_path.exists():
+        _ = shutil.copy(c1xx_path, orig_path)
+    _ = run_program(
+        str(CL_PATH),
+        "/LD",
+        conv_path(MSVC_PATH / "hackery.cpp"),
+        "/link",
+        f"/OUT:{MSVC_PATH / 'C1XX.DLL'}",
+        env=env,
+    )
+    _ = (MSVC_PATH / "C1XX.DLL").replace(c1xx_path)
 
 
 # this is awful
@@ -288,6 +311,7 @@ env["LIB"] = (
     + ";"
     + conv_path(VC_PATH / "PLATFORMSDK" / "COMMON" / "lib")
 )
+install_hackery(env)
 
 out = BUILD_DIR / "th07.exe"
 
@@ -297,12 +321,12 @@ cflags = [
     "/MT",
     "/Od",
     "/Ob1",
-    "/Op",
     "/Oi",
     "/GX",
     "/Gr",
     "/GL",
     "/Gy",
+    "/Gf",
     "/Zi",
     "/DNDEBUG",
     f"-I{conv_path(DX8_PATH / 'include')}",

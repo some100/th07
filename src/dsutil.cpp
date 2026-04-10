@@ -9,8 +9,8 @@
 //-----------------------------------------------------------------------------
 #define STRICT
 #include "dsutil.hpp"
-#include "dxutil.hpp"
 #include "SoundPlayer.hpp"
+#include "dxutil.hpp"
 #include <dsound.h>
 #include <mmsystem.h>
 #include <windows.h>
@@ -59,7 +59,9 @@ HRESULT CSoundManager::Initialize(HWND hWnd, DWORD dwCoopLevel,
 // FUNCTION: TH07 0x0045c7d0
 HRESULT CSoundManager::SetPrimaryBufferFormat(WORD dwPrimaryChannels,
                                               DWORD dwPrimaryFreq,
-                                              u16 dwPrimaryBitRate) {
+                                              u16 dwPrimaryBitRate)
+
+{
   if (this->pDS == NULL)
     return CO_E_NOTINITIALIZED;
 
@@ -323,9 +325,6 @@ HRESULT CStreamingSound::InitSoundBuffers() {
   }
   return S_OK;
 }
-
-// SYNTHETIC: TH07 0x0045d030
-// CSound::`scalar deleting destructor'
 
 //-----------------------------------------------------------------------------
 // Name: CSound::~CSound()
@@ -629,8 +628,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(i32 bLoopedPlay) {
   BOOL bRestored;
   HRESULT hr = RestoreBuffer(this->m_apDSBuffer[0], &bRestored);
   if (FAILED(hr)) {
-    DebugPrint(
-        "error : RestoreBuffer in HandleWaveStreamNotification\r\n");
+    DebugPrint("error : RestoreBuffer in HandleWaveStreamNotification\r\n");
     return hr;
   }
 
@@ -658,8 +656,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(i32 bLoopedPlay) {
         this->m_dwNextWriteOffset, this->m_dwNotifySize, &pDSLockedBuffer,
         &dwDSLockedBufferSize, &pDSLockedBuffer2, &dwDSLockedBufferSize2, 0L);
     if (FAILED(hr)) {
-      DebugPrint(
-          "error : Buffer->Lock in HandleWaveStreamNotification\r\n");
+      DebugPrint("error : Buffer->Lock in HandleWaveStreamNotification\r\n");
       return hr;
     }
 
@@ -693,7 +690,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(i32 bLoopedPlay) {
           hr = this->m_pWaveFile->ResetFile(true);
           if (FAILED(hr)) {
             DebugPrint("error : m_pWaveFile->ResetFile in "
-                              "HandleWaveStreamNotification\r\n");
+                       "HandleWaveStreamNotification\r\n");
             return hr;
           }
 
@@ -702,7 +699,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(i32 bLoopedPlay) {
                                        &dwBytesWrittenToBuffer);
           if (FAILED(hr)) {
             DebugPrint("error : m_pWaveFile->Read(+) in "
-                              "HandleWaveStreamNotification\r\n");
+                       "HandleWaveStreamNotification\r\n");
             return hr;
           }
 
@@ -717,7 +714,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(i32 bLoopedPlay) {
     hr = this->m_apDSBuffer[0]->GetCurrentPosition(&dwCurrentPlayPos, NULL);
     if (FAILED(hr)) {
       DebugPrint("error : m_apDSBuffer[0]->GetCurrentPosition in "
-                        "HandleWaveStreamNotification\r\n");
+                 "HandleWaveStreamNotification\r\n");
     } else {
       if (dwCurrentPlayPos < this->m_dwLastPlayPos) {
         dwPlayDelta =
@@ -884,8 +881,8 @@ HRESULT CWaveFile::ResetFile(bool bLoop) {
       this->m_ck.cksize = this->m_pzwf->totalLength - this->m_pzwf->introLength;
     } else {
       SetFilePointer(this->m_hWaveFile,
-                     g_SoundPlayer.bgmSeekOffset + this->m_pzwf->startOffset, NULL,
-                     FILE_BEGIN);
+                     g_SoundPlayer.bgmSeekOffset + this->m_pzwf->startOffset,
+                     NULL, FILE_BEGIN);
       this->m_ck.cksize = this->m_pzwf->totalLength;
     }
   } else {

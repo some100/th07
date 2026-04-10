@@ -227,7 +227,7 @@ ZunResult MidiOutput::ReadFileData(i32 fileIdx, const char *path)
   ReleaseFileData(fileIdx);
   this->midiFileData[fileIdx] = FileSystem::OpenFile(path, 0);
   if (this->midiFileData[fileIdx] == NULL) {
-    g_GameErrorContext.Log("error : MIDI File ãŒèª­ã¿è¾¼ã‚ãªã„ %s \rv\r\n", path);
+    g_GameErrorContext.Log("error : MIDI File ‚ª“Ç‚Ýž‚ß‚È‚¢ %s \rv\r\n", path);
     return ZUN_ERROR;
   } else {
     return ZUN_SUCCESS;
@@ -270,7 +270,7 @@ ZunResult MidiOutput::ParseFile(i32 fileIdx)
   fileData = (MidiHeader *)this->midiFileData[fileIdx];
   if (fileData == NULL) {
     DebugPrint(
-        "error : ã¾ã MIDIãŒèª­ã¿è¾¼ã¾ã‚Œã¦ã„ãªã„ã®ã«å†ç”Ÿã—ã‚ˆã†ã¨ã—ã¦ã„ã‚‹\r\n");
+        "error : ‚Ü‚¾MIDI‚ª“Ç‚Ýž‚Ü‚ê‚Ä‚¢‚È‚¢‚Ì‚ÉÄ¶‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚é\r\n");
     return ZUN_ERROR;
   } else {
     hdrLength = Ntohl(fileData->length);

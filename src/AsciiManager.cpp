@@ -138,8 +138,8 @@ void AsciiManager::InitializeVms()
   this->nextPopupIndex2 = 0;
   this->unused_74e4 = 0;
   this->color = 0xffffffff;
-  (this->scale).x = 1.0f;
-  (this->scale).y = 1.0f;
+  this->scale.x = 1.0f;
+  this->scale.y = 1.0f;
   this->vm1.flags = this->vm1.flags | 0xc00;
   this->vm1.Initialize();
   g_AnmManager->SetActiveSprite(&this->vm1, 0);

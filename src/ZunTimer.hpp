@@ -11,8 +11,8 @@ struct ZunTimer {
 
   inline void Initialize(i32 current) {
     this->current = current;
-    this->subFrame = 0.0f;
     this->previous = -999;
+    this->subFrame = 0.0f;
   }
 
   void Decrement(i32 value);

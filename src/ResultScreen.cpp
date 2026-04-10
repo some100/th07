@@ -16,9 +16,9 @@
 #include "pbg4/Lzss.hpp"
 
 // GLOBAL: TH07 0x0049ec34
-const char *g_CharacterList[6] = {"åšéº— éœŠå¤¢ (éœŠ)ã€€", "åšéº— éœŠå¤¢ (å¤¢)ã€€",
-                                  "éœ§é›¨ é­”ç†æ²™ (é­”)", "éœ§é›¨ é­”ç†æ²™ (æ‹",
-                                  "åå…­å¤œ å’²å¤œ (å¹»)", "åå…­å¤œ å’²å¤œ (æ™‚)"};
+const char *g_CharacterList[6] = {"”—í —ì–² (—ì)@", "”—í —ì–² (–²)@",
+                                  "–¶‰J –‚—¹ (–‚)", "–¶‰J –‚—¹ (—ö)",
+                                  "\˜Z–é ç–é (Œ¶)", "\˜Z–é ç–é ()"};
 
 // GLOBAL: TH07 0x0049ec30
 const char *g_AlphabetList =
@@ -800,7 +800,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         if (g_GameManager.catk[curVmIdx].numAttemptsPerShot[6] == 0) {
           AnmManager::DrawVmTextFmt(g_AnmManager,
                                     arg->spellcardListVms + curVmIdx % 10,
-                                    0xffffff, 0, "ï¼Ÿï¼Ÿï¼Ÿï¼Ÿï¼Ÿ");
+                                    0xffffff, 0, "HHHHH");
         } else {
           AnmManager::DrawVmTextFmt(
               g_AnmManager, arg->spellcardListVms + curVmIdx % 10, 0xffffff, 0,
@@ -810,7 +810,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
       }
       AnmManager::DrawVmTextFmt(
           g_AnmManager, arg->spellcardListVms + 10, 0xffffff, 0,
-          "%s %3dæšä¸­%3dæšå–å¾—ï¼ˆã‚­ãƒ£ãƒ©åˆ‡ã‚Šæ›¿ãˆâ†“â†‘ï¼‰",
+          "%s %3d–‡’†%3d–‡æ“¾iƒLƒƒƒ‰Ø‚è‘Ö‚¦«ªj",
           g_CharacterList[arg->prevSpellcardListPage], 0x8d,
           arg->totalPlayCountPerCharacter[arg->spellcardListPage + 1]);
       arg->spellcardListVms[10].color.bytes.a = 0xff;
@@ -1601,7 +1601,7 @@ i32 ResultScreen::DrawStats()
       g_Supervisor.UpdateStartupTime();
       AnmManager::DrawVmTextFmt(
           g_AnmManager, this->spellcardListVms, 0xffffff, 0,
-          "ç·èµ·å‹•æ™‚é–“   %.2d:%.2d:%.2d", g_GameManager.plst.totalHours,
+          "‘‹N“®ŠÔ   %.2d:%.2d:%.2d", g_GameManager.plst.totalHours,
           g_GameManager.plst.totalMinutes, g_GameManager.plst.totalSeconds);
       g_Supervisor.UpdateStartupTime();
       this->lastTotalSeconds = g_GameManager.plst.totalSeconds;
@@ -1610,7 +1610,7 @@ i32 ResultScreen::DrawStats()
       this->spellcardListVms[1].pos.z = 0.0f;
       AnmManager::DrawVmTextFmt(
           g_AnmManager, this->spellcardListVms + 1, 0xffffff, 0,
-          "ç·ãƒ—ãƒ¬ã‚¤æ™‚é–“ %.2d:%.2d:%.2d", g_GameManager.plst.gameHours,
+          "‘ƒvƒŒƒCŠÔ %.2d:%.2d:%.2d", g_GameManager.plst.gameHours,
           g_GameManager.plst.gameMinutes, g_GameManager.plst.gameSeconds);
       local_8 = this->spellcardListVms + 2;
       local_10 = 162.0;
@@ -1620,11 +1620,11 @@ i32 ResultScreen::DrawStats()
       if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0) {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8, 0xffffff, 0,
-            "ãƒ—ãƒ¬ã‚¤å›æ•°ã€€ã€€ã€€ ã€€Easy ã€€Norm ã€€Hard ã€€Luna  Extra  Total");
+            "ƒvƒŒƒC‰ñ”@@@ @Easy @Norm @Hard @Luna  Extra  Total");
       } else {
         AnmManager::DrawVmTextFmt(g_AnmManager, local_8, 0xffffff, 0,
-                                  "ãƒ—ãƒ¬ã‚¤å›æ•°ã€€ã€€ã€€ ã€€Easy ã€€Norm ã€€Hard "
-                                  "ã€€Luna  Extra Phants  Total");
+                                  "ƒvƒŒƒC‰ñ”@@@ @Easy @Norm @Hard "
+                                  "@Luna  Extra Phants  Total");
       }
       for (local_18 = 0; local_18 < 6; local_18 += 1) {
         vm = local_8 + 1;
@@ -1677,7 +1677,7 @@ i32 ResultScreen::DrawStats()
       if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0) {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 1, 0xffffff, 0,
-            "%s %6d %6d %6d %6d %6d %6d", "å…¨ä¸»äººå…¬åˆè¨ˆ  ã€€",
+            "%s %6d %6d %6d %6d %6d %6d", "‘SålŒö‡Œv  @",
             g_GameManager.plst.playDataByDifficulty[0].playCount,
             g_GameManager.plst.playDataByDifficulty[1].playCount,
             g_GameManager.plst.playDataByDifficulty[2].playCount,
@@ -1687,7 +1687,7 @@ i32 ResultScreen::DrawStats()
       } else {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 1, 0xffffff, 0,
-            "%s %6d %6d %6d %6d %6d %6d %6d", "å…¨ä¸»äººå…¬åˆè¨ˆ  ã€€",
+            "%s %6d %6d %6d %6d %6d %6d %6d", "‘SålŒö‡Œv  @",
             g_GameManager.plst.playDataByDifficulty[0].playCount,
             g_GameManager.plst.playDataByDifficulty[1].playCount,
             g_GameManager.plst.playDataByDifficulty[2].playCount,
@@ -1710,7 +1710,7 @@ i32 ResultScreen::DrawStats()
       if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0) {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 2, 0xffffff, 0,
-            "ã‚¯ãƒªã‚¢å›æ•°  ã€€ã€€ %6d %6d %6d %6d %6d %6d",
+            "ƒNƒŠƒA‰ñ”  @@ %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].noContinueClearCount,
             g_GameManager.plst.playDataByDifficulty[1].noContinueClearCount,
             g_GameManager.plst.playDataByDifficulty[2].noContinueClearCount,
@@ -1720,7 +1720,7 @@ i32 ResultScreen::DrawStats()
       } else {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 2, 0xffffff, 0,
-            "ã‚¯ãƒªã‚¢å›æ•°  ã€€ã€€ %6d %6d %6d %6d %6d %6d %6d",
+            "ƒNƒŠƒA‰ñ”  @@ %6d %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].noContinueClearCount,
             g_GameManager.plst.playDataByDifficulty[1].noContinueClearCount,
             g_GameManager.plst.playDataByDifficulty[2].noContinueClearCount,
@@ -1736,7 +1736,7 @@ i32 ResultScreen::DrawStats()
       if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0) {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 3, 0xffffff, 0,
-            "ã‚³ãƒ³ãƒ†ã‚£ãƒ‹ãƒ¥ãƒ¼   %6d %6d %6d %6d %6d %6d",
+            "ƒRƒ“ƒeƒBƒjƒ…[   %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].retryCount,
             g_GameManager.plst.playDataByDifficulty[1].retryCount,
             g_GameManager.plst.playDataByDifficulty[2].retryCount,
@@ -1746,7 +1746,7 @@ i32 ResultScreen::DrawStats()
       } else {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 3, 0xffffff, 0,
-            "ã‚³ãƒ³ãƒ†ã‚£ãƒ‹ãƒ¥ãƒ¼   %6d %6d %6d %6d %6d %6d %6d",
+            "ƒRƒ“ƒeƒBƒjƒ…[   %6d %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].retryCount,
             g_GameManager.plst.playDataByDifficulty[1].retryCount,
             g_GameManager.plst.playDataByDifficulty[2].retryCount,
@@ -1762,7 +1762,7 @@ i32 ResultScreen::DrawStats()
       if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0) {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 4, 0xffffff, 0,
-            "ãƒ—ãƒ©ã‚¯ãƒ†ã‚£ã‚¹ã€€   %6d %6d %6d %6d %6d %6d",
+            "ƒvƒ‰ƒNƒeƒBƒX@   %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].extraClearCount,
             g_GameManager.plst.playDataByDifficulty[1].extraClearCount,
             g_GameManager.plst.playDataByDifficulty[2].extraClearCount,
@@ -1772,7 +1772,7 @@ i32 ResultScreen::DrawStats()
       } else {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 4, 0xffffff, 0,
-            "ãƒ—ãƒ©ã‚¯ãƒ†ã‚£ã‚¹ã€€   %6d %6d %6d %6d %6d %6d %6d",
+            "ƒvƒ‰ƒNƒeƒBƒX@   %6d %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].extraClearCount,
             g_GameManager.plst.playDataByDifficulty[1].extraClearCount,
             g_GameManager.plst.playDataByDifficulty[2].extraClearCount,
@@ -1787,7 +1787,7 @@ i32 ResultScreen::DrawStats()
       if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0) {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 5, 0xffffff, 0,
-            "ãƒªãƒˆãƒ©ã‚¤å›æ•°  ã€€ %6d %6d %6d %6d %6d %6d",
+            "ƒŠƒgƒ‰ƒC‰ñ”  @ %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].clearCount,
             g_GameManager.plst.playDataByDifficulty[1].clearCount,
             g_GameManager.plst.playDataByDifficulty[2].clearCount,
@@ -1797,7 +1797,7 @@ i32 ResultScreen::DrawStats()
       } else {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 5, 0xffffff, 0,
-            "ãƒªãƒˆãƒ©ã‚¤å›æ•°  ã€€ %6d %6d %6d %6d %6d %6d %6d",
+            "ƒŠƒgƒ‰ƒC‰ñ”  @ %6d %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].clearCount,
             g_GameManager.plst.playDataByDifficulty[1].clearCount,
             g_GameManager.plst.playDataByDifficulty[2].clearCount,
@@ -1822,7 +1822,7 @@ i32 ResultScreen::DrawStats()
          g_GameManager.plst.totalSeconds != this->lastTotalSeconds)) {
       AnmManager::DrawVmTextFmt(
           g_AnmManager, this->spellcardListVms, 0xffffff, 0,
-          "ç·èµ·å‹•æ™‚é–“   %.2d:%.2d:%.2d", g_GameManager.plst.totalHours,
+          "‘‹N“®ŠÔ   %.2d:%.2d:%.2d", g_GameManager.plst.totalHours,
           g_GameManager.plst.totalMinutes, g_GameManager.plst.totalSeconds);
       this->lastTotalSeconds = (u8)g_GameManager.plst.totalSeconds;
     }

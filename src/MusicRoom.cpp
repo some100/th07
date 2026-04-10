@@ -12,7 +12,7 @@
 MusicRoom g_MusicRoom;
 
 // GLOBAL: TH07 0x01363eac
-i32 g_MusicRoomExists = 0;
+i32 g_MusicRoomExists;
 
 // FUNCTION: TH07 0x0043a69b
 MusicRoom::MusicRoom() { memset(this, 0, sizeof(MusicRoom)); }

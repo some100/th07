@@ -122,6 +122,9 @@ public:
     CSound(LPDIRECTSOUNDBUFFER* apDSBuffer, DWORD dwDSBufferSize, DWORD dwNumBuffers, CWaveFile* pWaveFile);
     virtual ~CSound();
 
+    // SYNTHETIC: TH07 0x0045d030
+    // CSound::`scalar deleting destructor'
+
     HRESULT RestoreBuffer(LPDIRECTSOUNDBUFFER pDSB, BOOL* pbWasRestored);
     HRESULT FillBufferWithSound(LPDIRECTSOUNDBUFFER pDSB, BOOL bRepeatWavIfBufferLarger);
     LPDIRECTSOUNDBUFFER GetFreeBuffer();

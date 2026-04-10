@@ -173,17 +173,7 @@ struct AnmManager {
   static void __stdcall ExecuteScripts(AnmVm *startVm, i32 count);
   static void __stdcall ExecuteVmsAnms(AnmVm *vm, i32 idx, i32 vmCount);
   static ZunResult __stdcall
-  UpdateTrail(AnmVm *vm, VertexTex1DiffuseXyzrwh *vertices,
-                           i32 count);
-
-  // FUNCTION: TH07 0x00433f20
-  void ReleaseSurfaces()
-
-  {
-    for (i32 i = 0; i < 0x20; i = i + 1) {
-      SAFE_RELEASE(this->surfaces[i]);
-    }
-  }
+  UpdateTrail(AnmVm *vm, VertexTex1DiffuseXyzrwh *vertices, i32 count);
 
   // FUNCTION: TH07 0x00404f30
   void ExecuteAnmIdx(AnmVm *vm, i32 anmFileIdx)
@@ -199,6 +189,15 @@ struct AnmManager {
     vm->fontHeight = 15;
     vm->fontWidth = 15;
     SetAndExecuteScript(vm, this->scripts[anmFileIdx]);
+  }
+
+  // FUNCTION: TH07 0x00433f20
+  void ReleaseSurfaces()
+
+  {
+    for (i32 i = 0; i < 0x20; i = i + 1) {
+      SAFE_RELEASE(this->surfaces[i]);
+    }
   }
 
   ZunColor color;

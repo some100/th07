@@ -34,7 +34,7 @@ const char *g_EclPaths[10] = {"dummy",
                               NULL};
 
 // GLOBAL: TH07 0x01347aa0
-EclGlobalVars g_GlobalEclVars = {{0}};
+EclGlobalVars g_GlobalEclVars;
 
 // FUNCTION: TH07 0x0040e420
 ZunResult EclManager::Load(const char *path)
@@ -42,8 +42,8 @@ ZunResult EclManager::Load(const char *path)
 {
   this->eclFile = (EclRawHeader *)FileSystem::OpenFile(path, 0);
   if (this->eclFile == NULL) {
-    g_GameErrorContext.Log("æ•µãƒ‡ãƒ¼ã‚¿ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸã€ãƒ‡ãƒ¼ã‚¿ãŒå£Šã‚Œã¦ã‚‹"
-                           "ã‹å¤±ã‚ã‚Œã¦ã„ã¾ã™\r\n");
+    g_GameErrorContext.Log("“Gƒf[ƒ^‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚Ü‚µ‚½Aƒf[ƒ^‚ª‰ó‚ê‚Ä‚é"
+                           "‚©¸‚í‚ê‚Ä‚¢‚Ü‚·\r\n");
     return ZUN_ERROR;
   } else {
     for (i32 i = 0; i < 0x10; i += 1) {
@@ -760,7 +760,6 @@ f32 *EclManager::GetFloatVar(Enemy *enemy, f32 *eclVar, u16 paramMask,
   return eclVar;
 }
 
-
 // FUNCTION: TH07 0x0040f6b0
 void EclManager::MoveDirTime(Enemy *enemy, EclRawInstr *instr)
 
@@ -875,14 +874,14 @@ void EclManager::MovePosTime(Enemy *enemy, EclRawInstr *instr)
 }
 
 // FUNCTION: TH07 0x0040fb30
+#pragma var_order(b, a)
 void EclManager::MathLerp(Enemy *enemy, EclInterp *interp, f32 t)
 
 {
-  *GetFloatVar(enemy, &interp->args[7].f, 0, -1) =
-      (GetFloatVarValue(enemy, interp->args[4].f) -
-       GetFloatVarValue(enemy, interp->args[3].f)) *
-          t +
-      GetFloatVarValue(enemy, interp->args[3].f);
+  f32 a = GetFloatVarValue(enemy, interp->args[3].f);
+  f32 b = GetFloatVarValue(enemy, interp->args[4].f);
+
+  *GetFloatVar(enemy, &interp->args[7].f, 0, -1) = (b - a) * t + a;
 }
 
 // FUNCTION: TH07 0x0040fb90
@@ -1117,6 +1116,7 @@ void EclManager::EndSpellcard()
   g_Stage.spellCardState = 0;
 }
 
+#pragma optimize("s", on)
 // FUNCTION: TH07 0x00410520
 ZunResult EclManager::RunEcl(Enemy *enemy)
 
@@ -1132,9 +1132,7 @@ ZunResult EclManager::RunEcl(Enemy *enemy)
   f32 local_e8;
   D3DXVECTOR3 local_d8;
   D3DXVECTOR3 local_cc;
-  AnyArg local_c0[7];
   D3DXVECTOR3 local_a0;
-  AnyArg local_94[7];
   D3DXVECTOR3 local_74;
   i32 local_68;
   i32 local_64;
@@ -1520,11 +1518,11 @@ LAB_0041069a:
                         ? instr->args[1].i
                         : GetVarValue(enemy, instr->args[1].i);
     *GetVar(enemy, &instr->args[0].i, instr->paramMask, 0) =
-        (((g_Rng.GetRandomU16() % 2 != 0) ? 2 : 0) - 1) * local_3a0;
+        ((((g_Rng.GetRandomU16() & 1) != 0) ? 2 : 0) - 1) * local_3a0;
     break;
   }
   case 0xb: {
-    f32 local_3a4 = (g_Rng.GetRandomU16() % 2 == 0) ? -1.0f : 1.0f;
+    f32 local_3a4 = ((g_Rng.GetRandomU16() & 1) == 0) ? -1.0f : 1.0f;
     f32 local_3a8 = (instr->paramMask & 2) == 0
                         ? instr->args[1].f
                         : GetFloatVarValue(enemy, instr->args[1].f);
@@ -1983,7 +1981,7 @@ LAB_0041069a:
             ? g_Rng.GetRandomFloat() * 1.5707964f - 0.7853982f
             : utils::AddNormalizeAngle(
                   g_Rng.GetRandomFloat() * 1.5707964f + 2.3561945f, 0.0f);
-    if (enemy->position.x < (enemy->lowerMoveLimit).x + 96.0) {
+    if (enemy->position.x < enemy->lowerMoveLimit.x + 96.0) {
       if (local_38 <= 1.5707964f) {
         if (local_38 < -1.5707964f) {
           local_38 = -3.1415927f - local_38;
@@ -2001,7 +1999,7 @@ LAB_0041069a:
         local_38 = 3.1415927f - enemy->angle;
       }
     }
-    if ((enemy->position.y < (enemy->lowerMoveLimit).y + 48.0) &&
+    if ((enemy->position.y < enemy->lowerMoveLimit.y + 48.0) &&
         (local_38 < 0.0f)) {
       local_38 = -local_38;
     }
@@ -2142,11 +2140,11 @@ LAB_0041069a:
     f32 local_628 = (instr->paramMask & 1) == 0
                         ? instr->args[0].f
                         : GetFloatVarValue(enemy, instr->args[0].f);
-    (enemy->lowerMoveLimit).x = local_628;
+    enemy->lowerMoveLimit.x = local_628;
     f32 local_62c = (instr->paramMask & 2) == 0
                         ? instr->args[1].f
                         : GetFloatVarValue(enemy, instr->args[1].f);
-    (enemy->lowerMoveLimit).y = local_62c;
+    enemy->lowerMoveLimit.y = local_62c;
     f32 local_630 = (instr->paramMask & 4) == 0
                         ? instr->args[2].f
                         : GetFloatVarValue(enemy, instr->args[2].f);
@@ -2502,18 +2500,17 @@ LAB_0041069a:
   }
   case 0x5c: {
     if (0 < enemy->life) {
-      memcpy(local_94, instr->args, sizeof(local_94));
       f32 local_6f0 = (instr->paramMask & 2) == 0
-                          ? local_94[1].f
-                          : GetFloatVarValue(enemy, local_94[1].f);
+                          ? instr->args[1].f
+                          : GetFloatVarValue(enemy, instr->args[1].f);
       local_a0.x = local_6f0;
       f32 local_6f4 = (instr->paramMask & 4) == 0
-                          ? local_94[2].f
-                          : GetFloatVarValue(enemy, local_94[2].f);
+                          ? instr->args[2].f
+                          : GetFloatVarValue(enemy, instr->args[2].f);
       local_a0.y = local_6f4;
       f32 local_6f8 = (instr->paramMask & 8) == 0
-                          ? local_94[3].f
-                          : GetFloatVarValue(enemy, local_94[3].f);
+                          ? instr->args[3].f
+                          : GetFloatVarValue(enemy, instr->args[3].f);
       local_a0.z = local_6f8;
       i32 local_6fc = (instr->paramMask & 64) == 0
                           ? instr->args[6].i
@@ -2524,7 +2521,7 @@ LAB_0041069a:
       i32 local_704 = (instr->paramMask & 16) == 0
                           ? instr->args[4].i
                           : GetVarValue(enemy, instr->args[4].i);
-      g_EnemyManager.SpawnEnemyEx(local_94[0].i, &local_a0, local_704,
+      g_EnemyManager.SpawnEnemyEx(instr->args[0].i, &local_a0, local_704,
                                   local_700, local_6fc,
                                   &enemy->currentContext.eclContextArgs);
     }
@@ -2532,18 +2529,17 @@ LAB_0041069a:
   }
   case 0x5d: {
     if (0 < enemy->life) {
-      memcpy(local_c0, instr->args, sizeof(local_c0));
       f32 local_708 = (instr->paramMask & 2) == 0
-                          ? local_c0[1].f
-                          : GetFloatVarValue(enemy, local_c0[1].f);
+                          ? instr->args[1].f
+                          : GetFloatVarValue(enemy, instr->args[1].f);
       local_cc.x = local_708;
       f32 local_70c = (instr->paramMask & 4) == 0
-                          ? local_c0[2].f
-                          : GetFloatVarValue(enemy, local_c0[2].f);
+                          ? instr->args[2].f
+                          : GetFloatVarValue(enemy, instr->args[2].f);
       local_cc.y = local_70c;
       f32 local_710 = (instr->paramMask & 8) == 0
-                          ? local_c0[3].f
-                          : GetFloatVarValue(enemy, local_c0[3].f);
+                          ? instr->args[3].f
+                          : GetFloatVarValue(enemy, instr->args[3].f);
       local_cc.z = local_710;
       local_cc += enemy->position;
       i32 local_714 = (instr->paramMask & 64) == 0
@@ -2555,7 +2551,7 @@ LAB_0041069a:
       i32 local_71c = (instr->paramMask & 16) == 0
                           ? instr->args[4].i
                           : GetVarValue(enemy, instr->args[4].i);
-      g_EnemyManager.SpawnEnemyEx(local_c0[0].i, &local_cc, local_71c,
+      g_EnemyManager.SpawnEnemyEx(instr->args[0].i, &local_cc, local_71c,
                                   local_718, local_714,
                                   &enemy->currentContext.eclContextArgs);
     }
@@ -2964,9 +2960,9 @@ LAB_0041069a:
                         : (i16)GetVarValue(enemy, instr->args[3].i);
     enemy->trailNodeStep = local_750;
     if ((enemy->trailFlags & 8) != 0) {
-      AnmManager::UpdateTrail(
-          &enemy->primaryVm, enemy->trailVertices,
-          (i32)enemy->trailCount / (i32)enemy->trailNodeStep << 1);
+      AnmManager::UpdateTrail(&enemy->primaryVm, enemy->trailVertices,
+                              (i32)enemy->trailCount / (i32)enemy->trailNodeStep
+                                  << 1);
     }
     break;
   }
@@ -3285,3 +3281,4 @@ switchD_0041073a_caseD_1:
   instr = (EclRawInstr *)((u8 *)instr + instr->args[1].i);
   goto LAB_0041069a;
 }
+#pragma optimize("s", off)

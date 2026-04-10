@@ -10,14 +10,14 @@ Pbg4File::Pbg4File()
   this->access = 0;
 }
 
-// SYNTHETIC: TH07 0x0045e590
-// Pbg4File::`scalar deleting destructor'
-
 // FUNCTION: TH07 0x0045e5c0
 Pbg4File::~Pbg4File()
 
-{ Close(); }
+{
+  Close();
+}
 
+#pragma var_order(local_8, local_c, local_114, local_118)
 // FUNCTION: TH07 0x0045e620
 bool Pbg4File::Open(const char *path, const char *mode)
 

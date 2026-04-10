@@ -4,8 +4,12 @@
 
 #include "../inttypes.hpp"
 
+// VTABLE: TH07 0x0049526c
 struct IPbg4File {
   IPbg4File() {}
+
+  // SYNTHETIC: TH07 0x0047e90b
+  // _purecall
 
   virtual bool Open(const char *path, const char *mode) = 0;
   virtual void Close() = 0;
@@ -15,11 +19,17 @@ struct IPbg4File {
   virtual DWORD GetSize() = 0;
   virtual bool Seek(u32 offset, DWORD seekFrom) = 0;
   virtual ~IPbg4File() {}
+
+  // SYNTHETIC: TH07 0x0045e520
+  // IPbg4File::`scalar deleting destructor'
 };
 
+// VTABLE: TH07 0x00495248
 struct Pbg4File : IPbg4File {
   Pbg4File();
   virtual ~Pbg4File();
+  // SYNTHETIC: TH07 0x0045e590
+  // Pbg4File::`scalar deleting destructor'
 
   virtual bool Open(const char *path, const char *mode);
   virtual void Close();
