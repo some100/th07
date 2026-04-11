@@ -793,8 +793,8 @@ ZunResult Stage::LoadStageData(const char *stdPath)
 
   this->stdData = (StdRawHeader *)FileSystem::OpenFile(stdPath, 0);
   if (this->stdData == NULL) {
-    g_GameErrorContext.Log(
-        "ステージデータが見つかりません。データが壊れています\r\n");
+    // STRING: TH07 0x0049888c
+    g_GameErrorContext.Log("ステージデータが見つかりません。データが壊れています\r\n");
     return ZUN_ERROR;
   } else {
     this->objectsCount = this->stdData->objectsCount;

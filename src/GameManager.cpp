@@ -456,8 +456,8 @@ ZunResult ResultScreen::ParseScores()
   }
   scoreDat = OpenScore("score.dat");
   if (scoreDat == NULL) {
-    g_GameErrorContext.Log(
-        "error : スコアファイルの読み取りに失敗しました\r\n");
+    // STRING: TH07 0x00498090
+    g_GameErrorContext.Log("error : スコアファイルの読み取りに失敗しました\r\n");
     return ZUN_ERROR;
   } else {
     uVar2 =
@@ -511,6 +511,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
     arg->globals->guiScore = arg->globals->score;
     arg->globals->guiScoreDifference = 0;
     if (Player::RegisterChain(0) != ZUN_SUCCESS) {
+      // STRING: TH07 0x00498064
       g_GameErrorContext.Log("error : プレイヤーの初期化に失敗しました\r\n");
       return ZUN_ERROR;
     }
@@ -619,8 +620,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
         IncrementCappedAgain(
             &g_GameManager.plst.playDataByDifficulty[g_GameManager.difficulty]
                  .playCount);
-        IncrementCappedAgain(
-            &g_GameManager.plst.playDataTotals.playCount);
+        IncrementCappedAgain(&g_GameManager.plst.playDataTotals.playCount);
         IncrementCappedAgain(
             &g_GameManager.plst.playDataByDifficulty[g_GameManager.difficulty]
                  .playCountPerShotType[arg->shotTypeAndCharacter]);
@@ -632,8 +632,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
               &((Plst *)(g_GameManager.pscr + 6))
                    ->playDataByDifficulty[g_GameManager.difficulty]
                    .clearCount);
-          IncrementCappedAgain(
-              &g_GameManager.plst.playDataTotals.clearCount);
+          IncrementCappedAgain(&g_GameManager.plst.playDataTotals.clearCount);
         }
         if ((g_GameManager.flags & 1) != 0) {
           IncrementCappedAgain(
@@ -691,6 +690,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
           if (EffectManager::RegisterChain() == ZUN_SUCCESS) {
             if (Gui::RegisterChain() == ZUN_SUCCESS) {
               if ((g_GameManager.flags >> 3 & 1) == 0) {
+                // STRING: TH07 0x00497e1c
                 ReplayManager::RegisterChain(0, "replay/th7_00.rpy");
               }
               Supervisor::LoadAudio(0, (g_Stage.stdData)->bgmPaths[0]);
@@ -715,32 +715,37 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
               g_AsciiManager.InitializeVms();
               g_GameManager.slowModeSlowActive = 0;
               Supervisor::DrawFpsCounter(0);
+              // STRING: TH07 0x00497e08
               Supervisor::DebugPrint2("random seed %d %d\r\n", (u32)g_Rng.seed,
-                                 g_Rng.generationCount);
+                                      g_Rng.generationCount);
               return ZUN_SUCCESS;
             } else {
-              g_GameErrorContext.Log(
-                  "error : 2D表示の初期化に失敗しました\r\n");
+              // STRING: TH07 0x00497e30
+              g_GameErrorContext.Log("error : 2D表示の初期化に失敗しました\r\n");
               return ZUN_ERROR;
             }
           } else {
-            g_GameErrorContext.Log(
-                "error : エフェクトの初期化に失敗しました\r\n");
+            // STRING: TH07 0x00497e58
+            g_GameErrorContext.Log("error : エフェクトの初期化に失敗しました\r\n");
             return ZUN_ERROR;
           }
         } else {
+          // STRING: TH07 0x00497e84
           g_GameErrorContext.Log("error : 敵頭脳の初期化に失敗しました\r\n");
           return ZUN_ERROR;
         }
       } else {
+        // STRING: TH07 0x00497f4c
         g_GameErrorContext.Log("error : 敵の初期化に失敗しました\r\n");
         return ZUN_ERROR;
       }
     } else {
+      // STRING: TH07 0x00498010
       g_GameErrorContext.Log("error : 敵弾の初期化に失敗しました\r\n");
       return ZUN_ERROR;
     }
   } else {
+    // STRING: TH07 0x00498038
     g_GameErrorContext.Log("error : 背景データの初期化に失敗しました\r\n");
     return ZUN_ERROR;
   }

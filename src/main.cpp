@@ -3,11 +3,11 @@
 #include <winnls32.h>
 
 // pull in gameerrorcontext::flush before anmmanager::releasesurfaces
-#include "GameErrorContext.hpp"
 #include "AnmManager.hpp"
 #include "Chain.hpp"
 #include "Controller.hpp"
 #include "FileSystem.hpp"
+#include "GameErrorContext.hpp"
 #include "GameManager.hpp"
 #include "GameWindow.hpp"
 #include "ResultScreen.hpp"
@@ -31,7 +31,9 @@ void AnmManager::TakeScreenshotIfRequested()
 
 // FUNCTION: TH07 0x00434020
 i32 WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-                   LPSTR lpCmdline, i32 nCmdShow) {
+                   LPSTR lpCmdline, i32 nCmdShow)
+
+{
   ZunResult chainResult;
   BOOL gotMessage;
   tagMSG msg;
@@ -47,8 +49,9 @@ i32 WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   SystemParametersInfoA(SPI_SETSCREENSAVEACTIVE, 0, NULL, 2);
   SystemParametersInfoA(SPI_SETLOWPOWERACTIVE, 0, NULL, 2);
   SystemParametersInfoA(SPI_SETPOWEROFFACTIVE, 0, NULL, 2);
-  if ((GameWindow::CheckForRunningGameInstance() != -1) &&
-      (g_Supervisor.LoadConfig("th07.cfg") == ZUN_SUCCESS)) {
+  if (GameWindow::CheckForRunningGameInstance() != -1 &&
+      // STRING: TH07 0x00497c60
+      g_Supervisor.LoadConfig("th07.cfg") == ZUN_SUCCESS) {
     GameWindow::ChecksumExecutable();
     QueryPerformanceFrequency(&g_GameWindow.lpFrequency);
   }
@@ -142,8 +145,8 @@ stop:
   }
   g_GameErrorContext.m_BufferEnd = g_GameErrorContext.m_Buffer;
   g_GameErrorContext.m_Buffer[0] = '\0';
-  g_GameErrorContext.Log(
-      "再起動を要するオプションが変更されたので再起動します\r\n");
+  // STRING: TH07 0x00497c28
+  g_GameErrorContext.Log("再起動を要するオプションが変更されたので再起動します\r\n");
   if (g_Supervisor.cfg.windowed == 0) {
     WINNLSEnableIME(0, 1);
   }

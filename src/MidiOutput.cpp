@@ -58,7 +58,8 @@ i32 MidiDevice::SendLongMsg(LPMIDIHDR pmh)
   if (this->handle == NULL) {
     return 0;
   } else {
-    if (midiOutPrepareHeader(this->handle, pmh, sizeof(MIDIHDR)) != MMSYSERR_NOERROR) {
+    if (midiOutPrepareHeader(this->handle, pmh, sizeof(MIDIHDR)) !=
+        MMSYSERR_NOERROR) {
       return 1;
     }
 
@@ -122,8 +123,8 @@ u32 MidiTimer::StartTimer(u32 delay, LPTIMECALLBACK cb, DWORD_PTR data)
                      (DWORD_PTR)this, TIME_PERIODIC);
     this->timerId = timerId;
   } else {
-    timerId = timeSetEvent(delay, this->timeCaps.wPeriodMin, cb, data,
-                           TIME_PERIODIC);
+    timerId =
+        timeSetEvent(delay, this->timeCaps.wPeriodMin, cb, data, TIME_PERIODIC);
     this->timerId = timerId;
   }
   return this->timerId;
@@ -227,6 +228,7 @@ ZunResult MidiOutput::ReadFileData(i32 fileIdx, const char *path)
   ReleaseFileData(fileIdx);
   this->midiFileData[fileIdx] = FileSystem::OpenFile(path, 0);
   if (this->midiFileData[fileIdx] == NULL) {
+    // STRING: TH07 0x004972d0
     g_GameErrorContext.Log("error : MIDI File ‚ª“Ç‚Ýž‚ß‚È‚¢ %s \rv\r\n", path);
     return ZUN_ERROR;
   } else {
@@ -269,8 +271,8 @@ ZunResult MidiOutput::ParseFile(i32 fileIdx)
   ClearTracks();
   fileData = (MidiHeader *)this->midiFileData[fileIdx];
   if (fileData == NULL) {
-    DebugPrint(
-        "error : ‚Ü‚¾MIDI‚ª“Ç‚Ýž‚Ü‚ê‚Ä‚¢‚È‚¢‚Ì‚ÉÄ¶‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚é\r\n");
+    // STRING: TH07 0x00497290
+    DebugPrint("error : ‚Ü‚¾MIDI‚ª“Ç‚Ýž‚Ü‚ê‚Ä‚¢‚È‚¢‚Ì‚ÉÄ¶‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚é\r\n");
     return ZUN_ERROR;
   } else {
     hdrLength = Ntohl(fileData->length);
@@ -290,6 +292,7 @@ ZunResult MidiOutput::ParseFile(i32 fileIdx)
     }
     this->tempo = 1000000;
     this->fileIdx = fileIdx;
+    // STRING: TH07 0x00497280
     DebugPrint(" midi open %d\n", fileIdx);
     return ZUN_SUCCESS;
   }
@@ -339,6 +342,7 @@ ZunResult MidiOutput::Play()
     LoadTracks();
     this->midiOutDev.OpenDevice(0xffffffff);
     StartTimer(1, NULL, 0);
+    // STRING: TH07 0x00497274
     DebugPrint(" midi play\n");
     return ZUN_SUCCESS;
   }
@@ -367,12 +371,11 @@ ZunResult MidiOutput::StopPlayback()
 ZunResult MidiOutput::UnprepareHeader(LPMIDIHDR pmh)
 
 {
-  MMRESULT MVar1;
-
   if (pmh == NULL) {
+    // STRING: TH07 0x00497268
     DebugPrint("error :\r\n");
   }
-  if ((this->midiOutDev).handle == NULL) {
+  if (this->midiOutDev.handle == NULL) {
     DebugPrint("error :\r\n");
   }
   i32 i = 0;
@@ -385,8 +388,7 @@ ZunResult MidiOutput::UnprepareHeader(LPMIDIHDR pmh)
     i += 1;
   }
   this->midiHeaders[i] = NULL;
-  MVar1 = midiOutUnprepareHeader((this->midiOutDev).handle, pmh, 0x40);
-  if (MVar1 != 0) {
+  if (midiOutUnprepareHeader(this->midiOutDev.handle, pmh, 0x40) != 0) {
     DebugPrint("error :\r\n");
   }
   free(pmh->lpData);

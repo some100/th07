@@ -397,9 +397,8 @@ ZunResult Ending::LoadEnding(const char *endFilePath)
   endFileDat = this->endFileData;
   this->endFileData = (char *)FileSystem::OpenFile(endFilePath, 0);
   if (this->endFileData == NULL) {
-    g_GameErrorContext.Log(
-        "error : "
-        "エンディングファイルが読み込めない、ファイルが破壊されています\r\n");
+    // STRING: TH07 0x004985d8
+    g_GameErrorContext.Log("error : エンディングファイルが読み込めない、ファイルが破壊されています\r\n");
     return ZUN_ERROR;
   } else {
     this->endFileDataPtr = this->endFileData;

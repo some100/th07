@@ -6,8 +6,8 @@
 
 #include "GameErrorContext.hpp"
 #include "Supervisor.hpp"
-#include "inttypes.hpp"
 #include "dsutil.hpp"
+#include "inttypes.hpp"
 
 // GLOBAL: TH07 0x0049fc88
 static JOYCAPSA g_JoystickCaps;
@@ -32,6 +32,7 @@ bool Controller::GetJoystickCaps()
   if (MVar1 == 0) {
     joyGetDevCapsA(0, &g_JoystickCaps, 0x194);
   } else {
+    // STRING: TH07 0x00497d9c
     g_GameErrorContext.Log("使えるパッドが存在しないようです、残念\r\n");
   }
   return MVar1 != 0;
@@ -184,6 +185,7 @@ u16 Controller::GetControllerInput(u16 buttons)
   } else {
     if (FAILED(g_Supervisor.controller->Poll())) {
       retryCount = 0;
+      // STRING: TH07 0x00497d80
       DebugPrint("error : DIERR_INPUTLOST\r\n");
       hr = (g_Supervisor.controller)->Acquire();
       do {
@@ -191,6 +193,7 @@ u16 Controller::GetControllerInput(u16 buttons)
           return buttons;
         }
         hr = (g_Supervisor.controller)->Acquire();
+        // STRING: TH07 0x00497d60
         DebugPrint("error : DIERR_INPUTLOST %d\r\n", retryCount);
         retryCount = retryCount + 1;
       } while (retryCount < 400);

@@ -709,8 +709,8 @@ ZunResult Gui::LoadMsg(const char *param_1)
   FreeMsgFile();
   this->impl->msg.msgFile = (MsgRawHeader *)FileSystem::OpenFile(param_1, 0);
   if (this->impl->msg.msgFile == NULL) {
-    g_GameErrorContext.Log(
-        "error : メッセージファイル %s が読み込めませんでした\r\n", param_1);
+    // STRING: TH07 0x00498108
+    g_GameErrorContext.Log("error : メッセージファイル %s が読み込めませんでした\r\n", param_1);
     return ZUN_ERROR;
   } else {
     this->impl->msg.currentMsgIdx = -1;

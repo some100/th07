@@ -9,7 +9,14 @@
 Pbg4Archive g_Pbg4Archive;
 
 // would it really not have been simpler to just type the letter where its used
-static const char *g_AccessModes[3] = {"r", "w", "a"};
+static const char *g_AccessModes[3] = {
+    // STRING: TH07 0x00495244
+    "r",
+    // STRING: TH07 0x00495240
+    "w",
+    // STRING: TH07 0x0049523c
+    "a"
+};
 
 // FUNCTION: TH07 0x0045f6b0
 Pbg4Archive::Pbg4Archive() {
@@ -27,6 +34,7 @@ bool Pbg4Archive::Load(const char *filename)
 
 {
   Release();
+  // STRING: TH07 0x00495100
   DebugPrint("info : %s open arcfile\r\n", filename);
 
   this->fileAbstraction = new Pbg4File();
@@ -38,6 +46,7 @@ bool Pbg4Archive::Load(const char *filename)
         return true;
       }
     }
+    // STRING: TH07 0x004950e8
     DebugPrint("info : %s not found\r\n", filename);
     Release();
   }
@@ -48,6 +57,7 @@ bool Pbg4Archive::Load(const char *filename)
 void Pbg4Archive::Release()
 
 {
+  // STRING: TH07 0x004950cc
   DebugPrint("info : %s close arcfile\r\n", this->filename);
   if (this->filename != NULL) {
     GlobalFree(this->filename);
@@ -95,6 +105,7 @@ u8 *Pbg4Archive::ReadDecompressEntry(const char *filename, u8 *buf)
         return pbVar5;
       }
     }
+    // STRING: TH07 0x004950b8
     DebugPrint("info : %s error\r\n", this->filename);
     if (local_14 != NULL) {
       GlobalFree(local_14);
@@ -191,8 +202,8 @@ bool Pbg4Archive::OpenArchive(const char *path)
       local_8 = NULL;
     }
     SAFE_DELETE(this->fileAbstraction);
-    DebugPrint("ファイル %s のオープン中にエラーが発生しました\r\n",
-                      path);
+    // STRING: TH07 0x00495084
+    DebugPrint("ファイル %s のオープン中にエラーが発生しました\r\n", path);
   }
   return false;
 }

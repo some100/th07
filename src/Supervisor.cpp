@@ -119,8 +119,9 @@ void Supervisor::CheckTiming()
           this->timingBadCount = this->timingBadCount + 1;
           this->timingSpikeAccumulator = 0;
         }
+        // STRING: TH07 0x00497244
         Supervisor::DebugPrint2("alq チェック %f / %f = %f\r\n", dVar1, dVar2,
-                           dVar1 / dVar2);
+                                dVar1 / dVar2);
       }
       this->checkTiming = 0;
     }
@@ -185,7 +186,9 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
   if (arg->wantedState == arg->curState)
     goto LAB_004382b4;
   arg->wantedState2 = arg->wantedState;
-  Supervisor::DebugPrint2("scene %d -> %d\r\n", arg->wantedState, arg->curState);
+  // STRING: TH07 0x00497230
+  Supervisor::DebugPrint2("scene %d -> %d\r\n", arg->wantedState,
+                          arg->curState);
   state = arg->wantedState;
   if (state == 0)
     goto LAB_00437eac;
@@ -401,6 +404,7 @@ ZunResult Supervisor::SetupDInput()
     if (FAILED(DirectInput8Create(hInstance, 0x800, IID_IDirectInput8A,
                                   (LPVOID *)&this->directInput, NULL))) {
       this->directInput = NULL;
+      // STRING: TH07 0x00497208
       g_GameErrorContext.Log("DirectInput が使用できません\r\n");
       return ZUN_ERROR;
     } else {
@@ -413,8 +417,8 @@ ZunResult Supervisor::SetupDInput()
         if (FAILED(this->keyboard->SetDataFormat(&c_dfDIKeyboard))) {
           SAFE_RELEASE(this->keyboard);
           SAFE_RELEASE(this->directInput);
-          g_GameErrorContext.Log(
-              "DirectInput SetDataFormat が使用できません\r\n");
+          // STRING: TH07 0x004971d8
+          g_GameErrorContext.Log("DirectInput SetDataFormat が使用できません\r\n");
           return ZUN_ERROR;
         } else {
           if (FAILED(this->keyboard->SetCooperativeLevel(
@@ -422,11 +426,12 @@ ZunResult Supervisor::SetupDInput()
                   DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY))) {
             SAFE_RELEASE(this->keyboard);
             SAFE_RELEASE(this->directInput);
-            g_GameErrorContext.Log(
-                "DirectInput SetCooperativeLevel が使用できません\r\n");
+            // STRING: TH07 0x004971a4
+            g_GameErrorContext.Log("DirectInput SetCooperativeLevel が使用できません\r\n");
             return ZUN_ERROR;
           } else {
             this->keyboard->Acquire();
+            // STRING: TH07 0x0049717c
             g_GameErrorContext.Log("DirectInput は正常に初期化されました\r\n");
             this->directInput->EnumDevices(4, EnumGameControllersCb, NULL, 1);
             if (this->controller != NULL) {
@@ -435,6 +440,7 @@ ZunResult Supervisor::SetupDInput()
               g_Supervisor.controllerCaps.dwSize = 0x2c;
               this->controller->GetCapabilities(&g_Supervisor.controllerCaps);
               this->controller->EnumObjects(ControllerCallback, NULL, 0);
+              // STRING: TH07 0x0049715c
               g_GameErrorContext.Log("有効なパッドを発見しました\r\n");
             }
             return ZUN_SUCCESS;
@@ -453,17 +459,21 @@ ZunResult Supervisor::LoadGameData()
 {
   char verFile[128];
 
+  // STRING: TH07 0x00497150
   if (g_Pbg4Archive.Load("th07.dat")) {
+    // STRING: TH07 0x00497140
     sprintf(verFile, "th07_%.4x%c.ver", 256, 98);
     g_Supervisor.version = (char *)FileSystem::OpenFile(verFile, 0);
     g_Supervisor.versionTableSize = g_LastFileSize;
     if (g_Supervisor.version == NULL) {
+      // STRING: TH07 0x00497118
       g_GameErrorContext.Fatal("error : データのバージョンが違います\r\n");
       return ZUN_ERROR;
     } else {
       return ZUN_SUCCESS;
     }
   } else {
+    // STRING: TH07 0x004970f0
     g_GameErrorContext.Fatal("error : データファイルが存在しません\r\n");
     return ZUN_ERROR;
   }
@@ -531,15 +541,16 @@ i32 Supervisor::CheckVSync()
     }
     if (local_a8 <= 160.0f) {
       if (65.0f <= local_a8) {
-        g_GameErrorContext.Log(
-            "垂直同期が取れてないか、リフレッシュレートが高すぎます。\r\n");
+        // STRING: TH07 0x00497050
+        g_GameErrorContext.Log("垂直同期が取れてないか、リフレッシュレートが高すぎます。\r\n");
+        // STRING: TH07 0x0049708c
         g_GameErrorContext.Log("強制６０フレームモードで動作します\r\n");
         g_Supervisor.vsyncEnabled = 1;
         return -2;
       }
     } else {
-      g_GameErrorContext.Log(
-          "垂直同期が取れてないか、リフレッシュレートが高すぎます\r\n");
+      // STRING: TH07 0x004970b4
+      g_GameErrorContext.Log("垂直同期が取れてないか、リフレッシュレートが高すぎます\r\n");
       g_GameErrorContext.Log("強制６０フレームモードで動作します\r\n");
       g_Supervisor.vsyncEnabled = 1;
     }
@@ -568,6 +579,7 @@ ZunResult Supervisor::AddedCallback(Supervisor *arg)
     g_Supervisor.d3dDevice->Reset(&g_Supervisor.presentParameters);
   }
   if (LoadGameData() == ZUN_SUCCESS) {
+    // STRING: TH07 0x00497038
     g_AnmManager->LoadSurface(0, "data/title/th07logo.jpg");
     g_Supervisor.isInEnding = 1;
     if (g_Supervisor.vsyncEnabled == 0) {
@@ -595,16 +607,20 @@ ZunResult Supervisor::AddedCallback(Supervisor *arg)
       arg->midiOutput = new MidiOutput;
     }
     if (arg->midiOutput != NULL) {
+      // STRING: TH07 0x00497028
       arg->midiOutput->ReadFileData(0x1e, "bgm/init.mid");
     }
     g_SoundPlayer.InitSoundBuffers();
+    // STRING: TH07 0x00497018
     if (g_AnmManager->LoadAnms(0, "data/text.anm", 0x700) == ZUN_SUCCESS) {
       if (AsciiManager::RegisterChain() == ZUN_SUCCESS) {
         g_AnmManager->SetupVertexBuffer();
         TextHelper::CreateTextBuffer();
+        // STRING: TH07 0x00496fe0
         if (g_SoundPlayer.LoadFmt("bgm/thbgm.fmt") == 0) {
           if (g_SoundPlayer.bgmSeekOffset == 0) {
             if ((g_Supervisor.cfg.opts >> 0xd & 1) == 0) {
+              // STRING: TH07 0x00496fac
               g_SoundPlayer.StartBGM("thbgm.dat");
             } else {
               strncpy(g_SoundPlayer.bgmArchivePath, "thbgm.dat", 10);
@@ -629,10 +645,12 @@ ZunResult Supervisor::AddedCallback(Supervisor *arg)
           }
           return ZUN_SUCCESS;
         } else {
+          // STRING: TH07 0x00496fb8
           g_GameErrorContext.Log("error : BGM の初期化に失敗しました\r\n");
           return ZUN_ERROR;
         }
       } else {
+        // STRING: TH07 0x00496ff0
         g_GameErrorContext.Log("error : 文字の初期化に失敗しました\r\n");
         return ZUN_ERROR;
       }
@@ -767,6 +785,7 @@ void Supervisor::DrawFpsCounter(i32 param_1)
     }
     f32 fps = (f32)g_NumFramesSinceLastTime / elapsedTimeInSecs;
     g_NumFramesSinceLastTime = 0;
+    // STRING: TH07 0x00496fa0
     sprintf(g_FpsCounterBuffer, "%.02ffps", (f64)fps);
     if (((g_GameManager.flags >> 2 & 1) != 0) && (param_1 != 0)) {
       g_Supervisor.fpsAccumulator = g_Supervisor.fpsAccumulator + 60.0f;
@@ -790,6 +809,7 @@ void Supervisor::DrawFpsCounter(i32 param_1)
       if ((g_GameManager.flags >> 3 & 1) == 0) {
         g_Supervisor.curFps = (fps + 0.5f);
       } else {
+        // STRING: TH07 0x00496f9c
         sprintf(g_FpsCounterBuffer2, "%2d", (i32)g_Supervisor.curFps);
       }
     }
@@ -910,6 +930,7 @@ i32 Supervisor::SnapshotScreen(const char *param_1)
   if ((this->presentParameters).BackBufferFormat == D3DFMT_X8R8G8B8) {
     local_1c = (BITMAPINFO *)malloc(0x2c);
     if (local_1c == NULL) {
+      // STRING: TH07 0x00496f60
       g_GameErrorContext.Log("snapShotScreen : 確保しくり\r\n");
     } else {
       memset(local_1c, 0, sizeof(BITMAPINFO));
@@ -951,9 +972,11 @@ i32 Supervisor::SnapshotScreen(const char *param_1)
     }
   } else {
     if ((this->presentParameters).BackBufferFormat != D3DFMT_R5G6B5) {
+      // STRING: TH07 0x00496f48
       g_GameErrorContext.Log("error ? mother.cpp\r\n");
       return 1;
     }
+    // STRING: TH07 0x00496f80
     g_GameErrorContext.Log("16bit は取り込めない\r\n");
   }
   SAFE_RELEASE(backBuffer);
@@ -977,17 +1000,19 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
   memset(&g_Supervisor.cfg, 0, sizeof(GameConfiguration));
   _Memory = (u32 *)FileSystem::OpenFile((char *)configFilename, 1);
   if (_Memory == NULL) {
-    g_GameErrorContext.Log(
-        "コンフィグデータが見つからないので初期化しました\r\n");
+    // STRING: TH07 0x00496f14
+    g_GameErrorContext.Log("コンフィグデータが見つからないので初期化しました\r\n");
   } else {
     g_Supervisor.cfg = *(GameConfiguration *)_Memory;
     free(_Memory);
+    // STRING: TH07 0x00496f08
     bgm = CreateFileA("./thbgm.dat", GENERIC_READ, 1, NULL, 3, 0x8000080, NULL);
     if (bgm != INVALID_HANDLE_VALUE) {
       ReadFile(bgm, bgmData, 0x10, &bytesRead, NULL);
       CloseHandle(bgm);
       if (((bgmData[0] != 0x5641575a) || (bgmData[1] != 1)) ||
           (bgmData[2] != 0x700)) {
+        // STRING: TH07 0x00496ee4
         g_GameErrorContext.Fatal("BGM データのバージョンが違います\r\n");
         return ZUN_ERROR;
       }
@@ -1006,8 +1031,8 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
                  (g_Supervisor.cfg.shotSlow < 2)))) &&
               ((g_Supervisor.cfg.version == 0x70002 &&
                 (g_LastFileSize == sizeof(GameConfiguration)))))))))) {
-      g_GameErrorContext.Log(
-          "コンフィグデータが異常でしたので再初期化しました\r\n");
+      // STRING: TH07 0x00496e88
+      g_GameErrorContext.Log("コンフィグデータが異常でしたので再初期化しました\r\n");
       g_Supervisor.cfg.lifeCount = 2;
       g_Supervisor.cfg.bombCount = 3;
       g_Supervisor.cfg.colorMode16bit = 0xff;
@@ -1018,6 +1043,7 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
           CreateFileA("./thbgm.dat", GENERIC_READ, 1, NULL, 3, 0x8000080, NULL);
       if (bgm2 == INVALID_HANDLE_VALUE) {
         g_Supervisor.cfg.musicMode = MUSIC_MIDI;
+        // STRING: TH07 0x00496ebc
         Supervisor::DebugPrint2("wave データが無いので、midi にします\r\n");
       } else {
         ReadFile(bgm2, bgm2Data, 0x10, &bytesRead2, NULL);
@@ -1061,48 +1087,61 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
   g_ControllerMapping.skipButton =
       g_Supervisor.cfg.controllerMapping.skipButton;
   if ((this->cfg.opts >> 1 & 1) != 0) {
+    // STRING: TH07 0x00496e64
     g_GameErrorContext.Log("頂点バッファの使用を抑制します\r\n");
   }
   if ((this->cfg.opts >> 10 & 1) != 0) {
+    // STRING: TH07 0x00496e48
     g_GameErrorContext.Log("フォグの使用を抑制します\r\n");
   }
   if ((this->cfg.opts >> 2 & 1) != 0) {
+    // STRING: TH07 0x00496e20
     g_GameErrorContext.Log("16Bit のテクスチャの使用を強制します\r\n");
   }
   if ((this->cfg.opts >> 3 & 1) != 0 || (this->cfg.opts >> 4 & 1) != 0) {
+    // STRING: TH07 0x00496dfc
     g_GameErrorContext.Log("バックバッファの消去を強制します\r\n");
   }
   if ((this->cfg.opts >> 4 & 1) != 0) {
+    // STRING: TH07 0x00496dd0
     g_GameErrorContext.Log("ゲーム周りのアイテムの描画を抑制します\r\n");
   }
   if ((this->cfg.opts >> 5 & 1) != 0) {
+    // STRING: TH07 0x00496da8
     g_GameErrorContext.Log("グーローシェーディングを抑制します\r\n");
   }
   if ((this->cfg.opts >> 6 & 1) != 0) {
+    // STRING: TH07 0x00496d8c
     g_GameErrorContext.Log("デプステストを抑制します\r\n");
   }
   this->vsyncEnabled = 0;
   this->cfg.opts = this->cfg.opts & 0xffffff7f;
   if ((this->cfg.opts >> 8 & 1) != 0) {
+    // STRING: TH07 0x00496d6c
     g_GameErrorContext.Log("テクスチャの色合成を抑制しますn");
   }
   if (this->cfg.windowed != 0) {
+    // STRING: TH07 0x00496d4c
     g_GameErrorContext.Log("ウィンドウモードで起動します\r\n");
   }
   if ((this->cfg.opts >> 9 & 1) != 0) {
+    // STRING: TH07 0x00496d24
     g_GameErrorContext.Log("リファレンスラスタライザを強制します\r\n");
   }
   if ((this->cfg.opts >> 0xb & 1) != 0) {
-    g_GameErrorContext.Log(
-        "パッド、キーボードの入力に DirectInput を使用しません\r\n");
+    // STRING: TH07 0x00496cec
+    g_GameErrorContext.Log("パッド、キーボードの入力に DirectInput を使用しません\r\n");
   }
   if ((this->cfg.opts >> 0xc & 1) != 0) {
+    // STRING: TH07 0x00496cd0
     g_GameErrorContext.Log("画面周りを毎回描画します\r\n");
   }
   if ((this->cfg.opts >> 0xd & 1) != 0) {
+    // STRING: TH07 0x00496cb0
     g_GameErrorContext.Log("ＢＧＭをメモリに読み込みます\r\n");
   }
   if ((this->cfg.opts >> 0xe & 1) != 0) {
+    // STRING: TH07 0x00496c98
     g_GameErrorContext.Log("垂直同期を取りません\r\n");
     g_Supervisor.vsyncEnabled = 1;
   }
@@ -1110,9 +1149,10 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
                                   sizeof(GameConfiguration)) == 0) {
     return ZUN_SUCCESS;
   } else {
+    // STRING: TH07 0x00496c78
     g_GameErrorContext.Fatal("ファイルが書き出せません %s\r\n", configFilename);
-    g_GameErrorContext.Fatal("フォルダが書込み禁止属性になっているか、ディスク"
-                             "がいっぱいいっぱいになってませんか？\r\n");
+    // STRING: TH07 0x00496c20
+    g_GameErrorContext.Fatal("フォルダが書込み禁止属性になっているか、ディスクがいっぱいいっぱいになってませんか？\r\n");
     return ZUN_ERROR;
   }
 }
@@ -1231,6 +1271,7 @@ i32 Supervisor::FadeOutMusic(f32 musicFadeFrames)
     } else {
       local_8 = musicFadeFrames;
     }
+    // STRING: TH07 0x00496c1e
     arg2 = "";
     g_SoundPlayer.PushCommand(AUDIO_FADEOUT, local_8, arg2);
   }
@@ -1350,8 +1391,6 @@ ZunResult Supervisor::CheckIntegrity(const char *version, i32 exeSize,
                                      i32 exeChecksum)
 
 {
-  return ZUN_SUCCESS; // this for now
-
   i32 local_18;
   char *local_14;
   i32 local_10;
@@ -1363,6 +1402,7 @@ ZunResult Supervisor::CheckIntegrity(const char *version, i32 exeSize,
   } else {
     local_8 = this->version;
     local_10 = this->versionTableSize;
+    // STRING: TH07 0x00496c18
     if (strncmp(version, "debug", 5) == 0) {
       return ZUN_SUCCESS;
     } else {
@@ -1372,6 +1412,7 @@ ZunResult Supervisor::CheckIntegrity(const char *version, i32 exeSize,
         while (local_10 != 0) {
           if (strncmp(version, local_8, 5) == 0) {
             local_8 = local_8 + 6;
+            // STRING: TH07 0x00496c10
             sscanf(local_8, "%d %d", &local_18, &local_c);
             if ((local_18 == exeSize) && (local_c == exeChecksum)) {
               return ZUN_SUCCESS;

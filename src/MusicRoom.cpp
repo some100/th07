@@ -186,6 +186,7 @@ u32 MusicRoom::OnDraw(MusicRoom *arg)
       g_AsciiManager.AddString(&local_18, local_c);
     }
     local_18.x = local_18.x + 15.0f;
+    // STRING: TH07 0x00496c04
     AsciiManager::AddFormatText(&g_AsciiManager, &local_18, "%2d.", i + 1);
   }
   for (i = 0; i < 8; i += 1) {
@@ -208,12 +209,15 @@ ZunResult MusicRoom::AddedCallback(MusicRoom *arg)
   i32 lineIdx;
   i32 offset;
 
+  // STRING: TH07 0x00496bec
   if (g_AnmManager->LoadSurface(0, "data/result/music.jpg") == ZUN_SUCCESS) {
+    // STRING: TH07 0x00496bd8
     if (g_AnmManager->LoadAnms(0x2e, "data/music00.anm", 0x900) ==
         ZUN_SUCCESS) {
       (arg->vm).anmFileIdx = 0x900;
       g_AnmManager->SetAndExecuteScript(&arg->vm, g_AnmManager->scripts[0x900]);
       arg->waitFramesCounter = 0;
+      // STRING: TH07 0x00496bc4
       firstChar = (char *)FileSystem::OpenFile("data/musiccmt.txt", 0);
       if ((u8 *)firstChar == NULL) {
         return ZUN_ERROR;

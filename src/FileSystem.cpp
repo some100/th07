@@ -1,8 +1,8 @@
 #include "FileSystem.hpp"
 
 #include "GameErrorContext.hpp"
-#include "pbg4/Pbg4Archive.hpp"
 #include "dsutil.hpp"
+#include "pbg4/Pbg4Archive.hpp"
 
 // GLOBAL: TH07 0x004b9e64
 u32 g_LastFileSize;
@@ -31,11 +31,13 @@ u8 *FileSystem::OpenFile(const char *filepath, i32 isExternalResource)
     g_LastFileSize = g_Pbg4Archive.GetEntrySize(filename);
     fsize = g_LastFileSize;
     if (g_LastFileSize == 0) {
+      // STRING: TH07 0x00497d38
       g_GameErrorContext.Fatal("error : %s is not found in arcfile.\r\n",
                                filename);
       return NULL;
     }
     if (g_LastFileSize != 0) {
+      // STRING: TH07 0x00497d24
       DebugPrint("%s Decode ... \r\n", filename);
       buf = (u8 *)malloc(fsize);
       if (buf == NULL) {
@@ -45,9 +47,11 @@ u8 *FileSystem::OpenFile(const char *filepath, i32 isExternalResource)
       return buf;
     }
   }
+  // STRING: TH07 0x00497d14
   DebugPrint("%s Load ... \r\n", filepath);
   hFile = CreateFileA(filepath, GENERIC_READ, 1, NULL, 3, 0x8000080, NULL);
   if (hFile == INVALID_HANDLE_VALUE) {
+    // STRING: TH07 0x00497cf8
     DebugPrint("error : %s is not found.\r\n", filepath);
     buf = NULL;
   } else {
@@ -88,12 +92,14 @@ i32 FileSystem::WriteDataToFile(const char *filename, const void *out,
 
   hFile = CreateFileA(filename, GENERIC_WRITE, 1, NULL, 2, 0x80, NULL);
   if (hFile == INVALID_HANDLE_VALUE) {
+    // STRING: TH07 0x00497cdc
     DebugPrint("error : %s write error\r\n", filename);
     return -1;
   } else {
     WriteFile(hFile, out, bytesToWrite, &bytesWritten, NULL);
     if (bytesToWrite == bytesWritten) {
       CloseHandle(hFile);
+      // STRING: TH07 0x00497ccc
       DebugPrint("%s write ...\r\n", filename);
       return 0;
     } else {

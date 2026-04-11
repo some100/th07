@@ -369,6 +369,7 @@ void TextHelper::RenderTextToTextureBold(i32 xPos, i32 yPos, i32 spriteWidth,
   hfont =
       CreateFontA(fontHeight * 2 - 2, 0, 0, 0, FW_BOLD, false, false, false,
                   SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+      // STRING: TH07 0x00497cbc
                   ANTIALIASED_QUALITY, FF_ROMAN | FIXED_PITCH, "‚l‚r ƒSƒVƒbƒN");
   TextHelper textHelper;
   g_TextBufferSurface->GetDesc(&textSurfaceDesc);

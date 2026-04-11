@@ -9,8 +9,8 @@
 #include "Player.hpp"
 #include "Rng.hpp"
 #include "Supervisor.hpp"
-#include "pbg4/Lzss.hpp"
 #include "dsutil.hpp"
+#include "pbg4/Lzss.hpp"
 
 // GLOBAL: TH07 0x004b9e48
 ReplayManager *g_ReplayManager;
@@ -129,17 +129,20 @@ ZunResult ReplayManager::AddedCallback(ReplayManager *arg)
   arg->unused_40 = NULL;
   if (arg->data == NULL) {
     arg->data = new ReplayHeaderAndData;
-    arg->data->head.magic = 0x50523754;
+    // STRING: TH07 0x00496aa8
+    arg->data->head.magic = *(u32 *)&"T7RP";
     arg->data->data.shotType = g_GameManager.shotTypeAndCharacter;
     arg->data->head.version = 0x1100;
     arg->data->data.replayVersion = 0x100;
     arg->data->data.versionChar1 = 'b';
-    strncpy(arg->data->data.replayStr, "0100", 4);
+    // STRING: TH07 0x00497228
+    strncpy(arg->data->data.replayStr, "0100b", 4);
     arg->data->data.versionChar2 = 'b';
     arg->data->data.exeSize = g_Supervisor.exeSize;
     arg->data->data.exeChecksum = g_Supervisor.exeChecksum;
     arg->data->data.difficulty = g_GameManager.difficulty;
-    strncpy(arg->data->data.name, "NO N", 4);
+    // STRING: TH07 0x00496aa0
+    strncpy(arg->data->data.name, "NO NAME", 4);
     arg->data->data.cfg = *g_GameManager.defaultCfg;
     for (i = 0; i < 7; i += 1) {
       arg->data->head.stageReplayData[i].data = NULL;
@@ -211,7 +214,7 @@ ReplayManager::ValidateReplayData(ReplayHeaderAndData *data, i32 size)
   u8 obfOffset;
   i32 i;
 
-  if (((data != NULL) && (data->head.magic == 0x50523754)) &&
+  if (((data != NULL) && (data->head.magic == *(u32 *)&"T7RP")) &&
       (data->head.version == 0x1100)) {
     curByte = &data->head.replaySize;
     obfOffset = data->head.key;
@@ -498,8 +501,8 @@ void ReplayManager::SaveReplay(const char *param_1, char *param_2)
       goto LAB_00443e18;
   } else {
   LAB_00443e18:
-    if ((g_ReplayManager->data->data.cfg.slowMode == 0) &&
-        (param_1 != NULL)) {
+    if ((g_ReplayManager->data->data.cfg.slowMode == 0) && (param_1 != NULL)) {
+      // STRING: TH07 0x00496a80
       DebugPrint("info : Replay File write %s\r\n", param_1);
       replayData = (u8 *)malloc(0x100000);
       replayCopy = *local_c->data;
@@ -559,6 +562,7 @@ void ReplayManager::SaveReplay(const char *param_1, char *param_2)
       replayCopy.data.slowdownRate3 = replayCopy.data.slowdownRate + 2.34f;
       replayCopy.data.magic30 = 0x1e;
       memcpy(replayData, &replayCopy.data.rngValue3, sizeof(ReplayData));
+      // STRING: TH07 0x00496a64
       DebugPrint("info : original size %d\r\n", replaySize);
       replayCopy.head.sizeWithoutHeader = replaySize - sizeof(ReplayHeader);
       lpBuffer = Lzss::Compress(replayData, replayCopy.head.sizeWithoutHeader,
@@ -595,8 +599,9 @@ void ReplayManager::SaveReplay(const char *param_1, char *param_2)
         WriteFile(hFile, &replayCopy, sizeof(ReplayHeader), &local_10, NULL);
         WriteFile(hFile, lpBuffer, compressedSize, &local_10, NULL);
         CloseHandle(hFile);
+        // STRING: TH07 0x00496a4c
         DebugPrint("info : Size %d -> %d\r\n", replaySize,
-                          compressedSize + sizeof(ReplayHeader));
+                   compressedSize + sizeof(ReplayHeader));
         GlobalFree(lpBuffer);
       }
     }
@@ -642,6 +647,7 @@ void ReplayManager::SaveReplay2(const char *param_1)
       goto LAB_00444a3e;
   }
   if ((g_ReplayManager->data->data.cfg.slowMode == 0) && (param_1 != NULL)) {
+    // STRING: TH07 0x00496a2c
     DebugPrint("info : Replay File rewrite %s\r\n", param_1);
     src = (u8 *)malloc(0x100000);
     replayCopy = *local_c->data;
@@ -717,7 +723,7 @@ void ReplayManager::SaveReplay2(const char *param_1)
       WriteFile(hFile, pbVar5, replayCopy.head.compressedSize, &local_10, NULL);
       CloseHandle(hFile);
       DebugPrint("info : Size %d -> %d\r\n", local_114,
-                        replayCopy.head.compressedSize + sizeof(ReplayHeader));
+                 replayCopy.head.compressedSize + sizeof(ReplayHeader));
       GlobalFree(pbVar5);
     }
   }

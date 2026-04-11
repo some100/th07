@@ -13,6 +13,7 @@ struct MidiHeader {
   u16 divisions;
 };
 
+// VTABLE: TH07 0x00497260
 struct MidiTimer {
   MidiTimer();
   ~MidiTimer();
@@ -110,6 +111,7 @@ struct MidiChannel {
   u8 modifiedVolume;
 };
 
+// VTABLE: TH07 0x00497264
 struct MidiOutput : MidiTimer {
   MidiOutput();
   ~MidiOutput();

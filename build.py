@@ -234,6 +234,7 @@ def run_program(name: str, *args: str, env: Dict[str, str]):
     if sys.platform == "win32":
         cmd = [name] + list(args)
     else:
+        env["LANG"] = "ja_JP.UTF-8"
         env["WINEDEBUG"] = "fixme-all"
         cmd = ["wine", name] + list(args)
     return subprocess.check_call(cmd, env=env)

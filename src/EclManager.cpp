@@ -42,8 +42,8 @@ ZunResult EclManager::Load(const char *path)
 {
   this->eclFile = (EclRawHeader *)FileSystem::OpenFile(path, 0);
   if (this->eclFile == NULL) {
-    g_GameErrorContext.Log("敵データの読み込みに失敗しました、データが壊れてる"
-                           "か失われています\r\n");
+    // STRING: TH07 0x00498700
+    g_GameErrorContext.Log("敵データの読み込みに失敗しました、データが壊れてるか失われています\r\n");
     return ZUN_ERROR;
   } else {
     for (i32 i = 0; i < 0x10; i += 1) {
@@ -2585,6 +2585,7 @@ LAB_0041069a:
                         ? instr->args[0].i
                         : GetVarValue(enemy, instr->args[0].i);
     if (1 < local_4e4) {
+      // STRING: TH07 0x004986c8
       DebugPrint("error : sub anim overflow\r\n");
     }
     i32 local_4e8 = (instr->paramMask & 2) == 0
@@ -3255,6 +3256,7 @@ switchD_0041073a_caseD_7e:
   goto LAB_0041069a;
 switchD_0041073a_caseD_29:
   if ((enemy->flags3 >> 5 & 1) != 0) {
+    // STRING: TH07 0x004986e4
     DebugPrint("error : no Stack Ret\r\n");
   }
   enemy->stackDepth = enemy->stackDepth + -1;

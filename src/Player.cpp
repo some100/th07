@@ -53,14 +53,34 @@ ShtFunc4 g_ShtHitFuncs[4] = {
 
 // GLOBAL: TH07 0x0049f530
 const char *g_ShooterTable[6] = {
-    "data/ply00a.sht", "data/ply00b.sht", "data/ply01a.sht",
-    "data/ply01b.sht", "data/ply02a.sht", "data/ply02b.sht",
+    // STRING: TH07 0x00496bb4
+    "data/ply00a.sht",
+    // STRING: TH07 0x00496ba4
+    "data/ply00b.sht",
+    // STRING: TH07 0x00496b94
+    "data/ply01a.sht",
+    // STRING: TH07 0x00496b84
+    "data/ply01b.sht",
+    // STRING: TH07 0x00496b74
+    "data/ply02a.sht",
+    // STRING: TH07 0x00496b64
+    "data/ply02b.sht",
 };
 
 // GLOBAL: TH07 0x0049f548
 const char *g_ShooterTable2[6] = {
-    "data/ply00as.sht", "data/ply00bs.sht", "data/ply01as.sht",
-    "data/ply01bs.sht", "data/ply02as.sht", "data/ply02bs.sht",
+    // STRING: TH07 0x00496b50
+    "data/ply00as.sht",
+    // STRING: TH07 0x00496b3c
+    "data/ply00bs.sht",
+    // STRING: TH07 0x00496b28
+    "data/ply01as.sht",
+    // STRING: TH07 0x00496b14
+    "data/ply01bs.sht",
+    // STRING: TH07 0x00496b00
+    "data/ply02as.sht",
+    // STRING: TH07 0x00496aec
+    "data/ply02bs.sht",
 };
 
 // GLOBAL: TH07 0x004bdad8
@@ -2102,16 +2122,19 @@ ZunResult Player::AddedCallback(Player *arg)
       }
       if (bVar1) {
         if (g_GameManager.character == CHAR_REIMU) {
+          // STRING: TH07 0x00496ad8
           if (g_AnmManager->LoadAnms(10, "data/player00.anm", 0x400) !=
               ZUN_SUCCESS) {
             return ZUN_ERROR;
           }
         } else if (g_GameManager.character == CHAR_MARISA) {
+          // STRING: TH07 0x00496ac4
           if (g_AnmManager->LoadAnms(10, "data/player01.anm", 0x400) !=
               ZUN_SUCCESS) {
             return ZUN_ERROR;
           }
         } else if ((g_GameManager.character == CHAR_SAKUYA) &&
+          // STRING: TH07 0x00496ab0
                    (g_AnmManager->LoadAnms(10, "data/player02.anm", 0x400) !=
                     ZUN_SUCCESS)) {
           return ZUN_ERROR;

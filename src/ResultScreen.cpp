@@ -16,24 +16,53 @@
 #include "pbg4/Lzss.hpp"
 
 // GLOBAL: TH07 0x0049ec34
-const char *g_CharacterList[6] = {"博麗 霊夢 (霊)　", "博麗 霊夢 (夢)　",
-                                  "霧雨 魔理沙 (魔)", "霧雨 魔理沙 (恋)",
-                                  "十六夜 咲夜 (幻)", "十六夜 咲夜 (時)"};
+const char *g_CharacterList[6] = {
+    // STRING: TH07 0x004969b0
+    "博麗 霊夢 (霊)　",
+    // STRING: TH07 0x0049699c
+    "博麗 霊夢 (夢)　",
+    // STRING: TH07 0x00496988
+    "霧雨 魔理沙 (魔)",
+    // STRING: TH07 0x00496974
+    "霧雨 魔理沙 (恋)",
+    // STRING: TH07 0x00496960
+    "十六夜 咲夜 (幻)",
+    // STRING: TH07 0x0049694c
+    "十六夜 咲夜 (時)"};
+
+// GLOBAL: TH07 0x0049ec4c
+// STRING: TH07 0x00496938
+const char *g_TotalForAllProtagonists = "全主人公合計  　";
 
 // GLOBAL: TH07 0x0049ec30
 const char *g_AlphabetList =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,:;_@abcdefghijklmnopqrstuvwxyz+-/"
-    "*=%0123456789#!?'\"$(){}[]<>&\\|~^ --";
+    // STRING: TH07 0x004969c8
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,:;_@abcdefghijklmnopqrstuvwxyz+-/*=%0123456789#!?'\"$(){}[]<>&\\|~^ --";
 
 // GLOBAL: TH07 0x0049f4ec
 const char *g_CharactersAndShotTypesStrings[6] = {
-    "ReimuA ", "ReimuB ", "MarisaA", "MarisaB", "SakuyaA", "SakuyaB",
+    "ReimuA ",
+    "ReimuB ",
+    "MarisaA",
+    "MarisaB",
+    "SakuyaA",
+    "SakuyaB",
 };
 
 // GLOBAL: TH07 0x0049f518
 const char *g_DifficultyNameTable[6] = {
-    "      Easy", "    Normal", "      Hard",
-    "   Lunatic", "     Extra", "  Phantasm",
+    // STRING: TH07 0x00496544
+    "      Easy",
+    // STRING: TH07 0x00496538
+    "    Normal",
+    // STRING: TH07 0x0049652c
+    "      Hard",
+    // STRING: TH07 0x00496520
+    "   Lunatic",
+    // STRING: TH07 0x00496514
+    "     Extra",
+    // STRING: TH07 0x00496508
+    "  Phantasm",
 };
 
 // FUNCTION: TH07 0x00444a5b
@@ -98,12 +127,14 @@ ScoreDat *ResultScreen::OpenScore(const char *path)
   ScoreDat *local_c;
   ScoreDat *pbVar2;
 
+  // STRING: TH07 0x00496924
   Supervisor::DebugPrint2("info : score load\r\n");
   scoreData = (ScoreDat *)FileSystem::OpenFile(path, 1);
   local_c = scoreData;
   if (scoreData != NULL) {
     if (g_LastFileSize < sizeof(ScoreDat)) {
-      Supervisor::DebugPrint2("warning : score.dat size is i16\r\n");
+      // STRING: TH07 0x004968e8
+      Supervisor::DebugPrint2("warning : score.dat size is short\r\n");
       free(scoreData);
     } else {
       checksum = 0;
@@ -135,23 +166,23 @@ ScoreDat *ResultScreen::OpenScore(const char *path)
             local_24 = (Th7k *)(local_c->xorseed + local_c->dataOffset);
             local_28 = local_c->fileLength - local_c->dataOffset;
             while (0 < local_28) {
-              if (local_24->magic == 0x4b374854) {
+              if (local_24->magic == 'TH7K') {
                 bVar2 = true;
                 local_2c = local_24;
               }
-              if ((local_24->magic == 0x4d535256) && (local_24->version == 1)) {
+              if ((local_24->magic == 'VRSM') && (local_24->version == 1)) {
                 if (g_Supervisor.CheckIntegrity(
                         ((Vrsm *)local_24)->versionStr,
                         ((Vrsm *)local_24)->exeSize,
                         ((Vrsm *)local_24)->exeChecksum) != ZUN_SUCCESS) {
-                  Supervisor::DebugPrint2(
-                      "warning : score.dat exesumcheck error\r\n");
+                  // STRING: TH07 0x00496850
+                  Supervisor::DebugPrint2("warning : score.dat exesumcheck error\r\n");
                   goto LAB_00444c48;
                 }
               }
               if (local_24->th7kLen == 0) {
-                Supervisor::DebugPrint2(
-                    "warning : score.dat chapter size is ZERO\r\n");
+                // STRING: TH07 0x00496824
+                Supervisor::DebugPrint2("warning : score.dat chapter size is ZERO\r\n");
                 goto LAB_00444c48;
               }
               u16 len = local_24->th7kLen;
@@ -160,19 +191,23 @@ ScoreDat *ResultScreen::OpenScore(const char *path)
             }
             if ((bVar2) && (local_2c->version == 1))
               goto LAB_00444ed5;
+            // STRING: TH07 0x00496878
             Supervisor::DebugPrint2("warning : score.dat version mismatch\r\n");
           } else {
             Supervisor::DebugPrint2("warning : score.dat version mismatch\r\n");
           }
         } else {
+          // STRING: TH07 0x004968a0
           Supervisor::DebugPrint2("warning : header size is mismatch\r\n");
         }
       } else {
+        // STRING: TH07 0x004968c4
         Supervisor::DebugPrint2("warning : score.dat chksum error\r\n");
       }
     }
   }
 LAB_00444c48:
+  // STRING: TH07 0x0049690c
   Supervisor::DebugPrint2("info : score recreate\r\n");
   if (local_c != NULL) {
     free(local_c);
@@ -209,7 +244,7 @@ u32 ResultScreen::GetHighScore(ScoreDat *scoreDat, ScoreListNode *node,
   local_8 = (Hscr *)(scoreDat->xorseed + scoreDat->dataOffset);
   for (local_c = scoreDat->fileLength - scoreDat->dataOffset; 0 < local_c;
        local_c = local_c - (u32)pTVar2->th7kLen) {
-    if ((((local_8->magic == 0x52435348) && (local_8->version == 1)) &&
+    if ((((local_8->magic == 'HSCR') && (local_8->version == 1)) &&
          (local_8->character == character)) &&
         (local_8->difficulty == difficulty)) {
       if (node == NULL) {
@@ -256,7 +291,7 @@ ZunResult ResultScreen::ParseCatk(ScoreDat *scoreDat, Catk *catk)
     local_8 = (Catk *)(scoreDat->xorseed + scoreDat->dataOffset);
     for (local_c = scoreDat->fileLength - scoreDat->dataOffset; 0 < local_c;
          local_c = local_c - (u32)pTVar1->th7kLen) {
-      if ((local_8->magic == 0x4b544143) && (local_8->version == 1)) {
+      if ((local_8->magic == 'CATK') && (local_8->version == 1)) {
         if (0x8c < (u16)local_8->idx)
           break;
         catk[local_8->idx] = *local_8;
@@ -281,7 +316,7 @@ ZunResult ResultScreen::ParseLsnm(ScoreDat *scoreDat, Lsnm *param_2)
     if (local_c < 1) {
       return ZUN_ERROR;
     }
-    if ((local_8->magic == 0x4d4e534c) && (local_8->version == 1))
+    if ((local_8->magic == 'LSNM') && (local_8->version == 1))
       break;
     local_c = local_c - (u32)local_8->th7kLen;
     local_8 = (Lsnm *)((u8 *)local_8 + local_8->th7kLen);
@@ -305,7 +340,7 @@ ZunResult ResultScreen::ParseClrd(ScoreDat *scoreDat, Clrd *clrd)
   } else {
     for (i = 0; i < 6; i = i + 1) {
       memset(clrd + i, 0, sizeof(Clrd));
-      clrd[i].magic = 0x44524c43;
+      clrd[i].magic = 'CLRD';
       clrd[i].th7kLen2 = sizeof(Clrd);
       clrd[i].th7kLen = sizeof(Clrd);
       clrd[i].version = 1;
@@ -318,7 +353,7 @@ ZunResult ResultScreen::ParseClrd(ScoreDat *scoreDat, Clrd *clrd)
     local_8 = (Clrd *)(scoreDat->xorseed + scoreDat->dataOffset);
     for (local_10 = scoreDat->fileLength - scoreDat->dataOffset; 0 < local_10;
          local_10 = local_10 - (u32)*puVar1) {
-      if ((local_8->magic == 0x44524c43) && (local_8->version == 1)) {
+      if ((local_8->magic == 'CLRD') && (local_8->version == 1)) {
         if (5 < local_8->characterShotType)
           break;
         clrd[local_8->characterShotType] = *local_8;
@@ -350,7 +385,7 @@ ZunResult ResultScreen::ParsePscr(ScoreDat *scoreDat, Pscr *pscr)
       for (local_14 = 0; local_14 < 6; local_14 = local_14 + 1) {
         for (local_1c = 0; local_1c < 4; local_1c = local_1c + 1) {
           memset(local_8, 0, sizeof(Pscr));
-          local_8->magic = 0x52435350;
+          local_8->magic = 'PSCR';
           local_8->th7kLen2 = sizeof(Pscr);
           local_8->th7kLen = sizeof(Pscr);
           local_8->version = 1;
@@ -365,7 +400,7 @@ ZunResult ResultScreen::ParsePscr(ScoreDat *scoreDat, Pscr *pscr)
     local_c = (Pscr *)(scoreDat->xorseed + scoreDat->dataOffset);
     for (local_18 = scoreDat->fileLength - scoreDat->dataOffset; 0 < local_18;
          local_18 = local_18 - (u32)pTVar1->th7kLen) {
-      if ((local_c->magic == 0x52435350) && (local_c->version == 1)) {
+      if ((local_c->magic == 'PSCR') && (local_c->version == 1)) {
         if ((5 < local_c->character) ||
             ((4 < local_c->difficulty || (6 < local_c->stage))))
           break;
@@ -390,7 +425,7 @@ ZunResult ResultScreen::ParsePlst(ScoreDat *scoreDat, Plst *param_2)
   local_8 = (Plst *)(scoreDat->xorseed + scoreDat->dataOffset);
   for (local_c = scoreDat->fileLength - scoreDat->dataOffset; 0 < local_c;
        local_c = local_c - (u32)*puVar1) {
-    if ((local_8->magic == 0x54534c50) && (local_8->version == 1)) {
+    if ((local_8->magic == 'PLST') && (local_8->version == 1)) {
       param_2 = local_8;
     }
     puVar1 = &local_8->th7kLen;
@@ -436,7 +471,7 @@ void ResultScreen::WriteScore()
 
   fileBuffer = (u8 *)malloc(0xa0000);
   memcpy(fileBuffer, this->scoreDat, sizeof(ScoreDat));
-  this->th7kHeader.magic = 0x4b374854;
+  this->th7kHeader.magic = 'TH7K';
   this->th7kHeader.th7kLen2 = sizeof(Th7k);
   this->th7kHeader.th7kLen = sizeof(Th7k);
   this->th7kHeader.version = 1;
@@ -447,7 +482,7 @@ void ResultScreen::WriteScore()
     if (5 < i) {
       clrd = g_GameManager.clrd;
       for (i = 0; i < 6; i += 1) {
-        clrd->magic = 0x44524c43;
+        clrd->magic = 'CLRD';
         clrd->th7kLen2 = sizeof(Clrd);
         clrd->th7kLen = sizeof(Clrd);
         clrd->version = 1;
@@ -457,7 +492,7 @@ void ResultScreen::WriteScore()
       }
       catk = g_GameManager.catk;
       for (i = 0; i < 0x8d; i += 1) {
-        if (catk->magic == 0x4b544143) {
+        if (catk->magic == 'CATK') {
           catk->idx = i;
           catk->th7kLen2 = sizeof(Catk);
           catk->th7kLen = sizeof(Catk);
@@ -483,7 +518,7 @@ void ResultScreen::WriteScore()
       g_Supervisor.UpdateStartupTime();
       memcpy(fileBuffer + local_14 + sizeof(this->lsnmHeader),
              &g_GameManager.plst, sizeof(Plst));
-      vrsm.magic = 0x4d535256;
+      vrsm.magic = 'VRSM';
       vrsm.version = 1;
       vrsm.th7kLen2 = sizeof(Vrsm);
       vrsm.th7kLen = sizeof(Vrsm);
@@ -535,7 +570,7 @@ void ResultScreen::WriteScore()
       do {
         if (local_18 == NULL)
           break;
-        if (local_18->data->magic == 0x52435348) {
+        if (local_18->data->magic == 'HSCR') {
           local_18->data->character = local_1c;
           local_18->data->difficulty = i;
           local_18->data->th7kLen2 = sizeof(Hscr);
@@ -800,6 +835,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         if (g_GameManager.catk[curVmIdx].numAttemptsPerShot[6] == 0) {
           AnmManager::DrawVmTextFmt(g_AnmManager,
                                     arg->spellcardListVms + curVmIdx % 10,
+          // STRING: TH07 0x00496818
                                     0xffffff, 0, "？？？？？");
         } else {
           AnmManager::DrawVmTextFmt(
@@ -810,6 +846,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
       }
       AnmManager::DrawVmTextFmt(
           g_AnmManager, arg->spellcardListVms + 10, 0xffffff, 0,
+      // STRING: TH07 0x004967ec
           "%s %3d枚中%3d枚取得（キャラ切り替え↓↑）",
           g_CharacterList[arg->prevSpellcardListPage], 0x8d,
           arg->totalPlayCountPerCharacter[arg->spellcardListPage + 1]);
@@ -1038,20 +1075,20 @@ ZunResult ResultScreen::HandleResultKeyboard()
     g_AnmManager->DrawStringFormat2(this->spellcardListVms, 0xffffff, 0,
                                     g_CharacterList[this->charUsed]);
     this->spellcardListVms[0].color.bytes.a = 0xff;
-    (this->curScore).character = (u8)this->charUsed;
-    (this->curScore).difficulty = (u8)this->diffPlayed;
-    (this->curScore).score = g_GameManager.globals->score;
-    (this->curScore).numRetries = g_GameManager.globals->numRetries;
-    (this->curScore).version = 1;
-    (this->curScore).magic = 0x52435348;
+    this->curScore.character = (u8)this->charUsed;
+    this->curScore.difficulty = (u8)this->diffPlayed;
+    this->curScore.score = g_GameManager.globals->score;
+    this->curScore.numRetries = g_GameManager.globals->numRetries;
+    this->curScore.version = 1;
+    this->curScore.magic = *(u32 *)&"HSCR";
     if ((g_GameManager.flags >> 4 & 1) == 0) {
-      (this->curScore).stage = (u8)g_GameManager.currentStage;
+      this->curScore.stage = (u8)g_GameManager.currentStage;
     } else {
-      (this->curScore).stage = 99;
+      this->curScore.stage = 99;
     }
-    (this->curScore).isPlayerScore = 1;
-    strcpy((this->curScore).name, (this->lsnmHeader).name);
-    GetDate((this->curScore).date);
+    this->curScore.isPlayerScore = 1;
+    strcpy(this->curScore.name, (this->lsnmHeader).name);
+    GetDate(this->curScore.date);
     local_10 =
         g_Supervisor.framerateMultiplier / g_Supervisor.fpsAccumulator - 0.5f;
     local_10 = local_10 + local_10;
@@ -1062,7 +1099,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
     } else {
       local_10 = 0.0f;
     }
-    (this->curScore).slowRatePercent = (u32)((1.0f - local_10) * 100.0f);
+    this->curScore.slowRatePercent = (u32)((1.0f - local_10) * 100.0f);
     if (9 < LinkScoreEx(&this->curScore, this->diffPlayed, this->charUsed))
       goto LAB_004470e9;
     this->cursor = 0;
@@ -1147,8 +1184,8 @@ ZunResult ResultScreen::HandleResultKeyboard()
       }
       if (0 < this->cursor) {
         this->cursor = this->cursor - 1;
-        (this->curScore).name[local_24] = ' ';
-        (this->curScore).name[this->cursor] = ' ';
+        this->curScore.name[local_24] = ' ';
+        this->curScore.name[this->cursor] = ' ';
       }
       g_SoundPlayer.PlaySoundByIdx(SOUND_BACK);
     }
@@ -1166,7 +1203,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
       local_20 = 7;
     }
     if (this->selectedChar < 0x5e) {
-      (this->curScore).name[local_20] = g_AlphabetList[this->selectedChar];
+      this->curScore.name[local_20] = g_AlphabetList[this->selectedChar];
     LAB_00446fd4:
       if ((this->cursor < 8) &&
           (this->cursor = this->cursor + 1, this->cursor == 8)) {
@@ -1176,7 +1213,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
       goto LAB_0044700b;
     }
     if (this->selectedChar == 0x5e) {
-      (this->curScore).name[local_20] = ' ';
+      this->curScore.name[local_20] = ' ';
       goto LAB_00446fd4;
     }
   }
@@ -1189,7 +1226,7 @@ LAB_004470e9:
     local_c->pendingInterrupt = 2;
     local_c = local_c + 1;
   }
-  strcpy(this->replayName, (this->curScore).name);
+  strcpy(this->replayName, this->curScore.name);
   strcpy((this->lsnmHeader).name, this->replayName);
   return ZUN_SUCCESS;
 }
@@ -1203,6 +1240,7 @@ void ResultScreen::GetDate(char *out)
 
   time(&local_c);
   timeinfo = localtime(&local_c);
+  // STRING: TH07 0x004967dc
   strftime(out, 6, "%m/%d", timeinfo);
 }
 
@@ -1487,6 +1525,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
       this->frameTimer = 0;
     }
     if (this->frameTimer == 0) {
+      // STRING: TH07 0x004967d4
       _mkdir("replay");
       for (local_10 = 0; local_10 < 0xf; local_10 += 1) {
         sprintf(local_54, "./replay/th7_%.2d.rpy", local_10 + 1);
@@ -1515,7 +1554,8 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
         this->frameTimer = 0;
         GetDate(this->defaultReplay.data.date);
         this->defaultReplay.data.score = g_GameManager.globals->score;
-        if ((this->replays[this->cursor].head.magic == 0x50523754) &&
+        if (*(i32 *)&this->replays[this->cursor].head.magic ==
+                *(i32 *)&"T7RP" &&
             ((this->replays[this->cursor].head.version & 0xfff) == 0x100)) {
           local_8 = this->vms;
           for (local_10 = 0; local_10 < 0x29; local_10 += 1) {
@@ -1601,6 +1641,7 @@ i32 ResultScreen::DrawStats()
       g_Supervisor.UpdateStartupTime();
       AnmManager::DrawVmTextFmt(
           g_AnmManager, this->spellcardListVms, 0xffffff, 0,
+      // STRING: TH07 0x004967a0
           "総起動時間   %.2d:%.2d:%.2d", g_GameManager.plst.totalHours,
           g_GameManager.plst.totalMinutes, g_GameManager.plst.totalSeconds);
       g_Supervisor.UpdateStartupTime();
@@ -1610,6 +1651,7 @@ i32 ResultScreen::DrawStats()
       this->spellcardListVms[1].pos.z = 0.0f;
       AnmManager::DrawVmTextFmt(
           g_AnmManager, this->spellcardListVms + 1, 0xffffff, 0,
+      // STRING: TH07 0x00496784
           "総プレイ時間 %.2d:%.2d:%.2d", g_GameManager.plst.gameHours,
           g_GameManager.plst.gameMinutes, g_GameManager.plst.gameSeconds);
       local_8 = this->spellcardListVms + 2;
@@ -1620,11 +1662,12 @@ i32 ResultScreen::DrawStats()
       if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0) {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8, 0xffffff, 0,
+        // STRING: TH07 0x00496700
             "プレイ回数　　　 　Easy 　Norm 　Hard 　Luna  Extra  Total");
       } else {
         AnmManager::DrawVmTextFmt(g_AnmManager, local_8, 0xffffff, 0,
-                                  "プレイ回数　　　 　Easy 　Norm 　Hard "
-                                  "　Luna  Extra Phants  Total");
+        // STRING: TH07 0x00496740
+            "プレイ回数　　　 　Easy 　Norm 　Hard 　Luna  Extra Phants  Total");
       }
       for (local_18 = 0; local_18 < 6; local_18 += 1) {
         vm = local_8 + 1;
@@ -1634,6 +1677,7 @@ i32 ResultScreen::DrawStats()
         local_8[1].pos.z = 0.0f;
         if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0) {
           AnmManager::DrawVmTextFmt(
+          // STRING: TH07 0x004966c4
               g_AnmManager, vm, 0xffffff, 0, "%s %6d %6d %6d %6d %6d %6d",
               g_CharacterList[local_18],
               ((Plst *)(g_GameManager.pscr + 6))
@@ -1651,6 +1695,7 @@ i32 ResultScreen::DrawStats()
               g_GameManager.plst.playDataTotals.playCountPerShotType[local_18]);
         } else {
           AnmManager::DrawVmTextFmt(
+          // STRING: TH07 0x004966e0
               g_AnmManager, vm, 0xffffff, 0, "%s %6d %6d %6d %6d %6d %6d %6d",
               g_CharacterList[local_18],
               ((Plst *)(g_GameManager.pscr + 6))
@@ -1677,7 +1722,7 @@ i32 ResultScreen::DrawStats()
       if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0) {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 1, 0xffffff, 0,
-            "%s %6d %6d %6d %6d %6d %6d", "全主人公合計  　",
+            "%s %6d %6d %6d %6d %6d %6d", g_TotalForAllProtagonists,
             g_GameManager.plst.playDataByDifficulty[0].playCount,
             g_GameManager.plst.playDataByDifficulty[1].playCount,
             g_GameManager.plst.playDataByDifficulty[2].playCount,
@@ -1687,7 +1732,7 @@ i32 ResultScreen::DrawStats()
       } else {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 1, 0xffffff, 0,
-            "%s %6d %6d %6d %6d %6d %6d %6d", "全主人公合計  　",
+            "%s %6d %6d %6d %6d %6d %6d %6d", g_TotalForAllProtagonists,
             g_GameManager.plst.playDataByDifficulty[0].playCount,
             g_GameManager.plst.playDataByDifficulty[1].playCount,
             g_GameManager.plst.playDataByDifficulty[2].playCount,
@@ -1710,6 +1755,7 @@ i32 ResultScreen::DrawStats()
       if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0) {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 2, 0xffffff, 0,
+        // STRING: TH07 0x00496668
             "クリア回数  　　 %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].noContinueClearCount,
             g_GameManager.plst.playDataByDifficulty[1].noContinueClearCount,
@@ -1720,6 +1766,7 @@ i32 ResultScreen::DrawStats()
       } else {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 2, 0xffffff, 0,
+        // STRING: TH07 0x00496694
             "クリア回数  　　 %6d %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].noContinueClearCount,
             g_GameManager.plst.playDataByDifficulty[1].noContinueClearCount,
@@ -1736,6 +1783,7 @@ i32 ResultScreen::DrawStats()
       if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0) {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 3, 0xffffff, 0,
+        // STRING: TH07 0x0049660c
             "コンティニュー   %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].retryCount,
             g_GameManager.plst.playDataByDifficulty[1].retryCount,
@@ -1746,6 +1794,7 @@ i32 ResultScreen::DrawStats()
       } else {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 3, 0xffffff, 0,
+        // STRING: TH07 0x00496638
             "コンティニュー   %6d %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].retryCount,
             g_GameManager.plst.playDataByDifficulty[1].retryCount,
@@ -1762,6 +1811,7 @@ i32 ResultScreen::DrawStats()
       if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0) {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 4, 0xffffff, 0,
+        // STRING: TH07 0x004965b0
             "プラクティス　   %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].extraClearCount,
             g_GameManager.plst.playDataByDifficulty[1].extraClearCount,
@@ -1772,6 +1822,7 @@ i32 ResultScreen::DrawStats()
       } else {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 4, 0xffffff, 0,
+        // STRING: TH07 0x004965dc
             "プラクティス　   %6d %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].extraClearCount,
             g_GameManager.plst.playDataByDifficulty[1].extraClearCount,
@@ -1787,6 +1838,7 @@ i32 ResultScreen::DrawStats()
       if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0) {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 5, 0xffffff, 0,
+        // STRING: TH07 0x00496554
             "リトライ回数  　 %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].clearCount,
             g_GameManager.plst.playDataByDifficulty[1].clearCount,
@@ -1797,6 +1849,7 @@ i32 ResultScreen::DrawStats()
       } else {
         AnmManager::DrawVmTextFmt(
             g_AnmManager, local_8 + 5, 0xffffff, 0,
+        // STRING: TH07 0x00496580
             "リトライ回数  　 %6d %6d %6d %6d %6d %6d %6d",
             g_GameManager.plst.playDataByDifficulty[0].clearCount,
             g_GameManager.plst.playDataByDifficulty[1].clearCount,
@@ -1878,6 +1931,7 @@ ZunResult ResultScreen::DrawFinalStats()
     local_14.z = this->vms[0x28].pos.z;
     local_14.x = this->vms[0x28].pos.x + 210.0f;
     local_14.y = this->vms[0x28].pos.y + 32.0f;
+    // STRING: TH07 0x00496550
     AsciiManager::AddFormatText(&g_AsciiManager, &local_14, "%9d",
                                 g_GameManager.globals->guiScore);
     local_14.x = local_14.x + 126.0f;
@@ -1893,9 +1947,11 @@ ZunResult ResultScreen::DrawFinalStats()
       if (1.0f <= local_30) {
         local_1c = 0.99f;
       }
+      // STRING: TH07 0x004964e8
       AsciiManager::AddFormatText(&g_AsciiManager, &local_14, "    %3.2f%%",
                                   (f64)(local_1c * 100.0f));
     } else {
+      // STRING: TH07 0x004964dc
       AsciiManager::AddFormatText(&g_AsciiManager, &local_14, "      100%%");
     }
     local_14.y = local_14.y + 22.0f;
@@ -2001,6 +2057,7 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
         local_38.x += 496.0f;
         if (g_GameManager.catk[local_40]
                 .numAttemptsPerShot[arg->prevSpellcardListPage] == 0) {
+          // STRING: TH07 0x00496458
           AsciiManager::AddFormatText(&g_AsciiManager, &local_38, "---/---");
         } else {
           AsciiManager::AddFormatText(
@@ -2018,6 +2075,7 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
         if (g_GameManager.catk[local_40]
                 .numAttemptsPerShot[arg->prevSpellcardListPage] != 0) {
           AsciiManager::AddFormatText(
+          // STRING: TH07 0x00496440
               &g_AsciiManager, &local_38, "MaxBonus %8d",
               g_GameManager.catk[local_40]
                   .highScorePerShot[arg->prevSpellcardListPage]);
@@ -2048,6 +2106,7 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
       local_38.x += 24.0f;
       g_AsciiManager.color = 0xffe0e0ef;
       AsciiManager::AddFormatText(&g_AsciiManager, &local_38,
+      // STRING: TH07 0x004964b4
                                   "No  Name      Score(Stage)  Date   Slow");
       local_28 = arg->scoreLists[arg->diffPlayed][arg->charUsed].next;
       for (local_14 = 0; local_38.y = local_38.y + 18.0f, local_14 < 10;
@@ -2073,24 +2132,29 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
             cursor = 7;
           }
           buf[cursor] = '_';
+          // STRING: TH07 0x004964a8
           AsciiManager::AddFormatText(&g_AsciiManager, &local_38, "%8s", buf);
         }
         if (local_28->data->stage < 7) {
           AsciiManager::AddFormatText(
+          // STRING: TH07 0x00496498
               &g_AsciiManager, &local_38, "%8s %9d%1d(%d)",
               local_28->data->name, local_28->data->score,
               (i32)local_28->data->numRetries, (u32)local_28->data->stage);
         } else if ((local_28->data->stage == 7) ||
                    (local_28->data->stage == 8)) {
           AsciiManager::AddFormatText(
+          // STRING: TH07 0x00496488
               &g_AsciiManager, &local_38, "%8s %9d%1d(1)", local_28->data->name,
               local_28->data->score, (i32)local_28->data->numRetries);
         } else {
           AsciiManager::AddFormatText(
+          // STRING: TH07 0x00496478
               &g_AsciiManager, &local_38, "%8s %9d%1d(C)", local_28->data->name,
               local_28->data->score, (i32)local_28->data->numRetries);
         }
         local_38.x += 320.0f;
+        // STRING: TH07 0x00496468
         AsciiManager::AddFormatText(&g_AsciiManager, &local_38, " %5s   %3.2f",
                                     local_28->data->date);
         local_38.x -= 368.0f;
@@ -2150,6 +2214,7 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
     local_38 = arg->vms[0x18].pos;
     local_24 = arg->vms + 0x19;
     AsciiManager::AddFormatText(&g_AsciiManager, &local_38,
+    // STRING: TH07 0x0049641c
                                 "No.   Name     Date   Player Score");
     for (local_14 = 0; local_14 < 0xf; local_14 += 1) {
       local_38 = local_24->pos;
@@ -2161,6 +2226,7 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
       }
       if (arg->resultScreenState == 0xe) {
         AsciiManager::AddFormatText(
+        // STRING: TH07 0x00496400
             &g_AsciiManager, &local_38, "No.%.2d %8s %5s  %7s %9d0",
             local_14 + 1, arg->replayName, (arg->defaultReplay).data.date,
             g_CharactersAndShotTypesStrings[(u32)g_GameManager.shotType +
@@ -2173,9 +2239,11 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
           cursor2 = 7;
         }
         buf[cursor2] = '_';
+        // STRING: TH07 0x004963f4
         AsciiManager::AddFormatText(&g_AsciiManager, &local_38, "      %8s",
                                     buf);
-      } else if ((arg->replays[local_14].head.magic == 0x50523754) &&
+      } else if (*(i32 *)&arg->replays[local_14].head.magic ==
+                     *(i32 *)&"T7RP" &&
                  ((arg->replays[local_14].head.version & 0xfff) == 0x100)) {
         AsciiManager::AddFormatText(
             &g_AsciiManager, &local_38, "No.%.2d %8s %5s  %7s %9d0",
@@ -2186,6 +2254,7 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
       } else {
         AsciiManager::AddFormatText(
             &g_AsciiManager, &local_38,
+        // STRING: TH07 0x004963c8
             "No.%.2d -------- --/--  -------          0");
       }
     }
@@ -2218,7 +2287,8 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
       for (i32 k = 0; k < 10; k = k + 1) {
         arg->defaultScores[i][j][k].score = k * -10000 + 100000;
         arg->defaultScores[i][j][k].slowRatePercent = 0;
-        arg->defaultScores[i][j][k].magic = 0x53594d44;
+        // STRING: TH07 0x004963c0
+        arg->defaultScores[i][j][k].magic = *(u32 *)&"DMYS";
         arg->defaultScores[i][j][k].difficulty = (u8)i;
         arg->defaultScores[i][j][k].version = 1;
         arg->defaultScores[i][j][k].th7kLen2 = sizeof(Hscr);
@@ -2227,27 +2297,31 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
         arg->defaultScores[i][j][k].isPlayerScore = 0;
         arg->defaultScores[i][j][k].numRetries = 0;
         arg->LinkScoreEx(arg->defaultScores[i][j] + k, i, j);
+        // STRING: TH07 0x004963b4
         strcpy(arg->defaultScores[i][j][k].name, "--------");
+        // STRING: TH07 0x004963ac
         strcpy(arg->defaultScores[i][j][k].date, "--/--");
       }
     }
   }
   if (arg->resultScreenState != 0x13) {
+    // STRING: TH07 0x00496394
     if (g_AnmManager->LoadSurface(0, "data/result/result.jpg") != ZUN_SUCCESS) {
       return ZUN_ERROR;
     }
+    // STRING: TH07 0x00496380
     if (g_AnmManager->LoadAnms(0x2a, "data/result00.anm", 0x900) !=
         ZUN_SUCCESS) {
       return ZUN_ERROR;
     }
     local_c = arg->vms;
     for (i32 i = 0; i < 0x29; i = i + 1) {
-      (local_c->pos).x = 0.0f;
-      (local_c->pos).y = 0.0f;
-      (local_c->pos).z = 0.0f;
-      (local_c->offset).x = 0.0f;
-      (local_c->offset).y = 0.0f;
-      (local_c->offset).z = 0.0f;
+      local_c->pos.x = 0.0f;
+      local_c->pos.y = 0.0f;
+      local_c->pos.z = 0.0f;
+      local_c->offset.x = 0.0f;
+      local_c->offset.y = 0.0f;
+      local_c->offset.z = 0.0f;
       local_44 = (i16)i + 0x900;
       local_c->anmFileIdx = local_44;
       g_AnmManager->SetAndExecuteScript(local_c,
@@ -2260,12 +2334,12 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
     for (i32 i = 0; i < 0xf; i = i + 1) {
       local_c->Initialize();
       g_AnmManager->SetActiveSprite(local_c, i + 0x715);
-      (local_c->pos).x = 0.0f;
-      (local_c->pos).y = 0.0f;
-      (local_c->pos).z = 0.0f;
+      local_c->pos.x = 0.0f;
+      local_c->pos.y = 0.0f;
+      local_c->pos.z = 0.0f;
       local_c->flags = local_c->flags | 0xc00;
-      local_c->fontWidth = '\x0f';
-      local_c->fontHeight = '\x0f';
+      local_c->fontWidth = 15;
+      local_c->fontHeight = 15;
       local_c = local_c + 1;
     }
   }
@@ -2276,11 +2350,12 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
       GetHighScore(arg->scoreDat, arg->scoreLists[i] + j, j, i, NULL);
     }
   }
-  (arg->lsnmHeader).magic = 0x4d4e534c;
-  (arg->lsnmHeader).version = 1;
-  (arg->lsnmHeader).th7kLen2 = sizeof(Lsnm);
-  (arg->lsnmHeader).th7kLen = sizeof(Lsnm);
-  strcpy((arg->lsnmHeader).name, "        ");
+  arg->lsnmHeader.magic = 'LSNM';
+  arg->lsnmHeader.version = 1;
+  arg->lsnmHeader.th7kLen2 = sizeof(Lsnm);
+  arg->lsnmHeader.th7kLen = sizeof(Lsnm);
+  // STRING: TH07 0x00496374
+  strcpy(arg->lsnmHeader.name, "        ");
   arg->isClearingReplayName = ParseLsnm(arg->scoreDat, &arg->lsnmHeader);
   if ((arg->resultScreenState != 10) && (arg->resultScreenState != 0x12)) {
     ParseCatk(arg->scoreDat, g_GameManager.catk);
@@ -2299,13 +2374,13 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
           .score = g_GameManager.globals->score;
     }
     arg->resultScreenState = 0xb;
-    strcpy(arg->replayName, (arg->lsnmHeader).name);
+    strcpy(arg->replayName, arg->lsnmHeader.name);
   }
   for (i32 i = 0; i < 7; i = i + 1) {
     local_18 = g_GameManager.catk;
     arg->totalPlayCountPerCharacter[i + 1] = 0;
     for (local_1c = 0; local_1c < 0x8d; local_1c = local_1c + 1) {
-      if (((local_18->magic == 0x4b544143) && (local_18->version == 1)) &&
+      if (((local_18->magic == 'CATK') && (local_18->version == 1)) &&
           (local_18->numSuccessesPerShot[i] != 0)) {
         arg->totalPlayCountPerCharacter[i + 1] =
             arg->totalPlayCountPerCharacter[i + 1] + 1;
@@ -2316,7 +2391,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
   arg->spellcardListPage = 6;
   arg->prevSpellcardListPage = 6;
   arg->listScrollAnimState = 0;
-  (arg->leftArrowVm).activeSpriteIdx = -1;
+  arg->leftArrowVm.activeSpriteIdx = -1;
   if (arg->resultScreenState == 0x13) {
     DeletedCallback(arg);
     return ZUN_ERROR;
@@ -2358,8 +2433,9 @@ ZunResult ResultScreen::RegisterChain(u32 param_1)
 
 {
   ResultScreen *resultScreen = new ResultScreen;
+  // STRING: TH07 0x0049635c
   Supervisor::DebugPrint2("Stg.PlayTimeAll = %d\r\n",
-                     g_GameManager.activeFrameCounter);
+                          g_GameManager.activeFrameCounter);
   if (param_1 == 1) {
     if ((g_GameManager.flags & 1) == 0) {
       resultScreen->resultScreenState = 10;

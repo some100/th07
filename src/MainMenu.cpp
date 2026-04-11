@@ -22,72 +22,146 @@ i16 g_LastJoystickInput;
 
 // GLOBAL: TH07 0x0049f40c
 const char *g_StagePracticeStrings[6] = {
-    "Stage1", "Stage2", "Stage3", "Stage4", "Stage5", "Stage6",
+    // STRING: TH07 0x00495520
+    "Stage1",
+    // STRING: TH07 0x00495518
+    "Stage2",
+    // STRING: TH07 0x00495510
+    "Stage3",
+    // STRING: TH07 0x00495508
+    "Stage4",
+    // STRING: TH07 0x00495500
+    "Stage5",
+    // STRING: TH07 0x004954f8
+    "Stage6",
 };
 
 // GLOBAL: TH07 0x0049f424
 const char *g_StageReplayStrings[7] = {
-    "Stage1  ", "Stage2  ", "Stage3  ", "Stage4  ",
-    "Stage5  ", "Stage6  ", "Extra   ",
+    // STRING: TH07 0x004955e0
+    "Stage1  ",
+    // STRING: TH07 0x004955d4
+    "Stage2  ",
+    // STRING: TH07 0x004955c8
+    "Stage3  ",
+    // STRING: TH07 0x004955bc
+    "Stage4  ",
+    // STRING: TH07 0x004955b0
+    "Stage5  ",
+    // STRING: TH07 0x004955a4
+    "Stage6  ",
+    // STRING: TH07 0x004955f8
+    "Extra   ",
 };
 
 // GLOBAL: TH07 0x0049f440
+// STRING: TH07 0x004955ec
 const char *g_PhantasmReplayString = "Phantasm";
 
 // GLOBAL: TH07 0x0049f444
 const char *g_DifficultyStrings[6] = {
-    "Easy    ", "Normal  ", "Hard    ", "Lunatic ", "Extra   ", "Phantasm",
+    "Easy    ",
+    "Normal  ",
+    "Hard    ",
+    "Lunatic ",
+    "Extra   ",
+    "Phantasm",
 };
 
 // GLOBAL: TH07 0x0049f45c
 const char *g_CharacterAndShottypeReplayStrings[6] = {
-    "ReimuA ", "ReimuB ", "MarisaA", "MarisaB", "SakuyaA", "SakuyaB"};
+    // STRING: TH07 0x00495b28
+    "ReimuA ",
+    // STRING: TH07 0x00495b20
+    "ReimuB ",
+    // STRING: TH07 0x00495b18
+    "MarisaA",
+    // STRING: TH07 0x00495b10
+    "MarisaB",
+    // STRING: TH07 0x00495b08
+    "SakuyaA",
+    // STRING: TH07 0x00495b00
+    "SakuyaB",
+};
 
 // GLOBAL: TH07 0x0049f478
 const char *g_KeyConfigStrings[12] = {
+    // STRING: TH07 0x004957e8
     "ショット、決定ボタンを設定します",
+    // STRING: TH07 0x004957c4
     "ボム、キャンセルボタンを設定します",
+    // STRING: TH07 0x004957a8
     "低速移動ボタンを設定します",
+    // STRING: TH07 0x00495780
     "メッセージスキップボタンを設定します",
+    // STRING: TH07 0x00495764
     "ポーズボタンを設定します",
+    // STRING: TH07 0x00495748
     "上移動ボタンを設定します",
+    // STRING: TH07 0x0049572c
     "下移動ボタンを設定します",
+    // STRING: TH07 0x00495710
     "左移動ボタンを設定します",
+    // STRING: TH07 0x004956f4
     "右移動ボタンを設定します",
+    // STRING: TH07 0x004956c0
     "ショット押しっぱなしで低速移動になるようにします",
+    // STRING: TH07 0x004956ac
     "初期設定に戻します",
+    // STRING: TH07 0x00495698
     "おおよそ終了します",
 };
 
 // GLOBAL: TH07 0x0049f4a8
 const char *g_OptionsStrings[9] = {
+    // STRING: TH07 0x0049596c
     "プレイヤーの初期数を変更します。（初期設定　３）",
+    // STRING: TH07 0x0049592c
     "画面の色数を変更します。３２ＢＩＴだと最も綺麗に表示されます。",
+    // STRING: TH07 0x004958f8
     "ＢＧＭの再生方法を変更します。（初期設定　ＷＡＶ）",
+    // STRING: TH07 0x004958d8
     "効果音を再生するか選択します",
+    // STRING: TH07 0x004958b0
     "ウィンドウかフルスクリーンか選択します",
+    // STRING: TH07 0x00495870
     "弾が多い場面でわざと処理落ちさせます(スコア、リプレイ記録不可)",
+    // STRING: TH07 0x00495858
     "全て初期設定にします",
+    // STRING: TH07 0x00495834
     "パッド操作のボタン配置を変更します",
+    // STRING: TH07 0x0049581c
     "おいそれと終了します",
 };
 
 // GLOBAL: TH07 0x0049f4cc
 const char *g_MainMenuStrings[8] = {
+    // STRING: TH07 0x00495aa4
     "ゲームを開始します",
+    // STRING: TH07 0x00495a84
     "エキストラステージを開始します",
+    // STRING: TH07 0x00495a60
     "ステージを選択し、練習を開始します",
+    // STRING: TH07 0x00495a48
     "リプレイを鑑賞できます",
+    // STRING: TH07 0x00495a18
     "過去のスコアやスペルカードの取得歴を見られます",
+    // STRING: TH07 0x00495a08
     "音楽を聴けます",
+    // STRING: TH07 0x004959f4
     "各種設定できます",
+    // STRING: TH07 0x004959dc
     "いろいろと終了します",
 };
 
 // GLOBAL: TH07 0x0049ea7c
-const char *g_DemoReplayPaths[3] = {"data/demo/demorpy0.rpy",
-                                    "data/demo/demorpy1.rpy",
-                                    "data/demo/demorpy2.rpy"};
+const char *g_DemoReplayPaths[3] = {
+    // STRING: TH07 0x00495ae8
+    "data/demo/demorpy0.rpy",
+    // STRING: TH07 0x00495ad0
+    "data/demo/demorpy1.rpy",
+    // STRING: TH07 0x00495ab8
+    "data/demo/demorpy2.rpy"};
 
 // FUNCTION: TH07 0x004553fa
 void InitializeTimingVars(Supervisor *arg)
@@ -202,6 +276,7 @@ u32 MainMenu::OnUpdatePreInput()
         (this->prevGameState == STATE_SELECT_REPLAY)) ||
        ((this->prevGameState == 8 ||
          (this->prevGameState == STATE_EXTRA_SELECT_DIFFICULTY)))) &&
+      // STRING: TH07 0x004959c4
       (g_AnmManager->LoadSurface(0, "data/title/title00.jpg") != ZUN_SUCCESS)) {
     return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
   }
@@ -294,6 +369,7 @@ LAB_0045599d:
       g_GameManager.replayStage = 0;
       return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
     }
+    // STRING: TH07 0x004959a0
     Supervisor::DebugPrint2("error : Demo Play is not ready\r\n");
     this->demoFramesCount = 0;
   }
@@ -538,6 +614,7 @@ u32 MainMenu::OnUpdateOptionsMenu()
           (g_Supervisor.cfg.musicMode == MUSIC_MIDI)) {
         g_SoundPlayer.StartBGM("thbgm.dat");
       }
+      // STRING: TH07 0x0049580c
       Supervisor::LoadAudio(8, "bgm/th07_01.mid");
       Supervisor::PlayLoadedAudio(8);
     } else if (this->cursor == 3) {
@@ -1594,6 +1671,7 @@ u32 MainMenu::OnUpdateSelectReplay()
   if (this->menuSubState == 0) {
     if (this->stateTimer == 0) {
       if ((this->prevGameState != STATE_SELECT_REPLAY) &&
+          // STRING: TH07 0x00495680
           (g_AnmManager->LoadSurface(0, "data/title/select00.jpg") !=
            ZUN_SUCCESS)) {
         return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
@@ -1605,6 +1683,7 @@ u32 MainMenu::OnUpdateSelectReplay()
       this->cursorVm = NULL;
       local_10 = 0;
       for (i = 0; i < 0xf; i += 1) {
+        // STRING: TH07 0x004967bc
         sprintf(local_54, "./replay/th7_%.2d.rpy", i + 1);
         local_14 = (ReplayHeaderAndData *)FileSystem::OpenFile(local_54, 1);
         if (local_14 == NULL) {
@@ -1615,6 +1694,7 @@ u32 MainMenu::OnUpdateSelectReplay()
           if (local_14 != NULL) {
             mainMenu->replays[local_10] = *local_14;
             strcpy(mainMenu->replayFilenames[local_10], local_54);
+            // STRING: TH07 0x00496460
             sprintf(mainMenu->replayLabels[local_10], "No.%.2d", i + 1);
             local_10 += 1;
             mainMenu = this;
@@ -1622,8 +1702,10 @@ u32 MainMenu::OnUpdateSelectReplay()
           }
         }
       }
+      // STRING: TH07 0x00495674
       _mkdir("./replay");
       _chdir("./replay");
+      // STRING: TH07 0x00495664
       local_c = FindFirstFileA("th7_ud????.rpy", &local_194);
       if (local_c != INVALID_HANDLE_VALUE) {
         for (i = 0; i < 0x2d; i += 1) {
@@ -1636,8 +1718,10 @@ u32 MainMenu::OnUpdateSelectReplay()
                 ReplayManager::ValidateReplayData(local_14, g_LastFileSize);
             if (local_14 != NULL) {
               mainMenu->replays[local_10] = *local_14;
+              // STRING: TH07 0x00495658
               sprintf(mainMenu->replayFilenames[local_10], "./replay/%s",
                       local_194.cFileName);
+              // STRING: TH07 0x00495650
               sprintf(mainMenu->replayLabels[local_10], "User ");
               free(local_14);
               local_10 += 1;
@@ -1648,6 +1732,7 @@ u32 MainMenu::OnUpdateSelectReplay()
         }
       }
       FindClose(local_c);
+      // STRING: TH07 0x0049564c
       _chdir("../");
       mainMenu->replayFilesNum = local_10;
       mainMenu->replayPage = 0;
@@ -1718,6 +1803,7 @@ u32 MainMenu::OnUpdateSelectReplay()
                    .data == NULL) {
           this->cursor = this->cursor + 1;
           if (6 < this->cursor) {
+            // STRING: TH07 0x00495634
             g_GameErrorContext.Fatal("リプレイデータが異常\r\n");
             return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
           }
@@ -1825,18 +1911,17 @@ u32 MainMenu::OnUpdateSelectReplay()
 i32 MainMenu::DrawReplayMenu()
 
 {
-  AnmVm *pAVar1;
   i32 iVar2;
   i32 replayAmount;
   i32 i;
   AnmVm *vm;
 
-  pAVar1 = this->vmHead;
-  AsciiManager::AddFormatText(&g_AsciiManager, &pAVar1[0x86].pos,
+  AsciiManager::AddFormatText(&g_AsciiManager, &this->vmHead[0x86].pos,
+  // STRING: TH07 0x0049557c
                               "No.   Name       Date  Player   Rank");
   replayAmount = this->chosenReplay - this->chosenReplay % 0xf;
   iVar2 = replayAmount + 0xf;
-  vm = pAVar1 + 0x86;
+  vm = &this->vmHead[0x86];
   while (replayAmount < iVar2 && (replayAmount < this->replayFilesNum)) {
     g_AsciiManager.isSelected = replayAmount == this->chosenReplay;
     if (replayAmount == this->chosenReplay) {
@@ -1845,6 +1930,7 @@ i32 MainMenu::DrawReplayMenu()
       g_AsciiManager.color = 0xff808080;
     }
     AsciiManager::AddFormatText(
+        // STRING: TH07 0x00495564
         &g_AsciiManager, &vm[1].pos, "%s %8s  %6s %7s  %8s",
         this->replayLabels + replayAmount,
         this->replays[replayAmount].data.name,
@@ -1860,12 +1946,13 @@ i32 MainMenu::DrawReplayMenu()
     g_AsciiManager.color = 0xffffffff;
     g_AsciiManager.isSelected = 0;
     AsciiManager::AddFormatText(&g_AsciiManager, &this->vmHead[0x85].pos,
+    // STRING: TH07 0x00495554
                                 "       %2.3f%%",
                                 (double)this->currentReplay->data.slowdownRate);
-    pAVar1 = this->vmHead;
-    AsciiManager::AddFormatText(&g_AsciiManager, &pAVar1[0x96].pos,
+    AsciiManager::AddFormatText(&g_AsciiManager, &this->vmHead[0x96].pos,
+    // STRING: TH07 0x00495540
                                 "Stage    LastScore");
-    vm = pAVar1 + 0x96;
+    vm = &this->vmHead[0x96];
     for (i = 0; i < 7; i += 1) {
       if (this->menuSubState == 3) {
         if (i == this->selectedStage) {
@@ -1883,13 +1970,13 @@ i32 MainMenu::DrawReplayMenu()
       }
       if (this->currentReplay->head.stageReplayData[i].data == NULL) {
         if ((i < 6) || (this->currentReplay->data.difficulty < 5)) {
-          AsciiManager::AddFormatText(&g_AsciiManager, &vm[1].pos,
-                                      "%s ----------");
+          // STRING: TH07 0x00495528
+          AsciiManager::AddFormatText(&g_AsciiManager, &vm[1].pos, "%s ----------");
         } else {
-          AsciiManager::AddFormatText(&g_AsciiManager, &vm[1].pos,
-                                      "%s ----------");
+          AsciiManager::AddFormatText(&g_AsciiManager, &vm[1].pos, "%s ----------");
         }
       } else if ((i < 6) || (this->currentReplay->data.difficulty < 5)) {
+        // STRING: TH07 0x00495538
         AsciiManager::AddFormatText(&g_AsciiManager, &vm[1].pos, "%s %9d0",
                                     g_StageReplayStrings[i]);
       } else {
@@ -1917,6 +2004,7 @@ i32 MainMenu::DrawPracticeMenu()
   g_AsciiManager.isSelected = 0;
   local_8 = this->vmHead + 0x83;
   AsciiManager::AddFormatText(&g_AsciiManager, &this->vmHead[0x83].pos,
+  // STRING: TH07 0x004954e4
                               "Stage    HI-Score");
   local_1c = local_8->pos;
   local_10 =
@@ -1933,6 +2021,7 @@ i32 MainMenu::DrawPracticeMenu()
       g_AsciiManager.color = 0xff404040;
     }
     AsciiManager::AddFormatText(
+        // STRING: TH07 0x004954d4
         &g_AsciiManager, &local_1c, "%s %9d0 (%3d)",
         g_StagePracticeStrings[local_c],
         g_GameManager
@@ -2110,6 +2199,7 @@ ZunResult MainMenu::ActualAddedCallback()
   if ((g_GameManager.isGameComplete == 0) &&
       (g_GameManager.HasUnlockedPhantomAndMaxClears() != 0)) {
     i32 local_c = 0;
+    // STRING: TH07 0x004954bc
     g_AnmManager->LoadSurface(0, "data/title/phantasm.jpg");
     while (local_c < 900) {
       g_AnmManager->currentVertexShader = 0xff;
@@ -2192,6 +2282,7 @@ LAB_0045c348:
   if (g_Supervisor.wantedState2 != 0) {
     GameManager::DrawLoadingSprite();
   }
+  // STRING: TH07 0x004954a8
   if (g_AnmManager->LoadAnms(0x20, "data/title01.anm", 0x900) == ZUN_SUCCESS) {
     if ((g_GameManager.flags >> 1 & 1) == 0) {
       if (g_Supervisor.wantedState2 != 5) {
