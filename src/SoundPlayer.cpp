@@ -736,10 +736,10 @@ loop:
     tmp = commandCursor->arg1;
     if (g_SoundPlayer.backgroundMusic != NULL) {
       g_SoundPlayer.backgroundMusic->m_dwIsFadingOut = 1;
-      g_SoundPlayer.backgroundMusic->m_dwCurFadeoutProgress =
+      g_SoundPlayer.backgroundMusic->m_iCurFadeoutProgress =
           ((f32)tmp * 60.0f);
-      g_SoundPlayer.backgroundMusic->m_dwTotalFadeout =
-          g_SoundPlayer.backgroundMusic->m_dwCurFadeoutProgress;
+      g_SoundPlayer.backgroundMusic->m_iTotalFadeout =
+          g_SoundPlayer.backgroundMusic->m_iCurFadeoutProgress;
     }
     break;
   case AUDIO_PAUSE:

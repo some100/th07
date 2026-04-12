@@ -70,8 +70,13 @@ struct GameManager {
   void RegenerateGameIntegrityCsum()
 
   {
-    this->globals->rng1[2] = g_Rng.GetRandomU32() % 100000 + 0x198f;
-    this->globals->rng2[3] = g_Rng.GetRandomU32() % 100000 + 0x198f;
+    u32 local_10;
+    u32 local_c;
+
+    local_c = g_Rng.GetRandomU32() % 100000;
+    this->globals->rng1[2] = local_c + 0x198f;
+    local_10 = g_Rng.GetRandomU32() % 100000;
+    this->globals->rng2[3] = local_10 + 0x198f;
     this->globals->curCsum = this->globals->rng1[2];
 
     this->globals->csumAsSum = ComputeGameIntegrityCsum();

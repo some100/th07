@@ -96,7 +96,7 @@ struct EclRawHeader {
 
 struct EclRawInstr {
   u32 time;
-  u16 id;
+  i16 id;
   i16 size;
   u8 unused_8;
   u8 skipInstrOnDifficulty;

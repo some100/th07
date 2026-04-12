@@ -99,11 +99,11 @@ public:
   CSoundManager();
   ~CSoundManager();
 
-  HRESULT Initialize(HWND hWnd, DWORD dwCoopLevel, WORD dwPrimaryChannels,
-                     DWORD dwPrimaryFreq, u16 dwPrimaryBitRate);
+  HRESULT Initialize(HWND hWnd, DWORD dwCoopLevel, DWORD dwPrimaryChannels,
+                     DWORD dwPrimaryFreq, DWORD dwPrimaryBitRate);
   inline LPDIRECTSOUND8 GetDirectSound() { return pDS; }
-  HRESULT SetPrimaryBufferFormat(WORD dwPrimaryChannels, DWORD dwPrimaryFreq,
-                                 u16 dwPrimaryBitRate);
+  HRESULT SetPrimaryBufferFormat(DWORD dwPrimaryChannels, DWORD dwPrimaryFreq,
+                                 DWORD dwPrimaryBitRate);
 
   HRESULT CreateStreaming(CStreamingSound **ppStreamingSound,
                           LPCSTR strWaveFileName, DWORD dwCreationFlags,
@@ -121,15 +121,15 @@ public:
 // Name: class CSound
 // Desc: Encapsulates functionality of a DirectSound buffer.
 //-----------------------------------------------------------------------------
+// VTABLE: TH07 0x00495290
 class CSound {
 public:
-  void *vtbl;
   LPDIRECTSOUNDBUFFER *m_apDSBuffer;
   DWORD m_dwDSBufferSize;
   CWaveFile *m_pWaveFile;
   DWORD m_dwNumBuffers;
-  DWORD m_dwCurFadeoutProgress;
-  DWORD m_dwTotalFadeout;
+  i32 m_iCurFadeoutProgress;
+  i32 m_iTotalFadeout;
   DWORD m_dwIsFadingOut;
   DWORD m_dwPriority;
   DWORD m_dwFlags;
@@ -158,11 +158,13 @@ public:
   HRESULT Pause();
   HRESULT Unpause();
 };
+C_ASSERT(sizeof(CSound) == 0x5c);
 
 //-----------------------------------------------------------------------------
 // Name: class CStreamingSound
 // Desc: Encapsulates functionality to play a wave file with DirectSound.
 //-----------------------------------------------------------------------------
+// VTABLE: TH07 0x0049528c
 class CStreamingSound : public CSound {
 public:
   DWORD m_dwLastPlayPos;
@@ -176,14 +178,15 @@ public:
   CStreamingSound(LPDIRECTSOUNDBUFFER pDSBuffer, DWORD dwDSBufferSize,
                   CWaveFile *pWaveFile, DWORD dwNotifySize);
   ~CStreamingSound();
-  
+
   // SYNTHETIC: TH07 0x0045da80
   // CStreamingSound::`scalar deleting destructor'
 
   HRESULT HandleWaveStreamNotification(i32 bLoopedPlay);
   HRESULT Reset();
   HRESULT InitSoundBuffers();
-  i32 UpdateFadeOut();
+  HRESULT UpdateFadeOut();
 };
+C_ASSERT(sizeof(CStreamingSound) == 0x78);
 
 void DebugPrint(const char *fmt, ...);
