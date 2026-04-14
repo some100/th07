@@ -114,8 +114,7 @@ struct PlayerBullet {
 };
 C_ASSERT(sizeof(PlayerBullet) == 0x364);
 
-struct PlayerBulletTimer {
-  ZunTimer base;
+struct PlayerBulletTimer : ZunTimer {
   PlayerBullet *bullet;
 };
 

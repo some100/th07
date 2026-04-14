@@ -47,11 +47,11 @@ RetryMenu::RetryMenu() {}
 PauseMenu::PauseMenu() {}
 
 // FUNCTION: TH07 0x004017b0
-void IncrementCapped(u32 *param)
+void IncrementCapped(u32 *param, u32 param_2)
 
 {
   if (*param < 999999) {
-    *param = *param + 1;
+    (*param)++;
   }
 }
 
@@ -1003,18 +1003,18 @@ i32 PauseMenu::OnUpdate()
       g_Gui.flags = (g_Gui.flags & 0xfffffc00) | 0x2aa;
       IncrementCapped(
           &g_GameManager.plst.playDataByDifficulty[g_GameManager.difficulty]
-               .playCount);
-      IncrementCapped(&g_GameManager.plst.playDataTotals.playCount);
+               .playCount, 999999);
+      IncrementCapped(&g_GameManager.plst.playDataTotals.playCount, 999999);
       IncrementCapped(
           &g_GameManager.plst.playDataByDifficulty[g_GameManager.difficulty]
-               .playCountPerShotType[g_GameManager.shotTypeAndCharacter]);
+               .playCountPerShotType[g_GameManager.shotTypeAndCharacter], 999999);
       IncrementCapped(
           &g_GameManager.plst.playDataTotals
-               .playCountPerShotType[g_GameManager.shotTypeAndCharacter]);
+               .playCountPerShotType[g_GameManager.shotTypeAndCharacter], 999999);
       IncrementCapped(
           &g_GameManager.plst.playDataByDifficulty[g_GameManager.difficulty]
-               .retryCount);
-      IncrementCapped(&g_GameManager.plst.playDataTotals.retryCount);
+               .retryCount, 999999);
+      IncrementCapped(&g_GameManager.plst.playDataTotals.retryCount, 999999);
       g_SoundPlayer.PushCommand(AUDIO_UNPAUSE, 0, "UnPause");
       g_Supervisor.currentTime = timeGetTime();
       return 0;

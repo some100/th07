@@ -19,7 +19,7 @@ ChainElem::ChainElem()
   this->addedCallback = NULL;
   this->deletedCallback = NULL;
   this->priority = 0;
-  this->flags &= ~1;
+  this->flags &= (u16)~1;
 }
 
 // FUNCTION: TH07 0x0042fb20
@@ -44,178 +44,170 @@ ZunResult Chain::AddToCalcChain(ChainElem *elem, i32 priority)
 
 {
   ZunResult uVar1;
-  ChainElem *calcChain;
+  ChainElem *curElem;
 
-  elem->priority = (i16)priority;
-  for (calcChain = &this->calcChain;
-       (calcChain->next != NULL && (calcChain->priority <= priority));
-       calcChain = calcChain->next) {
+  curElem = &this->calcChain;
+  elem->priority = priority;
+  while (curElem->next != NULL) {
+    if (curElem->priority > priority)
+      break;
+    curElem = curElem->next;
   }
-  if (priority < calcChain->priority) {
-    elem->next = calcChain;
-    elem->prev = calcChain->prev;
+  if (curElem->priority > priority) {
+    elem->next = curElem;
+    elem->prev = curElem->prev;
     if (elem->prev != NULL) {
       elem->prev->next = elem;
     }
-    calcChain->prev = elem;
+    curElem->prev = elem;
   } else {
     elem->next = NULL;
-    elem->prev = calcChain;
-    calcChain->next = elem;
+    elem->prev = curElem;
+    curElem->next = elem;
   }
-  if (elem->addedCallback == NULL) {
-    uVar1 = ZUN_SUCCESS;
-  } else {
+  if (elem->addedCallback != NULL) {
     uVar1 = elem->addedCallback(elem->arg);
     elem->addedCallback = NULL;
+    return uVar1;
+  } else {
+    return ZUN_SUCCESS;
   }
-  return uVar1;
 }
 
 // FUNCTION: TH07 0x0042fca0
 ZunResult Chain::AddToDrawChain(ChainElem *elem, i32 priority)
 
 {
-  ZunResult uVar1;
-  ChainElem *drawChain;
+  ChainElem *curElem;
 
-  elem->priority = (i16)priority;
-  for (drawChain = &this->drawChain;
-       (drawChain->next != NULL && (drawChain->priority <= priority));
-       drawChain = drawChain->next) {
+  curElem = &this->drawChain;
+  elem->priority = priority;
+  while (curElem->next != NULL) {
+    if (curElem->priority > priority)
+      break;
+    curElem = curElem->next;
   }
-  if (priority < drawChain->priority) {
-    elem->next = drawChain;
-    elem->prev = drawChain->prev;
+  if (curElem->priority > priority) {
+    elem->next = curElem;
+    elem->prev = curElem->prev;
     if (elem->prev != NULL) {
       elem->prev->next = elem;
     }
-    drawChain->prev = elem;
+    curElem->prev = elem;
   } else {
     elem->next = NULL;
-    elem->prev = drawChain;
-    drawChain->next = elem;
+    elem->prev = curElem;
+    curElem->next = elem;
   }
-  if (elem->addedCallback == NULL) {
-    uVar1 = ZUN_SUCCESS;
+  if (elem->addedCallback != NULL) {
+    return elem->addedCallback(elem->arg);
   } else {
-    uVar1 = (*elem->addedCallback)(elem->arg);
-    elem->addedCallback = NULL;
+    return ZUN_SUCCESS;
   }
-  return uVar1;
 }
 
 // FUNCTION: TH07 0x0042fd60
 i32 Chain::RunCalcChain()
 
 {
-  i32 updateCount;
+  ChainElem *next;
   ChainElem *current;
-  ChainElem *tmp;
+  i32 updateCount;
 
-restart:
+restart_from_first_job:
   updateCount = 0;
   current = &this->calcChain;
-LAB_0042fd76:
-  while (true) {
-    if (current == NULL) {
-      return updateCount;
+  while (current != NULL) {
+    if (current->callback != NULL) {
+    execute_again:
+      switch (current->callback(current->arg)) {
+      case CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB:
+        next = current;
+        current = current->next;
+        Cut(next);
+        updateCount++;
+        continue;
+      case CHAIN_CALLBACK_RESULT_EXECUTE_AGAIN:
+        goto execute_again;
+      case CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS:
+        return 0;
+      case CHAIN_CALLBACK_RESULT_BREAK:
+        return 1;
+      case CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR:
+        return -1;
+      case CHAIN_CALLBACK_RESULT_RESTART_FROM_FIRST_JOB:
+        goto restart_from_first_job;
+      default:
+        break;
+      }
+      updateCount += 1;
     }
-    if (current->callback != NULL)
-      break;
-  LAB_0042fde7:
     current = current->next;
   }
-  while (true) {
-    switch (current->callback(current->arg)) {
-    case CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB:
-      goto switchD_0042fd9d_caseD_0;
-    default:
-      updateCount += 1;
-      goto LAB_0042fde7;
-    case CHAIN_CALLBACK_RESULT_EXECUTE_AGAIN:
-      break;
-    case CHAIN_CALLBACK_RESULT_BREAK:
-      return 1;
-    case CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS:
-      return 0;
-    case CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR:
-      return -1;
-    case CHAIN_CALLBACK_RESULT_RESTART_FROM_FIRST_JOB:
-      goto restart;
-    }
-  }
-switchD_0042fd9d_caseD_0:
-  tmp = current->next;
-  Cut(current);
-  updateCount = updateCount + 1;
-  current = tmp;
-  goto LAB_0042fd76;
+  return updateCount;
 }
 
 // FUNCTION: TH07 0x0042fe20
 i32 Chain::RunDrawChain()
 
 {
-  i32 updateCount;
-  ChainElem *current;
   ChainElem *next;
+  ChainElem *current;
+  i32 updateCount;
 
   updateCount = 0;
   current = &this->drawChain;
-LAB_0042fe39:
-  while (true) {
-    if (current == NULL) {
-      return updateCount;
+  while (current != NULL) {
+    if (current->callback != NULL) {
+    execute_again:
+      switch (current->callback(current->arg)) {
+      case CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB:
+        next = current;
+        current = current->next;
+        Cut(next);
+        updateCount++;
+        continue;
+      case CHAIN_CALLBACK_RESULT_EXECUTE_AGAIN:
+        goto execute_again;
+      case CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS:
+        return 0;
+      case CHAIN_CALLBACK_RESULT_BREAK:
+        return 1;
+      case CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR:
+        return -1;
+      default:
+        break;
+      }
+      updateCount += 1;
     }
-    if (current->callback != NULL)
-      break;
-  LAB_0042fea8:
     current = current->next;
   }
-  while (true) {
-    switch (current->callback(current->arg)) {
-    case CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB:
-      goto switchD_0042fe60_caseD_0;
-    default:
-      updateCount += 1;
-      goto LAB_0042fea8;
-    case CHAIN_CALLBACK_RESULT_EXECUTE_AGAIN:
-      break;
-    case CHAIN_CALLBACK_RESULT_BREAK:
-      return 1;
-    case CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS:
-      return 0;
-    case CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR:
-      return -1;
-    }
-  }
-switchD_0042fe60_caseD_0:
-  next = current->next;
-  Cut(current);
-  updateCount = updateCount + 1;
-  current = next;
-  goto LAB_0042fe39;
+  return updateCount;
 }
 
+#pragma var_order(curElem, tmp2, tmp, nextRootElem)
 // FUNCTION: TH07 0x0042fee0
 void Chain::ReleaseSingleChain(ChainElem *root)
 
 {
   ChainElem nextRootElem;
-  ChainElem *tmp;
   ChainElem *tmp2;
+  ChainElem *tmp;
   ChainElem *curElem;
 
   tmp = new ChainElem;
   nextRootElem.next = tmp;
-  for (curElem = root; curElem != NULL; curElem = curElem->next) {
-    tmp->unkPtr = curElem;
-    tmp->next = new ChainElem;
-    tmp = tmp->next;
+  curElem = root;
+  while (curElem != NULL) {
+      tmp->unkPtr = curElem;
+      tmp->next = new ChainElem;
+      tmp = tmp->next;
+      curElem = curElem->next;
   }
-  for (curElem = &nextRootElem; curElem != NULL; curElem = curElem->next) {
+  curElem = &nextRootElem;
+  while (curElem != NULL) {
     Cut(curElem->unkPtr);
+    curElem = curElem->next;
   }
   tmp = nextRootElem.next;
   while (tmp != NULL) {
@@ -242,7 +234,7 @@ ChainElem *Chain::CreateElem(ChainCallback callback)
   elem->callback = callback;
   elem->addedCallback = NULL;
   elem->deletedCallback = NULL;
-  elem->flags = elem->flags | 1;
+  elem->flags |= (u16)1;
   return elem;
 }
 
@@ -250,37 +242,48 @@ ChainElem *Chain::CreateElem(ChainCallback callback)
 void Chain::Cut(ChainElem *toRemove)
 
 {
-  ChainElem *curElem = &this->calcChain;
-  if (toRemove != NULL) {
-    while (curElem != NULL) {
-      if (curElem == toRemove)
-        goto destroy_elem;
-      curElem = curElem->next;
+  BOOL isDrawChain;
+  ChainElem *curElem;
+
+  isDrawChain = FALSE;
+
+  if (toRemove == NULL)
+    return;
+
+  curElem = &this->calcChain;
+  while (curElem != NULL) {
+    if (curElem == toRemove)
+      goto destroy_elem;
+    curElem = curElem->next;
+  }
+  isDrawChain = TRUE;
+  curElem = &this->drawChain;
+  while (curElem != NULL) {
+    if (curElem == toRemove)
+      goto destroy_elem;
+    curElem = curElem->next;
+  }
+
+  return;
+
+destroy_elem:
+  if (toRemove->prev != NULL) {
+    toRemove->callback = NULL;
+    toRemove->prev->next = toRemove->next;
+    if (toRemove->next != NULL) {
+      toRemove->next->prev = toRemove->prev;
     }
-    for (curElem = &this->drawChain; curElem != NULL; curElem = curElem->next) {
-      if (curElem == toRemove) {
-      destroy_elem:
-        if (toRemove->prev == NULL) {
-          return;
-        }
-        toRemove->callback = NULL;
-        toRemove->prev->next = toRemove->next;
-        if (toRemove->next != NULL) {
-          toRemove->next->prev = toRemove->prev;
-        }
-        toRemove->prev = NULL;
-        toRemove->next = NULL;
-        if ((toRemove->flags & 1) != 0) {
-          delete toRemove;
-          return;
-        }
-        if (toRemove->deletedCallback == NULL) {
-          return;
-        }
+    toRemove->prev = NULL;
+    toRemove->next = NULL;
+
+    if (toRemove->flags & 1) {
+      delete toRemove;
+      toRemove = NULL;
+    } else {
+      if (toRemove->deletedCallback != NULL) {
         ChainLifecycleCallback deletedCallback = toRemove->deletedCallback;
+        deletedCallback(toRemove->arg);
         toRemove->deletedCallback = NULL;
-        (*deletedCallback)(toRemove->arg);
-        return;
       }
     }
   }

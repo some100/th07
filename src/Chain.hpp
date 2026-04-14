@@ -39,7 +39,7 @@ struct Chain {
 
   ZunResult AddToCalcChain(ChainElem *elem, i32 priority);
   ZunResult AddToDrawChain(ChainElem *elem, i32 priority);
-  static ChainElem *CreateElem(ChainCallback callback);
+  ChainElem *CreateElem(ChainCallback callback);
   void Cut(ChainElem *toRemove);
   void Release();
   void ReleaseSingleChain(ChainElem *root);

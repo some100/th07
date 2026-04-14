@@ -398,12 +398,12 @@ ZunResult ReplayManager::RegisterChain(i32 isDemo, const char *replayFilename)
     replayManager->isDemo = isDemo;
     replayManager->replayFilename = replayFilename;
     if (isDemo == 0) {
-      replayManager->calcChain = Chain::CreateElem((ChainCallback)OnUpdate);
+      replayManager->calcChain = g_Chain.CreateElem((ChainCallback)OnUpdate);
       replayManager->calcChain->addedCallback =
           (ChainLifecycleCallback)AddedCallback;
       replayManager->calcChain->deletedCallback =
           (ChainLifecycleCallback)DeletedCallback;
-      replayManager->drawChain = Chain::CreateElem(
+      replayManager->drawChain = g_Chain.CreateElem(
           (ChainCallback)EffectManager::UpdateNoOp); // idk either bro
       replayManager->calcChain->arg = replayManager;
       if (g_Chain.AddToCalcChain(replayManager->calcChain, 0x10) != 0) {
@@ -411,24 +411,24 @@ ZunResult ReplayManager::RegisterChain(i32 isDemo, const char *replayFilename)
       }
       replayManager->demoCalcChain = NULL;
       replayManager->rngCalcChain =
-          Chain::CreateElem((ChainCallback)OnUpdateRng);
+          g_Chain.CreateElem((ChainCallback)OnUpdateRng);
       replayManager->rngCalcChain->arg = replayManager;
       g_Chain.AddToCalcChain(replayManager->rngCalcChain, 6);
     } else if (isDemo == 1) {
       replayManager->calcChain =
-          Chain::CreateElem((ChainCallback)OnUpdateDemoHighPrio);
+          g_Chain.CreateElem((ChainCallback)OnUpdateDemoHighPrio);
       replayManager->calcChain->addedCallback =
           (ChainLifecycleCallback)AddedCallbackDemo;
       replayManager->calcChain->deletedCallback =
           (ChainLifecycleCallback)DeletedCallback;
       replayManager->drawChain =
-          Chain::CreateElem((ChainCallback)EffectManager::UpdateNoOp);
+          g_Chain.CreateElem((ChainCallback)EffectManager::UpdateNoOp);
       replayManager->calcChain->arg = replayManager;
       if (g_Chain.AddToCalcChain(replayManager->calcChain, 5) != 0) {
         return ZUN_ERROR;
       }
       replayManager->demoCalcChain =
-          Chain::CreateElem((ChainCallback)OnUpdateDemoLowPrio);
+          g_Chain.CreateElem((ChainCallback)OnUpdateDemoLowPrio);
       replayManager->demoCalcChain->arg = replayManager;
       g_Chain.AddToCalcChain(replayManager->demoCalcChain, 0x11);
       replayManager->rngCalcChain = NULL;

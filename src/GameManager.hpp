@@ -66,6 +66,7 @@ struct Rank {
 struct GameManager {
   GameManager();
 
+  #pragma var_order(local_10, local_c)
   // FUNCTION: TH07 0x004012b0
   void RegenerateGameIntegrityCsum()
 
@@ -73,9 +74,15 @@ struct GameManager {
     u32 local_10;
     u32 local_c;
 
-    local_c = g_Rng.GetRandomU32() % 100000;
+    if (100000 != 0) // makes perfect sense
+        local_c = g_Rng.GetRandomU32() % 100000;
+    else
+        local_c = 0;
     this->globals->rng1[2] = local_c + 0x198f;
-    local_10 = g_Rng.GetRandomU32() % 100000;
+    if (100000 != 0)
+        local_10 = g_Rng.GetRandomU32() % 100000;
+    else
+        local_10 = 0;
     this->globals->rng2[3] = local_10 + 0x198f;
     this->globals->curCsum = this->globals->rng1[2];
 

@@ -2,6 +2,20 @@
 
 #include "../inttypes.hpp"
 
+// GLOBAL: TH07 0x00495120
+u32 g_SeekModes[3] = {0, 1, 2};
+
+// would it really not have been simpler to just type the letter where its used
+// GLOBAL: TH07 0x0049ea70
+const char *g_AccessModes[3] = {
+    // STRING: TH07 0x00495244
+    "r",
+    // STRING: TH07 0x00495240
+    "w",
+    // STRING: TH07 0x0049523c
+    "a"
+};
+
 // FUNCTION: TH07 0x0045e550
 Pbg4File::Pbg4File()
 
@@ -83,11 +97,10 @@ DWORD Pbg4File::Read(void *data, u32 len)
   DWORD local_8;
 
   local_8 = 0;
-  if (this->access == GENERIC_READ) {
-    ReadFile(this->handle, data, len, &local_8, NULL);
-  } else {
-    local_8 = 0;
-  }
+  if (this->access != GENERIC_READ)
+    return 0;
+
+  ReadFile(this->handle, data, len, &local_8, NULL);
   return local_8;
 }
 
@@ -98,12 +111,11 @@ bool Pbg4File::Write(void *data, u32 len)
   DWORD local_8;
 
   local_8 = 0;
-  if (this->access == GENERIC_WRITE) {
-    WriteFile(this->handle, data, len, &local_8, NULL);
-    return len == local_8;
-  } else {
+  if (this->access != GENERIC_WRITE)
     return false;
-  }
+
+  WriteFile(this->handle, data, len, &local_8, NULL);
+  return len == local_8 ? true : false;
 }
 
 // FUNCTION: TH07 0x0045e850
@@ -132,51 +144,46 @@ DWORD Pbg4File::GetSize()
 bool Pbg4File::Seek(u32 offset, DWORD seekFrom)
 
 {
-  bool bVar1 = this->handle != INVALID_HANDLE_VALUE;
-  if (bVar1) {
-    SetFilePointer(this->handle, (LONG)offset, NULL, seekFrom);
-  }
-  return bVar1;
+  if (this->handle == INVALID_HANDLE_VALUE)
+    return false;
+
+  SetFilePointer(this->handle, (LONG)offset, NULL, seekFrom);
+  return true;
 }
 
+#pragma var_order(hMem, DVar2, DVar3)
 // FUNCTION: TH07 0x0045e8f0
 HGLOBAL Pbg4File::ReadRemaining(u32 max)
 
 {
-  bool bVar1;
   HGLOBAL hMem;
   DWORD DVar2;
   DWORD DVar3;
 
-  if (this->access == GENERIC_READ) {
-    DVar2 = this->GetSize();
-    if (max < DVar2) {
+  if (this->access != GENERIC_READ)
+    return NULL;
+
+  DVar2 = this->GetSize();
+  if (DVar2 > max)
+    return NULL;
+
+  hMem = GlobalAlloc(0x40, DVar2);
+  if (hMem == NULL)
+    return NULL;
+
+  DVar3 = this->Tell();
+  if (!this->Seek(DVar3, g_SeekModes[0]))
+    return NULL;
+
+  if (this->Read(hMem, DVar2) == 0) {
+    if (hMem != NULL) {
+      GlobalFree(hMem);
       hMem = NULL;
-    } else {
-      hMem = GlobalAlloc(0x40, DVar2);
-      if (hMem == NULL) {
-        hMem = NULL;
-      } else {
-        DVar3 = this->Tell();
-        bVar1 = this->Seek(DVar3, 0);
-        if (bVar1) {
-          DVar2 = this->Read(hMem, DVar2);
-          if (DVar2 == 0) {
-            if (hMem != NULL) {
-              GlobalFree(hMem);
-            }
-            hMem = NULL;
-          } else {
-            this->Seek(DVar3, 0);
-          }
-        } else {
-          hMem = NULL;
-        }
-      }
     }
-  } else {
-    hMem = NULL;
+    return NULL;
   }
+
+  this->Seek(DVar3, g_SeekModes[0]);
   return hMem;
 }
 
@@ -184,18 +191,15 @@ HGLOBAL Pbg4File::ReadRemaining(u32 max)
 void Pbg4File::GetFullPath(char *out, const char *filename)
 
 {
-  char *pcVar2;
-
-  pcVar2 = strchr((char *)filename, ':');
-  if (pcVar2 == NULL) {
+  if (strchr(filename, ':') != NULL) {
+    strcpy(out, filename);
+  } else {
     GetModuleFileNameA(NULL, out, 0x104);
-    pcVar2 = strrchr(out, '\\');
+    char *pcVar2 = strrchr(out, '\\');
     if (pcVar2 == NULL) {
-      *out = '\0';
+        strcpy(out, "");
     }
     pcVar2[1] = '\0';
     strcat(out, filename);
-  } else {
-    strcpy(out, filename);
   }
 }

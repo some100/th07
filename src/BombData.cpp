@@ -734,15 +734,15 @@ void BombData::BombMarisaADraw(Player *player)
     vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
     vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
     vm->pos.z = 0.0f;
-    (vm->scale).x = 3.2f;
-    (vm->scale).y = 3.2f;
+    vm->scale.x = 3.2f;
+    vm->scale.y = 3.2f;
     g_AnmManager->Draw(vm);
     vm->pos -= player->bombInfo.subInfo[i].bombRegionVelocities * 6.0f;
     vm->pos.x -= 32.0f;
     vm->pos.y -= 32.0f;
     vm->pos.z = 0.0f;
-    (vm->scale).x = 2.2f;
-    (vm->scale).y = 2.2f;
+    vm->scale.x = 2.2f;
+    vm->scale.y = 2.2f;
     g_AnmManager->Draw(vm);
     vm->pos -= (player->bombInfo.subInfo[i].bombRegionVelocities +
                 player->bombInfo.subInfo[i].bombRegionVelocities);
@@ -754,8 +754,8 @@ void BombData::BombMarisaADraw(Player *player)
     vm->pos.x -= 32.0f;
     vm->pos.y -= 32.0f;
     vm->pos.z = 0.0f;
-    (vm->scale).x = 1.0f;
-    (vm->scale).y = 1.0f;
+    vm->scale.x = 1.0f;
+    vm->scale.y = 1.0f;
     g_AnmManager->Draw(vm);
   }
 }
@@ -1001,12 +1001,12 @@ void BombData::BombMarisaBDraw(Player *player)
     vm = player->bombInfo.subInfo[i].vms;
     vm->pos = player->positionCenter;
     vm->pos.x += (cosf(player->bombInfo.subInfo[i].accel) *
-                  vm->sprite->heightPx * (vm->scale).y) /
+                  vm->sprite->heightPx * vm->scale.y) /
                  2.0f;
     vm->pos.y += (sinf(player->bombInfo.subInfo[i].accel) *
-                  vm->sprite->heightPx * (vm->scale).y) /
+                  vm->sprite->heightPx * vm->scale.y) /
                  2.0f;
-    (vm->rotation).z =
+    vm->rotation.z =
         utils::AddNormalizeAngle(player->bombInfo.subInfo[i].accel, 1.5707964f);
     vm->flags |= 4;
     vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
@@ -1092,14 +1092,14 @@ void BombData::BombMarisaBDrawFocus(Player *player)
     fVar1 = (((f32)i * 0.62831855f) / 3.0f - ZUN_PI) + 1.2566371f;
     local_8->pos = player->positionCenter;
     local_8->pos.x +=
-        (cosf(fVar1) * local_8->sprite->heightPx * (local_8->scale).y) / 2.0f;
+        (cosf(fVar1) * local_8->sprite->heightPx * local_8->scale.y) / 2.0f;
     local_8->pos.y +=
-        (sinf(fVar1) * local_8->sprite->heightPx * (local_8->scale).y) / 2.0f;
-    (local_8->rotation).z = utils::AddNormalizeAngle(fVar1, 1.5707964f);
+        (sinf(fVar1) * local_8->sprite->heightPx * local_8->scale.y) / 2.0f;
+    local_8->rotation.z = utils::AddNormalizeAngle(fVar1, 1.5707964f);
     local_8->flags |= 4;
-    (local_8->pos).x += g_GameManager.arcadeRegionTopLeftPos.x;
-    (local_8->pos).y += g_GameManager.arcadeRegionTopLeftPos.y;
-    (local_8->pos).z = 0.0f;
+    local_8->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
+    local_8->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
+    local_8->pos.z = 0.0f;
     g_AnmManager->Draw(local_8);
     local_8 = local_8 + 1;
   }

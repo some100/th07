@@ -595,7 +595,7 @@ void AnmManager::SetAndExecuteScript(AnmVm *vm, AnmRawInstr *beginningOfScript)
     vm->Initialize();
     vm->beginningOfScript = beginningOfScript;
     vm->currentInstruction = vm->beginningOfScript;
-    (vm->currentTimeInScript).Initialize(0);
+    vm->currentTimeInScript.Initialize(0);
     vm->flags = vm->flags & 0xfffffffe;
     ExecuteScript(vm);
     this->scriptsExecutedThisFrame = this->scriptsExecutedThisFrame + 1;

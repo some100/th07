@@ -483,12 +483,12 @@ ZunResult Ending::RegisterChain()
 
 {
   Ending *ending = new Ending;
-  ending->calcChain = Chain::CreateElem((ChainCallback)OnUpdate);
+  ending->calcChain = g_Chain.CreateElem((ChainCallback)OnUpdate);
   ending->calcChain->arg = ending;
   ending->calcChain->addedCallback = (ChainLifecycleCallback)AddedCallback;
   ending->calcChain->deletedCallback = (ChainLifecycleCallback)DeletedCallback;
   if (g_Chain.AddToCalcChain(ending->calcChain, 4) == 0) {
-    ending->drawChain = Chain::CreateElem((ChainCallback)OnDraw);
+    ending->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     ending->drawChain->arg = ending;
     g_Chain.AddToDrawChain(ending->drawChain, 1);
     return ZUN_SUCCESS;

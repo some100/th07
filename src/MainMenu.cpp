@@ -163,6 +163,8 @@ const char *g_DemoReplayPaths[3] = {
     // STRING: TH07 0x00495ab8
     "data/demo/demorpy2.rpy"};
 
+#pragma optimize("s", on)
+
 // FUNCTION: TH07 0x004553fa
 void InitializeTimingVars(Supervisor *arg)
 
@@ -2145,7 +2147,7 @@ u32 MainMenu::OnDraw(MainMenu *arg)
       fVar2 = local_c->pos.y;
       fVar3 = local_c->pos.z;
       local_c->pos += local_c->offset;
-      if ((local_c->rotation).z == 0.0f) {
+      if (local_c->rotation.z == 0.0f) {
         g_AnmManager->DrawNoRotation(local_c);
       } else {
         g_AnmManager->Draw(local_c);
@@ -2352,13 +2354,13 @@ ZunResult MainMenu::RegisterChain()
   memset(mainMenu, 0, sizeof(MainMenu));
 
   g_GameManager.isInGameMenu = 0;
-  mainMenu->calcChain = Chain::CreateElem((ChainCallback)OnUpdate);
+  mainMenu->calcChain = g_Chain.CreateElem((ChainCallback)OnUpdate);
   mainMenu->calcChain->arg = mainMenu;
   mainMenu->calcChain->addedCallback = (ChainLifecycleCallback)AddedCallback;
   mainMenu->calcChain->deletedCallback =
       (ChainLifecycleCallback)DeletedCallback;
   if (g_Chain.AddToCalcChain(mainMenu->calcChain, 3) == 0) {
-    mainMenu->drawChain = Chain::CreateElem((ChainCallback)OnDraw);
+    mainMenu->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     mainMenu->drawChain->arg = mainMenu;
     g_Chain.AddToDrawChain(mainMenu->drawChain, 0);
     return ZUN_SUCCESS;
@@ -2366,3 +2368,5 @@ ZunResult MainMenu::RegisterChain()
     return ZUN_ERROR;
   }
 }
+
+#pragma optimize("s", off)

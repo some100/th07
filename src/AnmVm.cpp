@@ -28,8 +28,8 @@ void AnmVm::Initialize()
 
 {
   memset(this, 0, offsetof(AnmVm, pos));
-  (this->scale).x = 1.0f;
-  (this->scale).y = 1.0f;
+  this->scale.x = 1.0f;
+  this->scale.y = 1.0f;
   (this->color).color = 0xffffffff;
   D3DXMatrixIdentity(&this->matrix);
   *(u16 *)&this->flags = 7;

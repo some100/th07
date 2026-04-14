@@ -22,6 +22,8 @@
 #include "dxutil.hpp"
 #include "pbg4/Pbg4Archive.hpp"
 
+#pragma optimize("s", on)
+
 // GLOBAL: TH07 0x00575950
 Supervisor g_Supervisor;
 
@@ -365,30 +367,33 @@ i32 __stdcall Supervisor::EnumGameControllersCb(LPCDIDEVICEINSTANCEA param_1,
                                                 void *param_2)
 
 {
-  if ((g_Supervisor.controller == NULL) &&
-      (FAILED(g_Supervisor.directInput->CreateDevice(
-          param_1->guidInstance, &g_Supervisor.controller, NULL)))) {
-    return 1;
+  HRESULT hr;
+  if (g_Supervisor.controller == NULL) {
+    hr = g_Supervisor.directInput->CreateDevice(param_1->guidInstance,
+                                                &g_Supervisor.controller, NULL);
+    if (FAILED(hr))
+      return 1;
   }
   return 0;
 }
 
+#pragma var_order(local_1c, idk)
 // FUNCTION: TH07 0x0043836e
 i32 __stdcall Supervisor::ControllerCallback(LPCDIDEVICEOBJECTINSTANCE param_1,
                                              void *param_2)
 
 {
   DIPROPRANGE local_1c;
+  void *idk = param_2;
 
-  if ((param_1->dwType & DIDFT_AXIS) != 0) {
+  if (param_1->dwType & DIDFT_AXIS) {
     local_1c.diph.dwSize = 0x18;
     local_1c.diph.dwHeaderSize = 0x10;
     local_1c.diph.dwHow = 2;
     local_1c.diph.dwObj = param_1->dwType;
     local_1c.lMin = -1000;
     local_1c.lMax = 1000;
-    if (g_Supervisor.controller->SetProperty(DIPROP_RANGE, &local_1c.diph) <
-        0) {
+    if (g_Supervisor.controller->SetProperty(DIPROP_RANGE, &local_1c.diph) < 0) {
       return 0;
     }
   }
@@ -726,7 +731,7 @@ ZunResult Supervisor::RegisterChain()
   chain->deletedCallback = (ChainLifecycleCallback)DeletedCallback;
   ZVar2 = g_Chain.AddToCalcChain(chain, 0);
   if (ZVar2 == ZUN_SUCCESS) {
-    chain = Chain::CreateElem((ChainCallback)OnDraw);
+    chain = g_Chain.CreateElem((ChainCallback)OnDraw);
     chain->arg = &g_Supervisor;
     g_Chain.AddToDrawChain(chain, 0xf);
     ZVar2 = ZUN_SUCCESS;
@@ -841,22 +846,24 @@ void ZunTimer::Increment(i32 value)
 
 {
   if ((g_Supervisor.flags >> 5 & 1) != 0) {
-    Initialize(this->current + 1);
+    ++this->current;
+    this->subFrame = 0.0f;
+    this->previous = -999;
   }
-  if (g_Supervisor.effectiveFramerateMultiplier <= 0.99f) {
+  if (g_Supervisor.effectiveFramerateMultiplier > 0.99f) {
+    this->current = this->current + value;
+  } else {
     if (value < 0) {
       Decrement(-value);
     } else {
       this->previous = this->current;
       this->subFrame = (f32)value * g_Supervisor.effectiveFramerateMultiplier +
                        this->subFrame;
-      while (1.0f <= this->subFrame) {
+      while (this->subFrame >= 1.0f) {
         this->current = this->current + 1;
         this->subFrame = this->subFrame - 1.0f;
       }
     }
-  } else {
-    this->current = this->current + value;
   }
 }
 
@@ -865,9 +872,13 @@ void ZunTimer::Decrement(i32 value)
 
 {
   if ((g_Supervisor.flags >> 5 & 1) != 0) {
-    Initialize(this->current - 1);
+    --this->current;
+    this->subFrame = 0.0f;
+    this->previous = -999;
   }
-  if (g_Supervisor.effectiveFramerateMultiplier <= 0.99f) {
+  if (g_Supervisor.effectiveFramerateMultiplier > 0.99f) {
+    this->current = this->current - value;
+  } else {
     if (value < 0) {
       Increment(-value);
     } else {
@@ -879,8 +890,6 @@ void ZunTimer::Decrement(i32 value)
         this->subFrame = this->subFrame + 1.0f;
       }
     }
-  } else {
-    this->current = this->current - value;
   }
 }
 
@@ -1429,3 +1438,5 @@ ZunResult Supervisor::CheckIntegrity(const char *version, i32 exeSize,
     }
   }
 }
+
+#pragma optimize("s", off)

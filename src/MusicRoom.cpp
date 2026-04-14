@@ -351,14 +351,14 @@ ZunResult MusicRoom::RegisterChain() {
   }
   memset(&g_MusicRoom, 0,
          sizeof(MusicRoom)); // memset it twice because why not?
-  g_MusicRoom.calcChain = Chain::CreateElem((ChainCallback)OnUpdate);
+  g_MusicRoom.calcChain = g_Chain.CreateElem((ChainCallback)OnUpdate);
   (g_MusicRoom.calcChain)->arg = &g_MusicRoom;
   (g_MusicRoom.calcChain)->addedCallback =
       (ChainLifecycleCallback)AddedCallback;
   (g_MusicRoom.calcChain)->deletedCallback =
       (ChainLifecycleCallback)DeletedCallback;
   if (g_Chain.AddToCalcChain(g_MusicRoom.calcChain, 3) == 0) {
-    g_MusicRoom.drawChain = Chain::CreateElem((ChainCallback)OnDraw);
+    g_MusicRoom.drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     (g_MusicRoom.drawChain)->arg = &g_MusicRoom;
     g_Chain.AddToDrawChain(g_MusicRoom.drawChain, 0);
     return ZUN_SUCCESS;

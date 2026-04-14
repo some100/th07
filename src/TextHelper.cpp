@@ -8,6 +8,8 @@
 #include "dxutil.hpp"
 #include "inttypes.hpp"
 
+#pragma optimize("s", on)
+
 // GLOBAL: TH07 0x0049fe28
 IDirect3DSurface8 *g_TextBufferSurface;
 
@@ -416,3 +418,5 @@ void TextHelper::RenderTextToTextureBold(i32 xPos, i32 yPos, i32 spriteWidth,
                              &srcRect, 4, 0);
   SAFE_RELEASE(dstSurface);
 }
+
+#pragma optimize("s", off)

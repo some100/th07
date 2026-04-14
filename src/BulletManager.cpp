@@ -614,11 +614,11 @@ Laser *BulletManager::SpawnLaserPattern(EnemyLaserShooter *laserShooter)
       if (laser->inUse == 0) {
         uVar1 = laserShooter->sprite;
         local_10 = uVar1 + 0x20a;
-        (laser->vm0).anmFileIdx = local_10;
+        laser->vm0.anmFileIdx = local_10;
         g_AnmManager->SetAndExecuteScript(
             &laser->vm0, g_AnmManager->scripts[(i16)uVar1 + 0x20a]);
         g_AnmManager->SetActiveSprite(&laser->vm0,
-                                      (i32)(laser->vm0).activeSpriteIdx +
+                                      (i32)laser->vm0.activeSpriteIdx +
                                           (i32)laserShooter->spriteOffset);
         iVar2 = g_BulletSpriteOffset16Px[laserShooter->spriteOffset];
         laser->vm1.Initialize();
@@ -1030,12 +1030,12 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
         local_38.x = (laser->endOffset - laser->startOffset) / 2.0f +
                      laser->startOffset + (laser->pos).x;
         local_38.y = (laser->pos).y;
-        (laser->vm0).scale.x = laser->width / ((laser->vm0).sprite)->widthPx;
-        (laser->vm0).scale.y = (laser->endOffset - laser->startOffset) /
-                               ((laser->vm0).sprite)->heightPx;
-        (laser->vm0).rotation.z =
+        laser->vm0.scale.x = laser->width / (laser->vm0.sprite)->widthPx;
+        laser->vm0.scale.y = (laser->endOffset - laser->startOffset) /
+                               (laser->vm0.sprite)->heightPx;
+        laser->vm0.rotation.z =
             utils::AddNormalizeAngle(laser->angle + 1.5707964f, 0.0f);
-        (laser->vm0).flags = (laser->vm0).flags | 4;
+        laser->vm0.flags = laser->vm0.flags | 4;
         if (laser->state == 0) {
           if ((laser->flags & 1) == 0) {
             if (laser->startTime < 0x1f) {
@@ -1051,7 +1051,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
               local_10 = 1.2f;
             }
             laser->targetWidth = local_10;
-            (laser->vm0).scale.x = local_10 / 16.0f;
+            laser->vm0.scale.x = local_10 / 16.0f;
             local_20.x = local_10 / 2.0f;
           } else {
             local_28 =
@@ -1060,7 +1060,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
             if (0xff < (i32)local_28) {
               local_28 = 0xff;
             }
-            (laser->vm0).color.color = local_28 << 0x18;
+            laser->vm0.color.color = local_28 << 0x18;
           }
           if (laser->grazeDelay <= laser->timer.current) {
             g_Player.CalcLaserHitbox(&local_38, &local_20, &laser->pos,
@@ -1095,7 +1095,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
                       (((f32)laser->timer.current + laser->timer.subFrame) *
                        laser->width) /
                           (f32)laser->endTime;
-              (laser->vm0).scale.x = fVar4 / 16.0f;
+              laser->vm0.scale.x = fVar4 / 16.0f;
               local_20.x = fVar4 / 2.0f;
             }
           } else {
@@ -1105,7 +1105,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
             if (0xff < (i32)local_28) {
               local_28 = 0xff;
             }
-            (laser->vm0).color.color = local_28 << 0x18;
+            laser->vm0.color.color = local_28 << 0x18;
           }
           if (laser->timer.current < laser->grazeInterval) {
             g_Player.CalcLaserHitbox(&local_38, &local_20, &laser->pos,
@@ -1161,7 +1161,7 @@ void Bullet::Draw()
   vm->pos.z = 0.05f;
   vm->color.color = (vm->color.color & 0xff000000) | 0xffffff;
   if (vm->autoRotate != 0) {
-    (vm->rotation).z = utils::AddNormalizeAngle(this->angle + 1.5707964f, 0.0f);
+    vm->rotation.z = utils::AddNormalizeAngle(this->angle + 1.5707964f, 0.0f);
     vm->flags |= 4;
   }
   g_AnmManager->Draw(vm);
@@ -1181,19 +1181,19 @@ u32 BulletManager::OnDraw(BulletManager *arg)
       sincosf(&local_c, &local_18, laser->angle);
       local_14 =
           (laser->endOffset - laser->startOffset) / 2.0f + laser->startOffset;
-      (laser->vm0).pos.x = local_18 * local_14 + (laser->pos).x;
-      (laser->vm0).pos.y = local_c * local_14 + (laser->pos).y;
-      (laser->vm0).pos.z = 0.05f;
+      laser->vm0.pos.x = local_18 * local_14 + (laser->pos).x;
+      laser->vm0.pos.y = local_c * local_14 + (laser->pos).y;
+      laser->vm0.pos.z = 0.05f;
       laser->color = -1;
-      (laser->vm0).pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-      (laser->vm0).pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
+      laser->vm0.pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
+      laser->vm0.pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
       g_AnmManager->Draw(&laser->vm0);
       if (((laser->startOffset < 16.0f) || (laser->speed == 0.0f)) &&
           ((laser->hideWarning == 0 || (laser->state != 0)))) {
         laser->vm1.pos.x = local_18 * laser->startOffset + (laser->pos).x;
         laser->vm1.pos.y = local_c * laser->startOffset + (laser->pos).y;
         laser->vm1.pos.z = 0.05f;
-        laser->vm1.color = (laser->vm0).color;
+        laser->vm1.color = laser->vm0.color;
         laser->vm1.flags = laser->vm1.flags | 0x20;
         laser->vm1.color.color =
             (laser->vm1.color.color & 0xffffff) | 0xff000000;

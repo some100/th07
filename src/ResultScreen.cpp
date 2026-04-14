@@ -15,6 +15,8 @@
 #include "ZunResult.hpp"
 #include "pbg4/Lzss.hpp"
 
+#pragma optimize("s", on)
+
 // GLOBAL: TH07 0x0049ec34
 const char *g_CharacterList[6] = {
     // STRING: TH07 0x004969b0
@@ -2033,8 +2035,8 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
         local_3c = local_38.x;
         local_38.x += 320.0f;
         local_38.y += 16.0f;
-        (arg->rightArrowVm).pos = local_38;
-        (arg->rightArrowVm).scale.x = 2.375f;
+        arg->rightArrowVm.pos = local_38;
+        arg->rightArrowVm.scale.x = 2.375f;
         g_AnmManager->DrawNoRotation(&arg->rightArrowVm);
         local_38.y -= 16.0f;
         local_38.x = local_3c;
@@ -2447,7 +2449,7 @@ ZunResult ResultScreen::RegisterChain(u32 param_1)
     AddedCallback(resultScreen);
     return ZUN_SUCCESS;
   }
-  ChainElem *calcChain = Chain::CreateElem((ChainCallback)OnUpdate);
+  ChainElem *calcChain = g_Chain.CreateElem((ChainCallback)OnUpdate);
   resultScreen->calcChain = calcChain;
   resultScreen->calcChain->addedCallback =
       (ChainLifecycleCallback)AddedCallback;
@@ -2455,7 +2457,7 @@ ZunResult ResultScreen::RegisterChain(u32 param_1)
       (ChainLifecycleCallback)DeletedCallback;
   resultScreen->calcChain->arg = resultScreen;
   if (g_Chain.AddToCalcChain(resultScreen->calcChain, 0xe) == 0) {
-    ChainElem *drawChain = Chain::CreateElem((ChainCallback)OnDraw);
+    ChainElem *drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     resultScreen->drawChain = drawChain;
     resultScreen->drawChain->arg = resultScreen;
     g_Chain.AddToDrawChain(resultScreen->drawChain, 0xd);
@@ -2464,3 +2466,5 @@ ZunResult ResultScreen::RegisterChain(u32 param_1)
     return ZUN_ERROR;
   }
 }
+
+#pragma optimize("s", off)

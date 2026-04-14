@@ -119,7 +119,6 @@ struct AnmRawInstr {
 struct AnmVmBase {
   // FUNCTION: TH07 0x004011b0
   AnmVmBase() {}
-  // this could be initializetimers? why though
   D3DXVECTOR3 rotation;
   D3DXVECTOR3 angleVel;
   D3DXVECTOR2 scale;

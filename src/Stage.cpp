@@ -926,10 +926,10 @@ i32 Stage::RenderObjects(i32 param_1)
                   ((vm->offset).z + (local_84->pos).z + (local_10->pos).z) -
                   (this->position).z;
               if ((local_84->size).x != 0.0f) {
-                (vm->scale).x = (local_84->size).x / vm->sprite->widthPx;
+                vm->scale.x = (local_84->size).x / vm->sprite->widthPx;
               }
               if ((local_84->size).y != 0.0f) {
-                (vm->scale).y = (local_84->size).y / vm->sprite->heightPx;
+                vm->scale.y = (local_84->size).y / vm->sprite->heightPx;
               }
               if (vm->autoRotate == 2) {
                 local_54.m[3][0] = vm->pos.x;
@@ -948,19 +948,19 @@ i32 Stage::RenderObjects(i32 param_1)
                   local_9c = (local_84->size).x;
                 }
                 local_54.m[3][0] =
-                    local_68.x * local_9c * (vm->scale).x + local_54.m[3][0];
+                    local_68.x * local_9c * vm->scale.x + local_54.m[3][0];
                 local_54.m[3][1] =
-                    local_68.y * local_9c * (vm->scale).x + local_54.m[3][1];
+                    local_68.y * local_9c * vm->scale.x + local_54.m[3][1];
                 local_54.m[3][2] =
-                    local_68.z * local_9c * (vm->scale).x + local_54.m[3][2];
+                    local_68.z * local_9c * vm->scale.x + local_54.m[3][2];
                 D3DXVec3Project(&local_68, &local_98, &g_Supervisor.viewport,
                                 &g_Supervisor.projectionMatrix,
                                 &g_Supervisor.viewMatrix, &local_54);
                 local_80.z = local_68.z - local_74.z;
                 local_80.y = local_68.y - local_74.y;
                 local_80.x = local_68.x - local_74.x;
-                (vm->scale).x = D3DXVec3Length(&local_80) / local_9c;
-                (vm->scale).y = (vm->scale).x;
+                vm->scale.x = D3DXVec3Length(&local_80) / local_9c;
+                vm->scale.y = vm->scale.x;
                 local_80.z = vm->pos.z - this->camPos.z;
                 local_80.y = vm->pos.y - this->camPos.y;
                 local_80.x = vm->pos.x - this->camPos.x;

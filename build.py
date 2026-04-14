@@ -4,8 +4,9 @@ import os
 import shutil
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path, PureWindowsPath
-from typing import Dict, Iterator, List
+from typing import Dict, Iterator, List, Tuple
 from zipfile import ZipFile
 
 import requests
@@ -32,60 +33,56 @@ RC_PATH = VC_PATH / "BIN" / "RC.EXE"
 DX8_URL = "https://archive.org/download/dx8sdk/dx8sdk.exe"
 MSVC_URL = "https://archive.org/download/en_vs.net_pro_full/en_vs.net_pro_full.exe"
 HACKERY_URL = "https://gist.githubusercontent.com/EstexNT/e98a1384b906a3eedaaa3eeb7e58cd9d/raw/822536a26025f0df8763f1112d89bb1514f6209c/hackery.cpp"
-DX8_CSUM = "9106e17618a531ca9ec2533984fd1c78"
-MSVC_CSUM = "473bf79735139292c8f6eb7c6af000bc"
+DX8_SIZE = 144441256
+MSVC_SIZE = 1706945024
 
-SOURCES = map(
-    lambda x: Path(x),
-    [
-        "AnmVm.cpp",
-        "AsciiManager.cpp",
-        "Stage.cpp",
-        "BombData.cpp",
-        "EclManager.cpp",
-        "EnemyEclInstr.cpp",
-        "EffectManager.cpp",
-        "Ending.cpp",
-        "EnemyManager.cpp",
-        "BulletManager.cpp",
-        "Gui.cpp",
-        "GameManager.cpp",
-        "Chain.cpp",
-        "Controller.cpp",
-        "FileSystem.cpp",
-        "GameErrorContext.cpp",
-        "Rng.cpp",
-        "utils.cpp",
-        "TextHelper.cpp",
-        "ItemManager.cpp",
-        "main.cpp",
-        "GameWindow.cpp",
-        "MidiOutput.cpp",
-        "Supervisor.cpp",
-        "MusicRoom.cpp",
-        "Player.cpp",
-        "ReplayManager.cpp",
-        "ResultScreen.cpp",
-        "ScreenEffect.cpp",
-        "SoundPlayer.cpp",
-        "AnmManager.cpp",
-        "MainMenu.cpp",
-        "dsutil.cpp",
-        "pbg4/Pbg4File.cpp",
-        "pbg4/Lzss.cpp",
-        "pbg4/Pbg4Archive.cpp",
-    ],
+SOURCES: List[Path] = list(
+    map(
+        lambda x: Path(x),
+        [
+            "AnmVm.cpp",
+            "AsciiManager.cpp",
+            "Stage.cpp",
+            "BombData.cpp",
+            "EclManager.cpp",
+            "EnemyEclInstr.cpp",
+            "EffectManager.cpp",
+            "Ending.cpp",
+            "EnemyManager.cpp",
+            "BulletManager.cpp",
+            "Gui.cpp",
+            "GameManager.cpp",
+            "Chain.cpp",
+            "Controller.cpp",
+            "FileSystem.cpp",
+            "GameErrorContext.cpp",
+            "Rng.cpp",
+            "utils.cpp",
+            "TextHelper.cpp",
+            "ItemManager.cpp",
+            "main.cpp",
+            "GameWindow.cpp",
+            "MidiOutput.cpp",
+            "Supervisor.cpp",
+            "MusicRoom.cpp",
+            "Player.cpp",
+            "ReplayManager.cpp",
+            "ResultScreen.cpp",
+            "ScreenEffect.cpp",
+            "SoundPlayer.cpp",
+            "AnmManager.cpp",
+            "MainMenu.cpp",
+            "dsutil.cpp",
+            "pbg4/Pbg4File.cpp",
+            "pbg4/Lzss.cpp",
+            "pbg4/Pbg4Archive.cpp",
+        ],
+    )
 )
 
 parser = argparse.ArgumentParser()
 _ = parser.add_argument("--no-icon", action="store_true")
 args = parser.parse_args()
-
-
-def md5_csum_matches(path: Path, target_csum: str):
-    with open(path, "rb") as file:
-        data = file.read()
-        return hashlib.md5(data).hexdigest() == target_csum
 
 
 # Oh My God Bruh
@@ -143,10 +140,10 @@ def download(url: str, dest_path: Path):
 def download_dx8():
     if not DX8_PATH.exists():
         os.makedirs(DX8_PATH)
-    if len(os.listdir(DX8_PATH)) > 1:
+    if (DX8_PATH / "include").exists():
         return
     archive_path = DX8_PATH / "dx8sdk.exe"
-    if not os.path.exists(archive_path) or not md5_csum_matches(archive_path, DX8_CSUM):
+    if not os.path.exists(archive_path) or archive_path.stat().st_size != DX8_SIZE:
         download(DX8_URL, archive_path)
 
     # these happen to be valid zips, too
@@ -180,12 +177,10 @@ def install_hackery(env: Dict[str, str]):
 def download_msvc():
     if not MSVC_PATH.exists():
         os.makedirs(MSVC_PATH)
-    if len(os.listdir(MSVC_PATH)) > 1:
+    if (VC_PATH / "BIN" / "CL.EXE").exists():
         return
     archive_path = MSVC_PATH / "en_vs.net_pro_full.exe"
-    if not os.path.exists(archive_path) or not md5_csum_matches(
-        archive_path, MSVC_CSUM
-    ):
+    if not os.path.exists(archive_path) or archive_path.stat().st_size != MSVC_SIZE:
         download(MSVC_URL, archive_path)
     with ZipFile(archive_path, "r") as zip:
         _ = zip.extractall(MSVC_PATH)
@@ -240,6 +235,26 @@ def run_program(name: str, *args: str, env: Dict[str, str]):
     return subprocess.check_call(cmd, env=env)
 
 
+def run_program_capture(name: str, *args: str, env: Dict[str, str]):
+    if sys.platform == "win32":
+        cmd = [name] + list(args)
+    else:
+        env = env.copy()
+        env["LANG"] = "ja_JP.UTF-8"
+        env["WINEDEBUG"] = "fixme-all"
+        cmd = ["wine", name] + list(args)
+
+    result = subprocess.run(
+        cmd,
+        env=env,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+
+    return result.returncode, result.stdout
+
+
 def conv_path(path: Path) -> str:
     """Convert a Unix path to a Windows path, if needed."""
     if sys.platform == "win32":
@@ -270,33 +285,42 @@ def compile_resources(path: Path) -> Path:
     return res_path
 
 
-def compile(src: Path) -> Path:
+def compile(src: Path) -> Tuple[int, str]:
+    if not needs_compile(src):
+        return 0, ""
+
     obj = OBJ_DIR / src.with_suffix(".obj")
 
-    if not (OBJ_DIR / src).parent.exists():
-        os.makedirs((OBJ_DIR / src).parent)
-
-    hpp = SRC_DIR / src.with_suffix(".hpp")
-
-    if (
-        os.path.exists(obj)
-        and os.path.getmtime(obj) >= os.path.getmtime(SRC_DIR / src)
-        and (not hpp.exists() or os.path.getmtime(obj) >= os.path.getmtime(hpp))
-        and os.path.getmtime(obj) >= os.path.getmtime(SCRIPT_PATH)
-    ):
-        return obj
-
-    _ = run_program(
+    returncode, output = run_program_capture(
         str(CL_PATH),
         "/c",
         conv_path(SRC_DIR / src),
         "/Fo" + conv_path(obj),
+        "/Fd" + conv_path(obj.with_suffix(".pdb")),
         *cflags,
         env=env,
     )
 
-    return obj
+    return returncode, output
 
+def needs_compile(src: Path) -> bool:
+    obj = OBJ_DIR / src.with_suffix(".obj")
+    if not (OBJ_DIR / src).parent.exists():
+        os.makedirs((OBJ_DIR / src).parent, exist_ok=True)
+    hpp = SRC_DIR / src.with_suffix(".hpp")
+
+    return not (
+        os.path.exists(obj)
+        and os.path.getmtime(obj) >= os.path.getmtime(SRC_DIR / src)
+        and (not hpp.exists() or os.path.getmtime(obj) >= os.path.getmtime(hpp))
+        and os.path.getmtime(obj) >= os.path.getmtime(SCRIPT_PATH)
+    )
+
+def handle_compile_result(result: Tuple[int, str]):
+    if result[1] != "":
+        print(result[1], flush=True)
+    if result[0] != 0:
+        sys.exit(1)
 
 env = os.environ.copy()
 
@@ -323,7 +347,7 @@ cflags = [
     "/Od",
     "/Ob1",
     "/Oi",
-    "/GX",
+    "/EHsc",
     "/Gr",
     "/GL",
     "/Gy",
@@ -355,12 +379,21 @@ libs = [
     "ole32.lib",
 ]
 
-objects: List[str] = []
+objects: List[str] = list(
+    map(lambda x: conv_path(OBJ_DIR / x.with_suffix(".obj")), SOURCES)
+)
+
+pending = [src for src in SOURCES if needs_compile(src)]
 
 os.makedirs(BUILD_DIR, exist_ok=True)
 os.chdir(BUILD_DIR)
-for src in SOURCES:
-    objects.append(conv_path(compile(src)))
+
+with ThreadPoolExecutor() as executor:
+    futures = {executor.submit(compile, src): src for src in pending}
+
+    for future in as_completed(futures):
+        src = futures[future]
+        handle_compile_result(future.result())
 
 if not args.no_icon:
     objects.append(conv_path(compile_resources(extract_icon(EXE_PATH))))

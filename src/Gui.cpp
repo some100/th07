@@ -19,6 +19,8 @@
 #include "ZunResult.hpp"
 #include "dxutil.hpp"
 
+#pragma optimize("s", on)
+
 // GLOBAL: TH07 0x0049fbf0
 Gui g_Gui;
 
@@ -1971,3 +1973,5 @@ void Gui::CutChain()
   g_Chain.Cut(&g_GuiCalcChain);
   g_Chain.Cut(&g_GuiDrawChain);
 }
+
+#pragma optimize("s", off)

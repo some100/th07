@@ -1157,10 +1157,10 @@ u32 EnemyManager::ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3)
       }
       if (-1 < local_20->vms[1].anmFileIdx) {
         if (local_20->vms[1].autoRotate != 0) {
-          (local_20->vms[1].rotation).z = -local_20->angle;
+          local_20->vms[1].rotation.z = -local_20->angle;
           local_20->vms[1].flags = local_20->vms[1].flags | 4;
         }
-        local_20->vms[1].pos = local_20->position + (local_20->vms[1].offset);
+        local_20->vms[1].pos = local_20->position + local_20->vms[1].offset;
         local_20->vms[1].pos.z = 0.3f;
         local_20->vms[1].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         local_20->vms[1].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
@@ -1211,10 +1211,10 @@ u32 EnemyManager::ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3)
             local_1c += local_20->trailNodeStep;
           }
           if (2 < local_2c) {
-            fVar4 = ((local_20->primaryVm.sprite)->uvEnd).x;
-            fVar5 = ((local_20->primaryVm.sprite)->uvStart).x;
+            fVar4 = (local_20->primaryVm.sprite->uvEnd).x;
+            fVar5 = (local_20->primaryVm.sprite->uvStart).x;
             iVar10 = local_2c + 1;
-            local_34 = ((local_20->primaryVm.sprite)->uvEnd).x +
+            local_34 = (local_20->primaryVm.sprite->uvEnd).x +
                        local_20->primaryVm.uvScrollPos.x;
             local_3c = local_20->trailVertices;
             local_1c = 0;
@@ -1244,7 +1244,7 @@ u32 EnemyManager::ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3)
                 fVar6 = cosf(local_44);
                 local_28 = 0.0f;
                 local_24 =
-                    (fVar3 * (local_20->primaryVm.sprite)->heightPx) / 2.0f;
+                    (fVar3 * local_20->primaryVm.sprite->heightPx) / 2.0f;
                 if ((local_20->trailFlags & 2) != 0) {
                   fVar8 = 1.0f - (f32)local_1c / (f32)(i32)local_20->trailCount;
                   local_28 = fVar8 * 0.0f;
@@ -1266,7 +1266,7 @@ u32 EnemyManager::ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3)
                                   local_3c->pos.y;
                 local_3c->textureUV.x = local_34;
                 local_3c->textureUV.y =
-                    ((local_20->primaryVm.sprite)->uvStart).y +
+                    (local_20->primaryVm.sprite->uvStart).y +
                     local_20->primaryVm.uvScrollPos.y;
                 *(D3DXVECTOR3 *)&local_3c[1].pos =
                     local_20->enemyHistory[local_1c].position;
@@ -1276,7 +1276,7 @@ u32 EnemyManager::ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3)
                                     16.0f + local_3c[1].pos.y;
                 local_3c[1].textureUV.x = local_34;
                 local_3c[1].textureUV.y =
-                    ((local_20->primaryVm.sprite)->uvEnd).y +
+                    (local_20->primaryVm.sprite->uvEnd).y +
                     local_20->primaryVm.uvScrollPos.y;
                 local_3c = local_3c + 2;
               } else {

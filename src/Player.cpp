@@ -151,7 +151,7 @@ i32 ShtData::FireOrbBulletUnfocused(Player *player, PlayerBullet *bullet,
   i16 sVar2 = shtEntry->fireOffset;
   if (player->timers[sVar2].bullet == NULL) {
     if (player->orbState == ORB_UNFOCUSED) {
-      player->timers[sVar2].base.Initialize(shtEntry->fireInterval);
+      player->timers[sVar2].Initialize(shtEntry->fireInterval);
       player->timers[sVar2].bullet = bullet;
       bullet->timerIdx = sVar2;
       bullet->optionId = (i16)shtEntry->option;
@@ -179,7 +179,7 @@ i32 ShtData::FireOrbBulletFocused(Player *player, PlayerBullet *bullet,
   i16 sVar2 = shtEntry->fireOffset;
   if (player->timers[sVar2].bullet == NULL) {
     if (player->orbState == ORB_FOCUSED) {
-      player->timers[sVar2].base.Initialize(999);
+      player->timers[sVar2].Initialize(999);
       player->timers[sVar2].bullet = bullet;
       bullet->timerIdx = sVar2;
       bullet->optionId = (i16)shtEntry->option;
@@ -364,16 +364,16 @@ i32 ShtData::UpdateOrbLaser(Player *player, PlayerBullet *bullet)
     bullet->vm.pendingInterrupt = 1;
   }
   if (((g_Gui.HasCurrentMsgIdx() != 0) || ((player->bombInfo).isInUse != 0)) &&
-      (0x14 < player->timers[bullet->timerIdx].base.current)) {
-    player->timers[bullet->timerIdx].base.Initialize(0x14);
+      (0x14 < player->timers[bullet->timerIdx].current)) {
+    player->timers[bullet->timerIdx].Initialize(0x14);
   }
-  if (player->timers[bullet->timerIdx].base.current < 1) {
-    player->timers[bullet->timerIdx].base.Initialize(0);
+  if (player->timers[bullet->timerIdx].current < 1) {
+    player->timers[bullet->timerIdx].Initialize(0);
     player->timers[bullet->timerIdx].bullet = NULL;
     bullet->bulletState = 0;
     return 1;
   } else {
-    if ((player->timers[bullet->timerIdx].base.current < 0x47) &&
+    if ((player->timers[bullet->timerIdx].current < 0x47) &&
         ((bullet->vm.flags >> 0xd & 1) != 0)) {
       bullet->vm.pendingInterrupt = 1;
     }
@@ -400,16 +400,16 @@ i32 ShtData::UpdatePlayerLaser(Player *player, PlayerBullet *bullet)
     bullet->vm.pendingInterrupt = 1;
   }
   if (((g_Gui.HasCurrentMsgIdx() != 0) || ((player->bombInfo).isInUse != 0)) &&
-      (0x14 < player->timers[bullet->timerIdx].base.current)) {
-    player->timers[bullet->timerIdx].base.Initialize(0x14);
+      (0x14 < player->timers[bullet->timerIdx].current)) {
+    player->timers[bullet->timerIdx].Initialize(0x14);
   }
-  if (player->timers[bullet->timerIdx].base.current < 1) {
-    player->timers[bullet->timerIdx].base.Initialize(0);
+  if (player->timers[bullet->timerIdx].current < 1) {
+    player->timers[bullet->timerIdx].Initialize(0);
     bullet->bulletState = 0;
     player->timers[bullet->timerIdx].bullet = NULL;
     return 1;
   } else {
-    if ((player->timers[bullet->timerIdx].base.current < 0x47) &&
+    if ((player->timers[bullet->timerIdx].current < 0x47) &&
         ((bullet->vm.flags >> 0xd & 1) != 0)) {
       bullet->vm.pendingInterrupt = 1;
     }
@@ -601,7 +601,6 @@ void Player::SpawnBullets(Player *player, u32 timer)
 void Player::UpdateShots()
 
 {
-  PlayerBulletTimer *pPVar1;
   PlayerBullet *bullet;
 
   if ((this->orbState != ORB_FOCUSED) && (this->timers[2].bullet != NULL)) {
@@ -628,16 +627,15 @@ void Player::UpdateShots()
   }
   for (i32 i = 0; i < 3; i += 1) {
     if (this->timers[i].bullet != NULL) {
-      if ((0 < this->timers[i].base.current) &&
-          (this->timers[i].base.current < 999)) {
-        this->timers[i].base.Decrement(1);
+      if ((0 < this->timers[i].current) &&
+          (this->timers[i].current < 999)) {
+        this->timers[i].Decrement(1);
       }
       if (((this->fireBulletTimer).current < 0) &&
-          (0x32 < this->timers[i].base.current)) {
-        pPVar1 = this->timers + i;
-        (pPVar1->base).Initialize(0x32);
+          (0x32 < this->timers[i].current)) {
+        this->timers[i].Initialize(0x32);
       }
-      if (this->timers[i].base.current == 0) {
+      if (this->timers[i].current == 0) {
         this->timers[i].bullet = NULL;
       }
     }
@@ -2247,9 +2245,9 @@ ZunResult Player::RegisterChain(u8 param_1)
   memset(&g_Player, 0, sizeof(Player));
   g_Player.invulnerabilityTimer.Initialize(0);
   g_Player.initParam = param_1;
-  g_Player.calcChain = Chain::CreateElem((ChainCallback)OnUpdate);
-  g_Player.drawChain1 = Chain::CreateElem((ChainCallback)OnDrawHighPrio);
-  g_Player.drawChain2 = Chain::CreateElem((ChainCallback)OnDrawLowPrio);
+  g_Player.calcChain = g_Chain.CreateElem((ChainCallback)OnUpdate);
+  g_Player.drawChain1 = g_Chain.CreateElem((ChainCallback)OnDrawHighPrio);
+  g_Player.drawChain2 = g_Chain.CreateElem((ChainCallback)OnDrawLowPrio);
   (g_Player.calcChain)->arg = &g_Player;
   (g_Player.drawChain1)->arg = &g_Player;
   (g_Player.drawChain2)->arg = &g_Player;

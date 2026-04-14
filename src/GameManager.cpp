@@ -17,6 +17,8 @@
 #include "ZunResult.hpp"
 #include "dxutil.hpp"
 
+#pragma optimize("s", on)
+
 // GLOBAL: TH07 0x00626270
 GameManager g_GameManager;
 
@@ -975,3 +977,5 @@ i32 GameManager::HasUnlockedPhantomAndMaxClears()
     return 0;
   }
 }
+
+#pragma optimize("s", off)

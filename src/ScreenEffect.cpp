@@ -336,23 +336,23 @@ void BombEffects::RegisterChain(i32 type, i32 duration, u32 arg1, u32 arg2,
     memset(bombEffects, 0, sizeof(BombEffects));
     switch (type) {
     case 0:
-      local_8 = Chain::CreateElem((ChainCallback)OnUpdateFadeOut);
-      local_c = Chain::CreateElem((ChainCallback)OnDrawFullScreenColor);
+      local_8 = g_Chain.CreateElem((ChainCallback)OnUpdateFadeOut);
+      local_c = g_Chain.CreateElem((ChainCallback)OnDrawFullScreenColor);
       break;
     case 1:
-      local_8 = Chain::CreateElem((ChainCallback)OnUpdateScreenShake);
+      local_8 = g_Chain.CreateElem((ChainCallback)OnUpdateScreenShake);
       break;
     case 2:
-      local_8 = Chain::CreateElem((ChainCallback)OnUpdateFadeIn);
-      local_c = Chain::CreateElem((ChainCallback)OnDrawPlayAreaColor);
+      local_8 = g_Chain.CreateElem((ChainCallback)OnUpdateFadeIn);
+      local_c = g_Chain.CreateElem((ChainCallback)OnDrawPlayAreaColor);
       break;
     case 3:
-      local_8 = Chain::CreateElem((ChainCallback)OnUpdatePulse);
-      local_c = Chain::CreateElem((ChainCallback)OnDrawPlayAreaPulseColor);
+      local_8 = g_Chain.CreateElem((ChainCallback)OnUpdatePulse);
+      local_c = g_Chain.CreateElem((ChainCallback)OnDrawPlayAreaPulseColor);
       break;
     case 4:
-      local_8 = Chain::CreateElem((ChainCallback)OnUpdateFadeIn);
-      local_c = Chain::CreateElem((ChainCallback)OnDrawFullScreenColor);
+      local_8 = g_Chain.CreateElem((ChainCallback)OnUpdateFadeIn);
+      local_c = g_Chain.CreateElem((ChainCallback)OnDrawFullScreenColor);
     }
     local_8->addedCallback = (ChainLifecycleCallback)AddedCallback;
     local_8->deletedCallback = (ChainLifecycleCallback)DeletedCallback;

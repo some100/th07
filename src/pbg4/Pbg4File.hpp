@@ -45,3 +45,6 @@ struct Pbg4File : IPbg4File {
   HANDLE handle;
   u32 access;
 };
+
+extern u32 g_SeekModes[3];
+extern const char *g_AccessModes[3];

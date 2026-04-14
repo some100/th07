@@ -38,7 +38,7 @@ namespace Controller {
 u16 GetControllerInput(u16 buttons);
 u8 *GetControllerState();
 u16 GetInput();
-bool GetJoystickCaps();
+u16 GetJoystickCaps();
 void ResetKeyboard();
 u32 SetButtonFromControllerInputs(u16 *outButtons, i16 controllerButtonToTest,
                                   u32 touhouButton, u32 inputButtons);
