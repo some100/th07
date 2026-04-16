@@ -82,6 +82,7 @@ SOURCES: List[Path] = list(
 
 parser = argparse.ArgumentParser()
 _ = parser.add_argument("--no-icon", action="store_true")
+_ = parser.add_argument("--no-matching", action="store_true")
 args = parser.parse_args()
 
 
@@ -356,6 +357,9 @@ cflags = [
     "/DNDEBUG",
     f"-I{conv_path(DX8_PATH / 'include')}",
 ]
+
+if args.no_matching:
+  cflags += "/DNON_MATCHING"
 
 lflags = [
     f"-LIBPATH:{conv_path(DX8_PATH / 'lib')}",

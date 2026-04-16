@@ -6,7 +6,8 @@
 
 union ZunColor {
     D3DCOLOR color;
-    struct ColorBytes {
+    struct ColorBytes
+    {
         u8 b;
         u8 g;
         u8 r;

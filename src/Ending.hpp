@@ -3,7 +3,8 @@
 #include "AnmVm.hpp"
 #include "Chain.hpp"
 
-struct Ending {
+struct Ending
+{
     Ending();
 
     static ZunResult RegisterChain();

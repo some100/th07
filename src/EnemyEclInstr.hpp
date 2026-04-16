@@ -5,8 +5,8 @@
 #include "AnmManager.hpp"
 #include "EclManager.hpp"
 
-namespace EnemyEclInstr {
-
+namespace EnemyEclInstr
+{
 
 void ExInsSetPosToBoss(Enemy *enemy, EclRawInstr *instr);
 void ExInsAliceCurveBullets(Enemy *enemy, EclRawInstr *instr);
