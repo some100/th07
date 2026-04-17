@@ -22,16 +22,18 @@
 EclManager g_EclManager;
 
 // GLOBAL: TH07 0x0049f560
-const char *g_EclPaths[10] = {"dummy",
-                              "data/ecldata1.ecl",
-                              "data/ecldata2.ecl",
-                              "data/ecldata3.ecl",
-                              "data/ecldata4.ecl",
-                              "data/ecldata5.ecl",
-                              "data/ecldata6.ecl",
-                              "data/ecldata7.ecl",
-                              "data/ecldata8.ecl",
-                              NULL};
+const char *g_EclPaths[10] = {
+    "dummy",
+    "data/ecldata1.ecl",
+    "data/ecldata2.ecl",
+    "data/ecldata3.ecl",
+    "data/ecldata4.ecl",
+    "data/ecldata5.ecl",
+    "data/ecldata6.ecl",
+    "data/ecldata7.ecl",
+    "data/ecldata8.ecl",
+    NULL,
+};
 
 // GLOBAL: TH07 0x01347aa0
 EclGlobalVars g_GlobalEclVars;
@@ -88,244 +90,162 @@ ZunResult EclManager::CallEclSub(EnemyEclContext *param_1, i16 subId)
 // FUNCTION: TH07 0x0040e5b0
 i32 EclManager::GetVarValue(Enemy *enemy, i32 eclVar)
 {
-    u32 local_38;
     D3DXVECTOR3 local_10;
 
     switch (eclVar)
     {
     case VAR_LOCAL_INT1_1:
-        eclVar = enemy->currentContext.eclContextArgs.intVars1[0];
-        break;
+        return enemy->currentContext.eclContextArgs.intVars1[0];
     case VAR_LOCAL_INT1_2:
-        eclVar = enemy->currentContext.eclContextArgs.intVars1[1];
-        break;
+        return enemy->currentContext.eclContextArgs.intVars1[1];
     case VAR_LOCAL_INT1_3:
-        eclVar = enemy->currentContext.eclContextArgs.intVars1[2];
-        break;
+        return enemy->currentContext.eclContextArgs.intVars1[2];
     case VAR_LOCAL_INT1_4:
-        eclVar = enemy->currentContext.eclContextArgs.intVars1[3];
-        break;
-    case VAR_LOCAL_FLOAT1_1:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[0];
-        break;
-    case VAR_LOCAL_FLOAT1_2:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[1];
-        break;
-    case VAR_LOCAL_FLOAT1_3:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[2];
-        break;
-    case VAR_LOCAL_FLOAT1_4:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[3];
-        break;
-    case VAR_LOCAL_FLOAT1_5:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[4];
-        break;
-    case VAR_LOCAL_FLOAT1_6:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[5];
-        break;
-    case VAR_LOCAL_FLOAT1_7:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[6];
-        break;
-    case VAR_LOCAL_FLOAT1_8:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[7];
-        break;
+        return enemy->currentContext.eclContextArgs.intVars1[3];
+    case VAR_LOCAL_INT3_1:
+        return enemy->currentContext.eclContextArgs.globalVars.intVars[0];
+    case VAR_LOCAL_INT3_2:
+        return enemy->currentContext.eclContextArgs.globalVars.intVars[1];
+    case VAR_LOCAL_INT3_3:
+        return enemy->currentContext.eclContextArgs.globalVars.intVars[2];
+    case VAR_LOCAL_INT3_4:
+        return enemy->currentContext.eclContextArgs.globalVars.intVars[3];
     case VAR_LOCAL_INT2_1:
-        eclVar = enemy->currentContext.eclContextArgs.intVars2[0];
-        break;
+        return enemy->currentContext.eclContextArgs.intVars2[0];
     case VAR_LOCAL_INT2_2:
-        eclVar = enemy->currentContext.eclContextArgs.intVars2[1];
-        break;
+        return enemy->currentContext.eclContextArgs.intVars2[1];
     case VAR_LOCAL_INT2_3:
-        eclVar = enemy->currentContext.eclContextArgs.intVars2[2];
-        break;
+        return enemy->currentContext.eclContextArgs.intVars2[2];
     case VAR_LOCAL_INT2_4:
-        eclVar = enemy->currentContext.eclContextArgs.intVars2[3];
-        break;
+        return enemy->currentContext.eclContextArgs.intVars2[3];
     case VAR_DIFFICULTY:
-        eclVar = g_GameManager.difficulty;
-        break;
+        return g_GameManager.difficulty;
     case VAR_RANK:
-        eclVar = g_GameManager.rank.rank;
-        break;
-    case VAR_POS_X:
-        eclVar = enemy->position.x;
-        break;
-    case VAR_POS_Y:
-        eclVar = enemy->position.y;
-        break;
-    case VAR_POS_Z:
-        eclVar = enemy->position.z;
-        break;
-    case VAR_PLAYER_POS_X:
-        eclVar = g_Player.positionCenter.x;
-        break;
-    case VAR_PLAYER_POS_Y:
-        eclVar = g_Player.positionCenter.y;
-        break;
-    case VAR_PLAYER_POS_Z:
-        eclVar = g_Player.positionCenter.z;
-        break;
-    case VAR_ANGLE_TO_PLAYER:
-        eclVar = g_Player.AngleToPlayer(&enemy->position);
-        break;
+        return g_GameManager.rank.rank;
     case VAR_CUR_TIME:
-        eclVar = enemy->timer.current;
-        break;
+        return enemy->timer.current;
+    case VAR_LIFE:
+        return enemy->life;
+    case VAR_PLAYER_SHOTTYPE:
+        return g_GameManager.shotTypeAndCharacter;
+    case VAR_LOCAL_FLOAT2_1:
+        return enemy->currentContext.eclContextArgs.floatVars2[0];
+    case VAR_LOCAL_FLOAT2_2:
+        return enemy->currentContext.eclContextArgs.floatVars2[1];
+    case VAR_LOCAL_FLOAT1_1:
+        return enemy->currentContext.eclContextArgs.floatVars1[0];
+    case VAR_LOCAL_FLOAT1_2:
+        return enemy->currentContext.eclContextArgs.floatVars1[1];
+    case VAR_LOCAL_FLOAT1_3:
+        return enemy->currentContext.eclContextArgs.floatVars1[2];
+    case VAR_LOCAL_FLOAT1_4:
+        return enemy->currentContext.eclContextArgs.floatVars1[3];
+    case VAR_LOCAL_FLOAT1_5:
+        return enemy->currentContext.eclContextArgs.floatVars1[4];
+    case VAR_LOCAL_FLOAT1_6:
+        return enemy->currentContext.eclContextArgs.floatVars1[5];
+    case VAR_LOCAL_FLOAT1_7:
+        return enemy->currentContext.eclContextArgs.floatVars1[6];
+    case VAR_LOCAL_FLOAT1_8:
+        return enemy->currentContext.eclContextArgs.floatVars1[7];
+    case VAR_LOCAL_FLOAT3_1:
+        return enemy->currentContext.eclContextArgs.globalVars.floatVars[0];
+    case VAR_LOCAL_FLOAT3_2:
+        return enemy->currentContext.eclContextArgs.globalVars.floatVars[1];
+    case VAR_LOCAL_FLOAT3_3:
+        return enemy->currentContext.eclContextArgs.globalVars.floatVars[2];
+    case VAR_LOCAL_FLOAT3_4:
+        return enemy->currentContext.eclContextArgs.globalVars.floatVars[3];
+    case VAR_GLOBAL_INT_1:
+        return g_GlobalEclVars.intVars[0];
+    case VAR_GLOBAL_INT_2:
+        return g_GlobalEclVars.intVars[1];
+    case VAR_GLOBAL_INT_3:
+        return g_GlobalEclVars.intVars[2];
+    case VAR_GLOBAL_INT_4:
+        return g_GlobalEclVars.intVars[3];
+    case VAR_GLOBAL_FLOAT_1:
+        return g_GlobalEclVars.floatVars[0];
+    case VAR_GLOBAL_FLOAT_2:
+        return g_GlobalEclVars.floatVars[1];
+    case VAR_GLOBAL_FLOAT_3:
+        return g_GlobalEclVars.floatVars[2];
+    case VAR_GLOBAL_FLOAT_4:
+        return g_GlobalEclVars.floatVars[3];
+    case VAR_POS_X:
+        return enemy->position.x;
+    case VAR_POS_Y:
+        return enemy->position.y;
+    case VAR_POS_Z:
+        return enemy->position.z;
+    case VAR_PLAYER_POS_X:
+        return g_Player.positionCenter.x;
+    case VAR_PLAYER_POS_Y:
+        return g_Player.positionCenter.y;
+    case VAR_PLAYER_POS_Z:
+        return g_Player.positionCenter.z;
+    case VAR_MOVE_INTERP_ORIGIN_X:
+        return enemy->moveInterpStartPos.x;
+    case VAR_MOVE_INTERP_ORIGIN_Y:
+        return enemy->moveInterpStartPos.y;
+    case VAR_MOVE_INTERP_ORIGIN_Z:
+        return enemy->moveInterpStartPos.z;
+    case VAR_FINAL_POS_X:
+        return enemy->finalPos.x;
+    case VAR_FINAL_POS_Y:
+        return enemy->finalPos.y;
+    case VAR_FINAL_POS_Z:
+        return enemy->finalPos.z;
+    case VAR_BOSS_LIFE_THRESHOLD1:
+        return enemy->lifeCallbackThreshold[0];
+    case VAR_BOSS_LIFE_THRESHOLD2:
+        return enemy->lifeCallbackThreshold[1];
+    case VAR_BOSS_LIFE_THRESHOLD3:
+        return enemy->lifeCallbackThreshold[2];
+    case VAR_BOSS_LIFE_THRESHOLD4:
+        return enemy->lifeCallbackThreshold[3];
+    case VAR_ANGLE:
+        return enemy->angle;
+    case VAR_ANGULAR_VELOCITY:
+        return enemy->angularVelocity;
+    case VAR_MOVE_SPEED:
+        return enemy->moveSpeed;
+    case VAR_MOVE_ACCELERATION:
+        return enemy->moveAcceleration;
+    case VAR_MOVE_RADIUS:
+        return enemy->moveRadius;
+    case VAR_MOVE_ANGLE:
+        return enemy->moveAngle;
+    case VAR_MOVE_ANGULAR_VELOCITY:
+        return enemy->moveAngularVelocity;
+    case VAR_RNG_0_TO_1:
+        return g_Rng.GetRandomU32();
+    case VAR_RNG_CUSTOM_BOUND:
+        return g_Rng.GetRandomU32InRange(enemy->currentContext.eclContextArgs.globalVars.intVars[0]) + enemy->currentContext.eclContextArgs.globalVars.intVars[1];
+    case VAR_LAST_DAMAGE:
+        return enemy->lastDamage;
+    case VAR_BOSS_ID:
+        return enemy->bossId;
+    case VAR_ITEMDROP:
+        return enemy->itemDrop;
+    case VAR_SCORE:
+        return enemy->score;
+    case VAR_ANGLE_TO_PLAYER:
+        return g_Player.AngleToPlayer(&enemy->position);
     case VAR_DISTANCE_FROM_PLAYER:
         local_10.z = g_Player.positionCenter.z - enemy->position.z;
         local_10.y = g_Player.positionCenter.y - enemy->position.y;
         local_10.x = g_Player.positionCenter.x - enemy->position.x;
-        eclVar = D3DXVec3Length(&local_10);
-        break;
-    case VAR_LIFE:
-        eclVar = enemy->life;
-        break;
-    case VAR_PLAYER_SHOTTYPE:
-        eclVar = g_GameManager.shotTypeAndCharacter;
-        break;
-    case VAR_LOCAL_INT3_1:
-        eclVar = enemy->currentContext.eclContextArgs.globalVars.intVars[0];
-        break;
-    case VAR_LOCAL_INT3_2:
-        eclVar = enemy->currentContext.eclContextArgs.globalVars.intVars[1];
-        break;
-    case VAR_LOCAL_INT3_3:
-        eclVar = enemy->currentContext.eclContextArgs.globalVars.intVars[2];
-        break;
-    case VAR_LOCAL_INT3_4:
-        eclVar = enemy->currentContext.eclContextArgs.globalVars.intVars[3];
-        break;
-    case VAR_LOCAL_FLOAT3_1:
-        eclVar = enemy->currentContext.eclContextArgs.globalVars.floatVars[0];
-        break;
-    case VAR_LOCAL_FLOAT3_2:
-        eclVar = enemy->currentContext.eclContextArgs.globalVars.floatVars[1];
-        break;
-    case VAR_LOCAL_FLOAT3_3:
-        eclVar = enemy->currentContext.eclContextArgs.globalVars.floatVars[2];
-        break;
-    case VAR_LOCAL_FLOAT3_4:
-        eclVar = enemy->currentContext.eclContextArgs.globalVars.floatVars[3];
-        break;
-    case VAR_GLOBAL_INT_1:
-        eclVar = g_GlobalEclVars.intVars[0];
-        break;
-    case VAR_GLOBAL_INT_2:
-        eclVar = g_GlobalEclVars.intVars[1];
-        break;
-    case VAR_GLOBAL_INT_3:
-        eclVar = g_GlobalEclVars.intVars[2];
-        break;
-    case VAR_GLOBAL_INT_4:
-        eclVar = g_GlobalEclVars.intVars[3];
-        break;
-    case VAR_GLOBAL_FLOAT_1:
-        eclVar = g_GlobalEclVars.floatVars[0];
-        break;
-    case VAR_GLOBAL_FLOAT_2:
-        eclVar = g_GlobalEclVars.floatVars[1];
-        break;
-    case VAR_GLOBAL_FLOAT_3:
-        eclVar = g_GlobalEclVars.floatVars[2];
-        break;
-    case VAR_GLOBAL_FLOAT_4:
-        eclVar = g_GlobalEclVars.floatVars[3];
-        break;
-    case VAR_ANGLE:
-        eclVar = enemy->angle;
-        break;
-    case VAR_ANGULAR_VELOCITY:
-        eclVar = enemy->angularVelocity;
-        break;
-    case VAR_MOVE_SPEED:
-        eclVar = enemy->moveSpeed;
-        break;
-    case VAR_MOVE_ACCELERATION:
-        eclVar = enemy->moveAcceleration;
-        break;
-    case VAR_MOVE_RADIUS:
-        eclVar = enemy->moveRadius;
-        break;
-    case VAR_MOVE_INTERP_ORIGIN_X:
-        eclVar = enemy->moveInterpStartPos.x;
-        break;
-    case VAR_MOVE_INTERP_ORIGIN_Y:
-        eclVar = enemy->moveInterpStartPos.y;
-        break;
-    case VAR_MOVE_INTERP_ORIGIN_Z:
-        eclVar = enemy->moveInterpStartPos.z;
-        break;
-    case VAR_MOVE_ANGLE:
-        eclVar = enemy->moveAngle;
-        break;
-    case VAR_MOVE_ANGULAR_VELOCITY:
-        eclVar = enemy->moveAngularVelocity;
-        break;
-    case VAR_RNG_0_TO_1:
-        eclVar = g_Rng.GetRandomU32();
-        break;
-    case VAR_RNG_CUSTOM_BOUND:
-        if (enemy->currentContext.eclContextArgs.globalVars.intVars[0] == 0)
-        {
-            local_38 = 0;
-        }
-        else
-        {
-            local_38 = g_Rng.GetRandomU32() %
-                       enemy->currentContext.eclContextArgs.globalVars.intVars[0];
-        }
-        eclVar =
-            local_38 + enemy->currentContext.eclContextArgs.globalVars.intVars[1];
-        break;
+        return D3DXVec3Length(&local_10);
     default:
-        break;
-    case VAR_LAST_DAMAGE:
-        eclVar = enemy->lastDamage;
-        break;
-    case VAR_BOSS_ID:
-        eclVar = enemy->bossId;
-        break;
-    case VAR_FINAL_POS_X:
-        eclVar = enemy->finalPos.x;
-        break;
-    case VAR_FINAL_POS_Y:
-        eclVar = enemy->finalPos.y;
-        break;
-    case VAR_FINAL_POS_Z:
-        eclVar = enemy->finalPos.z;
-        break;
-    case VAR_BOSS_LIFE_THRESHOLD1:
-        eclVar = enemy->lifeCallbackThreshold[0];
-        break;
-    case VAR_BOSS_LIFE_THRESHOLD2:
-        eclVar = enemy->lifeCallbackThreshold[1];
-        break;
-    case VAR_BOSS_LIFE_THRESHOLD3:
-        eclVar = enemy->lifeCallbackThreshold[2];
-        break;
-    case VAR_BOSS_LIFE_THRESHOLD4:
-        eclVar = enemy->lifeCallbackThreshold[3];
-        break;
-    case VAR_ITEMDROP:
-        eclVar = enemy->itemDrop;
-        break;
-    case VAR_SCORE:
-        eclVar = enemy->score;
-        break;
-    case VAR_LOCAL_FLOAT2_1:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars2[0];
-        break;
-    case VAR_LOCAL_FLOAT2_2:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars2[1];
+        return eclVar;
     }
-
-    return eclVar;
 }
 
 // FUNCTION: TH07 0x0040ec00
 i32 *EclManager::GetVar(Enemy *enemy, i32 *eclVar, u16 paramMask, i32 param_4)
 {
-    if ((-1 < param_4) && (((u32)paramMask & 1 << ((u8)param_4 & 0x1f)) == 0))
+    if ((param_4 >= 0) && (((u32)paramMask & 1 << param_4) == 0))
     {
         return eclVar;
     }
@@ -333,75 +253,52 @@ i32 *EclManager::GetVar(Enemy *enemy, i32 *eclVar, u16 paramMask, i32 param_4)
     switch (*eclVar)
     {
     case VAR_LOCAL_INT1_1:
-        eclVar = &enemy->currentContext.eclContextArgs.intVars1[0];
-        break;
+        return &enemy->currentContext.eclContextArgs.intVars1[0];
     case VAR_LOCAL_INT1_2:
-        eclVar = &enemy->currentContext.eclContextArgs.intVars1[1];
-        break;
+        return &enemy->currentContext.eclContextArgs.intVars1[1];
     case VAR_LOCAL_INT1_3:
-        eclVar = &enemy->currentContext.eclContextArgs.intVars1[2];
-        break;
+        return &enemy->currentContext.eclContextArgs.intVars1[2];
     case VAR_LOCAL_INT1_4:
-        eclVar = &enemy->currentContext.eclContextArgs.intVars1[3];
-        break;
-    default:
-        break;
-    case VAR_LOCAL_INT2_1:
-        eclVar = &enemy->currentContext.eclContextArgs.intVars2[0];
-        break;
-    case VAR_LOCAL_INT2_2:
-        eclVar = &enemy->currentContext.eclContextArgs.intVars2[1];
-        break;
-    case VAR_LOCAL_INT2_3:
-        eclVar = &enemy->currentContext.eclContextArgs.intVars2[2];
-        break;
-    case VAR_LOCAL_INT2_4:
-        eclVar = &enemy->currentContext.eclContextArgs.intVars2[3];
-        break;
-    case VAR_DIFFICULTY:
-        eclVar = &g_GameManager.difficulty;
-        break;
-    case VAR_RANK:
-        eclVar = &g_GameManager.rank.rank;
-        break;
-    case VAR_CUR_TIME:
-        eclVar = &enemy->timer.current;
-        break;
-    case VAR_LIFE:
-        eclVar = &enemy->life;
-        break;
+        return &enemy->currentContext.eclContextArgs.intVars1[3];
     case VAR_LOCAL_INT3_1:
-        eclVar = &enemy->currentContext.eclContextArgs.globalVars.intVars[0];
-        break;
+        return &enemy->currentContext.eclContextArgs.globalVars.intVars[0];
     case VAR_LOCAL_INT3_2:
-        eclVar = &enemy->currentContext.eclContextArgs.globalVars.intVars[1];
-        break;
+        return &enemy->currentContext.eclContextArgs.globalVars.intVars[1];
     case VAR_LOCAL_INT3_3:
-        eclVar = &enemy->currentContext.eclContextArgs.globalVars.intVars[2];
-        break;
+        return &enemy->currentContext.eclContextArgs.globalVars.intVars[2];
     case VAR_LOCAL_INT3_4:
-        eclVar = &enemy->currentContext.eclContextArgs.globalVars.intVars[3];
-        break;
-    case VAR_GLOBAL_INT_1:
-        eclVar = &g_GlobalEclVars.intVars[0];
-        break;
-    case VAR_GLOBAL_INT_2:
-        eclVar = &g_GlobalEclVars.intVars[1];
-        break;
-    case VAR_GLOBAL_INT_3:
-        eclVar = &g_GlobalEclVars.intVars[2];
-        break;
-    case VAR_GLOBAL_INT_4:
-        eclVar = &g_GlobalEclVars.intVars[3];
-        break;
+        return &enemy->currentContext.eclContextArgs.globalVars.intVars[3];
+    case VAR_LOCAL_INT2_1:
+        return &enemy->currentContext.eclContextArgs.intVars2[0];
+    case VAR_LOCAL_INT2_2:
+        return &enemy->currentContext.eclContextArgs.intVars2[1];
+    case VAR_LOCAL_INT2_3:
+        return &enemy->currentContext.eclContextArgs.intVars2[2];
+    case VAR_LOCAL_INT2_4:
+        return &enemy->currentContext.eclContextArgs.intVars2[3];
+    case VAR_DIFFICULTY:
+        return &g_GameManager.difficulty;
+    case VAR_RANK:
+        return &g_GameManager.rank.rank;
+    case VAR_CUR_TIME:
+        return &enemy->timer.current;
+    case VAR_LIFE:
+        return &enemy->life;
     case VAR_ITEMDROP:
-        eclVar = &enemy->itemDrop;
-        break;
+        return &enemy->itemDrop;
     case VAR_SCORE:
-        eclVar = &enemy->score;
+        return &enemy->score;
+    case VAR_GLOBAL_INT_1:
+        return &g_GlobalEclVars.intVars[0];
+    case VAR_GLOBAL_INT_2:
+        return &g_GlobalEclVars.intVars[1];
+    case VAR_GLOBAL_INT_3:
+        return &g_GlobalEclVars.intVars[2];
+    case VAR_GLOBAL_INT_4:
+        return &g_GlobalEclVars.intVars[3];
+    default:
+        return eclVar;
     }
-
-    return eclVar;
 }
 
 // FUNCTION: TH07 0x0040edf0
@@ -412,240 +309,167 @@ f32 EclManager::GetFloatVarValue(Enemy *enemy, f32 eclVar)
     switch ((i32)eclVar)
     {
     case VAR_LOCAL_INT1_1:
-        eclVar = (f32)enemy->currentContext.eclContextArgs.intVars1[0];
-        break;
+        return (f32)enemy->currentContext.eclContextArgs.intVars1[0];
     case VAR_LOCAL_INT1_2:
-        eclVar = (f32)enemy->currentContext.eclContextArgs.intVars1[1];
-        break;
+        return (f32)enemy->currentContext.eclContextArgs.intVars1[1];
     case VAR_LOCAL_INT1_3:
-        eclVar = (f32)enemy->currentContext.eclContextArgs.intVars1[2];
-        break;
+        return (f32)enemy->currentContext.eclContextArgs.intVars1[2];
     case VAR_LOCAL_INT1_4:
-        eclVar = (f32)enemy->currentContext.eclContextArgs.intVars1[3];
-        break;
+        return (f32)enemy->currentContext.eclContextArgs.intVars1[3];
     case VAR_LOCAL_FLOAT1_1:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[0];
-        break;
+        return enemy->currentContext.eclContextArgs.floatVars1[0];
     case VAR_LOCAL_FLOAT1_2:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[1];
-        break;
+        return enemy->currentContext.eclContextArgs.floatVars1[1];
     case VAR_LOCAL_FLOAT1_3:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[2];
-        break;
+        return enemy->currentContext.eclContextArgs.floatVars1[2];
     case VAR_LOCAL_FLOAT1_4:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[3];
-        break;
+        return enemy->currentContext.eclContextArgs.floatVars1[3];
     case VAR_LOCAL_FLOAT1_5:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[4];
-        break;
+        return enemy->currentContext.eclContextArgs.floatVars1[4];
     case VAR_LOCAL_FLOAT1_6:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[5];
-        break;
+        return enemy->currentContext.eclContextArgs.floatVars1[5];
     case VAR_LOCAL_FLOAT1_7:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[6];
-        break;
+        return enemy->currentContext.eclContextArgs.floatVars1[6];
     case VAR_LOCAL_FLOAT1_8:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars1[7];
-        break;
+        return enemy->currentContext.eclContextArgs.floatVars1[7];
     case VAR_LOCAL_INT2_1:
-        eclVar = (f32)enemy->currentContext.eclContextArgs.intVars2[0];
-        break;
+        return (f32)enemy->currentContext.eclContextArgs.intVars2[0];
     case VAR_LOCAL_INT2_2:
-        eclVar = (f32)enemy->currentContext.eclContextArgs.intVars2[1];
-        break;
+        return (f32)enemy->currentContext.eclContextArgs.intVars2[1];
     case VAR_LOCAL_INT2_3:
-        eclVar = (f32)enemy->currentContext.eclContextArgs.intVars2[2];
-        break;
+        return (f32)enemy->currentContext.eclContextArgs.intVars2[2];
     case VAR_LOCAL_INT2_4:
-        eclVar = (f32)enemy->currentContext.eclContextArgs.intVars2[3];
-        break;
+        return (f32)enemy->currentContext.eclContextArgs.intVars2[3];
     case VAR_DIFFICULTY:
-        eclVar = (f32)g_GameManager.difficulty;
-        break;
+        return (f32)g_GameManager.difficulty;
     case VAR_RANK:
-        eclVar = (f32)g_GameManager.rank.rank;
-        break;
+        return (f32)g_GameManager.rank.rank;
     case VAR_POS_X:
-        eclVar = enemy->position.x;
-        break;
+        return enemy->position.x;
     case VAR_POS_Y:
-        eclVar = enemy->position.y;
-        break;
+        return enemy->position.y;
     case VAR_POS_Z:
-        eclVar = enemy->position.z;
-        break;
+        return enemy->position.z;
     case VAR_PLAYER_POS_X:
-        eclVar = g_Player.positionCenter.x;
-        break;
+        return g_Player.positionCenter.x;
     case VAR_PLAYER_POS_Y:
-        eclVar = g_Player.positionCenter.y;
-        break;
+        return g_Player.positionCenter.y;
     case VAR_PLAYER_POS_Z:
-        eclVar = g_Player.positionCenter.z;
-        break;
+        return g_Player.positionCenter.z;
     case VAR_ANGLE_TO_PLAYER:
-        eclVar = g_Player.AngleToPlayer(&enemy->position);
-        break;
+        return g_Player.AngleToPlayer(&enemy->position);
     case VAR_CUR_TIME:
-        eclVar = (f32)enemy->timer.current;
-        break;
+        return (f32)enemy->timer.current;
     case VAR_DISTANCE_FROM_PLAYER:
         local_10.z = g_Player.positionCenter.z - enemy->position.z;
         local_10.y = g_Player.positionCenter.y - enemy->position.y;
         local_10.x = g_Player.positionCenter.x - enemy->position.x;
-        eclVar = D3DXVec3Length(&local_10);
-        break;
+        return D3DXVec3Length(&local_10);
     case VAR_LIFE:
-        eclVar = (f32)enemy->life;
-        break;
+        return (f32)enemy->life;
     case VAR_PLAYER_SHOTTYPE:
-        eclVar = (f32)g_GameManager.shotTypeAndCharacter;
-        break;
+        return (f32)g_GameManager.shotTypeAndCharacter;
     case VAR_LOCAL_INT3_1:
-        eclVar = (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[0];
-        break;
+        return (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[0];
     case VAR_LOCAL_INT3_2:
-        eclVar = (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[1];
-        break;
+        return (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[1];
     case VAR_LOCAL_INT3_3:
-        eclVar = (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[2];
-        break;
+        return (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[2];
     case VAR_LOCAL_INT3_4:
-        eclVar = (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[3];
-        break;
+        return (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[3];
     case VAR_LOCAL_FLOAT3_1:
-        eclVar = enemy->currentContext.eclContextArgs.globalVars.floatVars[0];
-        break;
+        return enemy->currentContext.eclContextArgs.globalVars.floatVars[0];
     case VAR_LOCAL_FLOAT3_2:
-        eclVar = enemy->currentContext.eclContextArgs.globalVars.floatVars[1];
-        break;
+        return enemy->currentContext.eclContextArgs.globalVars.floatVars[1];
     case VAR_LOCAL_FLOAT3_3:
-        eclVar = enemy->currentContext.eclContextArgs.globalVars.floatVars[2];
-        break;
+        return enemy->currentContext.eclContextArgs.globalVars.floatVars[2];
     case VAR_LOCAL_FLOAT3_4:
-        eclVar = enemy->currentContext.eclContextArgs.globalVars.floatVars[3];
-        break;
+        return enemy->currentContext.eclContextArgs.globalVars.floatVars[3];
     case VAR_GLOBAL_INT_1:
-        eclVar = (f32)g_GlobalEclVars.intVars[0];
-        break;
+        return (f32)g_GlobalEclVars.intVars[0];
     case VAR_GLOBAL_INT_2:
-        eclVar = (f32)g_GlobalEclVars.intVars[1];
-        break;
+        return (f32)g_GlobalEclVars.intVars[1];
     case VAR_GLOBAL_INT_3:
-        eclVar = (f32)g_GlobalEclVars.intVars[2];
-        break;
+        return (f32)g_GlobalEclVars.intVars[2];
     case VAR_GLOBAL_INT_4:
-        eclVar = (f32)g_GlobalEclVars.intVars[3];
-        break;
+        return (f32)g_GlobalEclVars.intVars[3];
     case VAR_GLOBAL_FLOAT_1:
-        eclVar = g_GlobalEclVars.floatVars[0];
-        break;
+        return g_GlobalEclVars.floatVars[0];
     case VAR_GLOBAL_FLOAT_2:
-        eclVar = g_GlobalEclVars.floatVars[1];
-        break;
+        return g_GlobalEclVars.floatVars[1];
     case VAR_GLOBAL_FLOAT_3:
-        eclVar = g_GlobalEclVars.floatVars[2];
-        break;
+        return g_GlobalEclVars.floatVars[2];
     case VAR_GLOBAL_FLOAT_4:
-        eclVar = g_GlobalEclVars.floatVars[3];
-        break;
+        return g_GlobalEclVars.floatVars[3];
     case VAR_ANGLE:
-        eclVar = enemy->angle;
-        break;
+        return enemy->angle;
     case VAR_ANGULAR_VELOCITY:
-        eclVar = enemy->angularVelocity;
-        break;
+        return enemy->angularVelocity;
     case VAR_MOVE_SPEED:
-        eclVar = enemy->moveSpeed;
-        break;
+        return enemy->moveSpeed;
     case VAR_MOVE_ACCELERATION:
-        eclVar = enemy->moveAcceleration;
-        break;
+        return enemy->moveAcceleration;
     case VAR_MOVE_RADIUS:
-        eclVar = enemy->moveRadius;
-        break;
+        return enemy->moveRadius;
     case VAR_MOVE_INTERP_ORIGIN_X:
-        eclVar = enemy->moveInterpStartPos.x;
-        break;
+        return enemy->moveInterpStartPos.x;
     case VAR_MOVE_INTERP_ORIGIN_Y:
-        eclVar = enemy->moveInterpStartPos.y;
-        break;
+        return enemy->moveInterpStartPos.y;
     case VAR_MOVE_INTERP_ORIGIN_Z:
-        eclVar = enemy->moveInterpStartPos.z;
-        break;
+        return enemy->moveInterpStartPos.z;
     case VAR_MOVE_ANGLE:
-        eclVar = enemy->moveAngle;
-        break;
+        return enemy->moveAngle;
     case VAR_MOVE_ANGULAR_VELOCITY:
-        eclVar = enemy->moveAngularVelocity;
-        break;
+        return enemy->moveAngularVelocity;
     case VAR_RNG_0_TO_1:
-        eclVar = g_Rng.GetRandomFloat();
-        break;
+        return g_Rng.GetRandomFloat();
     case VAR_RNG_CUSTOM_BOUND:
-        eclVar = g_Rng.GetRandomFloat() *
-                     enemy->currentContext.eclContextArgs.globalVars.floatVars[0] +
+        return g_Rng.GetRandomFloatInRange(enemy->currentContext.eclContextArgs.globalVars.floatVars[0]) +
                  enemy->currentContext.eclContextArgs.globalVars.floatVars[1];
-        break;
     case VAR_MOVE_INTERP_TARGET_X:
-        eclVar = enemy->moveInterp.x;
-        break;
+        return enemy->moveInterp.x;
     case VAR_MOVE_INTERP_TARGET_Y:
-        eclVar = enemy->moveInterp.y;
-        break;
+        return enemy->moveInterp.y;
     case VAR_MOVE_INTERP_TARGET_Z:
-        eclVar = enemy->moveInterp.z;
-        break;
+        return enemy->moveInterp.z;
     case VAR_RNG_RADIAN:
-        eclVar = g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI;
-        break;
+        return g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
     case VAR_LAST_DAMAGE:
-        eclVar = (f32)enemy->lastDamage;
-        break;
+        return (f32)enemy->lastDamage;
     case VAR_BOSS_ID:
-        eclVar = (f32)enemy->bossId;
-        break;
+        return (f32)enemy->bossId;
     case VAR_FINAL_POS_X:
-        eclVar = enemy->finalPos.x;
-        break;
+        return enemy->finalPos.x;
     case VAR_FINAL_POS_Y:
-        eclVar = enemy->finalPos.y;
-        break;
+        return enemy->finalPos.y;
     case VAR_FINAL_POS_Z:
-        eclVar = enemy->finalPos.z;
-        break;
+        return enemy->finalPos.z;
     case VAR_BOSS_LIFE_THRESHOLD1:
-        eclVar = (f32)enemy->lifeCallbackThreshold[0];
-        break;
+        return (f32)enemy->lifeCallbackThreshold[0];
     case VAR_BOSS_LIFE_THRESHOLD2:
-        eclVar = (f32)enemy->lifeCallbackThreshold[1];
-        break;
+        return (f32)enemy->lifeCallbackThreshold[1];
     case VAR_BOSS_LIFE_THRESHOLD3:
-        eclVar = (f32)enemy->lifeCallbackThreshold[2];
-        break;
+        return (f32)enemy->lifeCallbackThreshold[2];
     case VAR_BOSS_LIFE_THRESHOLD4:
-        eclVar = (f32)enemy->lifeCallbackThreshold[3];
-        break;
+        return (f32)enemy->lifeCallbackThreshold[3];
     case VAR_ITEMDROP:
-        eclVar = (f32)enemy->itemDrop;
-        break;
+        return (f32)enemy->itemDrop;
     case VAR_SCORE:
-        eclVar = (f32)enemy->score;
-        break;
+        return (f32)enemy->score;
     case VAR_LOCAL_FLOAT2_1:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars2[0];
-        break;
+        return enemy->currentContext.eclContextArgs.floatVars2[0];
     case VAR_LOCAL_FLOAT2_2:
-        eclVar = enemy->currentContext.eclContextArgs.floatVars2[1];
+        return enemy->currentContext.eclContextArgs.floatVars2[1];
+    default:
+        return eclVar;
     }
-    return eclVar;
 }
 
 // FUNCTION: TH07 0x0040f3c0
 f32 *EclManager::GetFloatVar(Enemy *enemy, f32 *eclVar, u16 paramMask,
                              i32 param_4)
 {
-    if ((-1 < param_4) && (((u32)paramMask & 1 << ((u8)param_4 & 0x1f)) == 0))
+    if ((param_4 >= 0) && (((u32)paramMask & 1 << param_4) == 0))
     {
         return eclVar;
     }
@@ -653,120 +477,82 @@ f32 *EclManager::GetFloatVar(Enemy *enemy, f32 *eclVar, u16 paramMask,
     switch ((i32)*eclVar)
     {
     case VAR_LOCAL_FLOAT1_1:
-        eclVar = &enemy->currentContext.eclContextArgs.floatVars1[0];
-        break;
+        return &enemy->currentContext.eclContextArgs.floatVars1[0];
     case VAR_LOCAL_FLOAT1_2:
-        eclVar = &enemy->currentContext.eclContextArgs.floatVars1[1];
-        break;
+        return &enemy->currentContext.eclContextArgs.floatVars1[1];
     case VAR_LOCAL_FLOAT1_3:
-        eclVar = &enemy->currentContext.eclContextArgs.floatVars1[2];
-        break;
+        return &enemy->currentContext.eclContextArgs.floatVars1[2];
     case VAR_LOCAL_FLOAT1_4:
-        eclVar = &enemy->currentContext.eclContextArgs.floatVars1[3];
-        break;
+        return &enemy->currentContext.eclContextArgs.floatVars1[3];
     case VAR_LOCAL_FLOAT1_5:
-        eclVar = &enemy->currentContext.eclContextArgs.floatVars1[4];
-        break;
+        return &enemy->currentContext.eclContextArgs.floatVars1[4];
     case VAR_LOCAL_FLOAT1_6:
-        eclVar = &enemy->currentContext.eclContextArgs.floatVars1[5];
-        break;
+        return &enemy->currentContext.eclContextArgs.floatVars1[5];
     case VAR_LOCAL_FLOAT1_7:
-        eclVar = &enemy->currentContext.eclContextArgs.floatVars1[6];
-        break;
+        return &enemy->currentContext.eclContextArgs.floatVars1[6];
     case VAR_LOCAL_FLOAT1_8:
-        eclVar = &enemy->currentContext.eclContextArgs.floatVars1[7];
-        break;
-    default:
-        break;
-    case VAR_POS_X:
-        eclVar = &enemy->position.x;
-        break;
-    case VAR_POS_Y:
-        eclVar = &enemy->position.y;
-        break;
-    case VAR_POS_Z:
-        eclVar = &enemy->position.z;
-        break;
-    case VAR_PLAYER_POS_X:
-        eclVar = &g_Player.positionCenter.x;
-        break;
-    case VAR_PLAYER_POS_Y:
-        eclVar = &g_Player.positionCenter.y;
-        break;
-    case VAR_PLAYER_POS_Z:
-        eclVar = &g_Player.positionCenter.z;
-        break;
+        return &enemy->currentContext.eclContextArgs.floatVars1[7];
     case VAR_LOCAL_FLOAT3_1:
-        eclVar = &enemy->currentContext.eclContextArgs.globalVars.floatVars[0];
-        break;
+        return &enemy->currentContext.eclContextArgs.globalVars.floatVars[0];
     case VAR_LOCAL_FLOAT3_2:
-        eclVar = &enemy->currentContext.eclContextArgs.globalVars.floatVars[1];
-        break;
+        return &enemy->currentContext.eclContextArgs.globalVars.floatVars[1];
     case VAR_LOCAL_FLOAT3_3:
-        eclVar = &enemy->currentContext.eclContextArgs.globalVars.floatVars[2];
-        break;
+        return &enemy->currentContext.eclContextArgs.globalVars.floatVars[2];
     case VAR_LOCAL_FLOAT3_4:
-        eclVar = &enemy->currentContext.eclContextArgs.globalVars.floatVars[3];
-        break;
-    case VAR_GLOBAL_FLOAT_1:
-        eclVar = &g_GlobalEclVars.floatVars[0];
-        break;
-    case VAR_GLOBAL_FLOAT_2:
-        eclVar = &g_GlobalEclVars.floatVars[1];
-        break;
-    case VAR_GLOBAL_FLOAT_3:
-        eclVar = &g_GlobalEclVars.floatVars[2];
-        break;
-    case VAR_GLOBAL_FLOAT_4:
-        eclVar = &g_GlobalEclVars.floatVars[3];
-        break;
-    case VAR_ANGLE:
-        eclVar = &enemy->angle;
-        break;
-    case VAR_ANGULAR_VELOCITY:
-        eclVar = &enemy->angularVelocity;
-        break;
-    case VAR_MOVE_SPEED:
-        eclVar = &enemy->moveSpeed;
-        break;
-    case VAR_MOVE_ACCELERATION:
-        eclVar = &enemy->moveAcceleration;
-        break;
-    case VAR_MOVE_RADIUS:
-        eclVar = &enemy->moveRadius;
-        break;
-    case VAR_MOVE_INTERP_ORIGIN_X:
-        eclVar = &enemy->moveInterpStartPos.x;
-        break;
-    case VAR_MOVE_INTERP_ORIGIN_Y:
-        eclVar = &enemy->moveInterpStartPos.y;
-        break;
-    case VAR_MOVE_INTERP_ORIGIN_Z:
-        eclVar = &enemy->moveInterpStartPos.z;
-        break;
-    case VAR_MOVE_ANGLE:
-        eclVar = &enemy->moveAngle;
-        break;
-    case VAR_MOVE_ANGULAR_VELOCITY:
-        eclVar = &enemy->moveAngularVelocity;
-        break;
-    case VAR_MOVE_INTERP_TARGET_X:
-        eclVar = &enemy->moveInterp.x;
-        break;
-    case VAR_MOVE_INTERP_TARGET_Y:
-        eclVar = &enemy->moveInterp.y;
-        break;
-    case VAR_MOVE_INTERP_TARGET_Z:
-        eclVar = &enemy->moveInterp.z;
-        break;
+        return &enemy->currentContext.eclContextArgs.globalVars.floatVars[3];
+    case VAR_POS_X:
+        return &enemy->position.x;
+    case VAR_POS_Y:
+        return &enemy->position.y;
+    case VAR_POS_Z:
+        return &enemy->position.z;
+    case VAR_PLAYER_POS_X:
+        return &g_Player.positionCenter.x;
+    case VAR_PLAYER_POS_Y:
+        return &g_Player.positionCenter.y;
+    case VAR_PLAYER_POS_Z:
+        return &g_Player.positionCenter.z;
     case VAR_LOCAL_FLOAT2_1:
-        eclVar = &enemy->currentContext.eclContextArgs.floatVars2[0];
-        break;
+        return &enemy->currentContext.eclContextArgs.floatVars2[0];
     case VAR_LOCAL_FLOAT2_2:
-        eclVar = &enemy->currentContext.eclContextArgs.floatVars2[1];
+        return &enemy->currentContext.eclContextArgs.floatVars2[1];
+    case VAR_GLOBAL_FLOAT_1:
+        return &g_GlobalEclVars.floatVars[0];
+    case VAR_GLOBAL_FLOAT_2:
+        return &g_GlobalEclVars.floatVars[1];
+    case VAR_GLOBAL_FLOAT_3:
+        return &g_GlobalEclVars.floatVars[2];
+    case VAR_GLOBAL_FLOAT_4:
+        return &g_GlobalEclVars.floatVars[3];
+    case VAR_MOVE_INTERP_ORIGIN_X:
+        return &enemy->moveInterpStartPos.x;
+    case VAR_MOVE_INTERP_ORIGIN_Y:
+        return &enemy->moveInterpStartPos.y;
+    case VAR_MOVE_INTERP_ORIGIN_Z:
+        return &enemy->moveInterpStartPos.z;
+    case VAR_MOVE_INTERP_TARGET_X:
+        return &enemy->moveInterp.x;
+    case VAR_MOVE_INTERP_TARGET_Y:
+        return &enemy->moveInterp.y;
+    case VAR_MOVE_INTERP_TARGET_Z:
+        return &enemy->moveInterp.z;
+    case VAR_ANGLE:
+        return &enemy->angle;
+    case VAR_ANGULAR_VELOCITY:
+        return &enemy->angularVelocity;
+    case VAR_MOVE_SPEED:
+        return &enemy->moveSpeed;
+    case VAR_MOVE_ACCELERATION:
+        return &enemy->moveAcceleration;
+    case VAR_MOVE_RADIUS:
+        return &enemy->moveRadius;
+    case VAR_MOVE_ANGLE:
+        return &enemy->moveAngle;
+    case VAR_MOVE_ANGULAR_VELOCITY:
+        return &enemy->moveAngularVelocity;
+    default:
+        return eclVar;
     }
-
-    return eclVar;
 }
 
 // FUNCTION: TH07 0x0040f6b0
@@ -1608,7 +1394,7 @@ restart:
                 i32 local_194 = (instr->paramMask & 2) == 0
                                     ? instr->args[1].i
                                     : GetVarValue(enemy, instr->args[1].i);
-                i32 local_388 = (local_194 == 0) ? 0 : g_Rng.GetRandomU32() % local_194;
+                i32 local_388 = g_Rng.GetRandomU32InRange(local_194);
                 *GetVar(enemy, &instr->args[0].i, instr->paramMask, 0) = local_388;
                 break;
             }
@@ -1619,7 +1405,7 @@ restart:
                 i32 local_38c = (instr->paramMask & 4) == 0
                                     ? instr->args[2].i
                                     : GetVarValue(enemy, instr->args[2].i);
-                i32 local_390 = (local_198 == 0) ? 0 : g_Rng.GetRandomU32() % local_198;
+                i32 local_390 = g_Rng.GetRandomU32InRange(local_198);
                 *GetVar(enemy, &instr->args[0].i, instr->paramMask, 0) =
                     local_390 + local_38c;
                 break;
@@ -1629,7 +1415,7 @@ restart:
                                     ? instr->args[1].f
                                     : GetFloatVarValue(enemy, instr->args[1].f);
                 *GetFloatVar(enemy, &instr->args[0].f, instr->paramMask, 0) =
-                    g_Rng.GetRandomFloat() * local_19c;
+                    g_Rng.GetRandomFloatInRange(local_19c);
                 break;
             }
             case 9: {
@@ -1640,7 +1426,7 @@ restart:
                                     ? instr->args[2].f
                                     : GetFloatVarValue(enemy, instr->args[2].f);
                 *GetFloatVar(enemy, &instr->args[0].f, instr->paramMask, 0) =
-                    g_Rng.GetRandomFloat() * local_1a0 + local_398;
+                    g_Rng.GetRandomFloatInRange(local_1a0) + local_398;
                 break;
             }
             case 10: {
@@ -2136,15 +1922,15 @@ restart:
                                     ? instr->args[1].f
                                     : GetFloatVarValue(enemy, instr->args[1].f);
                 *GetFloatVar(enemy, &instr->args[0].f, instr->paramMask, 0) =
-                    g_Rng.GetRandomFloat() * (local_638 - local_63c) + local_640;
+                    g_Rng.GetRandomFloatInRange(local_638 - local_63c) + local_640;
                 break;
             }
             case 0x34: {
                 f32 local_38 =
                     (enemy->position.x <= g_Player.positionCenter.x)
-                        ? g_Rng.GetRandomFloat() * 1.5707964f - 0.7853982f
+                        ? g_Rng.GetRandomFloatInRange(1.5707964f) - 0.7853982f
                         : utils::AddNormalizeAngle(
-                              g_Rng.GetRandomFloat() * 1.5707964f + 2.3561945f, 0.0f);
+                              g_Rng.GetRandomFloatInRange(1.5707964f) + 2.3561945f, 0.0f);
                 if (enemy->position.x < enemy->lowerMoveLimit.x + 96.0)
                 {
                     if (local_38 <= 1.5707964f)
@@ -2471,9 +2257,7 @@ restart:
                         (-enemy->shootInterval / 5 - iVar19) * g_GameManager.rank.rank;
                     enemy->shootInterval =
                         (i32)(iVar13 / 32) + iVar19 + enemy->shootInterval;
-                    i32 local_220 = (enemy->shootInterval == 0)
-                                        ? 0
-                                        : g_Rng.GetRandomU32() % enemy->shootInterval;
+                    i32 local_220 = g_Rng.GetRandomU32InRange(enemy->shootInterval);
                     enemy->shootIntervalTimer.Initialize(local_220);
                 }
                 break;
@@ -3029,8 +2813,8 @@ restart:
                 for (local_54 = 0; local_54 < local_50; local_54 += 1)
                 {
                     local_60 = enemy->position;
-                    local_60.x = (g_Rng.GetRandomFloat() * 128.0f - 64.0f) + local_60.x;
-                    local_60.y = (g_Rng.GetRandomFloat() * 128.0f - 64.0f) + local_60.y;
+                    local_60.x = (g_Rng.GetRandomFloatInRange(128.0f) - 64.0f) + local_60.x;
+                    local_60.y = (g_Rng.GetRandomFloatInRange(128.0f) - 64.0f) + local_60.y;
                     if ((i32)(g_GameManager.globals)->currentPower < 128)
                     {
                         g_ItemManager.SpawnItem(&local_60, (local_54 != 0) - 1 & 2, 0);
@@ -3387,8 +3171,8 @@ restart:
                 for (local_68 = 0; local_68 < local_64; local_68 += 1)
                 {
                     local_74 = enemy->position;
-                    local_74.x = (g_Rng.GetRandomFloat() * 128.0f - 64.0f) + local_74.x;
-                    local_74.y = (g_Rng.GetRandomFloat() * 128.0f - 64.0f) + local_74.y;
+                    local_74.x = (g_Rng.GetRandomFloatInRange(128.0f) - 64.0f) + local_74.x;
+                    local_74.y = (g_Rng.GetRandomFloatInRange(128.0f) - 64.0f) + local_74.y;
                     g_ItemManager.SpawnItem(&local_74, ITEM_POINT, 0);
                 }
                 break;
@@ -3400,12 +3184,12 @@ restart:
                 {
                     *GetFloatVar(enemy, &instr->args[0].f, instr->paramMask, 0) =
                         utils::AddNormalizeAngle(
-                            g_Rng.GetRandomFloat() * 1.5707964f + 2.3561945f, 0.0f);
+                            g_Rng.GetRandomFloatInRange(1.5707964f) + 2.3561945f, 0.0f);
                 }
                 else
                 {
                     *GetFloatVar(enemy, &instr->args[0].f, instr->paramMask, 0) =
-                        g_Rng.GetRandomFloat() * 1.5707964f - 0.7853982f;
+                        g_Rng.GetRandomFloatInRange(1.5707964f) - 0.7853982f;
                 }
                 break;
             }

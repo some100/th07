@@ -139,8 +139,8 @@ void ItemManager::SpawnItem(D3DXVECTOR3 *heading, i32 itemType, i32 state)
     item->timer.Initialize(0);
     if (state == 2)
     {
-        item->targetPosition.x = g_Rng.GetRandomFloat() * 288.0f + 48.0f;
-        item->targetPosition.y = g_Rng.GetRandomFloat() * 192.0f - 64.0f;
+        item->targetPosition.x = g_Rng.GetRandomFloatInRange(288.0f) + 48.0f;
+        item->targetPosition.y = g_Rng.GetRandomFloatInRange(192.0f) - 64.0f;
         item->targetPosition.z = 0.0f;
         item->startPosition.x = item->currentPosition.x;
         item->startPosition.y = item->currentPosition.y;

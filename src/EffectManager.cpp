@@ -88,8 +88,8 @@ void EffectManager::Reset()
 // FUNCTION: TH07 0x0041a370
 i32 EffectManager::InitDeceleratingBurstFast(Effect *effect)
 {
-    effect->velocity.x = (g_Rng.GetRandomFloat() * 256.0f - 128.0f) / 12.0f;
-    effect->velocity.y = (g_Rng.GetRandomFloat() * 256.0f - 128.0f) / 12.0f;
+    effect->velocity.x = (g_Rng.GetRandomFloatInRange(256.0f) - 128.0f) / 12.0f;
+    effect->velocity.y = (g_Rng.GetRandomFloatInRange(256.0f) - 128.0f) / 12.0f;
     effect->velocity.z = 0.0f;
     effect->acceleration = -effect->velocity * 0.05263158f;
     effect->velocity *= g_Supervisor.effectiveFramerateMultiplier;
@@ -109,9 +109,9 @@ i32 EffectManager::UpdatePhysics(Effect *effect)
 i32 EffectManager::InitDeceleratingBurst(Effect *effect)
 {
     effect->velocity.x =
-        ((g_Rng.GetRandomFloat() * 256.0f - 128.0f) * 4.0f) / 33.0f;
+        ((g_Rng.GetRandomFloatInRange(256.0f) - 128.0f) * 4.0f) / 33.0f;
     effect->velocity.y =
-        ((g_Rng.GetRandomFloat() * 256.0f - 128.0f) * 4.0f) / 33.0f;
+        ((g_Rng.GetRandomFloatInRange(256.0f) - 128.0f) * 4.0f) / 33.0f;
     effect->velocity.z = 0.0f;
     effect->acceleration = -effect->velocity * 0.05f;
     effect->velocity.x *= g_Supervisor.effectiveFramerateMultiplier;
@@ -184,7 +184,7 @@ i32 EffectManager::InitRandomDir(Effect *effect)
 
     effect->emitterPosition = effect->pos1;
     effect->emitterPosition.z = 0.0f;
-    fVar1 = g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI;
+    fVar1 = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
     effect->direction.x = cosf(fVar1);
     effect->direction.y = sinf(fVar1);
     effect->direction.z = 0.0f;
@@ -310,35 +310,33 @@ i32 EffectManager::UpdateWeatherPhysics(Effect *effect)
 i32 EffectManager::InitWeatherForward(Effect *effect)
 {
     u32 uVar2;
-    u32 local_8c;
 
     effect->basePosition = g_Stage.camLookAt + g_Stage.camPos;
     effect->basePosition.x = -g_Stage.camLookAt.x / 2.0f +
-                             (g_Rng.GetRandomFloat() * 120.0f - 60.0f) +
+                             (g_Rng.GetRandomFloatInRange(120.0f) - 60.0f) +
                              effect->basePosition.x;
     effect->basePosition.y = -g_Stage.camLookAt.y / 2.0f +
-                             (g_Rng.GetRandomFloat() * 200.0f - 100.0f) +
+                             (g_Rng.GetRandomFloatInRange(200.0f) - 100.0f) +
                              effect->basePosition.y;
     effect->basePosition.z = -g_Stage.camLookAt.z / 2.0f +
-                             (g_Rng.GetRandomFloat() * 100.0f - 100.0f) +
+                             (g_Rng.GetRandomFloatInRange(100.0f) - 100.0f) +
                              effect->basePosition.z;
     effect->velocity.x =
-        (g_Rng.GetRandomFloat() * 0.06f - 0.03f) + effect->custom.x;
+        (g_Rng.GetRandomFloatInRange(0.06f) - 0.03f) + effect->custom.x;
     effect->velocity.y =
-        (g_Rng.GetRandomFloat() * 0.06f - 0.03f) + effect->custom.y;
-    effect->velocity.z = g_Rng.GetRandomFloat() * 0.1f + 0.03f + effect->custom.z;
-    effect->acceleration.x = g_Rng.GetRandomFloat() * 0.0002f - 0.0001f;
-    effect->acceleration.y = g_Rng.GetRandomFloat() * 0.0002f - 0.0001f;
+        (g_Rng.GetRandomFloatInRange(0.06f) - 0.03f) + effect->custom.y;
+    effect->velocity.z = g_Rng.GetRandomFloatInRange(0.1f) + 0.03f + effect->custom.z;
+    effect->acceleration.x = g_Rng.GetRandomFloatInRange(0.0002f) - 0.0001f;
+    effect->acceleration.y = g_Rng.GetRandomFloatInRange(0.0002f) - 0.0001f;
     effect->velocity *= g_Supervisor.effectiveFramerateMultiplier;
     effect->acceleration *= g_Supervisor.effectiveFramerateMultiplier;
     effect->is2D = 1;
-    effect->vm.rotation.z = g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI;
-    effect->vm.rotation.x = g_Rng.GetRandomFloat() * 0.03141593f - 0.015707964f;
+    effect->vm.rotation.z = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
+    effect->vm.rotation.x = g_Rng.GetRandomFloatInRange(0.03141593f) - 0.015707964f;
     uVar2 = ((g_GameManager.cherry - g_GameManager.globals->cherryStart) * 100) /
             g_GameManager.cherryMax;
 
-    local_8c = g_Rng.GetRandomU32() % 100;
-    if (local_8c <= uVar2)
+    if (g_Rng.GetRandomU32InRange(100) <= uVar2)
     {
         g_AnmManager->SetActiveSprite(&effect->vm, 0x2d8);
         effect->vm.color.bytes.r = 0xff;
@@ -352,25 +350,23 @@ i32 EffectManager::InitWeatherForward(Effect *effect)
 i32 EffectManager::InitWeatherVortex(Effect *effect)
 {
     u32 uVar2;
-    u32 local_68;
 
-    effect->basePosition.x = g_Rng.GetRandomFloat() * 160.0f - 80.0f;
-    effect->basePosition.y = g_Rng.GetRandomFloat() * 160.0f - 80.0f;
-    effect->basePosition.z = g_Rng.GetRandomFloat() * 100.0f - 50.0f;
+    effect->basePosition.x = g_Rng.GetRandomFloatInRange(160.0f) - 80.0f;
+    effect->basePosition.y = g_Rng.GetRandomFloatInRange(160.0f) - 80.0f;
+    effect->basePosition.z = g_Rng.GetRandomFloatInRange(100.0f) - 50.0f;
     effect->velocity.x = -effect->basePosition.y / effect->custom.x;
     effect->velocity.y = effect->basePosition.x / effect->custom.x;
-    effect->velocity.z = g_Rng.GetRandomFloat() * 0.1f + 0.09f;
+    effect->velocity.z = g_Rng.GetRandomFloatInRange(0.1f) + 0.09f;
     effect->basePosition +=
         g_Stage.camLookAt * 0.5f + g_Stage.camPos + effect->basePosition;
     effect->velocity.x *= g_Supervisor.effectiveFramerateMultiplier;
     effect->is2D = 1;
-    effect->vm.rotation.z = g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI;
-    effect->vm.rotation.x = g_Rng.GetRandomFloat() * 0.06283186f - 0.03141593f;
+    effect->vm.rotation.z = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
+    effect->vm.rotation.x = g_Rng.GetRandomFloatInRange(0.06283186f) - 0.03141593f;
     uVar2 = ((g_GameManager.cherry - g_GameManager.globals->cherryStart) * 100) /
             g_GameManager.cherryMax;
 
-    local_68 = g_Rng.GetRandomU32() % 100;
-    if (local_68 <= uVar2)
+    if (g_Rng.GetRandomU32InRange(100) <= uVar2)
     {
         g_AnmManager->SetActiveSprite(&effect->vm, 0x2d8);
         effect->vm.color.bytes.r = 0xff;
@@ -386,17 +382,17 @@ i32 EffectManager::InitWeatherVortex(Effect *effect)
 // FUNCTION: TH07 0x0041b770
 i32 EffectManager::InitWeatherBackward(Effect *effect)
 {
-    effect->basePosition.x = g_Rng.GetRandomFloat() * 160.0f - 80.0f;
-    effect->basePosition.y = g_Rng.GetRandomFloat() * 160.0f - 80.0f;
-    effect->basePosition.z = g_Rng.GetRandomFloat() * 100.0f - 50.0f;
+    effect->basePosition.x = g_Rng.GetRandomFloatInRange(160.0f) - 80.0f;
+    effect->basePosition.y = g_Rng.GetRandomFloatInRange(160.0f) - 80.0f;
+    effect->basePosition.z = g_Rng.GetRandomFloatInRange(100.0f) - 50.0f;
     effect->velocity.x = -effect->basePosition.y / effect->custom.x;
     effect->velocity.y = effect->basePosition.x / effect->custom.x;
-    effect->velocity.z = -(g_Rng.GetRandomFloat() * 0.2f) - 0.06f;
+    effect->velocity.z = -(g_Rng.GetRandomFloatInRange(0.2f)) - 0.06f;
     effect->basePosition += g_Stage.camLookAt * 0.5f + g_Stage.camPos;
     effect->velocity *= g_Supervisor.effectiveFramerateMultiplier;
     effect->is2D = 1;
-    effect->vm.rotation.z = g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI;
-    effect->vm.rotation.x = g_Rng.GetRandomFloat() * 0.06283186f - 0.03141593f;
+    effect->vm.rotation.z = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
+    effect->vm.rotation.x = g_Rng.GetRandomFloatInRange(0.06283186f) - 0.03141593f;
     g_AnmManager->SetActiveSprite(&effect->vm, 0x2d8);
     effect->vm.color.bytes.r = 0xff;
     effect->vm.color.bytes.g = 0xff;
@@ -410,19 +406,19 @@ i32 EffectManager::InitWeatherBackward(Effect *effect)
 // FUNCTION: TH07 0x0041b9f0
 i32 EffectManager::InitWeatherSlow(Effect *effect)
 {
-    effect->basePosition.x = g_Rng.GetRandomFloat() * 160.0f - 80.0f;
-    effect->basePosition.y = g_Rng.GetRandomFloat() * 160.0f - 80.0f;
-    effect->basePosition.z = g_Rng.GetRandomFloat() * 100.0f - 100.0f;
+    effect->basePosition.x = g_Rng.GetRandomFloatInRange(160.0f) - 80.0f;
+    effect->basePosition.y = g_Rng.GetRandomFloatInRange(160.0f) - 80.0f;
+    effect->basePosition.z = g_Rng.GetRandomFloatInRange(100.0f) - 100.0f;
     effect->velocity.x =
-        (g_Rng.GetRandomFloat() * 0.06f - 0.03f) + effect->custom.x;
+        (g_Rng.GetRandomFloatInRange(0.06f) - 0.03f) + effect->custom.x;
     effect->velocity.y =
-        (g_Rng.GetRandomFloat() * 0.06f - 0.03f) + effect->custom.y;
+        (g_Rng.GetRandomFloatInRange(0.06f) - 0.03f) + effect->custom.y;
     effect->velocity.z =
-        g_Rng.GetRandomFloat() * 0.02f + 0.01f + effect->custom.z;
+        g_Rng.GetRandomFloatInRange(0.02f) + 0.01f + effect->custom.z;
     effect->basePosition.x += g_Stage.camLookAt.x * 0.5f + g_Stage.camPos.x;
     effect->is2D = 1;
-    effect->vm.rotation.z = g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI;
-    effect->vm.rotation.x = g_Rng.GetRandomFloat() * 0.06283186f - 0.03141593f;
+    effect->vm.rotation.z = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
+    effect->vm.rotation.x = g_Rng.GetRandomFloatInRange(0.06283186f) - 0.03141593f;
     g_AnmManager->SetActiveSprite(&effect->vm, 0x2d8);
     effect->vm.color.bytes.r = 0xff;
     effect->vm.color.bytes.g = 0xff;
@@ -436,19 +432,19 @@ i32 EffectManager::InitWeatherSlow(Effect *effect)
 // FUNCTION: TH07 0x0041bc20
 i32 EffectManager::InitWeatherFalling(Effect *effect)
 {
-    effect->basePosition.x = g_Rng.GetRandomFloat() * 160.0f - 80.0f;
-    effect->basePosition.y = g_Rng.GetRandomFloat() * 160.0f - 80.0f;
-    effect->basePosition.z = g_Rng.GetRandomFloat() * 200.0f - 0.0f;
+    effect->basePosition.x = g_Rng.GetRandomFloatInRange(160.0f) - 80.0f;
+    effect->basePosition.y = g_Rng.GetRandomFloatInRange(160.0f) - 80.0f;
+    effect->basePosition.z = g_Rng.GetRandomFloatInRange(200.0f) - 0.0f;
     effect->velocity.x =
-        (g_Rng.GetRandomFloat() * 0.06f - 0.03f) + effect->custom.x;
+        (g_Rng.GetRandomFloatInRange(0.06f) - 0.03f) + effect->custom.x;
     effect->velocity.y =
-        (g_Rng.GetRandomFloat() * 0.06f - 0.03f) + effect->custom.y;
-    effect->velocity.z = -(g_Rng.GetRandomFloat() * 0.1f) + effect->custom.z;
+        (g_Rng.GetRandomFloatInRange(0.06f) - 0.03f) + effect->custom.y;
+    effect->velocity.z = -(g_Rng.GetRandomFloatInRange(0.1f)) + effect->custom.z;
     effect->basePosition.x += g_Stage.camLookAt.x * 0.5f + g_Stage.camPos.x;
     effect->velocity.x *= g_Supervisor.effectiveFramerateMultiplier;
     effect->is2D = 1;
-    effect->vm.rotation.z = g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI;
-    effect->vm.rotation.x = g_Rng.GetRandomFloat() * 0.06283186f - 0.03141593f;
+    effect->vm.rotation.z = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
+    effect->vm.rotation.x = g_Rng.GetRandomFloatInRange(0.06283186f) - 0.03141593f;
     g_AnmManager->SetActiveSprite(&effect->vm, 0x2d8);
     effect->vm.angleVel.z += effect->vm.angleVel.z;
     effect->vm.color.bytes.r = 0xff;
@@ -468,7 +464,7 @@ i32 EffectManager::InitRandomDirWithSpeed(Effect *effect)
     // double intentionally used here, strangely
     if (effect->custom.x <= -990.0)
     {
-        local_8 = g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI;
+        local_8 = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
     }
     else
     {
@@ -479,7 +475,7 @@ i32 EffectManager::InitRandomDirWithSpeed(Effect *effect)
     effect->direction.x = cosf(local_8);
     effect->direction.y = sinf(local_8);
     effect->direction.z = 0.0f;
-    effect->direction *= g_Rng.GetRandomFloat() * 1.5f + 1.0f;
+    effect->direction *= g_Rng.GetRandomFloatInRange(1.5f) + 1.0f;
     return 0;
 }
 

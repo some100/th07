@@ -127,6 +127,7 @@ struct EclGlobalVars
     i32 intVars[4];
     f32 floatVars[4];
 };
+C_ASSERT(sizeof(EclGlobalVars) == 0x20);
 
 struct EclContextArgs
 {
@@ -136,6 +137,7 @@ struct EclContextArgs
     f32 floatVars2[2];
     EclGlobalVars globalVars;
 };
+C_ASSERT(sizeof(EclContextArgs) == 0x68);
 
 struct EclInterp
 {

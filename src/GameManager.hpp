@@ -32,7 +32,8 @@ struct ZunGlobals
     u32 score;
     u32 guiScoreDifference;
     u32 highScore;
-    i32 highScoreNumContinues;
+    u8 highScoreNumContinues;
+    // pad 3
     i32 grazeInStage;
     i32 grazeInTotal;
     i32 spellCardsCaptured;
@@ -76,19 +77,8 @@ struct GameManager
     void RegenerateGameIntegrityCsum()
 
     {
-        u32 local_10;
-        u32 local_c;
-
-        if (100000 != 0) // makes perfect sense
-            local_c = g_Rng.GetRandomU32() % 100000;
-        else
-            local_c = 0;
-        this->globals->rng1[2] = local_c + 0x198f;
-        if (100000 != 0)
-            local_10 = g_Rng.GetRandomU32() % 100000;
-        else
-            local_10 = 0;
-        this->globals->rng2[3] = local_10 + 0x198f;
+        this->globals->rng1[2] = g_Rng.GetRandomU32InRange(100000) + 0x198f;
+        this->globals->rng2[3] = g_Rng.GetRandomU32InRange(100000) + 0x198f;
         this->globals->curCsum = this->globals->rng1[2];
 
         this->globals->csumAsSum = ComputeGameIntegrityCsum();
@@ -128,25 +118,14 @@ struct GameManager
     void RerollRng()
 
     {
-        u32 local_1c;
-        u32 local_18;
-        u32 local_14;
-        u32 local_10;
-        u32 local_c;
-
-        local_c = g_Rng.GetRandomU32() % 100000;
-        this->globals->rng1[0] = local_c + 0x198f;
-        local_10 = g_Rng.GetRandomU32() % 100000;
-        this->globals->rng1[1] = local_10 + 0x198f;
-        local_14 = g_Rng.GetRandomU32() % 100000;
-        this->globals->rng1[2] = local_14 + 0x198f;
-        local_18 = g_Rng.GetRandomU32() % 100000;
-        this->globals->rng1[3] = local_18 + 0x198f;
-        local_1c = g_Rng.GetRandomU32() % 100000;
-        this->globals->rng1[4] = local_1c + 0x198f;
-        this->globals->rngFloat3[0] = g_Rng.GetRandomFloat() * 100000.0f + 6543.0f;
-        this->globals->rngFloat3[1] = g_Rng.GetRandomFloat() * 100000.0f + 6543.0f;
-        this->globals->rngFloat3[2] = g_Rng.GetRandomFloat() * 100000.0f + 6543.0f;
+        this->globals->rng1[0] = g_Rng.GetRandomU32InRange(100000) + 0x198f;
+        this->globals->rng1[1] = g_Rng.GetRandomU32InRange(100000) + 0x198f;
+        this->globals->rng1[2] = g_Rng.GetRandomU32InRange(100000) + 0x198f;
+        this->globals->rng1[3] = g_Rng.GetRandomU32InRange(100000) + 0x198f;
+        this->globals->rng1[4] = g_Rng.GetRandomU32InRange(100000) + 0x198f;
+        this->globals->rngFloat3[0] = g_Rng.GetRandomFloatInRange(100000.0f) + 6543.0f;
+        this->globals->rngFloat3[1] = g_Rng.GetRandomFloatInRange(100000.0f) + 6543.0f;
+        this->globals->rngFloat3[2] = g_Rng.GetRandomFloatInRange(100000.0f) + 6543.0f;
     }
 
     // FUNCTION: TH07 0x0043b750

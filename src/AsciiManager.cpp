@@ -132,11 +132,12 @@ u32 AsciiManager::OnDrawPopups(AsciiManager *arg)
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+#pragma var_order(idk, vm1, uselessAnmMgr, idk2, uselessAnmMgr2, fadeState)
 // FUNCTION: TH07 0x00401a00
 void AsciiManager::InitializeVms()
 {
-    i32 iVar2;
-    i16 local_1c;
+    i32 idk;
+    i32 idk2;
 
     memset(&this->vm1, 0, sizeof(AnmVm));
     memset(&this->vm0, 0, sizeof(AnmVm));
@@ -154,17 +155,19 @@ void AsciiManager::InitializeVms()
     this->scale.x = 1.0f;
     this->scale.y = 1.0f;
     this->vm1.flags = this->vm1.flags | 0xc00;
-    this->vm1.Initialize();
-    g_AnmManager->SetActiveSprite(&this->vm1, 0);
+    AnmVm *vm1 = &this->vm1;
+    AnmManager *uselessAnmMgr = g_AnmManager;
+    vm1->Initialize();
+    uselessAnmMgr->SetActiveSprite(vm1, 0);
+    AnmManager *uselessAnmMgr2 = g_AnmManager;
     this->vm0.Initialize();
-    g_AnmManager->SetActiveSprite(&this->vm0, 0x20);
+    uselessAnmMgr2->SetActiveSprite(&this->vm0, 0x20);
     this->vm1.pos.z = 0.1f;
     this->isSelected = 0;
     this->fontSpacing = 0xe;
-    iVar2 = this->uiFadeState;
-    local_1c = (i16)iVar2;
-    this->otherVms[0].pendingInterrupt = local_1c;
-    this->uiFadeState = iVar2;
+    i32 fadeState = this->uiFadeState;
+    this->otherVms[0].pendingInterrupt = fadeState;
+    this->uiFadeState = fadeState;
 }
 
 // FUNCTION: TH07 0x00401ba0
@@ -931,7 +934,6 @@ i32 RetryMenu::OnUpdate()
 void RetryMenu::OnDraw()
 {
     u32 i;
-    AnmVm local_25c;
 
     if (g_GameManager.isInGameMenu != 0)
     {
@@ -943,7 +945,7 @@ void RetryMenu::OnDraw()
         g_Supervisor.d3dDevice->SetViewport(&g_Supervisor.viewport);
         if (((g_Supervisor.flags >> 1 & 1) != 0) && (this->curState != 0))
         {
-            local_25c = this->menuBackground;
+            AnmVm local_25c = this->menuBackground;
             local_25c.flags = local_25c.flags | 0x1000;
             g_AnmManager->DrawNoRotation(&local_25c);
         }

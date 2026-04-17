@@ -80,19 +80,19 @@ void EnemyEclInstr::ExInsAliceCurveBullets(Enemy *enemy, EclRawInstr *instr)
         {
             if (bullet->spriteOffset == 2)
             {
-                local_10 = -ZUN_PI / (g_Rng.GetRandomFloat() * 60.0f + 180.0f);
+                local_10 = -ZUN_PI / (g_Rng.GetRandomFloatInRange(60.0f) + 180.0f);
             }
             else if (bullet->spriteOffset == 6)
             {
-                local_10 = ZUN_PI / (g_Rng.GetRandomFloat() * 60.0f + 180.0f);
+                local_10 = ZUN_PI / (g_Rng.GetRandomFloatInRange(60.0f) + 180.0f);
             }
             else if (bullet->spriteOffset == 8)
             {
-                local_10 = ZUN_PI / (g_Rng.GetRandomFloat() * 60.0f + 180.0f);
+                local_10 = ZUN_PI / (g_Rng.GetRandomFloatInRange(60.0f) + 180.0f);
             }
             else if (bullet->spriteOffset == 4)
             {
-                local_10 = -ZUN_PI / (g_Rng.GetRandomFloat() * 60.0f + 180.0f);
+                local_10 = -ZUN_PI / (g_Rng.GetRandomFloatInRange(60.0f) + 180.0f);
             }
             bullet->speed = 0.3f;
             memset(bullet->commands, 0, sizeof(bullet->commands));
@@ -162,7 +162,7 @@ void EnemyEclInstr::ExInsTurnBulletsIntoOtherBullets(Enemy *enemy,
             local_dc.aimMode = 6;
             angle = 1.5707964f;
             local_dc.AddTargetVelocityCommand(
-                0, 0, 0xb4, g_Rng.GetRandomFloat() * 0.005f + 0.013f, angle);
+                0, 0, 0xb4, g_Rng.GetRandomFloatInRange(0.005f) + 0.013f, angle);
             g_BulletManager.SpawnBulletPattern(&local_dc);
             bullet->Initialize();
         }
@@ -457,12 +457,12 @@ void EnemyEclInstr::ExInsShootBulletsAlongLaser(Enemy *enemy,
                     if (g_GameManager.difficulty < 2)
                     {
                         bullet->speed =
-                            (g_Rng.GetRandomFloat() * 0.3f + 0.7f) * bullet->speed;
+                            (g_Rng.GetRandomFloatInRange(0.3f) + 0.7f) * bullet->speed;
                     }
                     else
                     {
                         bullet->speed =
-                            (g_Rng.GetRandomFloat() * 0.4f + 0.8f) * bullet->speed;
+                            (g_Rng.GetRandomFloatInRange(0.4f) + 0.8f) * bullet->speed;
                     }
                     local_14 =
                         local_8 * bullet->velocity.y + local_28 * bullet->velocity.x;
@@ -568,7 +568,6 @@ void EnemyEclInstr::ExInsYoumuRestoreGameSpeed(Enemy *enemy, EclRawInstr *instr)
 void EnemyEclInstr::ExInsBurstLargeBullets(Enemy *enemy, EclRawInstr *instr)
 {
     f32 fVar5;
-    u32 local_108;
     i32 local_104;
     i32 local_100;
     u32 j;
@@ -612,34 +611,32 @@ void EnemyEclInstr::ExInsBurstLargeBullets(Enemy *enemy, EclRawInstr *instr)
             for (j = 0; (i32)j < local_100; j += 1)
             {
                 local_dc.position = bullet->pos;
-                local_dc.position.x += (g_Rng.GetRandomFloat() * 32.0f - 16.0f);
-                local_dc.position.y += (g_Rng.GetRandomFloat() * 32.0f - 16.0f);
+                local_dc.position.x += (g_Rng.GetRandomFloatInRange(32.0f) - 16.0f);
+                local_dc.position.y += (g_Rng.GetRandomFloatInRange(32.0f) - 16.0f);
 
-                local_108 = (u32)g_Rng.GetRandomU16() % 3;
-                if (local_108 == 0)
+                switch ((u32)g_Rng.GetRandomU16InRange(3))
                 {
+                case 0:
                     local_dc.sprite = 0;
                     local_dc.spriteOffset = 2;
-                }
-                else if (local_108 == 1)
-                {
+                    break;
+                case 1:
                     local_dc.sprite = 3;
                     local_dc.spriteOffset = 2;
-                }
-                else if (local_108 == 2)
-                {
+                    break;
+                case 2:
                     local_dc.sprite = 7;
                     local_dc.spriteOffset = 1;
                 }
                 if (instr->args[1].i == 0)
                 {
-                    local_dc.angle1 = g_Rng.GetRandomFloat() * 4.712389f - 1.5707964f;
+                    local_dc.angle1 = g_Rng.GetRandomFloatInRange(4.712389f) - 1.5707964f;
                 }
                 else
                 {
                     fVar5 = 0.7853982f;
                     local_dc.angle1 = utils::AddNormalizeAngle(
-                        g_Rng.GetRandomFloat() * 4.712389f, fVar5);
+                        g_Rng.GetRandomFloatInRange(4.712389f), fVar5);
                 }
                 local_dc.speed1 = 0.1f;
                 local_dc.count1 = 1;
@@ -647,7 +644,7 @@ void EnemyEclInstr::ExInsBurstLargeBullets(Enemy *enemy, EclRawInstr *instr)
                 local_dc.flags = (j & 1) ? 2 : 0;
                 local_dc.aimMode = 1;
                 local_dc.AddAngleAccelCommand(0, 0, 100, 0.0f,
-                                              g_Rng.GetRandomFloat() * 0.008f + 0.01f);
+                                              g_Rng.GetRandomFloatInRange(0.008f) + 0.01f);
                 g_BulletManager.SpawnBulletPattern(&local_dc);
             }
             bullet->Initialize();
@@ -812,7 +809,6 @@ void EnemyEclInstr::ExInsYuyukoCountButterflyBullets(Enemy *enemy,
 void EnemyEclInstr::ExInsBurstLargeBullets2(Enemy *enemy, EclRawInstr *instr)
 {
     f32 fVar5;
-    u32 local_108;
     f32 local_104;
     i32 j;
     Bullet *bullet;
@@ -841,34 +837,32 @@ void EnemyEclInstr::ExInsBurstLargeBullets2(Enemy *enemy, EclRawInstr *instr)
             for (j = 0; j < 0xf; j += 1)
             {
                 local_e4.position = bullet->pos;
-                local_e4.position.x += (g_Rng.GetRandomFloat() * 32.0f - 16.0f);
-                local_e4.position.y += (g_Rng.GetRandomFloat() * 32.0f - 16.0f);
+                local_e4.position.x += (g_Rng.GetRandomFloatInRange(32.0f) - 16.0f);
+                local_e4.position.y += (g_Rng.GetRandomFloatInRange(32.0f) - 16.0f);
 
-                local_108 = (u32)g_Rng.GetRandomU16() % 3;
-                if (local_108 == 0)
+                switch ((u32)g_Rng.GetRandomU16InRange(3))
                 {
+                case 0:
                     local_e4.sprite = 0;
                     local_e4.spriteOffset = 4;
-                }
-                else if (local_108 == 1)
-                {
+                    break;
+                case 1:
                     local_e4.sprite = 3;
                     local_e4.spriteOffset = 4;
-                }
-                else if (local_108 == 2)
-                {
+                    break;
+                case 2:
                     local_e4.sprite = 7;
                     local_e4.spriteOffset = 2;
                 }
                 if (instr->args[1].i == 0)
                 {
-                    local_e4.angle1 = g_Rng.GetRandomFloat() * 4.712389f - 1.5707964f;
+                    local_e4.angle1 = g_Rng.GetRandomFloatInRange(4.712389f) - 1.5707964f;
                 }
                 else
                 {
                     fVar5 = 0.7853982f;
                     local_e4.angle1 = utils::AddNormalizeAngle(
-                        g_Rng.GetRandomFloat() * 4.712389f, fVar5);
+                        g_Rng.GetRandomFloatInRange(4.712389f), fVar5);
                 }
                 local_e4.speed1 = 0.1f;
                 local_e4.count1 = 1;
@@ -876,7 +870,7 @@ void EnemyEclInstr::ExInsBurstLargeBullets2(Enemy *enemy, EclRawInstr *instr)
                 local_e4.flags = 0;
                 local_e4.aimMode = 1;
                 local_e4.AddAngleAccelCommand(0, 0, 100, 0.0f,
-                                              g_Rng.GetRandomFloat() * 0.008f + 0.01f);
+                                              g_Rng.GetRandomFloatInRange(0.008f) + 0.01f);
                 g_BulletManager.SpawnBulletPattern(&local_e4);
             }
             bullet->Initialize();
@@ -932,7 +926,7 @@ void EnemyEclInstr::ExInsSpawnBulletsWithDirChange(Enemy *enemy,
                 }
                 local_e4.spriteOffset =
                     (-(u16)(bullet->spriteOffset != 1) & 0xfffc) + 6;
-                local_e4.angle1 = g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI;
+                local_e4.angle1 = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
                 local_e4.angle2 = -ZUN_PI;
                 if (enemy->timer.current % 2 == 0)
                 {
@@ -991,7 +985,7 @@ void EnemyEclInstr::ExInsSpawnBulletsWithDirChange2(Enemy *enemy,
                     local_e4.sprite = 1;
                 }
                 local_e4.spriteOffset = (-(u16)(bullet->spriteOffset != 2) & 3) + 10;
-                local_e4.angle1 = g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI;
+                local_e4.angle1 = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
                 local_e4.angle2 = -ZUN_PI;
                 if (iVar1 == 0)
                 {

@@ -391,7 +391,7 @@ i32 ShtData::UpdateUpwardAcceleratingBullet(Player *player,
     if (bullet->bulletState == 1)
     {
         bullet->velocity.y =
-            bullet->velocity.y - (g_Rng.GetRandomFloat() * 0.1f + 0.27f);
+            bullet->velocity.y - (g_Rng.GetRandomFloatInRange(0.1f) + 0.27f);
     }
     return 0;
 }
@@ -543,7 +543,7 @@ i32 ShtData::OnMissileHit(Player *player, PlayerBullet *bullet,
     }
     else
     {
-        fVar2 = g_Rng.GetRandomFloat() * 1.5707964f - 2.3561945f;
+        fVar2 = g_Rng.GetRandomFloatInRange(1.5707964f) - 2.3561945f;
         switch (bullet->vm.anmFileIdx)
         {
         case 0x441:
@@ -2116,6 +2116,7 @@ BombProjectile *Player::SpawnBombProjectile(D3DXVECTOR3 *centerPosition,
     return local_c;
 }
 
+#pragma var_order(local_8, bomb)
 // FUNCTION: TH07 0x004418b0
 BombProjectile *Player::SpawnBombEffect(D3DXVECTOR3 *pos, f32 sizeY, f32 sizeZ,
                                         i32 lifetime, i32 payload)
@@ -2123,12 +2124,12 @@ BombProjectile *Player::SpawnBombEffect(D3DXVECTOR3 *pos, f32 sizeY, f32 sizeZ,
     BombProjectile *bomb;
     i32 local_8;
 
-    local_8 = 0;
-    for (bomb = this->bombHitboxes;
-         (local_8 < 0x5f && ((bomb->pos.z != 0.0f || (bomb->size.y != 0.0f))));
-         bomb = bomb + 1)
+    for (bomb = this->bombHitboxes, local_8 = 0;
+         local_8 < 0x5f;
+         local_8++, bomb++)
     {
-        local_8 += 1;
+        if (bomb->pos.z == 0.0f && bomb->size.y == 0.0f)
+            break;
     }
     bomb->pos.x = pos->x;
     bomb->pos.y = pos->y;

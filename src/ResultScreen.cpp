@@ -606,9 +606,9 @@ void ResultScreen::WriteScore()
             bytesToWrite = ((ScoreDat *)fileBuffer)->srcLen + sizeof(ScoreDat);
             ((ScoreDat *)fileBuffer)->dataOffset = sizeof(ScoreDat);
             ((ScoreDat *)fileBuffer)->csum = 0;
-            local_74 = ((u32)g_Rng.GetRandomU16() % 0x100);
+            local_74 = (u32)g_Rng.GetRandomU16InRange(0x100);
             ((ScoreDat *)fileBuffer)->xorseed[1] = local_74;
-            local_78 = ((u32)g_Rng.GetRandomU16() % 0x100);
+            local_78 = (u32)g_Rng.GetRandomU16InRange(0x100);
             ((ScoreDat *)fileBuffer)->unused_6 = local_78;
             ((ScoreDat *)fileBuffer)->magic = 0xb;
             for (local_5c = 4; local_5c < (i32)bytesToWrite; local_5c += 1)

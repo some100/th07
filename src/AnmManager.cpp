@@ -2145,8 +2145,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
         case ANM_RAND: {
             u32 maxv = (instr->flags & 2) == 0 ? instr->args[1].i
                                                : vm->GetVarValue(instr->args[1].i);
-            *vm->GetVar(&instr->args[0].i, instr->flags, 0) =
-                maxv == 0 ? 0 : (g_Rng.GetRandomU32() % maxv);
+            *vm->GetVar(&instr->args[0].i, instr->flags, 0) = g_Rng.GetRandomU32InRange(maxv);
             break;
         }
         case ANM_RAND_FLOAT: {
@@ -2154,7 +2153,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
                            ? instr->args[1].f
                            : vm->GetFloatVarValue(instr->args[1].f);
             *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
-                g_Rng.GetRandomFloat() * maxv;
+                g_Rng.GetRandomFloatInRange(maxv);
             break;
         }
         case ANM_SIN: {
@@ -2758,39 +2757,39 @@ void AnmManager::CopySurfaceToBackBuffer(i32 surfaceIdx, i32 left, i32 top,
         return;
     IDirect3DSurface8 *dstSurface;
     if (g_Supervisor.d3dDevice->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO,
-                                              &dstSurface) == 0)
+                                              &dstSurface) != 0)
+        return;
+
+    if (this->surfaces[surfaceIdx] == NULL)
     {
-        if (this->surfaces[surfaceIdx] == NULL)
+        if (g_Supervisor.d3dDevice->CreateRenderTarget(
+                this->surfaceSourceInfo[surfaceIdx].width,
+                this->surfaceSourceInfo[surfaceIdx].height,
+                g_Supervisor.presentParameters.BackBufferFormat,
+                D3DMULTISAMPLE_NONE, 1, this->surfaces + surfaceIdx) != 0 &&
+            g_Supervisor.d3dDevice->CreateImageSurface(
+                this->surfaceSourceInfo[surfaceIdx].width,
+                this->surfaceSourceInfo[surfaceIdx].height,
+                g_Supervisor.presentParameters.BackBufferFormat,
+                this->surfaces + surfaceIdx) != 0)
         {
-            if (g_Supervisor.d3dDevice->CreateRenderTarget(
-                    this->surfaceSourceInfo[surfaceIdx].width,
-                    this->surfaceSourceInfo[surfaceIdx].height,
-                    g_Supervisor.presentParameters.BackBufferFormat,
-                    D3DMULTISAMPLE_NONE, 1, this->surfaces + surfaceIdx) != 0 &&
-                g_Supervisor.d3dDevice->CreateImageSurface(
-                    this->surfaceSourceInfo[surfaceIdx].width,
-                    this->surfaceSourceInfo[surfaceIdx].height,
-                    g_Supervisor.presentParameters.BackBufferFormat,
-                    this->surfaces + surfaceIdx) != 0)
-            {
-                dstSurface->Release();
-                return;
-            }
-            if (D3DXLoadSurfaceFromSurface(this->surfaces[surfaceIdx], NULL, NULL,
-                                           this->surfacesBis[surfaceIdx], NULL, NULL,
-                                           1, 0) != 0)
-            {
-                dstSurface->Release();
-                return;
-            }
+            dstSurface->Release();
+            return;
         }
-        RECT srcRect = {left, top, (LONG)this->surfaceSourceInfo[surfaceIdx].width,
-                        (LONG)this->surfaceSourceInfo[surfaceIdx].height};
-        POINT dstPoint = {x, y};
-        g_Supervisor.d3dDevice->CopyRects(this->surfaces[surfaceIdx], &srcRect, 1,
-                                          dstSurface, &dstPoint);
-        dstSurface->Release();
+        if (D3DXLoadSurfaceFromSurface(this->surfaces[surfaceIdx], NULL, NULL,
+                                       this->surfacesBis[surfaceIdx], NULL, NULL,
+                                       1, 0) != 0)
+        {
+            dstSurface->Release();
+            return;
+        }
     }
+    RECT srcRect = {left, top, (LONG)this->surfaceSourceInfo[surfaceIdx].width,
+                    (LONG)this->surfaceSourceInfo[surfaceIdx].height};
+    POINT dstPoint = {x, y};
+    g_Supervisor.d3dDevice->CopyRects(this->surfaces[surfaceIdx], &srcRect, 1,
+                                      dstSurface, &dstPoint);
+    dstSurface->Release();
 }
 
 // FUNCTION: TH07 0x00454c60

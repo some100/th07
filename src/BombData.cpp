@@ -361,7 +361,7 @@ void BombData::BombReimuACalcFocus(Player *player)
                     pPVar1->accel = 8.0f;
                     pPVar1->bombRegionPositions = player->positionCenter;
                     AngleToVector(&pPVar1->bombRegionVelocities,
-                                  g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI,
+                                  g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI,
                                   pPVar1->accel);
                     player->bombProjectiles[iVar5].payload = 0;
                     local_1c = pPVar1->vms;
@@ -873,12 +873,12 @@ void BombData::BombMarisaACalcFocus(Player *player)
             }
             player->bombInfo.subInfo[iVar6].state = 1;
             AngleToVector(&player->bombInfo.subInfo[iVar6].bombRegionVelocities,
-                          (g_Rng.GetRandomFloat() * 0.3926991f - 0.19634955f) -
+                          (g_Rng.GetRandomFloatInRange(0.3926991f) - 0.19634955f) -
                               1.5707964f,
                           -5.0f);
             player->bombInfo.subInfo[iVar6].bombRegionVelocities.z = 0.0f;
             AngleToVector(&player->bombInfo.subInfo[iVar6].bombRegionAcceleration,
-                          (g_Rng.GetRandomFloat() * 0.3926991f - 0.19634955f) -
+                          (g_Rng.GetRandomFloatInRange(0.3926991f) - 0.19634955f) -
                               1.5707964f,
                           0.24f);
             player->bombInfo.subInfo[iVar6].bombRegionAcceleration.z = 0.0f;
@@ -1262,11 +1262,11 @@ void BombData::BombSakuyaACalc(Player *player)
                     {
                         local_c->state = 1;
                         g_AnmManager->ExecuteAnmIdx(local_c->vms, (local_8 & 1) + 0x405);
-                        local_c->angle = g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI;
-                        local_c->speed = g_Rng.GetRandomFloat() * 6.0f + 5.5f;
-                        local_c->accel = g_Rng.GetRandomFloat() * 0.1f + 0.1f;
+                        local_c->angle = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
+                        local_c->speed = g_Rng.GetRandomFloatInRange(6.0f) + 5.5f;
+                        local_c->accel = g_Rng.GetRandomFloatInRange(0.1f) + 0.1f;
                         (local_c->bombRegionAcceleration).x =
-                            g_Rng.GetRandomFloat() * 0.06283186f - 0.03141593f;
+                            g_Rng.GetRandomFloatInRange(0.06283186f) - 0.03141593f;
                         (local_c->bombRegionVelocities).x = cosf(local_c->angle) * 24.0f;
                         (local_c->bombRegionVelocities).y = sinf(local_c->angle) * 24.0f;
                         local_c->bombRegionPositions =
@@ -1415,8 +1415,8 @@ void BombData::BombSakuyaACalcFocus(Player *player)
                     local_c->state = 1;
                     g_AnmManager->ExecuteAnmIdx(local_c->vms, (local_8 & 1) + 0x407);
                     local_c->angle = ((f32)local_8 * ZUN_2PI) / 96.0f - ZUN_PI;
-                    local_c->speed = g_Rng.GetRandomFloat() * 1.0f + 0.5f;
-                    local_c->accel = g_Rng.GetRandomFloat() * 0.1f + 0.03f;
+                    local_c->speed = g_Rng.GetRandomFloatInRange(1.0f) + 0.5f;
+                    local_c->accel = g_Rng.GetRandomFloatInRange(0.1f) + 0.03f;
                     g_Rng.GetRandomU16(); // What
                     (local_c->bombRegionAcceleration).x = -0.15707964f;
                     (local_c->bombRegionVelocities).x = cosf(local_c->angle) * 24.0f;

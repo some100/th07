@@ -512,8 +512,6 @@ void ReplayManager::SaveReplay(const char *param_1, char *param_2)
     u8 *replayData;
     u8 *lpBuffer;
     HANDLE hFile;
-    u8 local_158;
-    u8 local_154;
     u8 *local_124;
     u8 local_11d;
     u8 *local_11c;
@@ -615,11 +613,9 @@ void ReplayManager::SaveReplay(const char *param_1, char *param_2)
             replayCopy.head.replaySize = replaySize;
             strcpy(replayCopy.data.name, param_2);
             ResultScreen::GetDate(replayCopy.data.date);
-            replayCopy.head.key = ((u32)g_Rng.GetRandomU16() % 0x80) + 0x40;
-            local_154 = (u8)((u32)g_Rng.GetRandomU16() % 0x100);
-            replayCopy.data.rngValue3 = local_154;
-            local_158 = (u8)((u32)g_Rng.GetRandomU16() % 0x100);
-            replayCopy.head.rngValue1 = local_158;
+            replayCopy.head.key = (u32)g_Rng.GetRandomU16InRange(0x80) + 0x40;
+            replayCopy.data.rngValue3 = (u32)g_Rng.GetRandomU16InRange(0x100);
+            replayCopy.head.rngValue1 = (u32)g_Rng.GetRandomU16InRange(0x100);
             replayCopy.data.slowdownRate2 = replayCopy.data.slowdownRate + 1.12f;
             replayCopy.data.slowdownRate3 = replayCopy.data.slowdownRate + 2.34f;
             replayCopy.data.magic30 = 0x1e;
@@ -694,8 +690,6 @@ void ReplayManager::SaveReplay2(const char *param_1)
     u8 *src;
     u8 *pbVar5;
     HANDLE hFile;
-    u8 local_138;
-    u8 local_134;
     i32 *local_124;
     u8 local_11d;
     u8 *local_11c;
@@ -755,11 +749,9 @@ void ReplayManager::SaveReplay2(const char *param_1)
         }
         replayCopy.data.score = g_GameManager.globals->guiScore;
         replayCopy.head.replaySize = local_114;
-        replayCopy.head.key = ((u32)g_Rng.GetRandomU16() % 0x80) + 0x40;
-        local_134 = (u8)((u32)g_Rng.GetRandomU16() % 0x100);
-        replayCopy.data.rngValue3 = local_134;
-        local_138 = (u8)((u32)g_Rng.GetRandomU16() % 0x100);
-        replayCopy.head.rngValue1 = local_138;
+        replayCopy.head.key = (u32)g_Rng.GetRandomU16InRange(0x80) + 0x40;
+        replayCopy.data.rngValue3 = (u32)g_Rng.GetRandomU16InRange(0x100);
+        replayCopy.head.rngValue1 = (u32)g_Rng.GetRandomU16InRange(0x100);
         replayCopy.data.slowdownRate2 = replayCopy.data.slowdownRate + 1.12f;
         replayCopy.data.slowdownRate3 = replayCopy.data.slowdownRate + 2.34f;
         replayCopy.data.magic30 = 0x1e;

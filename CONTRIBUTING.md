@@ -86,7 +86,40 @@ Immediately from the assembly diff, you can determine a few things just from thi
          : +mov eax, dword ptr [ebp - 4] 	(EclManager.cpp:67)
 ```
 
-Firstly, PCB was compiled with debug settings, so you can see that the frame pointer here was not omitted. Secondly, it shows that 8 bytes were allocated on the stack, evidenced by `sub esp, 8`, which was not allocated in the recompiled version. However, since this is a member function of EclManager, `this` is located at `ecx`, which is then immediately moved to the end of the stack at `[ebp - 8]` in the original binary, or `[ebp - 4]`. Thus, since `this` already occupies a stack "slot," it means that we are only missing 4 bytes of stack space from our version. So we have to see where exactly `[ebp - 4]` is used or assigned to in the _original_ version in the diff, to determine its type and use.
+Firstly, PCB was compiled with debug settings, so you can see that the frame pointer here was not omitted. Secondly, it shows that 8 bytes were allocated on the stack, evidenced by `sub esp, 8`, which was not allocated in the recompiled version. However, since this is a member function of EclManager, `this` is located at `ecx`, which is then immediately moved to the end of the stack at `[ebp - 8]` in the original binary, or `[ebp - 4]`. Thus, since `this` already occupies a stack "slot," it means that we are only missing 4 bytes of stack space from our version. Just to make sure, though, we can use a tool that comes with `reccmp`, called `stackcmp`. Call `reccmp-stackcmp --target TH07 0x0040e4f0` to get:
+
+```
+[ERROR] Structural mismatch at orig=0x40e506:
+-mov dword ptr [ebp - 4], edx
++push edx
++call free (FUNCTION)
++add esp, 4
+
+[ERROR] Mismatching line structure at orig=0x40e515:
+-push eax
+-call <OFFSET1>
+-add esp, 4
+-mov ecx, dword ptr [ebp - 8]
++mov dword ptr [eax], 0
++mov esp, ebp 	(EclManager.cpp:77)
++pop ebp
++ret
+
+
+Ordered by original stack (left=orig, right=recomp):
+⇄  ebp - 0x08: ebp - 0x04  this
+✓  ebp - 0x04: ebp - 0x04  this
+
+Ordered by recomp stack (left=orig, right=recomp):
+✗  ['ebp - 0x08', 'ebp - 0x04']: ebp - 0x04  this
+
+Legend:
+⇄ : This stack variable matches 1:1, but the order of variables is not correct.
+✗ : This stack variable matches multiple variables in the other binary.
+? : This stack variable did not appear in the diff. It either matches or only appears in structural mismatches.
+```
+
+This confirms that we are missing an a variable, and more importantly, we are using `this` in place of where it should be. So we have to see where exactly `[ebp - 4]` is used or assigned to in the _original_ version in the diff, to determine its type and use.
 
 ```
 0x40e506 : -mov dword ptr [ebp - 4], edx
@@ -419,7 +452,7 @@ A lot of things going on here, but we only need to care about a few things:
          : +jne 0x163
 ```
 
-When seeing something like `test eax, eax`, followed by a `je` type instruction, that usually indicates an if statement. `je` basically means "if equal, jump relative to the current offset." In these cases, it's emitted to skip over an if-statement is the condition is not true. Afterwards is an unconditional `jmp` call, indicating an early return, which can be either a goto or a return. However, our version instead chooses to do `jne`, which is meant to skip to the else statement. Immediately before the `je` instruction is this:
+When seeing something like `test eax, eax` (or alternatively `cmp xyz, a`), followed by a `je` type instruction, that usually indicates an if statement. `je` basically means "if equal, jump relative to the current offset." In these cases, it's emitted to skip over an if-statement is the condition is not true. Afterwards is an unconditional `jmp` call, indicating an early return, which can be either a goto or a return. However, our version instead chooses to do `jne`, which is meant to skip to the else statement. Immediately before the `je` instruction is this:
 
 ```
 0x454861 : -call <OFFSET9>

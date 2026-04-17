@@ -1783,7 +1783,7 @@ void Gui::DrawGameScene()
         local_20.x = local_20.x + 112.0f;
         AsciiManager::AddFormatText(
             &g_AsciiManager, &local_20, "%1d",
-            (u32)(u8)g_GameManager.globals->highScoreNumContinues);
+            (u32)g_GameManager.globals->highScoreNumContinues);
     }
     else
     {
@@ -1794,7 +1794,7 @@ void Gui::DrawGameScene()
         local_20.x = local_20.x + 113.399994f;
         AsciiManager::AddFormatText(
             &g_AsciiManager, &local_20, "%1d",
-            (u32)(u8)g_GameManager.globals->highScoreNumContinues);
+            (u32)g_GameManager.globals->highScoreNumContinues);
         g_AsciiManager.scale.x = 1.0f;
         g_AsciiManager.scale.y = 1.0f;
     }

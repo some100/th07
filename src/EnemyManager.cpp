@@ -359,16 +359,16 @@ void EnemyManager::RunEclTimeline(EclTimeline *timeline)
                     if (fVar5 < -990.0f != (fVar5 == -990.0f))
                     {
                         local_20.x =
-                            g_Rng.GetRandomFloat() * g_GameManager.playerMovementAreaSize.x;
+                            g_Rng.GetRandomFloatInRange(g_GameManager.playerMovementAreaSize.x);
                     }
                     if (pEVar1->args[1].f < -990.0f != (pEVar1->args[1].f == -990.0f))
                     {
                         local_20.y =
-                            g_Rng.GetRandomFloat() * g_GameManager.playerMovementAreaSize.y;
+                            g_Rng.GetRandomFloatInRange(g_GameManager.playerMovementAreaSize.y);
                     }
                     if (pEVar1->args[2].f < -990.0f != (pEVar1->args[2].f == -990.0f))
                     {
-                        local_20.z = g_Rng.GetRandomFloat() * 800.0f;
+                        local_20.z = g_Rng.GetRandomFloatInRange(800.0f);
                     }
                     g_EnemyManager.SpawnEnemy(timeline->timelineInstr->arg0, &local_20,
                                               pEVar1->args[3].i, (char)pEVar1->args[4].i,
@@ -385,16 +385,16 @@ void EnemyManager::RunEclTimeline(EclTimeline *timeline)
                     if (local_2c.x < -990.0f != (local_2c.x == -990.0f))
                     {
                         local_2c.x =
-                            g_Rng.GetRandomFloat() * g_GameManager.playerMovementAreaSize.x;
+                            g_Rng.GetRandomFloatInRange(g_GameManager.playerMovementAreaSize.x);
                     }
                     if (local_2c.y < -990.0f != (local_2c.y == -990.0f))
                     {
                         local_2c.y =
-                            g_Rng.GetRandomFloat() * g_GameManager.playerMovementAreaSize.y;
+                            g_Rng.GetRandomFloatInRange(g_GameManager.playerMovementAreaSize.y);
                     }
                     if (local_2c.z < -990.0f != (local_2c.z == -990.0f))
                     {
-                        local_2c.z = g_Rng.GetRandomFloat() * 800.0f;
+                        local_2c.z = g_Rng.GetRandomFloatInRange(800.0f);
                     }
                     g_EnemyManager.SpawnEnemy(timeline->timelineInstr->arg0, &local_2c,
                                               -1, -1, -1, 0);
@@ -411,16 +411,16 @@ void EnemyManager::RunEclTimeline(EclTimeline *timeline)
                     if (fVar5 < -990.0f != (fVar5 == -990.0f))
                     {
                         local_3c.x =
-                            g_Rng.GetRandomFloat() * g_GameManager.playerMovementAreaSize.x;
+                            g_Rng.GetRandomFloatInRange(g_GameManager.playerMovementAreaSize.x);
                     }
                     if (pEVar1->args[1].f < -990.0f != (pEVar1->args[1].f == -990.0f))
                     {
                         local_3c.y =
-                            g_Rng.GetRandomFloat() * g_GameManager.playerMovementAreaSize.y;
+                            g_Rng.GetRandomFloatInRange(g_GameManager.playerMovementAreaSize.y);
                     }
                     if (pEVar1->args[2].f < -990.0f != (pEVar1->args[2].f == -990.0f))
                     {
-                        local_3c.z = g_Rng.GetRandomFloat() * 800.0f;
+                        local_3c.z = g_Rng.GetRandomFloatInRange(800.0f);
                     }
                     pEVar3 = g_EnemyManager.SpawnEnemy(
                         timeline->timelineInstr->arg0, &local_3c, pEVar1->args[3].i,
@@ -438,16 +438,16 @@ void EnemyManager::RunEclTimeline(EclTimeline *timeline)
                     if (local_48.x < -990.0f != (local_48.x == -990.0f))
                     {
                         local_48.x =
-                            g_Rng.GetRandomFloat() * g_GameManager.playerMovementAreaSize.x;
+                            g_Rng.GetRandomFloatInRange(g_GameManager.playerMovementAreaSize.x);
                     }
                     if (local_48.y < -990.0f != (local_48.y == -990.0f))
                     {
                         local_48.y =
-                            g_Rng.GetRandomFloat() * g_GameManager.playerMovementAreaSize.y;
+                            g_Rng.GetRandomFloatInRange(g_GameManager.playerMovementAreaSize.y);
                     }
                     if (local_48.z < -990.0f != (local_48.z == -990.0f))
                     {
-                        local_48.z = g_Rng.GetRandomFloat() * 800.0f;
+                        local_48.z = g_Rng.GetRandomFloatInRange(800.0f);
                     }
                     pEVar3 = g_EnemyManager.SpawnEnemy(timeline->timelineInstr->arg0,
                                                        &local_48, -1, -1, -1, 0);
@@ -976,7 +976,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                         (((i32)local_1c / 5) * 10) / 10 + g_GameManager.globals->score;
                     if ((enemy->flags2 >> 2 & 1) != 0)
                     {
-                        if ((arg->spellcardInfo).isActive != 0)
+                        if (arg->spellcardInfo.isActive != 0)
                         {
                             if (local_18 == 0)
                             {
@@ -992,7 +992,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                                     local_1c = (i32)local_1c / 7;
                                 }
                             }
-                            else if ((arg->spellcardInfo).usedBomb == 0)
+                            else if (arg->spellcardInfo.usedBomb == 0)
                             {
                                 local_1c = 0;
                             }
@@ -1522,9 +1522,6 @@ u32 EnemyManager::OnDraw2(EnemyManager *arg)
 // FUNCTION: TH07 0x00422ce0
 ZunResult EnemyManager::AddedCallback(EnemyManager *arg)
 {
-    u16 local_20;
-    u16 local_1c;
-
     if ((arg->stgEnmAnmFilename != NULL) &&
         (g_AnmManager->LoadAnms(0xf, arg->stgEnmAnmFilename, 0x900) !=
          ZUN_SUCCESS))
@@ -1538,11 +1535,9 @@ ZunResult EnemyManager::AddedCallback(EnemyManager *arg)
         return ZUN_ERROR;
     }
 
-    local_1c = g_Rng.GetRandomU16() % 3;
-    arg->randomItemSpawnIdx = local_1c;
-    local_20 = g_Rng.GetRandomU16() % 8;
-    arg->randomItemTableIdx = local_20;
-    (arg->spellcardInfo).isActive = 0;
+    arg->randomItemSpawnIdx = g_Rng.GetRandomU16InRange(3);
+    arg->randomItemTableIdx = g_Rng.GetRandomU16InRange(8);
+    arg->spellcardInfo.isActive = 0;
     g_AsciiManager.otherVms[6].pos.z = -999.0f;
     g_AsciiManager.otherVms[6].pos.y = -999.0f;
     g_AsciiManager.otherVms[6].pos.x = -999.0f;

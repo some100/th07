@@ -333,7 +333,7 @@ u32 GameManager::OnUpdate(GameManager *arg)
             if (arg->globals->highScore < arg->globals->guiScore)
             {
                 arg->globals->highScore = arg->globals->guiScore;
-                *(u8 *)&arg->globals->highScoreNumContinues = arg->globals->numRetries;
+                arg->globals->highScoreNumContinues = arg->globals->numRetries;
             }
         }
         for (u32 i = 0; i < 3; i += 1)
@@ -439,63 +439,57 @@ void GameManager::InitializeRank()
     this->rank.maxRank = g_RankArray[g_GameManager.difficulty][2];
 }
 
+#pragma var_order(csum, i)
 // FUNCTION: TH07 0x0042e3da
 void GameManager::InitializeRngAndCsum()
 {
-    u32 local_1c;
-    u32 local_18;
-    u32 local_14;
-    u32 local_10;
-    u32 local_c;
+    u32 i;
 
-    local_10 = g_Rng.GetRandomU32() % 100000;
-    g_GameManager.globals->cherryStart = local_10 + 0x198f;
-    for (local_c = 0; local_c < 7; local_c += 1)
+    g_GameManager.globals->cherryStart = g_Rng.GetRandomU32InRange(100000) + 0x198f;
+    for (i = 0; i < 7; i += 1)
     {
-        local_14 = g_Rng.GetRandomU32() % 100000;
-        g_GameManager.globals->rng1[local_c] = local_14 + 0x198f;
+        g_GameManager.globals->rng1[i] = g_Rng.GetRandomU32InRange(100000) + 0x198f;
     }
-    for (local_c = 0; local_c < 8; local_c += 1)
+    for (i = 0; i < 8; i += 1)
     {
-        local_18 = g_Rng.GetRandomU32() % 100000;
-        g_GameManager.globals->rng2[local_c] = local_18 + 0x198f;
+        g_GameManager.globals->rng2[i] = g_Rng.GetRandomU32InRange(100000) + 0x198f;
     }
-    for (local_c = 0; local_c < 2; local_c += 1)
+    for (i = 0; i < 2; i += 1)
     {
-        g_GameManager.globals->rngFloat1[local_c] =
-            g_Rng.GetRandomFloat() * 100000.0f + 6543.0f;
+        g_GameManager.globals->rngFloat1[i] =
+            g_Rng.GetRandomFloatInRange(100000.0f) + 6543.0f;
     }
-    for (local_c = 0; local_c < 2; local_c += 1)
+    for (i = 0; i < 2; i += 1)
     {
-        g_GameManager.globals->rngFloat2[local_c] =
-            g_Rng.GetRandomFloat() * 100000.0f + 6543.0f;
+        g_GameManager.globals->rngFloat2[i] =
+            g_Rng.GetRandomFloatInRange(100000.0f) + 6543.0f;
     }
-    for (local_c = 0; local_c < 3; local_c += 1)
+    for (i = 0; i < 3; i += 1)
     {
-        g_GameManager.globals->rngFloat3[local_c] =
-            g_Rng.GetRandomFloat() * 100000.0f + 6543.0f;
+        g_GameManager.globals->rngFloat3[i] =
+            g_Rng.GetRandomFloatInRange(100000.0f) + 6543.0f;
     }
-    for (local_c = 0; local_c < 2; local_c += 1)
+    for (i = 0; i < 2; i += 1)
     {
-        g_GameManager.globals->rngFloat4[local_c] =
-            g_Rng.GetRandomFloat() * 100000.0f + 6543.0f;
+        g_GameManager.globals->rngFloat4[i] =
+            g_Rng.GetRandomFloatInRange(100000.0f) + 6543.0f;
     }
-    for (local_c = 0; local_c < 5; local_c += 1)
+    for (i = 0; i < 5; i += 1)
     {
-        local_1c = g_Rng.GetRandomU32() % 100000;
-        g_GameManager.globals->csumData[local_c] = local_1c + 0x198f;
+        g_GameManager.globals->csumData[i] = g_Rng.GetRandomU32InRange(100000) + 0x198f;
     }
     g_GameManager.globals->curCsum = g_GameManager.globals->rng1[2];
-    g_GameManager.globals->csumAsSum = g_GameManager.ComputeGameIntegrityCsum();
-    g_GameManager.csumFloat = (f32)g_GameManager.globals->csumAsSum +
+    i32 csum = g_GameManager.ComputeGameIntegrityCsum();
+    g_GameManager.globals->csumAsSum = csum;
+    g_GameManager.csumFloat = (f32)csum +
                               (f32)g_GameManager.globals->rng2[3];
 }
 
+#pragma var_order(local_8, local_c, scoreDat, local_14)
 // FUNCTION: TH07 0x0042e634
 ZunResult ResultScreen::ParseScores()
 {
     ScoreDat *scoreDat;
-    u32 uVar2;
     i32 local_14;
     i32 local_c;
     Catk *local_8;
@@ -503,20 +497,19 @@ ZunResult ResultScreen::ParseScores()
     local_8 = g_GameManager.catk;
     RegisterChain(2);
     memset(g_GameManager.catk, 0, sizeof(g_GameManager.catk));
-    for (local_c = 0; local_c < 0x8d; local_c = local_c + 1)
+    for (local_c = 0; local_c < 0x8d; local_c++, local_8++)
     {
         local_8->magic = 0x4b544143;
         local_8->th7kLen2 = sizeof(Catk);
         local_8->th7kLen = sizeof(Catk);
         local_8->version = 1;
         local_8->idx = (i16)local_c;
-        for (local_14 = 0; local_14 < 7; local_14 = local_14 + 1)
+        for (local_14 = 0; local_14 < 7; local_14++)
         {
             local_8->numAttemptsPerShot[local_14] = 0;
             local_8->numSuccessesPerShot[local_14] = 0;
             local_8->highScorePerShot[local_14] = 0;
         }
-        local_8 = local_8 + 1;
     }
     scoreDat = OpenScore("score.dat");
     if (scoreDat == NULL)
@@ -525,33 +518,29 @@ ZunResult ResultScreen::ParseScores()
         g_GameErrorContext.Log("error : スコアファイルの読み取りに失敗しました\r\n");
         return ZUN_ERROR;
     }
-    else
+
+    g_GameManager.globals->highScore = GetHighScore(scoreDat, NULL, (u32)g_GameManager.shotTypeAndCharacter,
+                                                    g_GameManager.difficulty,
+                                                    &g_GameManager.globals->highScoreNumContinues);
+    ParseCatk(scoreDat, g_GameManager.catk);
+    ParseClrd(scoreDat, g_GameManager.clrd);
+    ParsePscr(scoreDat, &g_GameManager.pscr[0][0][0]);
+    if ((g_GameManager.flags & 1) != 0)
     {
-        uVar2 =
-            GetHighScore(scoreDat, NULL, (u32)g_GameManager.shotTypeAndCharacter,
-                         g_GameManager.difficulty,
-                         (u8 *)&g_GameManager.globals->highScoreNumContinues);
-        g_GameManager.globals->highScore = uVar2;
-        ParseCatk(scoreDat, g_GameManager.catk);
-        ParseClrd(scoreDat, g_GameManager.clrd);
-        ParsePscr(scoreDat, &g_GameManager.pscr[0][0][0]);
-        if ((g_GameManager.flags & 1) != 0)
-        {
-            g_GameManager.globals->highScore =
-                g_GameManager
-                    .pscr[g_GameManager.shotTypeAndCharacter]
-                         [g_GameManager.currentStage][g_GameManager.difficulty]
-                    .score;
+        g_GameManager.globals->highScore =
             g_GameManager
-                .pscr[g_GameManager.shotTypeAndCharacter][g_GameManager.currentStage]
-                     [g_GameManager.difficulty]
-                .playCount += 1;
-            g_GameManager.globals->highScoreNumContinues = 0;
-        }
-        ReleaseScoreDat(scoreDat);
-        *(Catk *)g_GameManager.catkAgain = *(Catk *)g_GameManager.catk;
-        return ZUN_SUCCESS;
+                .pscr[g_GameManager.shotTypeAndCharacter]
+                     [g_GameManager.currentStage][g_GameManager.difficulty]
+                .score;
+        g_GameManager
+            .pscr[g_GameManager.shotTypeAndCharacter][g_GameManager.currentStage]
+                 [g_GameManager.difficulty]
+            .playCount += 1;
+        g_GameManager.globals->highScoreNumContinues = 0;
     }
+    ReleaseScoreDat(scoreDat);
+    memcpy(g_GameManager.catkAgain, g_GameManager.catk, sizeof(g_GameManager.catkAgain));
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x0042e81b
@@ -568,7 +557,6 @@ void IncrementCappedAgain(u32 *param, u32 cap)
 ZunResult GameManager::AddedCallback(GameManager *arg)
 {
     u16 uVar2;
-    u32 local_34;
 
     g_Supervisor.checkTiming = 0;
     arg->difficultyMask = 1 << ((u8)arg->difficulty & 0x1f);
@@ -592,8 +580,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
         SAFE_FREE(arg->defaultCfg);
         SAFE_FREE(arg->globals);
 
-        local_34 = g_Rng.GetRandomU32() % 0xffff;
-        arg->tmpBuffer = malloc(local_34 + 0x10);
+        arg->tmpBuffer = malloc(g_Rng.GetRandomU32InRange(0xffff) + 0x10);
         arg->defaultCfg = new GameConfiguration;
         arg->globals = new ZunGlobals;
         InitializeRngAndCsum();

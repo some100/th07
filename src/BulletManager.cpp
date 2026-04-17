@@ -198,22 +198,22 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, f32 x,
             break;
         case 6:
             bulletAngle =
-                g_Rng.GetRandomFloat() * (bulletProps->angle1 - bulletProps->angle2) +
+                g_Rng.GetRandomFloatInRange(bulletProps->angle1 - bulletProps->angle2) +
                 bulletProps->angle2;
             break;
         case 7:
             bulletSpeed =
-                g_Rng.GetRandomFloat() * (bulletProps->speed1 - bulletProps->speed2) +
+                g_Rng.GetRandomFloatInRange(bulletProps->speed1 - bulletProps->speed2) +
                 bulletProps->speed2;
             bulletAngle = y * bulletProps->angle2 + bulletProps->angle1 +
                           (x * ZUN_2PI) / (f32)(i32)bulletProps->count1 + 0.0f;
             break;
         case 8:
             bulletAngle =
-                g_Rng.GetRandomFloat() * (bulletProps->angle1 - bulletProps->angle2) +
+                g_Rng.GetRandomFloatInRange(bulletProps->angle1 - bulletProps->angle2) +
                 bulletProps->angle2;
             bulletSpeed =
-                g_Rng.GetRandomFloat() * (bulletProps->speed1 - bulletProps->speed2) +
+                g_Rng.GetRandomFloatInRange(bulletProps->speed1 - bulletProps->speed2) +
                 bulletProps->speed2;
         }
         bullet->state = BULLET_NORMAL;
