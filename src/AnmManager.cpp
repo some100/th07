@@ -551,7 +551,7 @@ void AnmManager::ReleaseAnm(i32 anmIdx)
         afterHdr = (this->anmFiles[anmIdx].raw)->spriteOffsets;
         spriteIdxOffset = this->anmFiles[anmIdx].spriteIndexOffset;
         rawEntry = this->anmFiles[anmIdx].raw;
-        local_14 = anmIdx + 1;
+        local_14 = anmIdx;
         for (i = 1; local_14 = local_14 + 1, i < this->anmFiles[anmIdx].childCount;
              i++)
         {

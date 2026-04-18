@@ -220,7 +220,7 @@ struct AnmManager
         this->SetActiveSprite(vm, spriteIdx);
     }
 
-    i32 CreateScreenshotTexture(i32 x, i32 y, i32 height, i32 width)
+    i32 CreateScreenshotTexture(i32 x, i32 y, i32 width, i32 height)
     {
         if (this->screenshotTextureId >= 0)
         {
@@ -236,9 +236,8 @@ struct AnmManager
             this->screenshotDstLeft = x;
             this->screenshotDstTop = y;
 
-            // seems like ZUN accidentally swapped height and width
-            this->screenshotDstWidth = height;
-            this->screenshotDstHeight = width;
+            this->screenshotDstWidth = width;
+            this->screenshotDstHeight = height;
             return 0;
         }
     }

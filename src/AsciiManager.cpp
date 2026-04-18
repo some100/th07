@@ -485,9 +485,7 @@ i32 RetryMenu::OnUpdate()
         this->numFrames = 0;
         this->menuBackground.pendingInterrupt = 1;
     }
-    if ((((g_CurFrameRawInput & TH_BUTTON_Q) != 0) &&
-         ((g_CurFrameRawInput & TH_BUTTON_Q) !=
-          (g_LastFrameRawInput & TH_BUTTON_Q))) &&
+    if (WAS_PRESSED_RAW(TH_BUTTON_Q) &&
         (this->curState != 9))
     {
         g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
@@ -501,11 +499,9 @@ i32 RetryMenu::OnUpdate()
         }
         this->numFrames = 0;
     }
-    if ((((g_GameManager.flags >> 3 & 1) == 0) &&
-         ((g_CurFrameRawInput & TH_BUTTON_RESET) != 0)) &&
-        (((g_CurFrameRawInput & TH_BUTTON_RESET) !=
-              (g_LastFrameRawInput & TH_BUTTON_RESET) &&
-          (this->curState != 9))))
+    if (((g_GameManager.flags >> 3 & 1) == 0) &&
+        WAS_PRESSED_RAW(TH_BUTTON_RESET) &&
+        this->curState != 9)
     {
         g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
         this->curState = 10;
@@ -570,31 +566,23 @@ i32 RetryMenu::OnUpdate()
         {
             if ((g_GameManager.flags >> 3 & 1) == 0)
             {
-                if (((g_CurFrameRawInput & TH_BUTTON_UP) != 0) &&
-                    ((g_CurFrameRawInput & TH_BUTTON_UP) !=
-                     (g_LastFrameRawInput & TH_BUTTON_UP)))
+                if (WAS_PRESSED_RAW(TH_BUTTON_UP))
                 {
                     this->curState = 3;
                     g_SoundPlayer.PlaySoundByIdx(SOUND_0, 0);
                 }
             }
-            else if (((g_CurFrameRawInput & TH_BUTTON_UP) != 0) &&
-                     ((g_CurFrameRawInput & TH_BUTTON_UP) !=
-                      (g_LastFrameRawInput & TH_BUTTON_UP)))
+            else if (WAS_PRESSED_RAW(TH_BUTTON_UP))
             {
                 this->curState = 2;
                 g_SoundPlayer.PlaySoundByIdx(SOUND_0, 0);
             }
-            if (((g_CurFrameRawInput & TH_BUTTON_DOWN) != 0) &&
-                ((g_CurFrameRawInput & TH_BUTTON_DOWN) !=
-                 (g_LastFrameRawInput & TH_BUTTON_DOWN)))
+            if (WAS_PRESSED_RAW(TH_BUTTON_DOWN))
             {
                 this->curState = 2;
                 g_SoundPlayer.PlaySoundByIdx(SOUND_0, 0);
             }
-            if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-                ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-                 (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+            if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
                 for (i = 0; (i32)i < 4; i = i + 1)
@@ -616,18 +604,14 @@ i32 RetryMenu::OnUpdate()
         this->menuSprites[2].offset = D3DXVECTOR3(-4.0f, -4.0f, 0.0f);
         if (this->numFrames >= 4)
         {
-            if (((g_CurFrameRawInput & TH_BUTTON_UP) != 0) &&
-                ((g_CurFrameRawInput & TH_BUTTON_UP) !=
-                 (g_LastFrameRawInput & TH_BUTTON_UP)))
+            if (WAS_PRESSED_RAW(TH_BUTTON_UP))
             {
                 this->curState = 1;
                 g_SoundPlayer.PlaySoundByIdx(SOUND_0, 0);
             }
             if ((g_GameManager.flags >> 3 & 1) != 0)
             {
-                if (((g_CurFrameRawInput & TH_BUTTON_DOWN) != 0) &&
-                    ((g_CurFrameRawInput & TH_BUTTON_DOWN) !=
-                     (g_LastFrameRawInput & TH_BUTTON_DOWN)))
+                if (WAS_PRESSED_RAW(TH_BUTTON_DOWN))
                 {
                     this->curState = 1;
                     g_SoundPlayer.PlaySoundByIdx(SOUND_0, 0);
@@ -635,17 +619,13 @@ i32 RetryMenu::OnUpdate()
             }
             else
             {
-                if (((g_CurFrameRawInput & TH_BUTTON_DOWN) != 0) &&
-                    ((g_CurFrameRawInput & TH_BUTTON_DOWN) !=
-                     (g_LastFrameRawInput & TH_BUTTON_DOWN)))
+                if (WAS_PRESSED_RAW(TH_BUTTON_DOWN))
                 {
                     this->curState = 3;
                     g_SoundPlayer.PlaySoundByIdx(SOUND_0, 0);
                 }
             }
-            if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-                ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-                 (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+            if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
                 for (i = 0; (i32)i < 4; i = i + 1)
@@ -670,23 +650,17 @@ i32 RetryMenu::OnUpdate()
         this->menuSprites[3].offset = D3DXVECTOR3(-4.0f, -4.0f, 0.0f);
         if (this->numFrames >= 4)
         {
-            if (((g_CurFrameRawInput & TH_BUTTON_UP) != 0) &&
-                ((g_CurFrameRawInput & TH_BUTTON_UP) !=
-                 (g_LastFrameRawInput & TH_BUTTON_UP)))
+            if (WAS_PRESSED_RAW(TH_BUTTON_UP))
             {
                 this->curState = 2;
                 g_SoundPlayer.PlaySoundByIdx(SOUND_0, 0);
             }
-            if (((g_CurFrameRawInput & TH_BUTTON_DOWN) != 0) &&
-                ((g_CurFrameRawInput & TH_BUTTON_DOWN) !=
-                 (g_LastFrameRawInput & TH_BUTTON_DOWN)))
+            if (WAS_PRESSED_RAW(TH_BUTTON_DOWN))
             {
                 this->curState = 1;
                 g_SoundPlayer.PlaySoundByIdx(SOUND_0, 0);
             }
-            if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-                ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-                 (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+            if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
                 for (i = 0; (i32)i < 4; i = i + 1)
@@ -727,12 +701,7 @@ i32 RetryMenu::OnUpdate()
         this->menuSprites[6].offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
         if (this->numFrames >= 4)
         {
-            if ((((g_CurFrameRawInput & TH_BUTTON_UP) != 0) &&
-                 ((g_CurFrameRawInput & TH_BUTTON_UP) !=
-                  (g_LastFrameRawInput & TH_BUTTON_UP))) ||
-                (((g_CurFrameRawInput & TH_BUTTON_DOWN) != 0 &&
-                  ((g_CurFrameRawInput & TH_BUTTON_DOWN) !=
-                   (g_LastFrameRawInput & TH_BUTTON_DOWN)))))
+            if (WAS_PRESSED_RAW(TH_BUTTON_UP) || WAS_PRESSED_RAW(TH_BUTTON_DOWN))
             {
                 if (this->curState == 5)
                 {
@@ -744,9 +713,7 @@ i32 RetryMenu::OnUpdate()
                 }
                 g_SoundPlayer.PlaySoundByIdx(SOUND_0, 0);
             }
-            if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-                ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-                 (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+            if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
                 for (i = 4; (i32)i < 7; i = i + 1)
@@ -773,12 +740,7 @@ i32 RetryMenu::OnUpdate()
         this->menuSprites[6].offset = D3DXVECTOR3(-4.0f, -4.0f, 0.0f);
         if (this->numFrames >= 4)
         {
-            if ((((g_CurFrameRawInput & TH_BUTTON_UP) != 0) &&
-                 ((g_CurFrameRawInput & TH_BUTTON_UP) !=
-                  (g_LastFrameRawInput & TH_BUTTON_UP))) ||
-                (((g_CurFrameRawInput & TH_BUTTON_DOWN) != 0 &&
-                  ((g_CurFrameRawInput & TH_BUTTON_DOWN) !=
-                   (g_LastFrameRawInput & TH_BUTTON_DOWN)))))
+            if (WAS_PRESSED_RAW(TH_BUTTON_UP) || WAS_PRESSED_RAW(TH_BUTTON_DOWN))
             {
                 if (this->curState == 6)
                 {
@@ -790,9 +752,7 @@ i32 RetryMenu::OnUpdate()
                 }
                 g_SoundPlayer.PlaySoundByIdx(SOUND_0, 0);
             }
-            if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-                ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-                 (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+            if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
                 for (i = 0; (i32)i < 4; i = i + 1)
@@ -952,19 +912,12 @@ i32 PauseMenu::OnUpdate()
         this->menuSprites[3].offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
         if (this->numFrames >= 4)
         {
-            if ((((g_CurFrameRawInput & TH_BUTTON_UP) != 0) &&
-                 ((g_CurFrameRawInput & TH_BUTTON_UP) !=
-                  (g_LastFrameRawInput & TH_BUTTON_UP))) ||
-                (((g_CurFrameRawInput & TH_BUTTON_DOWN) != 0 &&
-                  ((g_CurFrameRawInput & TH_BUTTON_DOWN) !=
-                   (g_LastFrameRawInput & TH_BUTTON_DOWN)))))
+            if (WAS_PRESSED_RAW(TH_BUTTON_UP) || WAS_PRESSED_RAW(TH_BUTTON_DOWN))
             {
                 this->curState = 2;
                 g_SoundPlayer.PlaySoundByIdx(SOUND_0, 0);
             }
-            if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-                ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-                 (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+            if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
                 for (i = 0; i < 5; i += 1)
@@ -984,19 +937,12 @@ i32 PauseMenu::OnUpdate()
         this->menuSprites[2].offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
         if (this->numFrames >= 0x1e)
         {
-            if ((((g_CurFrameRawInput & TH_BUTTON_UP) != 0) &&
-                 ((g_CurFrameRawInput & TH_BUTTON_UP) !=
-                  (g_LastFrameRawInput & TH_BUTTON_UP))) ||
-                (((g_CurFrameRawInput & TH_BUTTON_DOWN) != 0 &&
-                  ((g_CurFrameRawInput & TH_BUTTON_DOWN) !=
-                   (g_LastFrameRawInput & TH_BUTTON_DOWN)))))
+            if (WAS_PRESSED_RAW(TH_BUTTON_UP) || WAS_PRESSED_RAW(TH_BUTTON_DOWN))
             {
                 this->curState = 1;
                 g_SoundPlayer.PlaySoundByIdx(SOUND_0, 0);
             }
-            if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-                ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-                 (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+            if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
                 for (i = 0; i < 5; i += 1)

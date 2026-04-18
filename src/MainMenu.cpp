@@ -359,7 +359,7 @@ LAB_0045599d:
             (i32)this->vmHead[this->cursor + 1].baseSpriteIdx);
     }
     this->demoFramesCount = this->demoFramesCount + 1;
-    if (g_CurFrameRawInput != 0)
+    if (IS_PRESSED_RAW(TH_BUTTON_ANY))
     {
         this->demoFramesCount = 0;
     }
@@ -403,9 +403,7 @@ LAB_0045599d:
     this->selected = this->cursor;
     if (this->stateTimer < 10)
         goto LAB_004561e9;
-    if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) == 0) ||
-        ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) ==
-         (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+    if (!WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
         goto switchD_00455cdd_default;
     g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
     g_SoundPlayer.ProcessQueues();
@@ -621,11 +619,7 @@ u32 MainMenu::OnUpdateOptionsMenu()
         (i32)this->vmHead[g_Supervisor.cfg.slowMode + 0x20].baseSpriteIdx);
     if (this->stateTimer < 4)
         goto LAB_00456e08;
-    if ((((g_CurFrameRawInput & TH_BUTTON_LEFT) != 0) &&
-         ((g_CurFrameRawInput & TH_BUTTON_LEFT) !=
-          (g_LastFrameRawInput & TH_BUTTON_LEFT))) ||
-        (((g_CurFrameRawInput & TH_BUTTON_LEFT) != 0 &&
-          (g_IsEighthFrameOfHeldInput != 0))))
+    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_LEFT))
     {
         if (this->cursor == 0)
         {
@@ -714,11 +708,7 @@ u32 MainMenu::OnUpdateOptionsMenu()
         g_SoundPlayer.ProcessQueues();
     }
 LAB_00456a2d:
-    if ((((g_CurFrameRawInput & TH_BUTTON_RIGHT) != 0) &&
-         ((g_CurFrameRawInput & TH_BUTTON_RIGHT) !=
-          (g_LastFrameRawInput & TH_BUTTON_RIGHT))) ||
-        (((g_CurFrameRawInput & TH_BUTTON_RIGHT) != 0 &&
-          (g_IsEighthFrameOfHeldInput != 0))))
+    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_RIGHT))
     {
         if (this->cursor == 0)
         {
@@ -767,7 +757,7 @@ LAB_00456a2d:
         g_SoundPlayer.ProcessQueues();
     }
 LAB_00456bd3:
-    if (g_CurFrameRawInput != 0)
+    if (IS_PRESSED_RAW(TH_BUTTON_ANY))
     {
         this->idleFrames = 0;
     }
@@ -799,9 +789,7 @@ LAB_00456bd3:
                     goto LAB_00456cc0;
             }
         }
-        if (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) != 0) &&
-            ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) !=
-             (g_LastFrameRawInput & TH_BUTTON_RETURNMENU)))
+        if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
         {
             if (this->cursor == 8)
                 goto LAB_00456cc0;
@@ -1015,30 +1003,24 @@ u32 MainMenu::OnUpdateKeyConfig()
         g_SoundPlayer.ProcessQueues();
     }
 switchD_00457548_default:
-    if ((((g_CurFrameRawInput & TH_BUTTON_LEFT) != 0) &&
-         ((g_CurFrameRawInput & TH_BUTTON_LEFT) !=
-          (g_LastFrameRawInput & TH_BUTTON_LEFT))) &&
-        (this->cursor == 9))
+    if (WAS_PRESSED_RAW(TH_BUTTON_LEFT) &&
+        this->cursor == 9)
     {
         g_Supervisor.cfg.shotSlow = 1 - g_Supervisor.cfg.shotSlow;
     }
-    if ((((g_CurFrameRawInput & TH_BUTTON_RIGHT) != 0) &&
-         ((g_CurFrameRawInput & TH_BUTTON_RIGHT) !=
-          (g_LastFrameRawInput & TH_BUTTON_RIGHT))) &&
-        (this->cursor == 9))
+    if (WAS_PRESSED_RAW(TH_BUTTON_RIGHT) &&
+        this->cursor == 9)
     {
         g_Supervisor.cfg.shotSlow = 1 - g_Supervisor.cfg.shotSlow;
     }
     g_LastJoystickInput = btnPressed;
-    if (g_CurFrameRawInput != 0)
+    if (IS_PRESSED_RAW(TH_BUTTON_ANY))
     {
         this->idleFrames = 0;
     }
     if (this->idleFrames < 0xe10)
     {
-        if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-            ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-             (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+        if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
         {
             if (this->cursor == 10)
             {
@@ -1222,9 +1204,7 @@ u32 MainMenu::OnUpdateSelectDifficulty()
                     (i32)this->vmHead[this->cursor + 0x43].baseSpriteIdx);
             }
         }
-        if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-            ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-             (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+        if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
         {
             if (this->gameState == STATE_EXTRA_SELECT_DIFFICULTY)
             {
@@ -1251,9 +1231,7 @@ u32 MainMenu::OnUpdateSelectDifficulty()
             this->cursor = 0;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
-        if (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) != 0) &&
-            ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) !=
-             (g_LastFrameRawInput & TH_BUTTON_RETURNMENU)))
+        if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
         {
             if (this->gameState == STATE_EXTRA_SELECT_DIFFICULTY)
             {
@@ -1535,9 +1513,7 @@ u32 MainMenu::OnUpdateSelectCharacter()
                 this->vmHead[0x55].pendingInterrupt = 9;
             }
         }
-        if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-            ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-             (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+        if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
         {
             g_GameManager.character = this->cursor;
             g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
@@ -1557,9 +1533,7 @@ u32 MainMenu::OnUpdateSelectCharacter()
             this->cursor = 0;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
-        if (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) != 0) &&
-            ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) !=
-             (g_LastFrameRawInput & TH_BUTTON_RETURNMENU)))
+        if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
             g_SoundPlayer.ProcessQueues();
@@ -1758,9 +1732,7 @@ u32 MainMenu::OnUpdateSelectShotType()
                     (i32)this->vmHead[this->cursor + 0x4e].baseSpriteIdx);
             }
         }
-        if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-            ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-             (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+        if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
         {
             g_GameManager.shotType = this->cursor;
             g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
@@ -1787,9 +1759,7 @@ u32 MainMenu::OnUpdateSelectShotType()
             SetGameState(STATE_SELECT_PRACTICE_STAGE);
             return CHAIN_CALLBACK_RESULT_EXECUTE_AGAIN;
         }
-        if (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) != 0) &&
-            ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) !=
-             (g_LastFrameRawInput & TH_BUTTON_RETURNMENU)))
+        if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
             g_GameManager.shotType = this->cursor;
@@ -1899,9 +1869,7 @@ u32 MainMenu::OnUpdateSelectPracticeStage()
             this->cursor = 0;
         }
         MoveCursorVertical(local_8);
-        if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-            ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-             (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+        if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
             g_GameManager.difficulty = g_Supervisor.cfg.defaultDifficulty;
@@ -1913,9 +1881,7 @@ u32 MainMenu::OnUpdateSelectPracticeStage()
                 ;
             return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
         }
-        if (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) != 0) &&
-            ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) !=
-             (g_LastFrameRawInput & TH_BUTTON_RETURNMENU)))
+        if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
             this->cursor = g_GameManager.shotType;
@@ -2050,11 +2016,7 @@ u32 MainMenu::OnUpdateSelectReplay()
         MoveCursorVertical(this->replayFilesNum);
         if (0xf < this->replayFilesNum)
         {
-            if ((((g_CurFrameRawInput & TH_BUTTON_LEFT) != 0) &&
-                 ((g_CurFrameRawInput & TH_BUTTON_LEFT) !=
-                  (g_LastFrameRawInput & TH_BUTTON_LEFT))) ||
-                (((g_CurFrameRawInput & TH_BUTTON_LEFT) != 0 &&
-                  (g_IsEighthFrameOfHeldInput != 0))))
+            if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_LEFT))
             {
                 this->cursor = this->cursor - 0xf;
                 if (this->cursor < 0)
@@ -2063,11 +2025,7 @@ u32 MainMenu::OnUpdateSelectReplay()
                 }
                 g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
             }
-            if ((((g_CurFrameRawInput & TH_BUTTON_RIGHT) != 0) &&
-                 ((g_CurFrameRawInput & TH_BUTTON_RIGHT) !=
-                  (g_LastFrameRawInput & TH_BUTTON_RIGHT))) ||
-                (((g_CurFrameRawInput & TH_BUTTON_RIGHT) != 0 &&
-                  (g_IsEighthFrameOfHeldInput != 0))))
+            if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_RIGHT))
             {
                 this->cursor = this->cursor + 0xf;
                 if (this->replayFilesNum <= this->cursor)
@@ -2080,13 +2038,9 @@ u32 MainMenu::OnUpdateSelectReplay()
         this->chosenReplay = this->cursor;
         if (9 < this->inputDelayTimer)
         {
-            if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) == 0) ||
-                ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) ==
-                 (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+            if (!WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
-                if (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) != 0) &&
-                    ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) !=
-                     (g_LastFrameRawInput & TH_BUTTON_RETURNMENU)))
+                if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
                 {
                     g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
                     this->menuSubState = 4;
@@ -2160,13 +2114,9 @@ u32 MainMenu::OnUpdateSelectReplay()
             }
         }
         this->selectedStage = this->cursor;
-        if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) == 0) ||
-            ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) ==
-             (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+        if (!WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
         {
-            if (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) != 0) &&
-                ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) !=
-                 (g_LastFrameRawInput & TH_BUTTON_RETURNMENU)))
+            if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
             {
                 free(this->currentReplay);
                 this->currentReplay = NULL;
@@ -2198,9 +2148,7 @@ u32 MainMenu::OnUpdateSelectReplay()
             this->vmHead[0xa0].pendingInterrupt = 0x15;
             this->vmHead[this->cursor + 0x9e].pendingInterrupt = 0x14;
         }
-        if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-            ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-             (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+        if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
         {
             g_GameManager.flags = (g_GameManager.flags & 0xfffffff7) | 8;
             strcpy(g_GameManager.replayFilename,
@@ -2226,9 +2174,7 @@ u32 MainMenu::OnUpdateSelectReplay()
                 ;
             return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
         }
-        if (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) != 0) &&
-            ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) !=
-             (g_LastFrameRawInput & TH_BUTTON_RETURNMENU)))
+        if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
         {
             this->menuSubState = 2;
             this->stateTimer = 0;
@@ -2624,11 +2570,8 @@ ZunResult MainMenu::ActualAddedCallback()
             {
                 g_Supervisor.d3dDevice->Reset(&g_Supervisor.presentParameters);
             }
-            if ((((0x77 < local_c) && (local_c < 0x348)) &&
-                 ((g_CurFrameRawInput & (TH_BUTTON_SELECTMENU | TH_BUTTON_BOMB)) !=
-                  0)) &&
-                ((g_CurFrameRawInput & (TH_BUTTON_SELECTMENU | TH_BUTTON_BOMB)) !=
-                 (g_LastFrameRawInput & (TH_BUTTON_SELECTMENU | TH_BUTTON_BOMB))))
+            if ((0x77 < local_c && local_c < 0x348) &&
+                WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU | TH_BUTTON_BOMB))
             {
                 local_c = 0x348;
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);

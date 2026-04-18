@@ -56,9 +56,7 @@ i32 MusicRoom::ProcessInput()
     char local_54[72];
     i32 local_c;
 
-    if (((g_CurFrameRawInput & TH_BUTTON_UP) != 0) &&
-        ((g_CurFrameRawInput & TH_BUTTON_UP) !=
-         (g_LastFrameRawInput & TH_BUTTON_UP)))
+    if (WAS_PRESSED_RAW(TH_BUTTON_UP))
     {
         this->cursor = this->cursor - 1;
         if (this->cursor < 0)
@@ -86,9 +84,7 @@ i32 MusicRoom::ProcessInput()
             }
         }
     }
-    if (((g_CurFrameRawInput & TH_BUTTON_DOWN) != 0) &&
-        ((g_CurFrameRawInput & TH_BUTTON_DOWN) !=
-         (g_LastFrameRawInput & TH_BUTTON_DOWN)))
+    if (WAS_PRESSED_RAW(TH_BUTTON_DOWN))
     {
         this->cursor = this->cursor + 1;
         if (this->cursor < this->numDescriptors)
@@ -115,9 +111,7 @@ i32 MusicRoom::ProcessInput()
             }
         }
     }
-    if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-        ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-         (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
+    if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
     {
         this->selectedIdx = this->cursor;
         if ((g_Supervisor.cfg.opts >> 0xd & 1) != 0)
@@ -145,9 +139,7 @@ i32 MusicRoom::ProcessInput()
             this->descriptionSprites[local_c].pendingInterrupt = 1;
         }
     }
-    if (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) == 0) ||
-        ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) ==
-         (g_LastFrameRawInput & TH_BUTTON_RETURNMENU)))
+    if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
     {
         return 0;
     }

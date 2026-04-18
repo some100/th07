@@ -359,7 +359,7 @@ cflags = [
 ]
 
 if args.no_matching:
-  cflags += "/DNON_MATCHING"
+  cflags.append("/DNON_MATCHING")
 
 lflags = [
     f"-LIBPATH:{conv_path(DX8_PATH / 'lib')}",

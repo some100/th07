@@ -2,7 +2,7 @@
 
 A work-in-progress reimplementation/decompilation of 東方妖々夢　～ Perfect Cherry Blossom 1.00b (md5: 0126afce1e805370d36c3482445e98da) by Team Shanghai Alice.
 
-This project is still in early stages. It's playable-ish, and every system appears to work fine, but the original game replays are not fully compatible, and there are a few bugs and problems. Perfect byte accuracy is an eventual goal.
+This project is still in early stages. The game is "playable," as in you can load into the game, but there are a number of bugs since the game isn't matching, like bullets having no killbox. Perfect byte accuracy is an eventual goal.
 
 ## Building
 
@@ -32,9 +32,8 @@ Note that this build script was not tested on Windows.
 
 ## Todo
 
-* Fix the replay desync issue.
 * Clean up this complete mess of code.
-* Start matching.
+* Start matching (and fixing issues).
 
 ## Contributing
 

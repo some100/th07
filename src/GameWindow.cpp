@@ -109,9 +109,7 @@ void GameWindow::Present()
         g_Supervisor.renderSkipFrames = 2;
     }
     g_AnmManager->TakeScreenshotIfRequested();
-    if (((g_CurFrameRawInput & TH_BUTTON_HOME) != 0) &&
-        ((g_CurFrameRawInput & TH_BUTTON_HOME) !=
-         (g_LastFrameRawInput & TH_BUTTON_HOME)))
+    if (WAS_PRESSED_RAW(TH_BUTTON_HOME))
     {
         // STRING: TH07 0x00497c1c
         _mkdir("snapshot");

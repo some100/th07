@@ -899,7 +899,7 @@ i32 Player::CheckCollisionWithEnemy(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
                     if ((bullet->hitCallback == NULL) ||
                         (bullet->hitCallback(this, bullet, param_1) == 0))
                     {
-                        if ((this->bombInfo).isInUse == 0)
+                        if (this->bombInfo.isInUse == 0)
                         {
                             local_d4 = bullet->damage;
                         }
@@ -965,7 +965,7 @@ i32 Player::CheckCollisionWithEnemy(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
                             g_EffectManager.SpawnParticles(5, param_1, 1, 0xffffffff);
                         }
                     }
-                    if (((this->bombInfo).isInUse != 0) && (param_3 != NULL))
+                    if ((this->bombInfo.isInUse != 0) && (param_3 != NULL))
                     {
                         *param_3 = 1;
                     }
@@ -1270,80 +1270,47 @@ void Player::HandlePlayerInputs()
 
     horizontalSpeed = 0.0f;
     verticalSpeed = 0.0f;
+    PlayerDirection direction = this->playerDirection;
     this->playerDirection = MOVEMENT_NONE;
-    if ((g_CurFrameGameInput & TH_BUTTON_UP) == 0)
-    {
-        if ((g_CurFrameGameInput & TH_BUTTON_DOWN) == 0)
-        {
-            if ((g_CurFrameGameInput & TH_BUTTON_LEFT) != 0)
-            {
-                this->playerDirection = MOVEMENT_LEFT;
-            }
-            if ((g_CurFrameGameInput & TH_BUTTON_RIGHT) != 0)
-            {
-                this->playerDirection = MOVEMENT_RIGHT;
-            }
-        }
-        else
-        {
-            this->playerDirection = MOVEMENT_DOWN;
-            if ((g_CurFrameGameInput & TH_BUTTON_LEFT) != 0)
-            {
-                this->playerDirection = MOVEMENT_DOWN_LEFT;
-            }
-            if ((g_CurFrameGameInput & TH_BUTTON_RIGHT) != 0)
-            {
-                this->playerDirection = MOVEMENT_DOWN_RIGHT;
-            }
-        }
-    }
-    else
+    if (IS_PRESSED_GAME(TH_BUTTON_UP))
     {
         this->playerDirection = MOVEMENT_UP;
-        if ((g_CurFrameGameInput & TH_BUTTON_LEFT) != 0)
+        if (IS_PRESSED_GAME(TH_BUTTON_LEFT))
         {
             this->playerDirection = MOVEMENT_UP_LEFT;
         }
-        if ((g_CurFrameGameInput & TH_BUTTON_RIGHT) != 0)
+        if (IS_PRESSED_GAME(TH_BUTTON_RIGHT))
         {
             this->playerDirection = MOVEMENT_UP_RIGHT;
         }
     }
-    if ((g_CurFrameGameInput & TH_BUTTON_FOCUS) == 0)
+    else
     {
-        this->isFocus = 0;
-        switch (this->playerDirection)
+        if (IS_PRESSED_GAME(TH_BUTTON_DOWN))
         {
-        case MOVEMENT_UP:
-            verticalSpeed = -this->shooterData->speed;
-            break;
-        case MOVEMENT_DOWN:
-            verticalSpeed = this->shooterData->speed;
-            break;
-        case MOVEMENT_LEFT:
-            horizontalSpeed = -this->shooterData->speed;
-            break;
-        case MOVEMENT_RIGHT:
-            horizontalSpeed = this->shooterData->speed;
-            break;
-        case MOVEMENT_UP_LEFT:
-            horizontalSpeed = -this->shooterData->speedDiagonal;
-            verticalSpeed = horizontalSpeed;
-            break;
-        case MOVEMENT_UP_RIGHT:
-            horizontalSpeed = this->shooterData->speedDiagonal;
-            verticalSpeed = -horizontalSpeed;
-            break;
-        case MOVEMENT_DOWN_LEFT:
-            verticalSpeed = this->shooterData->speedDiagonal;
-            horizontalSpeed = -verticalSpeed;
-            break;
-        case MOVEMENT_DOWN_RIGHT:
-            horizontalSpeed = this->shooterData->speedDiagonal;
-            verticalSpeed = horizontalSpeed;
+            this->playerDirection = MOVEMENT_DOWN;
+            if (IS_PRESSED_GAME(TH_BUTTON_LEFT))
+            {
+                this->playerDirection = MOVEMENT_DOWN_LEFT;
+            }
+            if (IS_PRESSED_GAME(TH_BUTTON_RIGHT))
+            {
+                this->playerDirection = MOVEMENT_DOWN_RIGHT;
+            }
+        }
+        else
+        {
+            if (IS_PRESSED_GAME(TH_BUTTON_LEFT))
+            {
+                this->playerDirection = MOVEMENT_LEFT;
+            }
+            if (IS_PRESSED_GAME(TH_BUTTON_RIGHT))
+            {
+                this->playerDirection = MOVEMENT_RIGHT;
+            }
         }
     }
-    else
+    if (IS_PRESSED_GAME(TH_BUTTON_FOCUS))
     {
         this->isFocus = 1;
         switch (this->playerDirection)
@@ -1377,36 +1344,56 @@ void Player::HandlePlayerInputs()
             verticalSpeed = horizontalSpeed;
         }
     }
-    if ((0.0f <= horizontalSpeed) || (this->previousHorizontalSpeed < 0.0f))
-    {
-        if ((horizontalSpeed == 0.0f) && (this->previousHorizontalSpeed < 0.0f))
-        {
-            this->playerSprite.anmFileIdx = 0x402;
-            g_AnmManager->SetAndExecuteScript(&this->playerSprite,
-                                              g_AnmManager->scripts[0x402]);
-        }
-    }
     else
     {
-        this->playerSprite.anmFileIdx = 0x401;
-        g_AnmManager->SetAndExecuteScript(&this->playerSprite,
-                                          g_AnmManager->scripts[0x401]);
-    }
-    if ((horizontalSpeed <= 0.0f) || (this->previousHorizontalSpeed < 0.0f ==
-                                      (this->previousHorizontalSpeed == 0.0f)))
-    {
-        if ((horizontalSpeed == 0.0f) && (0.0f < this->previousHorizontalSpeed))
+        this->isFocus = 0;
+        switch (this->playerDirection)
         {
-            this->playerSprite.anmFileIdx = 0x404;
-            g_AnmManager->SetAndExecuteScript(&this->playerSprite,
-                                              g_AnmManager->scripts[0x404]);
+        case MOVEMENT_UP:
+            verticalSpeed = -this->shooterData->speed;
+            break;
+        case MOVEMENT_DOWN:
+            verticalSpeed = this->shooterData->speed;
+            break;
+        case MOVEMENT_LEFT:
+            horizontalSpeed = -this->shooterData->speed;
+            break;
+        case MOVEMENT_RIGHT:
+            horizontalSpeed = this->shooterData->speed;
+            break;
+        case MOVEMENT_UP_LEFT:
+            horizontalSpeed = -this->shooterData->speedDiagonal;
+            verticalSpeed = horizontalSpeed;
+            break;
+        case MOVEMENT_UP_RIGHT:
+            horizontalSpeed = this->shooterData->speedDiagonal;
+            verticalSpeed = -horizontalSpeed;
+            break;
+        case MOVEMENT_DOWN_LEFT:
+            verticalSpeed = this->shooterData->speedDiagonal;
+            horizontalSpeed = -verticalSpeed;
+            break;
+        case MOVEMENT_DOWN_RIGHT:
+            horizontalSpeed = this->shooterData->speedDiagonal;
+            verticalSpeed = horizontalSpeed;
         }
     }
-    else
+    if (horizontalSpeed < 0.0f && this->previousHorizontalSpeed >= 0.0f)
     {
-        this->playerSprite.anmFileIdx = 0x403;
-        g_AnmManager->SetAndExecuteScript(&this->playerSprite,
-                                          g_AnmManager->scripts[0x403]);
+        g_AnmManager->SetAnmIdxAndExecuteScript(&this->playerSprite, 0x401);
+    }
+    else if (horizontalSpeed == 0.0f && this->previousHorizontalSpeed < 0.0f)
+    {
+        g_AnmManager->SetAnmIdxAndExecuteScript(&this->playerSprite, 0x402);
+    }
+
+    if (horizontalSpeed > 0.0f && this->previousHorizontalSpeed <= 0.0f)
+    {
+        g_AnmManager->SetAnmIdxAndExecuteScript(&this->playerSprite, 0x403);
+    }
+    else if (horizontalSpeed == 0.0f && this->previousHorizontalSpeed > 0.0f)
+    {
+        g_AnmManager->SetAnmIdxAndExecuteScript(&this->playerSprite, 0x404);
     }
     this->previousHorizontalSpeed = horizontalSpeed;
     this->previousVerticalSpeed = verticalSpeed;
@@ -1418,33 +1405,22 @@ void Player::HandlePlayerInputs()
                        g_Supervisor.effectiveFramerateMultiplier;
     this->positionCenter.x += this->velocity.x;
     this->positionCenter.y += this->velocity.y;
-    if (g_GameManager.playerMovementAreaTopLeftPos.x <= this->positionCenter.x)
-    {
-        if (g_GameManager.playerMovementAreaTopLeftPos.x +
-                g_GameManager.playerMovementAreaSize.x <
-            this->positionCenter.x)
-        {
-            this->positionCenter.x = g_GameManager.playerMovementAreaTopLeftPos.x +
-                                     g_GameManager.playerMovementAreaSize.x;
-        }
-    }
-    else
+    if (this->positionCenter.x < g_GameManager.playerMovementAreaTopLeftPos.x)
     {
         this->positionCenter.x = g_GameManager.playerMovementAreaTopLeftPos.x;
     }
-    if (g_GameManager.playerMovementAreaTopLeftPos.y <= this->positionCenter.y)
+    else if (this->positionCenter.x > g_GameManager.playerMovementAreaTopLeftPos.x + g_GameManager.playerMovementAreaSize.x)
     {
-        if (g_GameManager.playerMovementAreaTopLeftPos.y +
-                g_GameManager.playerMovementAreaSize.y <
-            this->positionCenter.y)
-        {
-            this->positionCenter.y = g_GameManager.playerMovementAreaTopLeftPos.y +
-                                     g_GameManager.playerMovementAreaSize.y;
-        }
+        this->positionCenter.x = g_GameManager.playerMovementAreaTopLeftPos.x + g_GameManager.playerMovementAreaSize.x;
     }
-    else
+
+    if (this->positionCenter.y < g_GameManager.playerMovementAreaTopLeftPos.y)
     {
         this->positionCenter.y = g_GameManager.playerMovementAreaTopLeftPos.y;
+    }
+    else if (this->positionCenter.y > g_GameManager.playerMovementAreaTopLeftPos.y + g_GameManager.playerMovementAreaSize.y)
+    {
+        this->positionCenter.y = g_GameManager.playerMovementAreaTopLeftPos.y + g_GameManager.playerMovementAreaSize.y;
     }
     this->hitboxTopLeft = this->positionCenter - this->hitboxSize;
     this->hitboxBottomRight = this->positionCenter + this->hitboxSize;
@@ -1456,71 +1432,123 @@ void Player::HandlePlayerInputs()
     this->orbsPosition[1] = this->positionCenter;
     local_14 = 0.0f;
     local_18 = 0.0f;
-    if ((g_GameManager.character == CHAR_SAKUYA) &&
-        (g_GameManager.shotType == 1))
+    if (g_GameManager.character != CHAR_SAKUYA || g_GameManager.shotType != 1)
     {
         switch (this->orbState)
         {
         case ORB_HIDDEN:
-            this->focusMovementTimer.Initialize(0);
+            this->focusMovementTimer.InitializeForPopup();
             break;
         case ORB_UNFOCUSED:
-            this->focusMovementTimer.Initialize(0);
-            if (this->isFocus == 0)
+            local_18 = 24.0f;
+            this->focusMovementTimer.InitializeForPopup();
+            if (this->isFocus != 0)
             {
-                this->orbsPosition[0].x -= cosf(this->orbAngle + 1.5707964f) * 24.0f;
-                this->orbsPosition[1].x += cosf(this->orbAngle + 1.5707964f) * 24.0f;
-                this->orbsPosition[0].y -= sinf(this->orbAngle + 1.5707964f) * 24.0f;
-                this->orbsPosition[1].y += sinf(this->orbAngle + 1.5707964f) * 24.0f;
-                break;
-            }
-            this->orbState = ORB_FOCUSING;
-            this->focusEffect = g_EffectManager.SpawnEffect(
-                0x18, &this->positionCenter, 2, 1, 0xffffffff);
-        case ORB_FOCUSING:
-            while (this->isFocus == 0)
-            {
-                this->orbState = ORB_UNFOCUSING;
-                this->focusMovementTimer.Initialize(8 -
-                                                    this->focusMovementTimer.current);
-                if (this->focusEffect != NULL)
-                {
-                    (this->focusEffect->vm).pendingInterrupt = 1;
-                }
-            switchD_0043fe16_caseD_4:
-                if (this->isFocus == 0)
-                {
-                    this->focusMovementTimer.previous = this->focusMovementTimer.current;
-                    g_Supervisor.TickTimer(&this->focusMovementTimer.current,
-                                           &this->focusMovementTimer.subFrame);
-                    fVar1 = 1.0f - ((f32)this->focusMovementTimer.current +
-                                    this->focusMovementTimer.subFrame) /
-                                       8.0f;
-                    fVar2 = cosf(this->orbAngle + 1.5707964f) * 24.0f;
-                    fVar3 = sinf(this->orbAngle + 1.5707964f) * 24.0f;
-                    this->orbsPosition[1].x +=
-                        (cosf(this->orbAngle + 0.22439948f) * 24.0f - fVar2) * fVar1 +
-                        fVar2;
-                    this->orbsPosition[1].y +=
-                        (sinf(this->orbAngle + 0.22439948f) * 24.0f - fVar3) * fVar1 +
-                        fVar3;
-                    if (7 < this->focusMovementTimer.current)
-                    {
-                        this->orbState = ORB_UNFOCUSED;
-                    }
-                    this->orbsPosition[0].x +=
-                        ((cosf(this->orbAngle - 0.22439948f) * 24.0f + fVar2) * fVar1 -
-                         fVar2);
-                    this->orbsPosition[0].y +=
-                        ((sinf(this->orbAngle - 0.22439948f) * 24.0f + fVar3) * fVar1 -
-                         fVar3);
-                    goto switchD_0043fe16_default;
-                }
                 this->orbState = ORB_FOCUSING;
-                this->focusMovementTimer.Initialize(8 -
-                                                    this->focusMovementTimer.current);
                 this->focusEffect = g_EffectManager.SpawnEffect(
                     0x18, &this->positionCenter, 2, 1, 0xffffffff);
+                break;
+            }
+            break;
+        case ORB_FOCUSING:
+            this->focusMovementTimer.previous = this->focusMovementTimer.current;
+            g_Supervisor.TickTimer(&this->focusMovementTimer.current,
+                                   &this->focusMovementTimer.subFrame);
+            fVar1 = ((f32)this->focusMovementTimer.current +
+                     this->focusMovementTimer.subFrame) /
+                    8.0f;
+            local_14 = (1.0f - fVar1) * 32.0f - 32.0f;
+            local_18 = fVar1 * fVar1 * -16.0f + 24.0f;
+            if (this->focusMovementTimer.current >= 8)
+            {
+                this->orbState = ORB_FOCUSED;
+            }
+            if (this->isFocus != 0)
+                break;
+            this->orbState = ORB_UNFOCUSING;
+            this->focusMovementTimer.Initialize2(8 -
+                                                 this->focusMovementTimer.current);
+            if (this->focusEffect != NULL)
+            {
+                this->focusEffect->vm.pendingInterrupt = 1;
+            }
+        switchD_0043f936_caseD_4:
+            this->focusMovementTimer.previous = this->focusMovementTimer.current;
+            g_Supervisor.TickTimer(&this->focusMovementTimer.current,
+                                   &this->focusMovementTimer.subFrame);
+            fVar1 = ((f32)this->focusMovementTimer.current +
+                     this->focusMovementTimer.subFrame) /
+                    8.0f;
+            local_14 = fVar1 * 32.0f - 32.0f;
+            local_18 = (1.0f - fVar1 * fVar1) * -16.0f + 24.0f;
+            if (this->focusMovementTimer.current >= 8)
+            {
+                this->orbState = ORB_UNFOCUSED;
+            }
+            if (this->isFocus == 0)
+                break;
+            this->orbState = ORB_FOCUSING;
+            this->focusMovementTimer.Initialize2(8 -
+                                                 this->focusMovementTimer.current);
+            this->focusEffect = g_EffectManager.SpawnEffect(
+                0x18, &this->positionCenter, 2, 1, 0xffffffff);
+            break;
+        case ORB_FOCUSED:
+            local_18 = 8.0f;
+            local_14 = -32.0f;
+            this->focusMovementTimer.InitializeForPopup();
+            if (this->isFocus == 0)
+            {
+                this->orbState = ORB_UNFOCUSING;
+                if (this->focusEffect == NULL)
+                    goto switchD_0043f936_caseD_4;
+                this->focusEffect->vm.pendingInterrupt = 1;
+                goto switchD_0043f936_caseD_4;
+            }
+            break;
+        case ORB_UNFOCUSING:
+            goto switchD_0043f936_caseD_4;
+        }
+        this->orbsPosition[0].x -= local_18;
+        this->orbsPosition[1].x += local_18;
+        this->orbsPosition[0].y += local_14;
+        this->orbsPosition[1].y += local_14;
+    }
+    else
+    {
+        switch (this->orbState)
+        {
+        case ORB_HIDDEN:
+            this->focusMovementTimer.InitializeForPopup();
+            break;
+        case ORB_UNFOCUSED:
+            local_18 = cosf(this->orbAngle + 1.5707964f) * 24.0f;
+            local_14 = sinf(this->orbAngle + 1.5707964f) * 24.0f;
+            this->focusMovementTimer.InitializeForPopup();
+            if (this->isFocus != 0)
+            {
+                this->orbState = ORB_FOCUSING;
+                this->focusEffect = g_EffectManager.SpawnEffect(
+                    0x18, &this->positionCenter, 2, 1, 0xffffffff);
+                goto CASE_ORB_FOCUSING;
+            }
+            this->orbsPosition[0].x -= local_18;
+            this->orbsPosition[1].x += local_18;
+            this->orbsPosition[0].y -= local_14;
+            this->orbsPosition[1].y += local_14;
+            break;
+        CASE_ORB_FOCUSING:
+        case ORB_FOCUSING:
+            if (this->isFocus == 0)
+            {
+                this->orbState = ORB_UNFOCUSING;
+                this->focusMovementTimer.Initialize2(8 -
+                                                     this->focusMovementTimer.current);
+                if (this->focusEffect != NULL)
+                {
+                    this->focusEffect->vm.pendingInterrupt = 1;
+                }
+                goto CASE_ORB_UNFOCUSING;
             }
             this->focusMovementTimer.previous = this->focusMovementTimer.current;
             g_Supervisor.TickTimer(&this->focusMovementTimer.current,
@@ -1534,7 +1562,7 @@ void Player::HandlePlayerInputs()
                 (cosf(this->orbAngle + 0.22439948f) * 24.0f - fVar2) * fVar1 + fVar2;
             this->orbsPosition[1].y +=
                 (sinf(this->orbAngle + 0.22439948f) * 24.0f - fVar3) * fVar1 + fVar3;
-            if (7 < this->focusMovementTimer.current)
+            if (this->focusMovementTimer.current >= 8)
             {
                 this->orbState = ORB_FOCUSED;
             }
@@ -1544,121 +1572,81 @@ void Player::HandlePlayerInputs()
                 (sinf(this->orbAngle - 0.22439948f) * 24.0f + fVar3) * fVar1 - fVar3;
             break;
         case ORB_FOCUSED:
-            this->focusMovementTimer.Initialize(0);
+            this->focusMovementTimer.InitializeForPopup();
             if (this->isFocus == 0)
             {
                 this->orbState = ORB_UNFOCUSING;
                 if (this->focusEffect == NULL)
-                    goto switchD_0043fe16_caseD_4;
-                (this->focusEffect->vm).pendingInterrupt = 1;
-                goto switchD_0043fe16_caseD_4;
+                    goto CASE_ORB_UNFOCUSING;
+                this->focusEffect->vm.pendingInterrupt = 1;
+                goto CASE_ORB_UNFOCUSING;
             }
             this->orbsPosition[1].x += cosf(this->orbAngle + 0.22439948f) * 24.0f;
             this->orbsPosition[1].y += sinf(this->orbAngle + 0.22439948f) * 24.0f;
             this->orbsPosition[0].x += cosf(this->orbAngle - 0.22439948f) * 24.0f;
             this->orbsPosition[0].y += sinf(this->orbAngle - 0.22439948f) * 24.0f;
             break;
+        CASE_ORB_UNFOCUSING:
         case ORB_UNFOCUSING:
-            goto switchD_0043fe16_caseD_4;
-        }
-    }
-    else
-    {
-        switch (this->orbState)
-        {
-        case ORB_HIDDEN:
-            this->focusMovementTimer.Initialize(0);
-            break;
-        case ORB_UNFOCUSED:
-            local_18 = 24.0f;
-            this->focusMovementTimer.Initialize(0);
-            if (this->isFocus != 0)
-            {
-                this->orbState = ORB_FOCUSING;
-                this->focusEffect = g_EffectManager.SpawnEffect(
-                    0x18, &this->positionCenter, 2, 1, 0xffffffff);
-                goto switchD_0043f936_caseD_2;
-            }
-            break;
-        case ORB_FOCUSING:
-        switchD_0043f936_caseD_2:
-            while (true)
+            if (this->isFocus == 0)
             {
                 this->focusMovementTimer.previous = this->focusMovementTimer.current;
                 g_Supervisor.TickTimer(&this->focusMovementTimer.current,
                                        &this->focusMovementTimer.subFrame);
-                fVar1 = ((f32)this->focusMovementTimer.current +
-                         this->focusMovementTimer.subFrame) /
-                        8.0f;
-                local_14 = (1.0f - fVar1) * 32.0f - 32.0f;
-                local_18 = fVar1 * fVar1 * -16.0f + 24.0f;
-                if (7 < this->focusMovementTimer.current)
-                {
-                    this->orbState = ORB_FOCUSED;
-                }
-                if (this->isFocus != 0)
-                    break;
-                this->orbState = ORB_UNFOCUSING;
-                this->focusMovementTimer.Initialize(8 -
-                                                    this->focusMovementTimer.current);
-                if (this->focusEffect != NULL)
-                {
-                    (this->focusEffect->vm).pendingInterrupt = 1;
-                }
-            switchD_0043f936_caseD_4:
-                this->focusMovementTimer.previous = this->focusMovementTimer.current;
-                g_Supervisor.TickTimer(&this->focusMovementTimer.current,
-                                       &this->focusMovementTimer.subFrame);
-                fVar1 = ((f32)this->focusMovementTimer.current +
-                         this->focusMovementTimer.subFrame) /
-                        8.0f;
-                local_14 = fVar1 * 32.0f - 32.0f;
-                local_18 = (1.0f - fVar1 * fVar1) * -16.0f + 24.0f;
-                if (7 < this->focusMovementTimer.current)
+                fVar1 = 1.0f - ((f32)this->focusMovementTimer.current +
+                                this->focusMovementTimer.subFrame) /
+                                   8.0f;
+                fVar2 = cosf(this->orbAngle + 1.5707964f) * 24.0f;
+                fVar3 = sinf(this->orbAngle + 1.5707964f) * 24.0f;
+                this->orbsPosition[1].x +=
+                    (cosf(this->orbAngle + 0.22439948f) * 24.0f - fVar2) * fVar1 +
+                    fVar2;
+                this->orbsPosition[1].y +=
+                    (sinf(this->orbAngle + 0.22439948f) * 24.0f - fVar3) * fVar1 +
+                    fVar3;
+                if (this->focusMovementTimer.current >= 8)
                 {
                     this->orbState = ORB_UNFOCUSED;
                 }
-                if (this->isFocus == 0)
-                    break;
-                this->orbState = ORB_FOCUSING;
-                this->focusMovementTimer.Initialize(8 -
-                                                    this->focusMovementTimer.current);
-                this->focusEffect = g_EffectManager.SpawnEffect(
-                    0x18, &this->positionCenter, 2, 1, 0xffffffff);
+                this->orbsPosition[0].x +=
+                    ((cosf(this->orbAngle - 0.22439948f) * 24.0f + fVar2) * fVar1 -
+                     fVar2);
+                this->orbsPosition[0].y +=
+                    ((sinf(this->orbAngle - 0.22439948f) * 24.0f + fVar3) * fVar1 -
+                     fVar3);
+                goto switchD_0043fe16_default;
             }
+            this->orbState = ORB_FOCUSING;
+            this->focusMovementTimer.Initialize(8 -
+                                                this->focusMovementTimer.current);
+            this->focusEffect = g_EffectManager.SpawnEffect(
+                0x18, &this->positionCenter, 2, 1, 0xffffffff);
             break;
-        case ORB_FOCUSED:
-            local_18 = 8.0f;
-            local_14 = -32.0f;
-            this->focusMovementTimer.Initialize(0);
-            if (this->isFocus == 0)
-            {
-                this->orbState = ORB_UNFOCUSING;
-                if (this->focusEffect == NULL)
-                    goto switchD_0043f936_caseD_4;
-                (this->focusEffect->vm).pendingInterrupt = 1;
-                goto switchD_0043f936_caseD_4;
-            }
-            break;
-        case ORB_UNFOCUSING:
-            goto switchD_0043f936_caseD_4;
         }
-        this->orbsPosition[0].x -= local_18;
-        this->orbsPosition[1].x += local_18;
-        this->orbsPosition[0].y += local_14;
-        this->orbsPosition[1].y += local_14;
     }
 switchD_0043fe16_default:
-    if (((g_CurFrameGameInput & TH_BUTTON_SHOOT) != 0) &&
-        (g_Gui.HasCurrentMsgIdx() == 0))
+    if (IS_PRESSED_GAME(TH_BUTTON_SHOOT) && g_Gui.HasCurrentMsgIdx() == 0)
     {
         if (g_GameManager.CheckGameIntegrity() == 0)
         {
             StartFireBulletTimer();
         }
-        if ((g_CurFrameGameInput & TH_BUTTON_FOCUS) == 0)
+        if (!IS_PRESSED_GAME(TH_BUTTON_FOCUS))
         {
-            if (this->velocity.x == 0.0f)
+            if (this->velocity.x != 0.0f)
+            {
+                f32 angleDelta = ((-(this->velocity.x / 4.0f) * ZUN_PI) / 5.0f) / 10.0f;
+                this->orbAngle -= angleDelta;
+                if (this->orbAngle < -2.1991148f)
+                {
+                    this->orbAngle = -2.1991148f;
+                }
+                else if (this->orbAngle > -0.9424778f)
+                {
+                    this->orbAngle = -0.9424778f;
+                }
+            }
+            else
             {
                 if (fabsf(this->orbAngle - -1.5707964f) <= 0.03141593f)
                 {
@@ -1676,22 +1664,6 @@ switchD_0043fe16_default:
                         local_218 = g_Supervisor.effectiveFramerateMultiplier * 0.06283186f;
                     }
                     this->orbAngle = local_218 + this->orbAngle;
-                }
-            }
-            else
-            {
-                this->orbAngle = this->orbAngle -
-                                 ((-(this->velocity.x / 4.0f) * ZUN_PI) / 5.0f) / 10.0f;
-                if (-2.1991148f <= this->orbAngle)
-                {
-                    if (-0.9424778f < this->orbAngle)
-                    {
-                        this->orbAngle = -0.9424778f;
-                    }
-                }
-                else
-                {
-                    this->orbAngle = -2.1991148f;
                 }
             }
         }
@@ -1725,8 +1697,8 @@ void Player::UpdateBombProjectiles()
 // FUNCTION: TH07 0x004409f0
 void Player::UpdateBorderAndBombState()
 {
-    if (((this->hasBorder == BORDER_NONE) || ((this->bombInfo).isInUse != 0)) ||
-        ((g_CurFrameGameInput & TH_BUTTON_BOMB) == 0))
+    if (((this->hasBorder == BORDER_NONE) || (this->bombInfo.isInUse != 0)) ||
+        !IS_PRESSED_GAME(TH_BUTTON_BOMB))
     {
         if (this->hasBorder == BORDER_READY)
         {
@@ -1736,25 +1708,25 @@ void Player::UpdateBorderAndBombState()
         {
             this->borderInvulnerabilityTime = this->borderInvulnerabilityTime - 1;
         }
-        if ((this->bombInfo).isInUse == 0)
+        if (this->bombInfo.isInUse == 0)
         {
             if ((((g_GameManager.CheckGameIntegrity() == 0) &&
                   (g_Gui.HasCurrentMsgIdx() == 0)) &&
                  ((this->respawnTimer != 0 &&
                    ((0 < (i32)g_GameManager.globals->bombsRemaining &&
                      (this->borderInvulnerabilityTime == 0)))))) &&
-                ((g_CurFrameGameInput & TH_BUTTON_BOMB) != 0))
+                IS_PRESSED_GAME(TH_BUTTON_BOMB))
             {
                 g_ReplayManager->replayEventFlags |= 1;
                 g_GameManager.AddBombsUsed(1);
                 g_GameManager.AddBombsRemaining(-1);
                 g_Gui.flags = (g_Gui.flags & 0xfffffff3) | 8;
-                (this->bombInfo).isFocus = (i32)this->isFocus;
-                (this->bombInfo).isInUse = 1;
+                this->bombInfo.isFocus = (i32)this->isFocus;
+                this->bombInfo.isInUse = 1;
                 this->isBombing = 1;
-                (this->bombInfo).bombTimer.Initialize(0);
-                (this->bombInfo).bombDuration = 999;
-                if ((this->bombInfo).isFocus == 0)
+                this->bombInfo.bombTimer.Initialize(0);
+                this->bombInfo.bombDuration = 999;
+                if (this->bombInfo.isFocus == 0)
                 {
                     this->bombInfo.bombCalc(this);
                 }
@@ -1780,21 +1752,21 @@ void Player::UpdateBorderAndBombState()
         }
         else
         {
-            if ((this->bombInfo).bombTimer.current !=
-                (this->bombInfo).bombTimer.previous)
+            if (this->bombInfo.bombTimer.current !=
+                this->bombInfo.bombTimer.previous)
             {
                 if (g_GameManager.cherry - g_GameManager.globals->cherryStart <
-                    (this->bombInfo).bombCherryDrain)
+                    this->bombInfo.bombCherryDrain)
                 {
                     g_GameManager.cherry = g_GameManager.globals->cherryStart;
                 }
                 else
                 {
-                    g_GameManager.cherry -= (this->bombInfo).bombCherryDrain;
+                    g_GameManager.cherry -= this->bombInfo.bombCherryDrain;
                 }
                 g_Gui.flags = (g_Gui.flags & 0xfffffcff) | 0x200;
             }
-            if ((this->bombInfo).isFocus == 0)
+            if (this->bombInfo.isFocus == 0)
             {
                 this->bombInfo.bombCalc(this);
             }
@@ -2145,7 +2117,7 @@ void Player::ActivateBorder()
 {
     Effect *pEVar3;
 
-    if (((this->bombInfo).isInUse != 0) || (g_Gui.HasCurrentMsgIdx() != 0))
+    if ((this->bombInfo.isInUse != 0) || (g_Gui.HasCurrentMsgIdx() != 0))
     {
         this->hasBorder = BORDER_READY;
         return;

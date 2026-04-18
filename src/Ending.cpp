@@ -55,7 +55,7 @@ u32 Ending::OnUpdate(Ending *arg)
             g_AnmManager->ExecuteScript(&arg->sprites[i]);
         }
         if (((arg->hasSeenEnding == 0) ||
-             ((g_CurFrameRawInput & TH_BUTTON_SKIP) == 0)) ||
+             IS_PRESSED_RAW(TH_BUTTON_SKIP)) ||
             (3 < local_8))
             break;
         local_8 += 1;
@@ -188,11 +188,9 @@ ZunResult Ending::ParseEndFile()
         this->timer3.Decrement(1);
         if (this->minWaitResetFrames == 0)
         {
-            if ((((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-                 ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-                  (g_LastFrameRawInput & TH_BUTTON_SELECTMENU))) ||
+            if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU) ||
                 ((this->hasSeenEnding != 0 &&
-                  ((g_CurFrameRawInput & TH_BUTTON_SKIP) != 0))))
+                  IS_PRESSED_RAW(TH_BUTTON_SKIP))))
             {
                 this->timer3.Initialize(0);
             }
@@ -388,11 +386,9 @@ ZunResult Ending::ParseEndFile()
     this->timer2.Decrement(1);
     if (this->minWaitFrames == 0)
     {
-        if ((((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
-             ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-              (g_LastFrameRawInput & TH_BUTTON_SELECTMENU))) ||
+        if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU) ||
             ((this->hasSeenEnding != 0 &&
-              ((g_CurFrameRawInput & TH_BUTTON_SKIP) != 0))))
+              IS_PRESSED_RAW(TH_BUTTON_SKIP))))
         {
             this->timer2.Initialize(0);
         }
@@ -415,15 +411,15 @@ switchD_0041d980_caseD_0:
     {
         this->endFileDataPtr = this->endFileDataPtr + 1;
     }
-    if ((g_CurFrameRawInput & 0x1001) == 0)
-    {
-        this->timer2.Initialize(this->line2Delay);
-        this->minWaitFrames = this->line2Delay;
-    }
-    else
+    if (IS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
     {
         this->timer2.Initialize(this->topLineDelay);
         this->minWaitFrames = this->topLineDelay;
+    }
+    else
+    {
+        this->timer2.Initialize(this->line2Delay);
+        this->minWaitFrames = this->line2Delay;
     }
     this->possiblyTimesFileParsed = this->possiblyTimesFileParsed + 1;
 LAB_0041e331:
