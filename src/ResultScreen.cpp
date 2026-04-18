@@ -1004,7 +1004,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
             for (curVmIdx = 0; curVmIdx < 0x29; curVmIdx += 1)
             {
                 vm->pendingInterrupt = 1;
-                vm->flags = vm->flags | 0x20;
+                vm->flag6 = 1;
                 vm->color = vm->color;
                 vm = vm + 1;
             }
@@ -1013,30 +1013,30 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
             {
                 if (curVmIdx == arg->cursor)
                 {
-                    (vm->color).color = 0xffffffff;
-                    (vm->offset).x = -4.0f;
-                    (vm->offset).y = -4.0f;
-                    (vm->offset).z = 0.0f;
+                    vm->color.color = 0xffffffff;
+                    vm->offset.x = -4.0f;
+                    vm->offset.y = -4.0f;
+                    vm->offset.z = 0.0f;
                 }
                 else
                 {
-                    (vm->color).color = 0xb0ffffff;
-                    (vm->offset).x = 0.0f;
-                    (vm->offset).y = 0.0f;
-                    (vm->offset).z = 0.0f;
+                    vm->color.color = 0xb0ffffff;
+                    vm->offset.x = 0.0f;
+                    vm->offset.y = 0.0f;
+                    vm->offset.z = 0.0f;
                 }
                 vm = vm + 1;
             }
             if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0)
             {
-                arg->vms[5].flags = arg->vms[5].flags & 0xfffffffd;
+                arg->vms[5].active = 0;
                 arg->vms[6].offset.y = arg->vms[6].offset.y - 32.0f;
                 arg->vms[7].offset.y = arg->vms[7].offset.y - 32.0f;
                 arg->vms[8].offset.y = arg->vms[8].offset.y - 32.0f;
             }
             else
             {
-                arg->vms[5].flags = arg->vms[5].flags | 2;
+                arg->vms[5].active = 1;
             }
         }
         if (arg->frameTimer < 0x14)
@@ -1055,23 +1055,23 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         {
             if (curVmIdx == arg->cursor)
             {
-                (vm->color).color = 0xffffffff;
-                (vm->offset).x = -4.0f;
-                (vm->offset).y = -4.0f;
-                (vm->offset).z = 0.0f;
+                vm->color.color = 0xffffffff;
+                vm->offset.x = -4.0f;
+                vm->offset.y = -4.0f;
+                vm->offset.z = 0.0f;
             }
             else
             {
-                (vm->color).color = 0xb0ffffff;
-                (vm->offset).x = 0.0f;
-                (vm->offset).y = 0.0f;
-                (vm->offset).z = 0.0f;
+                vm->color.color = 0xb0ffffff;
+                vm->offset.x = 0.0f;
+                vm->offset.y = 0.0f;
+                vm->offset.z = 0.0f;
             }
             vm = vm + 1;
         }
         if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0)
         {
-            arg->vms[5].flags = arg->vms[5].flags & 0xfffffffd;
+            arg->vms[5].active = 0;
             arg->vms[6].offset.y = arg->vms[6].offset.y - 32.0f;
             arg->vms[7].offset.y = arg->vms[7].offset.y - 32.0f;
             arg->vms[8].offset.y = arg->vms[8].offset.y - 32.0f;
@@ -2708,7 +2708,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
             local_c->pos.x = 0.0f;
             local_c->pos.y = 0.0f;
             local_c->pos.z = 0.0f;
-            local_c->flags = local_c->flags | 0xc00;
+            local_c->anchor = 3;
             local_c->fontWidth = 15;
             local_c->fontHeight = 15;
             local_c = local_c + 1;

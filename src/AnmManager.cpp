@@ -660,12 +660,12 @@ void AnmManager::SetAndExecuteScript(AnmVm *vm, AnmRawInstr *beginningOfScript)
     }
     else
     {
-        vm->flags = vm->flags & 0xfffffcff;
+        vm->flip = 0;
         vm->Initialize();
         vm->beginningOfScript = beginningOfScript;
         vm->currentInstruction = vm->beginningOfScript;
         vm->currentTimeInScript.Initialize2(0);
-        vm->flags = vm->flags & 0xfffffffe;
+        vm->visible = 0;
         ExecuteScript(vm);
         this->scriptsExecutedThisFrame = this->scriptsExecutedThisFrame + 1;
     }
@@ -686,9 +686,9 @@ void AnmManager::SetRenderStateForVm(AnmVm *vm)
     u32 local_c;
     ZunColor color;
 
-    if ((u32)this->currentBlendMode != (vm->flags >> 4 & 1))
+    if ((u32)this->currentBlendMode != vm->blendMode)
     {
-        this->currentBlendMode = (u8)(vm->flags >> 4) & 1;
+        this->currentBlendMode = vm->blendMode;
         if (this->currentBlendMode == 0)
         {
             g_Supervisor.d3dDevice->SetRenderState(D3DRS_DESTBLEND, 6);
@@ -698,7 +698,7 @@ void AnmManager::SetRenderStateForVm(AnmVm *vm)
             g_Supervisor.d3dDevice->SetRenderState(D3DRS_DESTBLEND, 2);
         }
     }
-    if ((vm->flags >> 0x10 & 1) == 0)
+    if (vm->useColor2 == 0)
     {
         local_30 = vm->color;
     }
@@ -791,9 +791,9 @@ void AnmManager::SetRenderStateForVm(AnmVm *vm)
         g_PrimitivesToDrawUnknown[3].diffuse = color;
     }
     if (((g_Supervisor.cfg.opts >> 6 & 1) == 0) &&
-        ((u32)this->currentZWriteDisable != (vm->flags >> 0xc & 1)))
+        ((u32)this->currentZWriteDisable != vm->zWriteDisable))
     {
-        this->currentZWriteDisable = (u8)(vm->flags >> 0xc) & 1;
+        this->currentZWriteDisable = vm->zWriteDisable;
         if (this->currentZWriteDisable == 0)
         {
             g_Supervisor.d3dDevice->SetRenderState(D3DRS_ZWRITEENABLE, 1);
@@ -803,10 +803,10 @@ void AnmManager::SetRenderStateForVm(AnmVm *vm)
             g_Supervisor.d3dDevice->SetRenderState(D3DRS_ZWRITEENABLE, 0);
         }
     }
-    if ((u32)this->currentCameraMode != (vm->flags >> 0xe & 1))
+    if ((u32)this->currentCameraMode != vm->cameraMode)
     {
         g_AnmManager->Flush();
-        this->currentCameraMode = (u8)(vm->flags >> 0xe) & 1;
+        this->currentCameraMode = vm->cameraMode;
         if (this->currentCameraMode == 0)
         {
             Stage::SetupCameraStageBackground();
@@ -824,9 +824,9 @@ void AnmManager::SetRenderStateForVm(AnmVm *vm)
 // FUNCTION: TH07 0x0044eec0
 void AnmManager::SyncRenderState(AnmVm *vm)
 {
-    if ((u32)this->currentBlendMode != (vm->flags >> 4 & 1))
+    if ((u32)this->currentBlendMode != vm->blendMode)
     {
-        this->currentBlendMode = (u8)(vm->flags >> 4) & 1;
+        this->currentBlendMode = vm->blendMode;
         if (this->currentBlendMode == 0)
         {
             g_Supervisor.SetRenderState(D3DRS_DESTBLEND, 6);
@@ -837,9 +837,9 @@ void AnmManager::SyncRenderState(AnmVm *vm)
         }
     }
     if (((g_Supervisor.cfg.opts >> 6 & 1) == 0) &&
-        ((u32)this->currentZWriteDisable != (vm->flags >> 0xc & 1)))
+        ((u32)this->currentZWriteDisable != vm->zWriteDisable))
     {
-        this->currentZWriteDisable = (u8)(vm->flags >> 0xc) & 1;
+        this->currentZWriteDisable = vm->zWriteDisable;
         if (this->currentZWriteDisable == 0)
         {
             g_Supervisor.SetRenderState(D3DRS_ZWRITEENABLE, 1);
@@ -990,7 +990,7 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, u32 param2)
         if ((param2 & 2) == 0)
         {
             ZunColor baseColor =
-                ((vm->flags >> 16) & 1) == 0 ? vm->color : vm->color2;
+                vm->useColor2 == 0 ? vm->color : vm->color2;
             ZunColor finalColor = baseColor;
             if (this->colorMulEnabled != 0)
             {
@@ -1075,7 +1075,7 @@ ZunResult AnmManager::PushSprite(VertexTex1DiffuseXyzrwh *spriteVertex)
 // FUNCTION: TH07 0x0044f770
 ZunResult AnmManager::DrawNoRotation(AnmVm *vm)
 {
-    if ((vm->flags & 1) == 0 || ((vm->flags >> 1) & 1) == 0 ||
+    if (vm->visible == 0 || vm->active == 0 ||
         vm->color.bytes.a == 0)
         return ZUN_ERROR;
 
@@ -1083,7 +1083,7 @@ ZunResult AnmManager::DrawNoRotation(AnmVm *vm)
     f32 centerY = (vm->sprite->heightPx * vm->scale.y) / 2.0f;
     f32 fVar1;
 
-    if (((vm->flags >> 10) & 1) == 0)
+    if ((vm->anchor & 1) == 0)
     {
         g_PrimitivesToDrawNoVertexBuf[2].pos.x = vm->pos.x - centerX;
         fVar1 = vm->pos.x;
@@ -1095,7 +1095,7 @@ ZunResult AnmManager::DrawNoRotation(AnmVm *vm)
     }
     g_PrimitivesToDrawNoVertexBuf[3].pos.x = centerX + fVar1;
 
-    if (((vm->flags >> 10) & 2) == 0)
+    if ((vm->anchor & 2) == 0)
     {
         g_PrimitivesToDrawNoVertexBuf[1].pos.y = vm->pos.y - centerY;
         centerX = vm->pos.y;
@@ -1142,7 +1142,7 @@ ZunResult AnmManager::Draw(AnmVm *vm)
     {
         return DrawNoRotation(vm);
     }
-    else if ((vm->flags & 1) == 0 || ((vm->flags >> 1) & 1) == 0 ||
+    else if (vm->visible == 0 || vm->active == 0 ||
              vm->color.bytes.a == 0)
     {
         return ZUN_ERROR;
@@ -1167,14 +1167,14 @@ ZunResult AnmManager::Draw(AnmVm *vm)
                           cosZ, vm->pos.x, vm->pos.y);
 
         g_PrimitivesToDrawNoVertexBuf[0].pos.z = vm->pos.z;
-        if (((vm->flags >> 10) & 1) != 0)
+        if ((vm->anchor & 1) != 0)
         {
             g_PrimitivesToDrawNoVertexBuf[0].pos.x += width;
             g_PrimitivesToDrawNoVertexBuf[1].pos.x += width;
             g_PrimitivesToDrawNoVertexBuf[2].pos.x += width;
             g_PrimitivesToDrawNoVertexBuf[3].pos.x += width;
         }
-        if (((vm->flags >> 10) & 2) != 0)
+        if ((vm->anchor & 2) != 0)
         {
             g_PrimitivesToDrawNoVertexBuf[0].pos.y += height;
             g_PrimitivesToDrawNoVertexBuf[1].pos.y += height;
@@ -1195,7 +1195,7 @@ ZunResult AnmManager::Draw(AnmVm *vm)
 // FUNCTION: TH07 0x0044fc10
 ZunResult AnmManager::DrawFacingCamera(AnmVm *vm)
 {
-    if ((vm->flags & 1) == 0 || ((vm->flags >> 1) & 1) == 0 ||
+    if (vm->visible == 0 || vm->active == 0 ||
         vm->color.bytes.a == 0)
         return ZUN_ERROR;
 
@@ -1203,7 +1203,7 @@ ZunResult AnmManager::DrawFacingCamera(AnmVm *vm)
     f32 centerY = (vm->sprite->heightPx * vm->scale.y) / 2.0f;
     f32 fVar1;
 
-    if (((vm->flags >> 10) & 1) == 0)
+    if ((vm->anchor & 1) == 0)
     {
         g_PrimitivesToDrawNoVertexBuf[2].pos.x = vm->pos.x - centerX;
         fVar1 = vm->pos.x;
@@ -1215,7 +1215,7 @@ ZunResult AnmManager::DrawFacingCamera(AnmVm *vm)
     }
     g_PrimitivesToDrawNoVertexBuf[3].pos.x = centerX + fVar1;
 
-    if (((vm->flags >> 10) & 2) == 0)
+    if ((vm->anchor & 2) == 0)
     {
         g_PrimitivesToDrawNoVertexBuf[1].pos.y = vm->pos.y - centerY;
         centerX = vm->pos.y;
@@ -1296,14 +1296,14 @@ ZunResult AnmManager::CalcBillboardTransform(AnmVm *vm)
     g_PrimitivesToDrawNoVertexBuf[1].pos.z = local_78.z;
     g_PrimitivesToDrawNoVertexBuf[0].pos.z = local_78.z;
 
-    if (((vm->flags >> 10) & 1) != 0)
+    if ((vm->anchor & 1) != 0)
     {
         g_PrimitivesToDrawNoVertexBuf[0].pos.x += local_8;
         g_PrimitivesToDrawNoVertexBuf[1].pos.x += local_8;
         g_PrimitivesToDrawNoVertexBuf[2].pos.x += local_8;
         g_PrimitivesToDrawNoVertexBuf[3].pos.x += local_8;
     }
-    if (((vm->flags >> 10) & 2) != 0)
+    if ((vm->anchor & 2) != 0)
     {
         g_PrimitivesToDrawNoVertexBuf[0].pos.y += local_c;
         g_PrimitivesToDrawNoVertexBuf[1].pos.y += local_c;
@@ -1316,11 +1316,11 @@ ZunResult AnmManager::CalcBillboardTransform(AnmVm *vm)
 // FUNCTION: TH07 0x00450130
 ZunResult AnmManager::DrawBillboard(AnmVm *vm)
 {
-    if ((vm->flags & 1) == 0)
+    if (vm->visible == 0)
     {
         return ZUN_ERROR;
     }
-    else if ((vm->flags >> 1 & 1) == 0)
+    else if (vm->active == 0)
     {
         return ZUN_ERROR;
     }
@@ -1344,13 +1344,13 @@ ZunResult AnmManager::DrawBillboard(AnmVm *vm)
 // FUNCTION: TH07 0x004501a0
 void AnmManager::CalcProjectedTransform(AnmVm *vm)
 {
-    if (((vm->flags >> 15) & 1) == 0 &&
-        (((vm->flags >> 3) & 1) != 0 || ((vm->flags >> 2) & 1) != 0))
+    if (vm->skipTransform == 0 &&
+        (vm->updateScale != 0 || vm->updateRotation != 0))
     {
         vm->worldTransformMatrix = vm->matrix;
         vm->worldTransformMatrix.m[0][0] *= vm->scale.x;
         vm->worldTransformMatrix.m[1][1] *= vm->scale.y;
-        vm->flags &= ~8;
+        vm->updateScale = 0;
         D3DXMATRIX rot;
         if (vm->rotation.x != 0.0)
         {
@@ -1370,16 +1370,16 @@ void AnmManager::CalcProjectedTransform(AnmVm *vm)
             D3DXMatrixMultiply(&vm->worldTransformMatrix, &vm->worldTransformMatrix,
                                &rot);
         }
-        vm->flags &= ~4;
+        vm->updateRotation = 0;
     }
 
     D3DXMATRIX local_84 = vm->worldTransformMatrix;
     local_84.m[3][0] =
-        ((vm->flags >> 10) & 1) == 0
+        (vm->anchor & 1) == 0
             ? vm->pos.x
             : fabsf((vm->sprite->widthPx * vm->scale.x) / 2.0f) + vm->pos.x;
     local_84.m[3][1] =
-        ((vm->flags >> 10) & 2) == 0
+        (vm->anchor & 2) == 0
             ? vm->pos.y
             : fabsf((vm->sprite->heightPx * vm->scale.y) / 2.0f) + vm->pos.y;
     local_84.m[3][2] = vm->pos.z;
@@ -1407,11 +1407,11 @@ void AnmManager::CalcProjectedTransform(AnmVm *vm)
 // FUNCTION: TH07 0x004504b0
 ZunResult AnmManager::DrawProjected(AnmVm *vm)
 {
-    if ((vm->flags & 1) == 0)
+    if (vm->visible == 0)
     {
         return ZUN_ERROR;
     }
-    else if ((vm->flags >> 1 & 1) == 0)
+    else if (vm->active == 0)
     {
         return ZUN_ERROR;
     }
@@ -1429,7 +1429,7 @@ ZunResult AnmManager::DrawProjected(AnmVm *vm)
 // FUNCTION: TH07 0x00450520
 ZunResult AnmManager::Draw3(AnmVm *vm)
 {
-    if ((vm->flags & 1) == 0 || ((vm->flags >> 1) & 1) == 0 ||
+    if (vm->visible == 0 || vm->active == 0 ||
         vm->color.bytes.a == 0)
         return ZUN_ERROR;
 
@@ -1438,13 +1438,13 @@ ZunResult AnmManager::Draw3(AnmVm *vm)
         this->Flush();
     }
 
-    if (((vm->flags >> 15) & 1) == 0 &&
-        (((vm->flags >> 3) & 1) != 0 || ((vm->flags >> 2) & 1) != 0))
+    if (vm->skipTransform == 0 &&
+        (vm->updateScale != 0 || vm->updateRotation != 0))
     {
         vm->worldTransformMatrix = vm->matrix;
         vm->worldTransformMatrix.m[0][0] *= vm->scale.x;
         vm->worldTransformMatrix.m[1][1] *= vm->scale.y;
-        vm->flags &= ~8;
+        vm->updateScale = 0;
         D3DXMATRIX rot;
 
         // double intentionally used here
@@ -1466,16 +1466,16 @@ ZunResult AnmManager::Draw3(AnmVm *vm)
             D3DXMatrixMultiply(&vm->worldTransformMatrix, &vm->worldTransformMatrix,
                                &rot);
         }
-        vm->flags &= ~4;
+        vm->updateRotation = 0;
     }
 
     D3DXMATRIX local_c4 = vm->worldTransformMatrix;
     local_c4.m[3][0] =
-        ((vm->flags >> 10) & 1) == 0
+        (vm->anchor & 1) == 0
             ? vm->pos.x
             : fabsf((vm->sprite->widthPx * vm->scale.x) / 2.0f) + vm->pos.x;
     local_c4.m[3][1] =
-        ((vm->flags >> 10) & 2) == 0
+        (vm->anchor & 2) == 0
             ? vm->pos.y
             : fabsf((vm->sprite->heightPx * vm->scale.y) / 2.0f) + vm->pos.y;
 
@@ -1688,7 +1688,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
                 beginInstr = (AnmRawInstr *)((u8 *)beginInstr + beginInstr->size);
             }
             vm->pendingInterrupt = 0;
-            vm->flags &= ~0x2000;
+            vm->isStopped = 0;
             if (beginInstr->opcode != ANM_INTERRUPT_LABEL)
             {
                 if (nextInstr == NULL)
@@ -1702,7 +1702,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             vm->currentInstruction =
                 (AnmRawInstr *)((u8 *)beginInstr + beginInstr->size);
             vm->currentTimeInScript.Initialize((i32)vm->currentInstruction->time);
-            vm->flags |= 1;
+            vm->visible = 1;
         }
 
         AnmRawInstr *instr = vm->currentInstruction;
@@ -1714,7 +1714,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
         switch (instr->opcode)
         {
         case ANM_SET_ACTIVE_SPRITE: {
-            vm->flags |= 1;
+            vm->visible = 1;
             i32 spriteIdx = (instr->flags & 1) == 0
                                 ? instr->args[0].i
                                 : vm->GetVarValue(instr->args[0].i);
@@ -1748,7 +1748,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
                                             : vm->GetFloatVarValue(instr->args[1].f);
             f32 x = (instr->flags & 1) == 0 ? instr->args[0].f
                                             : vm->GetFloatVarValue(instr->args[0].f);
-            if (((vm->flags >> 7) & 1) == 0)
+            if (vm->useOffset == 0)
             {
                 vm->pos.x = x;
                 vm->pos.y = y;
@@ -1769,7 +1769,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             vm->scale.y = (instr->flags & 2) == 0
                               ? instr->args[1].f
                               : vm->GetFloatVarValue(instr->args[1].f);
-            vm->flags |= 8;
+            vm->updateScale = 1;
             break;
         case ANM_SET_ALPHA:
             vm->color.bytes.a = instr->args[0].b[0];
@@ -1779,14 +1779,14 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
                 (vm->color.color & 0xff000000) | (instr->args[0].i & 0xffffff);
             break;
         case ANM_FLIP_X:
-            vm->flags = (vm->flags & 0xfffffcff) | (((vm->flags >> 8) & 3) ^ 1) << 8;
+            vm->flip ^= 1;
             vm->scale.x = -vm->scale.x;
-            vm->flags |= 8;
+            vm->updateScale = 1;
             break;
         case ANM_FLIP_Y:
-            vm->flags = (vm->flags & 0xfffffcff) | (((vm->flags >> 8) & 3) ^ 2) << 8;
+            vm->flip ^= 2;
             vm->scale.y = -vm->scale.y;
-            vm->flags |= 8;
+            vm->updateScale = 1;
             break;
         case ANM_SET_ROTATION:
             vm->rotation.x = (instr->flags & 1) == 0
@@ -1798,7 +1798,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             vm->rotation.z = (instr->flags & 4) == 0
                                  ? instr->args[2].f
                                  : vm->GetFloatVarValue(instr->args[2].f);
-            vm->flags |= 4;
+            vm->updateRotation = 1;
             break;
         case ANM_SET_ANGLE_VEL:
             vm->angleVel.x = (instr->flags & 1) == 0
@@ -1810,7 +1810,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             vm->angleVel.z = (instr->flags & 4) == 0
                                  ? instr->args[2].f
                                  : vm->GetFloatVarValue(instr->args[2].f);
-            vm->flags |= 4;
+            vm->updateRotation = 1;
             break;
         case ANM_SET_SCALE_SPEED:
             vm->scaleGrowth.x = (instr->flags & 1) == 0
@@ -1830,7 +1830,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             vm->interpModes[2] = 0;
             break;
         case ANM_SET_BLEND:
-            vm->flags = (vm->flags & 0xffffffef) | ((instr->args[0].i & 1) << 4);
+            vm->blendMode = instr->args[0].i & 1;
             break;
         case ANM_POS_TIME_LINEAR:
             vm->interpModes[0] = 0;
@@ -1841,7 +1841,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
         case ANM_POS_TIME_ACCEL:
             vm->interpModes[0] = 6;
         interp_pos:
-            if (((vm->flags >> 7) & 1) == 0)
+            if (vm->useOffset == 0)
             {
                 vm->posInterpInitial = vm->pos;
             }
@@ -1864,14 +1864,14 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             vm->interpStartTimes[0].Initialize(0);
             break;
         case ANM_22:
-            vm->flags |= 0xc00;
+            vm->anchor = 3;
             break;
         case ANM_STOP_HIDE:
-            vm->flags &= ~1;
+            vm->visible = 0;
         case ANM_STOP:
             if (vm->pendingInterrupt == 0)
             {
-                vm->flags |= 0x2000;
+                vm->isStopped = 1;
                 vm->currentTimeInScript.Decrement(1);
                 goto execute_timers;
             }
@@ -1880,8 +1880,8 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
                 goto handle_interrupt;
             }
             break;
-        case ANM_24:
-            vm->flags = (vm->flags & 0xffffff7f) | ((instr->args[0].i & 1) << 7);
+        case ANM_SET_USE_OFFSET:
+            vm->useOffset = instr->args[0].i & 1;
             break;
         case ANM_SET_AUTO_ROTATE:
             vm->autoRotate = instr->args[0].us[0];
@@ -1911,7 +1911,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
                 vm->uvScrollPos.y -= 1.0f;
             break;
         case ANM_SET_VISIBILITY:
-            vm->flags = (vm->flags & 0xfffffffe) | (instr->args[0].i & 1);
+            vm->visible = (instr->args[0].i & 1);
             break;
         case ANM_INTERP_SCALE:
             vm->interpStartTimes[4].Initialize(0);
@@ -1927,11 +1927,11 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
                                          ? instr->args[1].f
                                          : vm->GetFloatVarValue(instr->args[1].f);
             break;
-        case ANM_30:
-            vm->flags = (vm->flags & 0xffffefff) | ((instr->args[0].i & 1) << 12);
+        case ANM_SET_ZWRITE_DISABLE:
+            vm->zWriteDisable = instr->args[0].i & 1;
             break;
-        case ANM_31:
-            vm->flags = (vm->flags & 0xffffbfff) | ((instr->args[0].i & 1) << 14);
+        case ANM_SET_CAMERA_MODE:
+            vm->cameraMode = instr->args[0].i & 1;
             break;
         case ANM_INTERP_POS:
             vm->interpStartTimes[0].Initialize(0);
@@ -1939,7 +1939,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
                                                  ? instr->args[0].i
                                                  : vm->GetVarValue(instr->args[0].i));
             vm->interpModes[0] = instr->args[1].b[0];
-            if (((vm->flags >> 7) & 1) == 0)
+            if (vm->useOffset == 0)
                 vm->posInterpInitial = vm->pos;
             else
                 vm->posInterpInitial = vm->offset;
@@ -1991,7 +1991,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             vm->rotateInterpFinal.z = (instr->flags & 16) == 0
                                           ? instr->args[4].f
                                           : vm->GetFloatVarValue(instr->args[4].f);
-            vm->flags |= 4;
+            vm->updateRotation = 1;
             break;
         case ANM_INTERP_SCALE_2:
             vm->interpStartTimes[4].Initialize(0);
@@ -2006,7 +2006,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             vm->scaleInterpFinal.y = (instr->flags & 8) == 0
                                          ? instr->args[3].f
                                          : vm->GetFloatVarValue(instr->args[3].f);
-            vm->flags |= 8;
+            vm->updateScale = 1;
             break;
         case ANM_MOV:
             *vm->GetVar(&instr->args[0].i, instr->flags, 0) =
@@ -2399,7 +2399,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             break;
         case ANM_EXIT_HIDE:
         case ANM_EXIT_HIDE2:
-            vm->flags &= ~1;
+            vm->visible = 0;
         case ANM_EXIT:
             vm->currentInstruction = NULL;
             return 1;
@@ -2413,21 +2413,21 @@ execute_timers:
         vm->rotation.x = utils::AddNormalizeAngle(
             vm->rotation.x,
             g_Supervisor.effectiveFramerateMultiplier * vm->angleVel.x);
-        vm->flags |= 4;
+        vm->updateRotation = 1;
     }
     if (vm->angleVel.y != 0.0f)
     {
         vm->rotation.y = utils::AddNormalizeAngle(
             vm->rotation.y,
             g_Supervisor.effectiveFramerateMultiplier * vm->angleVel.y);
-        vm->flags |= 4;
+        vm->updateRotation = 1;
     }
     if (vm->angleVel.z != 0.0f)
     {
         vm->rotation.z = utils::AddNormalizeAngle(
             vm->rotation.z,
             g_Supervisor.effectiveFramerateMultiplier * vm->angleVel.z);
-        vm->flags |= 4;
+        vm->updateRotation = 1;
     }
     for (i32 i = 0; i < 5; i++)
     {
@@ -2476,7 +2476,7 @@ execute_timers:
             switch (i)
             {
             case 0:
-                if (((vm->flags >> 7) & 1) == 0)
+                if (vm->useOffset == 0)
                 {
                     vm->pos = (vm->posInterpFinal - vm->posInterpInitial) * t +
                               vm->posInterpInitial;
@@ -2521,12 +2521,12 @@ execute_timers:
                 vm->rotation.z = utils::AddNormalizeAngle(
                     (vm->rotateInterpFinal.z - vm->rotateInterpInitial.z) * t,
                     vm->rotateInterpInitial.z);
-                vm->flags |= 4;
+                vm->updateRotation = 1;
                 break;
             case 4:
                 vm->scale = (vm->scaleInterpFinal - vm->scaleInterpInitial) * t +
                             vm->scaleInterpInitial;
-                vm->flags |= 8;
+                vm->updateScale = 1;
                 break;
             }
         }
@@ -2535,14 +2535,14 @@ execute_timers:
     {
         vm->scale.y +=
             g_Supervisor.effectiveFramerateMultiplier * vm->scaleGrowth.y;
-        vm->flags |= 8;
+        vm->updateScale = 1;
     }
     if (vm->scaleGrowth.x != 0.0f)
     {
         vm->scale.x +=
             g_Supervisor.effectiveFramerateMultiplier * vm->scaleGrowth.x;
-        vm->flags |= 8;
-        vm->flags |= 4;
+        vm->updateScale = 1;
+        vm->updateRotation = 1;
     }
     vm->uvScrollPos.x += vm->uvScrollVel.x;
     if (vm->uvScrollPos.x < 1.0f)
@@ -2607,7 +2607,7 @@ void AnmManager::DrawVmTextFmt(AnmManager *manager, AnmVm *vm,
     manager->DrawTextToSprite(vm->sprite->sourceFileIndex, x, y, width, height,
                               fontWidth, fontHeight, textColor, outlineType,
                               local_54, scaleY, scaleX);
-    vm->flags |= 1;
+    vm->visible = 1;
 }
 
 // FUNCTION: TH07 0x004543b0
@@ -2636,7 +2636,7 @@ void AnmManager::DrawStringFormat(AnmVm *vm, D3DCOLOR textColor,
                            vm->fontHeight, textColor, outlineType, buf, vm->sprite->cols,
                            vm->sprite->rows);
 
-    vm->flags |= 1;
+    vm->visible = 1;
 }
 
 // FUNCTION: TH07 0x004545b0
@@ -2664,7 +2664,7 @@ void AnmManager::DrawStringFormat2(AnmVm *vm, D3DCOLOR textColor,
                            vm->sprite->textureWidth, vm->sprite->textureHeight, fontWidth, vm->fontHeight,
                            textColor, outlineType, buf, vm->sprite->cols, vm->sprite->rows);
 
-    vm->flags |= 1;
+    vm->visible = 1;
 }
 
 // FUNCTION: TH07 0x004547b0
@@ -3002,7 +3002,7 @@ ZunResult AnmManager::DrawTriangleStrip(AnmVm *vm,
                                         VertexTex1DiffuseXyzrwh *vertices,
                                         i32 param3)
 {
-    if ((vm->flags & 1) == 0 || ((vm->flags >> 1) & 1) == 0 ||
+    if (vm->visible == 0 || vm->active == 0 ||
         vm->color.bytes.a == 0)
         return ZUN_ERROR;
 

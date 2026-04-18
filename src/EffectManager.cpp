@@ -290,7 +290,7 @@ i32 EffectManager::UpdateWeatherPhysics(Effect *effect)
     {
         effect->vm.rotation.z =
             utils::AddNormalizeAngle(effect->vm.rotation.z, effect->vm.rotation.x);
-        effect->vm.flags |= 4;
+        effect->vm.updateRotation = 1;
         if (effect->pos1.z < 0.0f)
         {
             return 1;
@@ -537,7 +537,7 @@ Effect *EffectManager::SpawnParticles(i32 effectId, D3DXVECTOR3 *pos,
             effect->vm.anmFileIdx = local_1c;
             g_AnmManager->SetAndExecuteScript(&effect->vm,
                                               g_AnmManager->scripts[iVar1]);
-            effect->vm.flags = effect->vm.flags | 0x1000;
+            effect->vm.zWriteDisable = 1;
             effect->vm.color.color = color;
             effect->callback = g_EffectMapping[effectId].updateCallback;
             effect->timer.Initialize(0);
@@ -671,7 +671,7 @@ Effect *EffectManager::SpawnEffect(i32 effectId, D3DXVECTOR3 *pos, i32 param_3,
     local_18 = (i16)iVar1;
     effect->vm.anmFileIdx = local_18;
     g_AnmManager->SetAndExecuteScript(&effect->vm, g_AnmManager->scripts[iVar1]);
-    effect->vm.flags = effect->vm.flags | 0x1000;
+    effect->vm.zWriteDisable = 1;
     effect->vm.color.color = color;
     effect->callback = g_EffectMapping[effectId].updateCallback;
     effect->timer.Initialize(0);
@@ -726,7 +726,7 @@ u32 EffectManager::OnUpdate(EffectManager *arg)
                     }
                     else if (effect->is2D == 0)
                     {
-                        if ((effect->vm.flags >> 4 & 1) == 0)
+                        if (effect->vm.blendMode == 0)
                         {
                             arg->specialEffectsPtrs[0]->head = effect;
                             arg->specialEffectsPtrs[0] = effect;

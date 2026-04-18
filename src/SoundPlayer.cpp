@@ -647,7 +647,7 @@ i32 SoundPlayer::ProcessQueues()
     i32 tmp;
     LPDIRECTSOUNDBUFFER buffer2;
     DWORD DVar2;
-    char(*name)[256];
+    char (*name)[256];
     SoundPlayerCommand *commandCursor;
     i32 i;
     bool loopAgain;

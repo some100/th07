@@ -34,14 +34,14 @@ typedef enum AnmOpcode
     ANM_INTERRUPT_LABEL = 21,
     ANM_22 = 22,
     ANM_STOP_HIDE = 23,
-    ANM_24 = 24,
+    ANM_SET_USE_OFFSET = 24,
     ANM_SET_AUTO_ROTATE = 25,
     ANM_SET_SCROLL_POS_X = 26,
     ANM_SET_SCROLL_POS_Y = 27,
     ANM_SET_VISIBILITY = 28,
     ANM_INTERP_SCALE = 29,
-    ANM_30 = 30,
-    ANM_31 = 31,
+    ANM_SET_ZWRITE_DISABLE = 30,
+    ANM_SET_CAMERA_MODE = 31,
     ANM_INTERP_POS = 32,
     ANM_INTERP_COLOR = 33,
     ANM_INTERP_ALPHA = 34,
@@ -145,10 +145,10 @@ struct AnmVm : AnmVmBase
         memset(this, 0, sizeof(AnmVm));
         this->activeSpriteIdx = -1;
     }
-    
-    void ClearFlagBit0()
+
+    void SetInvisible()
     {
-        this->flags &= ~1;
+        this->visible = 0;
     }
 
     i32 *GetVar(i32 *paramId, u16 mask, u8 idx);
@@ -168,7 +168,27 @@ struct AnmVm : AnmVmBase
     D3DXMATRIX uvMatrix;
     ZunColor color;
     ZunColor color2;
-    u32 flags;
+    union {
+        u32 flags;
+        struct
+        {
+            u32 visible : 1;
+            u32 active : 1;
+            u32 updateRotation : 1;
+            u32 updateScale : 1;
+            u32 blendMode : 1;
+            u32 flag6 : 1;
+            u32 flag7 : 1;
+            u32 useOffset : 1;
+            u32 flip : 2;
+            u32 anchor : 2;
+            u32 zWriteDisable : 1;
+            u32 isStopped : 1;
+            u32 cameraMode : 1;
+            u32 skipTransform : 1;
+            u32 useColor2 : 1;
+        };
+    };
     u16 autoRotate;
     i16 pendingInterrupt;
     D3DXVECTOR3 pos;

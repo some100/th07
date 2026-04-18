@@ -20,7 +20,7 @@ ChainElem::ChainElem()
     this->addedCallback = NULL;
     this->deletedCallback = NULL;
     this->priority = 0;
-    this->flags &= (u16)~1;
+    this->isAllocated = 0;
 }
 
 // FUNCTION: TH07 0x0042fb20
@@ -255,7 +255,7 @@ ChainElem *Chain::CreateElem(ChainCallback callback)
     elem->callback = callback;
     elem->addedCallback = NULL;
     elem->deletedCallback = NULL;
-    elem->flags |= (u16)1;
+    elem->isAllocated = 1;
     return elem;
 }
 
@@ -300,7 +300,7 @@ destroy_elem:
         toRemove->prev = NULL;
         toRemove->next = NULL;
 
-        if (toRemove->flags & 1)
+        if (toRemove->isAllocated)
         {
             delete toRemove;
             toRemove = NULL;

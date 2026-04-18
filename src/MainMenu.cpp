@@ -1086,8 +1086,8 @@ ZunResult MainMenu::UpdateMenuDigits(AnmVm *param_1, i16 param_2)
 {
     if (param_2 < 0)
     {
-        param_1->flags = param_1->flags & 0xfffffffd;
-        param_1[1].flags = param_1[1].flags & 0xfffffffd;
+        param_1->active = 0;
+        param_1[1].active = 0;
     }
     else
     {
@@ -1095,8 +1095,8 @@ ZunResult MainMenu::UpdateMenuDigits(AnmVm *param_1, i16 param_2)
                                                    ((i32)param_2 / 10) * 2);
         g_AnmManager->SetActiveSprite(param_1 + 1, (i32)param_1[1].baseSpriteIdx +
                                                        ((i32)param_2 % 10) * 2);
-        param_1->flags = param_1->flags | 2;
-        param_1[1].flags = param_1[1].flags | 2;
+        param_1->active = 1;
+        param_1[1].active = 1;
     }
     return ZUN_SUCCESS;
 }
@@ -1346,44 +1346,44 @@ u32 MainMenu::OnUpdateSelectCharacter()
                     }
                 }
             }
-            this->vmHead[0x48].flags = this->vmHead[0x48].flags & 0xfffffffd;
-            this->vmHead[0x49].flags = this->vmHead[0x49].flags & 0xfffffffd;
-            this->vmHead[0x47].flags = this->vmHead[0x47].flags & 0xfffffffd;
-            this->vmHead[0x50].flags = this->vmHead[0x50].flags & 0xfffffffd;
-            this->vmHead[0x53].flags = this->vmHead[0x53].flags & 0xfffffffd;
-            this->vmHead[0x4b].flags = this->vmHead[0x4b].flags & 0xfffffffd;
-            this->vmHead[0x4c].flags = this->vmHead[0x4c].flags & 0xfffffffd;
-            this->vmHead[0x4a].flags = this->vmHead[0x4a].flags & 0xfffffffd;
-            this->vmHead[0x51].flags = this->vmHead[0x51].flags & 0xfffffffd;
-            this->vmHead[0x54].flags = this->vmHead[0x54].flags & 0xfffffffd;
-            this->vmHead[0x4e].flags = this->vmHead[0x4e].flags & 0xfffffffd;
-            this->vmHead[0x4f].flags = this->vmHead[0x4f].flags & 0xfffffffd;
-            this->vmHead[0x4d].flags = this->vmHead[0x4d].flags & 0xfffffffd;
-            this->vmHead[0x52].flags = this->vmHead[0x52].flags & 0xfffffffd;
-            this->vmHead[0x55].flags = this->vmHead[0x55].flags & 0xfffffffd;
+            this->vmHead[0x48].active = 0;
+            this->vmHead[0x49].active = 0;
+            this->vmHead[0x47].active = 0;
+            this->vmHead[0x50].active = 0;
+            this->vmHead[0x53].active = 0;
+            this->vmHead[0x4b].active = 0;
+            this->vmHead[0x4c].active = 0;
+            this->vmHead[0x4a].active = 0;
+            this->vmHead[0x51].active = 0;
+            this->vmHead[0x54].active = 0;
+            this->vmHead[0x4e].active = 0;
+            this->vmHead[0x4f].active = 0;
+            this->vmHead[0x4d].active = 0;
+            this->vmHead[0x52].active = 0;
+            this->vmHead[0x55].active = 0;
             if (this->cursor == 0)
             {
-                this->vmHead[0x48].flags = this->vmHead[0x48].flags | 2;
-                this->vmHead[0x49].flags = this->vmHead[0x49].flags | 2;
-                this->vmHead[0x47].flags = this->vmHead[0x47].flags | 2;
-                this->vmHead[0x50].flags = this->vmHead[0x50].flags | 2;
-                this->vmHead[0x53].flags = this->vmHead[0x53].flags | 2;
+                this->vmHead[0x48].active = 1;
+                this->vmHead[0x49].active = 1;
+                this->vmHead[0x47].active = 1;
+                this->vmHead[0x50].active = 1;
+                this->vmHead[0x53].active = 1;
             }
             else if (this->cursor == 1)
             {
-                this->vmHead[0x4b].flags = this->vmHead[0x4b].flags | 2;
-                this->vmHead[0x4c].flags = this->vmHead[0x4c].flags | 2;
-                this->vmHead[0x4a].flags = this->vmHead[0x4a].flags | 2;
-                this->vmHead[0x51].flags = this->vmHead[0x51].flags | 2;
-                this->vmHead[0x54].flags = this->vmHead[0x54].flags | 2;
+                this->vmHead[0x4b].active = 1;
+                this->vmHead[0x4c].active = 1;
+                this->vmHead[0x4a].active = 1;
+                this->vmHead[0x51].active = 1;
+                this->vmHead[0x54].active = 1;
             }
             else if (this->cursor == 2)
             {
-                this->vmHead[0x4e].flags = this->vmHead[0x4e].flags | 2;
-                this->vmHead[0x4f].flags = this->vmHead[0x4f].flags | 2;
-                this->vmHead[0x4d].flags = this->vmHead[0x4d].flags | 2;
-                this->vmHead[0x52].flags = this->vmHead[0x52].flags | 2;
-                this->vmHead[0x55].flags = this->vmHead[0x55].flags | 2;
+                this->vmHead[0x4e].active = 1;
+                this->vmHead[0x4f].active = 1;
+                this->vmHead[0x4d].active = 1;
+                this->vmHead[0x52].active = 1;
+                this->vmHead[0x55].active = 1;
             }
             if (this->cursor == 0)
             {
@@ -1611,21 +1611,21 @@ u32 MainMenu::OnUpdateSelectShotType()
                         .pendingInterrupt = 9;
                 }
             }
-            this->vmHead[0x48].flags = this->vmHead[0x48].flags & 0xfffffffd;
-            this->vmHead[0x49].flags = this->vmHead[0x49].flags & 0xfffffffd;
-            this->vmHead[0x47].flags = this->vmHead[0x47].flags & 0xfffffffd;
-            this->vmHead[0x50].flags = this->vmHead[0x50].flags & 0xfffffffd;
-            this->vmHead[0x53].flags = this->vmHead[0x53].flags & 0xfffffffd;
-            this->vmHead[0x4b].flags = this->vmHead[0x4b].flags & 0xfffffffd;
-            this->vmHead[0x4c].flags = this->vmHead[0x4c].flags & 0xfffffffd;
-            this->vmHead[0x4a].flags = this->vmHead[0x4a].flags & 0xfffffffd;
-            this->vmHead[0x51].flags = this->vmHead[0x51].flags & 0xfffffffd;
-            this->vmHead[0x54].flags = this->vmHead[0x54].flags & 0xfffffffd;
-            this->vmHead[0x4e].flags = this->vmHead[0x4e].flags & 0xfffffffd;
-            this->vmHead[0x4f].flags = this->vmHead[0x4f].flags & 0xfffffffd;
-            this->vmHead[0x4d].flags = this->vmHead[0x4d].flags & 0xfffffffd;
-            this->vmHead[0x52].flags = this->vmHead[0x52].flags & 0xfffffffd;
-            this->vmHead[0x55].flags = this->vmHead[0x55].flags & 0xfffffffd;
+            this->vmHead[0x48].active = 0;
+            this->vmHead[0x49].active = 0;
+            this->vmHead[0x47].active = 0;
+            this->vmHead[0x50].active = 0;
+            this->vmHead[0x53].active = 0;
+            this->vmHead[0x4b].active = 0;
+            this->vmHead[0x4c].active = 0;
+            this->vmHead[0x4a].active = 0;
+            this->vmHead[0x51].active = 0;
+            this->vmHead[0x54].active = 0;
+            this->vmHead[0x4e].active = 0;
+            this->vmHead[0x4f].active = 0;
+            this->vmHead[0x4d].active = 0;
+            this->vmHead[0x52].active = 0;
+            this->vmHead[0x55].active = 0;
             this->cursor = g_GameManager.shotType;
             if (g_Supervisor.cfg.defaultDifficulty == 4)
             {
@@ -1653,9 +1653,9 @@ u32 MainMenu::OnUpdateSelectShotType()
             }
             if (g_GameManager.character == CHAR_REIMU)
             {
-                this->vmHead[0x48].flags = this->vmHead[0x48].flags | 2;
-                this->vmHead[0x49].flags = this->vmHead[0x49].flags | 2;
-                this->vmHead[0x47].flags = this->vmHead[0x47].flags | 2;
+                this->vmHead[0x48].active = 1;
+                this->vmHead[0x49].active = 1;
+                this->vmHead[0x47].active = 1;
                 g_AnmManager->SetActiveSprite(
                     this->vmHead + (0x49 - this->cursor),
                     this->vmHead[0x49 - this->cursor].baseSpriteIdx + 1);
@@ -1665,9 +1665,9 @@ u32 MainMenu::OnUpdateSelectShotType()
             }
             else if (g_GameManager.character == CHAR_MARISA)
             {
-                this->vmHead[0x4b].flags = this->vmHead[0x4b].flags | 2;
-                this->vmHead[0x4c].flags = this->vmHead[0x4c].flags | 2;
-                this->vmHead[0x4a].flags = this->vmHead[0x4a].flags | 2;
+                this->vmHead[0x4b].active = 1;
+                this->vmHead[0x4c].active = 1;
+                this->vmHead[0x4a].active = 1;
                 g_AnmManager->SetActiveSprite(
                     this->vmHead + (0x4c - this->cursor),
                     this->vmHead[0x4c - this->cursor].baseSpriteIdx + 1);
@@ -1677,9 +1677,9 @@ u32 MainMenu::OnUpdateSelectShotType()
             }
             else if (g_GameManager.character == CHAR_SAKUYA)
             {
-                this->vmHead[0x4e].flags = this->vmHead[0x4e].flags | 2;
-                this->vmHead[0x4f].flags = this->vmHead[0x4f].flags | 2;
-                this->vmHead[0x4d].flags = this->vmHead[0x4d].flags | 2;
+                this->vmHead[0x4e].active = 1;
+                this->vmHead[0x4f].active = 1;
+                this->vmHead[0x4d].active = 1;
                 g_AnmManager->SetActiveSprite(
                     this->vmHead + (0x4f - this->cursor),
                     this->vmHead[0x4f - this->cursor].baseSpriteIdx + 1);
@@ -1805,21 +1805,21 @@ u32 MainMenu::OnUpdateSelectShotType()
             {
                 SetGameState(STATE_PRACTICE_SELECT_CHARACTER);
             }
-            this->vmHead[0x48].flags = this->vmHead[0x48].flags | 2;
-            this->vmHead[0x49].flags = this->vmHead[0x49].flags | 2;
-            this->vmHead[0x47].flags = this->vmHead[0x47].flags | 2;
-            this->vmHead[0x50].flags = this->vmHead[0x50].flags | 2;
-            this->vmHead[0x53].flags = this->vmHead[0x53].flags | 2;
-            this->vmHead[0x4b].flags = this->vmHead[0x4b].flags | 2;
-            this->vmHead[0x4c].flags = this->vmHead[0x4c].flags | 2;
-            this->vmHead[0x4a].flags = this->vmHead[0x4a].flags | 2;
-            this->vmHead[0x51].flags = this->vmHead[0x51].flags | 2;
-            this->vmHead[0x54].flags = this->vmHead[0x54].flags | 2;
-            this->vmHead[0x4e].flags = this->vmHead[0x4e].flags | 2;
-            this->vmHead[0x4f].flags = this->vmHead[0x4f].flags | 2;
-            this->vmHead[0x4d].flags = this->vmHead[0x4d].flags | 2;
-            this->vmHead[0x52].flags = this->vmHead[0x52].flags | 2;
-            this->vmHead[0x55].flags = this->vmHead[0x55].flags | 2;
+            this->vmHead[0x48].active = 1;
+            this->vmHead[0x49].active = 1;
+            this->vmHead[0x47].active = 1;
+            this->vmHead[0x50].active = 1;
+            this->vmHead[0x53].active = 1;
+            this->vmHead[0x4b].active = 1;
+            this->vmHead[0x4c].active = 1;
+            this->vmHead[0x4a].active = 1;
+            this->vmHead[0x51].active = 1;
+            this->vmHead[0x54].active = 1;
+            this->vmHead[0x4e].active = 1;
+            this->vmHead[0x4f].active = 1;
+            this->vmHead[0x4d].active = 1;
+            this->vmHead[0x52].active = 1;
+            this->vmHead[0x55].active = 1;
             return CHAIN_CALLBACK_RESULT_EXECUTE_AGAIN;
         }
     }
@@ -1839,38 +1839,38 @@ u32 MainMenu::OnUpdateSelectPracticeStage()
         if (this->stateTimer == 0)
         {
             AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 0x12);
-            this->vmHead[0x48].flags = this->vmHead[0x48].flags & 0xfffffffd;
-            this->vmHead[0x49].flags = this->vmHead[0x49].flags & 0xfffffffd;
-            this->vmHead[0x47].flags = this->vmHead[0x47].flags & 0xfffffffd;
-            this->vmHead[0x50].flags = this->vmHead[0x50].flags & 0xfffffffd;
-            this->vmHead[0x53].flags = this->vmHead[0x53].flags & 0xfffffffd;
-            this->vmHead[0x4b].flags = this->vmHead[0x4b].flags & 0xfffffffd;
-            this->vmHead[0x4c].flags = this->vmHead[0x4c].flags & 0xfffffffd;
-            this->vmHead[0x4a].flags = this->vmHead[0x4a].flags & 0xfffffffd;
-            this->vmHead[0x51].flags = this->vmHead[0x51].flags & 0xfffffffd;
-            this->vmHead[0x54].flags = this->vmHead[0x54].flags & 0xfffffffd;
-            this->vmHead[0x4e].flags = this->vmHead[0x4e].flags & 0xfffffffd;
-            this->vmHead[0x4f].flags = this->vmHead[0x4f].flags & 0xfffffffd;
-            this->vmHead[0x4d].flags = this->vmHead[0x4d].flags & 0xfffffffd;
-            this->vmHead[0x52].flags = this->vmHead[0x52].flags & 0xfffffffd;
-            this->vmHead[0x55].flags = this->vmHead[0x55].flags & 0xfffffffd;
+            this->vmHead[0x48].active = 0;
+            this->vmHead[0x49].active = 0;
+            this->vmHead[0x47].active = 0;
+            this->vmHead[0x50].active = 0;
+            this->vmHead[0x53].active = 0;
+            this->vmHead[0x4b].active = 0;
+            this->vmHead[0x4c].active = 0;
+            this->vmHead[0x4a].active = 0;
+            this->vmHead[0x51].active = 0;
+            this->vmHead[0x54].active = 0;
+            this->vmHead[0x4e].active = 0;
+            this->vmHead[0x4f].active = 0;
+            this->vmHead[0x4d].active = 0;
+            this->vmHead[0x52].active = 0;
+            this->vmHead[0x55].active = 0;
             if (g_GameManager.character == CHAR_REIMU)
             {
-                this->vmHead[0x48].flags = this->vmHead[0x48].flags | 2;
-                this->vmHead[0x49].flags = this->vmHead[0x49].flags | 2;
-                this->vmHead[0x47].flags = this->vmHead[0x47].flags | 2;
+                this->vmHead[0x48].active = 1;
+                this->vmHead[0x49].active = 1;
+                this->vmHead[0x47].active = 1;
             }
             else if (g_GameManager.character == CHAR_MARISA)
             {
-                this->vmHead[0x4b].flags = this->vmHead[0x4b].flags | 2;
-                this->vmHead[0x4c].flags = this->vmHead[0x4c].flags | 2;
-                this->vmHead[0x4a].flags = this->vmHead[0x4a].flags | 2;
+                this->vmHead[0x4b].active = 1;
+                this->vmHead[0x4c].active = 1;
+                this->vmHead[0x4a].active = 1;
             }
             else if (g_GameManager.character == CHAR_SAKUYA)
             {
-                this->vmHead[0x4e].flags = this->vmHead[0x4e].flags | 2;
-                this->vmHead[0x4f].flags = this->vmHead[0x4f].flags | 2;
-                this->vmHead[0x4d].flags = this->vmHead[0x4d].flags | 2;
+                this->vmHead[0x4e].active = 1;
+                this->vmHead[0x4f].active = 1;
+                this->vmHead[0x4d].active = 1;
             }
             this->menuSubState = 0;
             this->inputDelayTimer = 0;
@@ -1920,21 +1920,21 @@ u32 MainMenu::OnUpdateSelectPracticeStage()
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
             this->cursor = g_GameManager.shotType;
             SetGameState(STATE_NORMAL_SELECT_SHOTTYPE);
-            this->vmHead[0x48].flags = this->vmHead[0x48].flags | 2;
-            this->vmHead[0x49].flags = this->vmHead[0x49].flags | 2;
-            this->vmHead[0x47].flags = this->vmHead[0x47].flags | 2;
-            this->vmHead[0x50].flags = this->vmHead[0x50].flags | 2;
-            this->vmHead[0x53].flags = this->vmHead[0x53].flags | 2;
-            this->vmHead[0x4b].flags = this->vmHead[0x4b].flags | 2;
-            this->vmHead[0x4c].flags = this->vmHead[0x4c].flags | 2;
-            this->vmHead[0x4a].flags = this->vmHead[0x4a].flags | 2;
-            this->vmHead[0x51].flags = this->vmHead[0x51].flags | 2;
-            this->vmHead[0x54].flags = this->vmHead[0x54].flags | 2;
-            this->vmHead[0x4e].flags = this->vmHead[0x4e].flags | 2;
-            this->vmHead[0x4f].flags = this->vmHead[0x4f].flags | 2;
-            this->vmHead[0x4d].flags = this->vmHead[0x4d].flags | 2;
-            this->vmHead[0x52].flags = this->vmHead[0x52].flags | 2;
-            this->vmHead[0x55].flags = this->vmHead[0x55].flags | 2;
+            this->vmHead[0x48].active = 1;
+            this->vmHead[0x49].active = 1;
+            this->vmHead[0x47].active = 1;
+            this->vmHead[0x50].active = 1;
+            this->vmHead[0x53].active = 1;
+            this->vmHead[0x4b].active = 1;
+            this->vmHead[0x4c].active = 1;
+            this->vmHead[0x4a].active = 1;
+            this->vmHead[0x51].active = 1;
+            this->vmHead[0x54].active = 1;
+            this->vmHead[0x4e].active = 1;
+            this->vmHead[0x4f].active = 1;
+            this->vmHead[0x4d].active = 1;
+            this->vmHead[0x52].active = 1;
+            this->vmHead[0x55].active = 1;
             return CHAIN_CALLBACK_RESULT_EXECUTE_AGAIN;
         }
     }

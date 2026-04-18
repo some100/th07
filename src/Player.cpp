@@ -400,7 +400,7 @@ i32 ShtData::UpdateUpwardAcceleratingBullet(Player *player,
 i32 ShtData::UpdateOrbLaser(Player *player, PlayerBullet *bullet)
 {
     if ((player->timers[bullet->timerIdx].bullet != bullet) &&
-        ((bullet->vm.flags >> 0xd & 1) != 0))
+        (bullet->vm.isStopped != 0))
     {
         bullet->vm.pendingInterrupt = 1;
     }
@@ -419,7 +419,7 @@ i32 ShtData::UpdateOrbLaser(Player *player, PlayerBullet *bullet)
     else
     {
         if ((player->timers[bullet->timerIdx].current < 0x47) &&
-            ((bullet->vm.flags >> 0xd & 1) != 0))
+            (bullet->vm.isStopped != 0))
         {
             bullet->vm.pendingInterrupt = 1;
         }
@@ -444,7 +444,7 @@ i32 ShtData::UpdateOrbLaser(Player *player, PlayerBullet *bullet)
 i32 ShtData::UpdatePlayerLaser(Player *player, PlayerBullet *bullet)
 {
     if ((player->timers[bullet->timerIdx].bullet != bullet) &&
-        ((bullet->vm.flags >> 0xd & 1) != 0))
+        (bullet->vm.isStopped != 0))
     {
         bullet->vm.pendingInterrupt = 1;
     }
@@ -463,7 +463,7 @@ i32 ShtData::UpdatePlayerLaser(Player *player, PlayerBullet *bullet)
     else
     {
         if ((player->timers[bullet->timerIdx].current < 0x47) &&
-            ((bullet->vm.flags >> 0xd & 1) != 0))
+            (bullet->vm.isStopped != 0))
         {
             bullet->vm.pendingInterrupt = 1;
         }
@@ -655,7 +655,7 @@ void Player::SpawnBullets(Player *player, u32 timer)
                 }
                 if (local_14 == 1)
                 {
-                    bullet->vm.flags = bullet->vm.flags | 0x1000;
+                    bullet->vm.zWriteDisable = 1;
                     bullet->bulletState = 1;
                     bullet->shtEntry = entry;
                     bullet->updateCallback = bullet->shtEntry->updateCallback;
@@ -774,7 +774,7 @@ void Player::DrawBullets()
             {
                 bullet->vm.rotation.z =
                     utils::AddNormalizeAngle(bullet->angle, 1.5707964f);
-                bullet->vm.flags = bullet->vm.flags | 4;
+                bullet->vm.updateRotation = 1;
             }
             bullet->vm.pos.x = g_GameManager.arcadeRegionTopLeftPos.x + bullet->pos.x;
             bullet->vm.pos.y = g_GameManager.arcadeRegionTopLeftPos.y + bullet->pos.y;
@@ -801,7 +801,7 @@ void Player::DrawBulletExplosions()
             {
                 bullet->vm.rotation.z =
                     utils::AddNormalizeAngle(bullet->angle, 1.5707964f);
-                bullet->vm.flags |= 4;
+                bullet->vm.updateRotation = 1;
             }
             bullet->vm.pos.x = g_GameManager.arcadeRegionTopLeftPos.x + bullet->pos.x;
             bullet->vm.pos.y = g_GameManager.arcadeRegionTopLeftPos.y + bullet->pos.y;
@@ -1832,7 +1832,7 @@ i32 Player::UpdateDeath()
                                30.0f)
                 << 0x18 |
             0xffffff;
-        this->playerSprite.flags = this->playerSprite.flags | 0x10;
+        this->playerSprite.blendMode = 1;
         this->previousHorizontalSpeed = 0.0f;
         this->previousVerticalSpeed = 0.0f;
         if (0x1d < this->invulnerabilityTimer.current)
@@ -1936,7 +1936,7 @@ void Player::Respawn()
                            30.0f;
     this->playerSprite.scale.y = fVar1 * 2.0f + 1.0f;
     this->playerSprite.scale.x = 1.0f - fVar1 * 1.0f;
-    this->playerSprite.flags = this->playerSprite.flags | 0x10;
+    this->playerSprite.blendMode = 1;
     this->verticalMovementSpeedMultiplierDuringBomb = 1.0f;
     this->horizontalMovementSpeedMultiplierDuringBomb = 1.0f;
     this->playerSprite.color.color =
@@ -1948,7 +1948,7 @@ void Player::Respawn()
         this->playerSprite.scale.x = 1.0f;
         this->playerSprite.scale.y = 1.0f;
         this->playerSprite.color.color = 0xffffffff;
-        this->playerSprite.flags = this->playerSprite.flags & 0xffffffef;
+        this->playerSprite.blendMode = 0;
         this->invulnerabilityTimer.Initialize(0xf0);
         this->respawnTimer = g_Player.shooterData->initialRespawnTimer;
     }
@@ -2077,7 +2077,7 @@ void Player::BreakBorderNaturally()
         this->playerSprite.scale.x = 1.0f;
         this->playerSprite.scale.y = 1.0f;
         this->playerSprite.color.color = 0xffffffff;
-        this->playerSprite.flags = this->playerSprite.flags & 0xffffffef;
+        this->playerSprite.blendMode = 0;
         this->invulnerabilityTimer.Initialize(0xf0);
         this->respawnTimer = g_Player.shooterData->initialRespawnTimer;
     }

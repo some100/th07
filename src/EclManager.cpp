@@ -425,7 +425,7 @@ f32 EclManager::GetFloatVarValue(Enemy *enemy, f32 eclVar)
         return g_Rng.GetRandomFloat();
     case VAR_RNG_CUSTOM_BOUND:
         return g_Rng.GetRandomFloatInRange(enemy->currentContext.eclContextArgs.globalVars.floatVars[0]) +
-                 enemy->currentContext.eclContextArgs.globalVars.floatVars[1];
+               enemy->currentContext.eclContextArgs.globalVars.floatVars[1];
     case VAR_MOVE_INTERP_TARGET_X:
         return enemy->moveInterp.x;
     case VAR_MOVE_INTERP_TARGET_Y:

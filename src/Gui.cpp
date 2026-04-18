@@ -43,8 +43,8 @@ i32 Gui::IsStageFinished()
 {
     i32 local_c;
 
-    if ((this->impl->stageClearTextVm.activeSpriteIdx < 0) ||
-        ((this->impl->stageClearTextVm.flags >> 0xd & 1) == 0))
+    if (this->impl->stageClearTextVm.activeSpriteIdx < 0 ||
+        this->impl->stageClearTextVm.isStopped == 0)
     {
         local_c = 0;
     }
@@ -737,7 +737,7 @@ ZunResult Gui::ActualAddedCallback()
     this->impl->spellcardBonusIndicator.anmFileIdx = 2;
     g_AnmManager->SetAndExecuteScript(&this->impl->spellcardBonusIndicator,
                                       g_AnmManager->scripts[2]);
-    (this->impl->captureBonusVm).anmFileIdx = 3;
+    this->impl->captureBonusVm.anmFileIdx = 3;
     g_AnmManager->SetAndExecuteScript(&this->impl->captureBonusVm,
                                       g_AnmManager->scripts[3]);
     this->impl->bombSpellcardPortrait.currentInstruction = NULL;
@@ -748,22 +748,14 @@ ZunResult Gui::ActualAddedCallback()
     (this->impl->enemySpellcardRelated1).currentInstruction = NULL;
     (this->impl->enemySpellcardRelated2).currentInstruction = NULL;
     this->impl->enemySpellcardName.currentInstruction = NULL;
-    this->impl->bombSpellcardPortrait.flags =
-        this->impl->bombSpellcardPortrait.flags & 0xfffffffe;
-    this->impl->bombSpellcardDecorLeft.flags =
-        this->impl->bombSpellcardDecorLeft.flags & 0xfffffffe;
-    this->impl->bombSpellcardDecorRight.flags =
-        this->impl->bombSpellcardDecorRight.flags & 0xfffffffe;
-    this->impl->bombSpellcardName.flags =
-        this->impl->bombSpellcardName.flags & 0xfffffffe;
-    this->impl->enemySpellcardPortrait.flags =
-        this->impl->enemySpellcardPortrait.flags & 0xfffffffe;
-    (this->impl->enemySpellcardRelated1).flags =
-        (this->impl->enemySpellcardRelated1).flags & 0xfffffffe;
-    (this->impl->enemySpellcardRelated2).flags =
-        (this->impl->enemySpellcardRelated2).flags & 0xfffffffe;
-    this->impl->enemySpellcardName.flags =
-        this->impl->enemySpellcardName.flags & 0xfffffffe;
+    this->impl->bombSpellcardPortrait.visible = 0;
+    this->impl->bombSpellcardDecorLeft.visible = 0;
+    this->impl->bombSpellcardDecorRight.visible = 0;
+    this->impl->bombSpellcardName.visible = 0;
+    this->impl->enemySpellcardPortrait.visible = 0;
+    (this->impl->enemySpellcardRelated1).visible = 0;
+    (this->impl->enemySpellcardRelated2).visible = 0;
+    this->impl->enemySpellcardName.visible = 0;
     this->impl->bombSpellcardName.fontWidth = 0xf;
     this->impl->bombSpellcardName.fontHeight = 0xf;
     this->impl->enemySpellcardName.fontWidth = 0xf;
@@ -1382,7 +1374,7 @@ void Gui::UpdateGui()
                 {
                     this->bossHealthBarAlpha = this->bossHealthBarAlpha - 4;
                 }
-                if ((this->impl->vms0[0xb].flags >> 0xd & 1) != 0)
+                if (this->impl->vms0[0xb].isStopped != 0)
                 {
                     this->impl->bossHealthBarState = 0;
                     this->bossHealthBarEased = 0.0f;
@@ -1398,7 +1390,7 @@ void Gui::UpdateGui()
         }
         else
         {
-            if ((this->impl->vms0[0xb].flags >> 0xd & 1) != 0)
+            if (this->impl->vms0[0xb].isStopped != 0)
             {
                 this->impl->bossHealthBarState = 2;
             }
@@ -1937,13 +1929,13 @@ void Gui::DrawStageElements()
     {
         g_AnmManager->Draw(this->impl->vms1 + i);
     }
-    if ((this->impl->bombSpellcardPortrait.flags & 1) != 0)
+    if (this->impl->bombSpellcardPortrait.visible != 0)
     {
         g_AnmManager->DrawNoRotation(&this->impl->bombSpellcardPortrait);
         g_AnmManager->DrawNoRotation(&this->impl->bombSpellcardDecorLeft);
         g_AnmManager->Draw(&this->impl->bombSpellcardDecorRight);
     }
-    if ((this->impl->enemySpellcardPortrait.flags & 1) != 0)
+    if (this->impl->enemySpellcardPortrait.visible != 0)
     {
         fVar1 = this->impl->enemySpellcardPortrait.pos.x;
         fVar2 = this->impl->enemySpellcardPortrait.pos.y;
@@ -1957,13 +1949,13 @@ void Gui::DrawStageElements()
         g_AnmManager->DrawNoRotation(&this->impl->enemySpellcardRelated1);
         g_AnmManager->Draw(&this->impl->enemySpellcardRelated2);
     }
-    if ((this->impl->bombSpellcardName.flags & 1) != 0)
+    if (this->impl->bombSpellcardName.visible != 0)
     {
         this->impl->bombSpellcardNameBg.pos = this->impl->bombSpellcardName.pos;
         g_AnmManager->DrawNoRotation(&this->impl->bombSpellcardNameBg);
         g_AnmManager->Draw(&this->impl->bombSpellcardName);
     }
-    if ((this->impl->enemySpellcardName.flags & 1) != 0)
+    if (this->impl->enemySpellcardName.visible != 0)
     {
         this->impl->enemySpellcardNameBg.pos = this->impl->enemySpellcardName.pos;
         g_AnmManager->DrawNoRotation(&this->impl->enemySpellcardNameBg);
@@ -1978,8 +1970,8 @@ void Gui::DrawStageElements()
         {
             local_18 = 0;
         }
-        (this->impl->captureBonusVm).pos = this->impl->spellcardBonusIndicator.pos;
-        (this->impl->captureBonusVm).pos.x -= 40.0f;
+        this->impl->captureBonusVm.pos = this->impl->spellcardBonusIndicator.pos;
+        this->impl->captureBonusVm.pos.x -= 40.0f;
         for (i = 0; i < 8; i += 1)
         {
             if (local_18 / local_24 != 0)
@@ -1988,12 +1980,12 @@ void Gui::DrawStageElements()
             }
             if ((bVar6) || (local_24 == 1))
             {
-                (this->impl->captureBonusVm).sprite =
+                this->impl->captureBonusVm.sprite =
                     g_AnmManager->sprites + local_18 / local_24 + 0x84;
                 g_AnmManager->DrawNoRotation(&this->impl->captureBonusVm);
             }
-            (this->impl->captureBonusVm).pos.x =
-                (this->impl->captureBonusVm).pos.x + 7.0f;
+            this->impl->captureBonusVm.pos.x =
+                this->impl->captureBonusVm.pos.x + 7.0f;
             local_18 %= local_24;
             local_24 /= 10;
         }
@@ -2003,16 +1995,16 @@ void Gui::DrawStageElements()
         {
             local_20 = 99;
         }
-        (this->impl->captureBonusVm).pos.x =
-            (this->impl->captureBonusVm).pos.x + 36.0f;
+        this->impl->captureBonusVm.pos.x =
+            this->impl->captureBonusVm.pos.x + 36.0f;
         if (local_20 / 10 != 0)
         {
-            (this->impl->captureBonusVm).sprite =
+            this->impl->captureBonusVm.sprite =
                 g_AnmManager->sprites + local_20 / 10 + 0x84;
             g_AnmManager->DrawNoRotation(&this->impl->captureBonusVm);
         }
-        (this->impl->captureBonusVm).pos.x += 7.0f;
-        (this->impl->captureBonusVm).sprite =
+        this->impl->captureBonusVm.pos.x += 7.0f;
+        this->impl->captureBonusVm.sprite =
             g_AnmManager->sprites + local_20 % 10 + 0x84;
         g_AnmManager->DrawNoRotation(&this->impl->captureBonusVm);
         local_20 = g_GameManager.catk[iVar8]
@@ -2021,15 +2013,15 @@ void Gui::DrawStageElements()
         {
             local_20 = 99;
         }
-        (this->impl->captureBonusVm).pos.x += 14.0f;
+        this->impl->captureBonusVm.pos.x += 14.0f;
         if (local_20 / 10 != 0)
         {
-            (this->impl->captureBonusVm).sprite =
+            this->impl->captureBonusVm.sprite =
                 g_AnmManager->sprites + local_20 / 10 + 0x84;
             g_AnmManager->DrawNoRotation(&this->impl->captureBonusVm);
         }
-        (this->impl->captureBonusVm).pos.x += 7.0f;
-        (this->impl->captureBonusVm).sprite =
+        this->impl->captureBonusVm.pos.x += 7.0f;
+        this->impl->captureBonusVm.sprite =
             g_AnmManager->sprites + local_20 % 10 + 0x84;
         g_AnmManager->DrawNoRotation(&this->impl->captureBonusVm);
     }

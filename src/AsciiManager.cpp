@@ -154,7 +154,7 @@ void AsciiManager::InitializeVms()
     this->color = 0xffffffff;
     this->scale.x = 1.0f;
     this->scale.y = 1.0f;
-    this->vm1.flags = this->vm1.flags | 0xc00;
+    this->vm1.anchor = 3;
     AnmVm *vm1 = &this->vm1;
     AnmManager *uselessAnmMgr = g_AnmManager;
     vm1->Initialize();
@@ -295,8 +295,8 @@ void AsciiManager::DrawStrings()
 
     guiString = 1;
     string = this->strings;
-    this->vm0.flags = this->vm0.flags | 1;
-    this->vm0.flags = this->vm0.flags | 0xc00;
+    this->vm0.visible = 1;
+    this->vm0.anchor = 3;
     for (i = 0; i < this->numStrings; i++, string++)
     {
         this->vm0.pos = string->position;
@@ -477,7 +477,7 @@ i32 RetryMenu::OnUpdate()
         this->curState = 4;
         for (i = 0; i < 10; i = i + 1)
         {
-            if ((this->menuSprites[i].flags & 1) != 0)
+            if (this->menuSprites[i].visible != 0)
             {
                 this->menuSprites[i].pendingInterrupt = 2;
             }
@@ -494,7 +494,7 @@ i32 RetryMenu::OnUpdate()
         this->curState = 9;
         for (i = 0; i < 10; i = i + 1)
         {
-            if ((this->menuSprites[i].flags & 1) != 0)
+            if (this->menuSprites[i].visible != 0)
             {
                 this->menuSprites[i].pendingInterrupt = 2;
             }
@@ -511,7 +511,7 @@ i32 RetryMenu::OnUpdate()
         this->curState = 10;
         for (i = 0; i < 10; i = i + 1)
         {
-            if ((this->menuSprites[i].flags & 1) != 0)
+            if (this->menuSprites[i].visible != 0)
             {
                 this->menuSprites[i].pendingInterrupt = 2;
             }
@@ -533,11 +533,11 @@ i32 RetryMenu::OnUpdate()
                                       g_GameManager.difficulty + 0x10d);
         if ((g_GameManager.flags & 1) == 0)
         {
-            this->menuSprites[8].ClearFlagBit0();
+            this->menuSprites[8].SetInvisible();
         }
         if ((g_GameManager.defaultCfg)->slowMode == 0)
         {
-            this->menuSprites[9].ClearFlagBit0();
+            this->menuSprites[9].SetInvisible();
         }
         if ((g_GameManager.flags >> 3 & 1) != 0)
         {
@@ -709,7 +709,7 @@ i32 RetryMenu::OnUpdate()
             g_GameManager.isInGameMenu = 0;
             for (i = 0; i < 10; i = i + 1)
             {
-                this->menuSprites[i].ClearFlagBit0();
+                this->menuSprites[i].SetInvisible();
             }
             if ((g_GameManager.currentStage != 6) || (g_Gui.frameCounter >= 300))
             {
@@ -823,7 +823,7 @@ i32 RetryMenu::OnUpdate()
             g_Supervisor.curState = 1;
             for (i = 0; i < 10; i = i + 1)
             {
-                this->menuSprites[i].ClearFlagBit0();
+                this->menuSprites[i].SetInvisible();
             }
             g_Supervisor.currentTime = timeGetTime();
         }
@@ -836,7 +836,7 @@ i32 RetryMenu::OnUpdate()
             g_Supervisor.curState = 10;
             for (i = 0; i < 10; i = i + 1)
             {
-                this->menuSprites[i].ClearFlagBit0();
+                this->menuSprites[i].SetInvisible();
             }
             g_Supervisor.currentTime = timeGetTime();
         }
@@ -869,12 +869,12 @@ void RetryMenu::OnDraw()
         if (((g_Supervisor.flags >> 1 & 1) != 0) && (this->curState != 0))
         {
             AnmVm local_25c = this->menuBackground;
-            local_25c.flags = local_25c.flags | 0x1000;
+            local_25c.zWriteDisable = 1;
             g_AnmManager->DrawNoRotation(&local_25c);
         }
         for (i = 0; i < 10; i = i + 1)
         {
-            if ((this->menuSprites[i].flags & 1) != 0)
+            if (this->menuSprites[i].visible != 0)
             {
                 g_AnmManager->DrawNoRotation(this->menuSprites + i);
             }
@@ -1017,7 +1017,7 @@ i32 PauseMenu::OnUpdate()
             g_Supervisor.curState = 6;
             for (i = 0; i < 5; i += 1)
             {
-                this->menuSprites[i].ClearFlagBit0();
+                this->menuSprites[i].SetInvisible();
             }
             g_GameManager.globals->guiScore = g_GameManager.globals->score;
             g_Supervisor.currentTime = timeGetTime();
@@ -1032,7 +1032,7 @@ i32 PauseMenu::OnUpdate()
             g_GameManager.isInRetryMenu = 0;
             for (i = 0; i < 5; i += 1)
             {
-                this->menuSprites[i].ClearFlagBit0();
+                this->menuSprites[i].SetInvisible();
             }
             g_GameManager.globals->numRetries++;
             g_GameManager.globals->guiScore = (u32)g_GameManager.globals->numRetries;
@@ -1116,7 +1116,7 @@ void PauseMenu::OnDraw()
         }
         for (i = 0; i < 5; i += 1)
         {
-            if ((this->menuSprites[i].flags & 1) != 0)
+            if (this->menuSprites[i].visible != 0)
             {
                 g_AnmManager->DrawNoRotation(&this->menuSprites[i]);
             }
@@ -1199,7 +1199,7 @@ void AsciiManager::DrawPopups()
         }
         local_8 = local_8 + 1;
     }
-    if ((this->otherVms[0].flags & 1) != 0)
+    if (this->otherVms[0].visible != 0)
     {
         local_3c = 100000;
         bVar3 = false;

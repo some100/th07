@@ -1103,7 +1103,7 @@ void BombData::BombMarisaBDraw(Player *player)
                      2.0f;
         vm->rotation.z =
             utils::AddNormalizeAngle(player->bombInfo.subInfo[i].accel, 1.5707964f);
-        vm->flags |= 4;
+        vm->updateRotation = 1;
         vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         vm->pos.z = 0.0f;
@@ -1202,7 +1202,7 @@ void BombData::BombMarisaBDrawFocus(Player *player)
         local_8->pos.y +=
             (sinf(fVar1) * local_8->sprite->heightPx * local_8->scale.y) / 2.0f;
         local_8->rotation.z = utils::AddNormalizeAngle(fVar1, 1.5707964f);
-        local_8->flags |= 4;
+        local_8->updateRotation = 1;
         local_8->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         local_8->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         local_8->pos.z = 0.0f;
@@ -1339,7 +1339,7 @@ void BombData::BombSakuyaADraw(Player *player)
         {
             subInfo->vms[0].rotation.z =
                 utils::AddNormalizeAngle(subInfo->angle, 1.5707964f);
-            subInfo->vms[0].flags |= 4;
+            subInfo->vms[0].updateRotation = 1;
             subInfo->vms[0].pos = subInfo->bombRegionPositions;
             subInfo->vms[0].pos.z = 0.0f;
             g_AnmManager->Draw(subInfo->vms);
@@ -1532,7 +1532,7 @@ void BombData::BombSakuyaADrawFocus(Player *player)
         {
             subInfo->vms[0].rotation.z =
                 utils::AddNormalizeAngle(subInfo->angle, 1.5707964f);
-            subInfo->vms[0].flags |= 4;
+            subInfo->vms[0].updateRotation = 1;
             subInfo->vms[0].pos = subInfo->bombRegionPositions;
             subInfo->vms[0].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
             subInfo->vms[0].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;

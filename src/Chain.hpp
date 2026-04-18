@@ -25,7 +25,7 @@ struct ChainElem
     ~ChainElem();
 
     i16 priority;
-    u16 flags;
+    u16 isAllocated : 1;
     ChainCallback callback;
     ChainLifecycleCallback addedCallback;
     ChainLifecycleCallback deletedCallback;

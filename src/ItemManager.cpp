@@ -159,7 +159,7 @@ void ItemManager::SpawnItem(D3DXVECTOR3 *heading, i32 itemType, i32 state)
     g_AnmManager->SetAndExecuteScript(&item->sprite,
                                       g_AnmManager->scripts[itemType + 0x2c4]);
     item->sprite.color.color = 0xffffffff;
-    item->sprite.flags = item->sprite.flags | 0x1000;
+    item->sprite.zWriteDisable = 1;
     item->autoCollect = 0;
     item->isArrowSprite = 1;
 }
@@ -720,7 +720,7 @@ void ItemManager::OnDraw()
                 g_AnmManager->SetActiveSprite(&item->sprite, item->itemType + 0x2ac);
                 item->isArrowSprite = 1;
                 item->sprite.color.color = 0xffffffff;
-                item->sprite.flags = item->sprite.flags | 0x1000;
+                item->sprite.zWriteDisable = 1;
             }
         }
         else
@@ -730,7 +730,7 @@ void ItemManager::OnDraw()
             {
                 g_AnmManager->SetActiveSprite(&item->sprite, item->itemType + 0x2b6);
                 item->isArrowSprite = 0;
-                item->sprite.flags = item->sprite.flags | 0x1000;
+                item->sprite.zWriteDisable = 1;
             }
             i32 local_8 = 0xff - ((8.0f - item->currentPosition.y) * 255.0f) / 128.0f;
             if (local_8 < 0x40)

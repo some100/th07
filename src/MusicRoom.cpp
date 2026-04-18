@@ -133,13 +133,11 @@ i32 MusicRoom::ProcessInput()
                    0x40);
             if (local_54[0] == '\0')
             {
-                this->descriptionSprites[local_c].flags =
-                    this->descriptionSprites[local_c].flags & 0xfffffffd;
+                this->descriptionSprites[local_c].active = 0;
             }
             else
             {
-                this->descriptionSprites[local_c].flags =
-                    this->descriptionSprites[local_c].flags | 2;
+                this->descriptionSprites[local_c].active = 1;
                 AnmManager::DrawVmTextFmt(g_AnmManager,
                                           this->descriptionSprites + local_c, 0xffe0c0,
                                           0x300000, local_54);
@@ -354,8 +352,7 @@ ZunResult MusicRoom::AddedCallback(MusicRoom *arg)
                     arg->titleSprites[offset].pos.y =
                         ((f32)((offset + 1) * 0x12) + 104.0f) - 20.0f;
                     arg->titleSprites[offset].pos.z = 0.0f;
-                    arg->titleSprites[offset].flags =
-                        arg->titleSprites[offset].flags | 0xc00;
+                    arg->titleSprites[offset].anchor = 3;
                 }
                 for (offset = 0; offset < 8; offset += 1)
                 {
@@ -370,13 +367,11 @@ ZunResult MusicRoom::AddedCallback(MusicRoom *arg)
                            0x40);
                     if (*lineCharBuffer == '\0')
                     {
-                        arg->descriptionSprites[offset].flags =
-                            arg->descriptionSprites[offset].flags & 0xfffffffd;
+                        arg->descriptionSprites[offset].active = 0;
                     }
                     else
                     {
-                        arg->descriptionSprites[offset].flags =
-                            arg->descriptionSprites[offset].flags | 2;
+                        arg->descriptionSprites[offset].active = 1;
                         AnmManager::DrawVmTextFmt(
                             g_AnmManager, arg->descriptionSprites + offset, 0xffe0c0,
                             0x300000, (char *)&lineCharBuffer);

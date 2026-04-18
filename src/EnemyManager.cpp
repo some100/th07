@@ -190,7 +190,7 @@ Enemy *EnemyManager::SpawnEnemy(i16 eclSubId, D3DXVECTOR3 *pos, i32 life,
     }
     else
     {
-        enemy->color = (enemy->primaryVm).color;
+        enemy->color = enemy->primaryVm.color;
         enemy->itemDrop = itemDrop;
         if (-1 < score)
         {
@@ -235,7 +235,7 @@ Enemy *EnemyManager::SpawnEnemyEx(i32 eclSubId, D3DXVECTOR3 *pos, i32 life,
     }
     else
     {
-        enemy->color = (enemy->primaryVm).color;
+        enemy->color = enemy->primaryVm.color;
         enemy->itemDrop = itemDrop;
         if (-1 < life)
         {
@@ -261,8 +261,7 @@ void Enemy::UpdateEffects()
         if (effect == NULL)
             continue;
 
-        effect->vm.flags = (effect->vm.flags & 0xfffffffd) |
-                           (u32)((this->flags2 >> 3 & 1) == 0) << 1;
+        effect->vm.active = (this->flags2 >> 3 & 1) == 0;
         effect->emitterPosition = this->position;
         if (effect->radius < this->effectDistance)
         {
@@ -831,15 +830,15 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                 enemy->enemyHistory[0].axisSpeed = enemy->axisSpeed;
                 enemy->enemyHistory[0].angle = enemy->angle;
             }
-            if ((enemy->primaryVm).sprite == NULL)
+            if (enemy->primaryVm.sprite == NULL)
             {
                 enemy->flags2 = enemy->flags2 | 8;
             }
             if ((((enemy->flags2 >> 3 & 1) == 0) &&
                  ((enemy->flags3 >> 3 & 1) == 0)) &&
                 (GameManager::IsInBounds(enemy->position.x, enemy->position.y,
-                                         ((enemy->primaryVm).sprite)->widthPx,
-                                         ((enemy->primaryVm).sprite)->heightPx) !=
+                                         (enemy->primaryVm.sprite)->widthPx,
+                                         (enemy->primaryVm.sprite)->heightPx) !=
                  0))
             {
                 enemy->flags3 = enemy->flags3 | 8;
@@ -847,19 +846,19 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
             if (((enemy->flags3 >> 3 & 1) == 1) &&
                 ((((enemy->trailFlags == 0 &&
                     (GameManager::IsInBounds(enemy->position.x, enemy->position.y,
-                                             ((enemy->primaryVm).sprite)->widthPx,
-                                             ((enemy->primaryVm).sprite)->heightPx) ==
+                                             (enemy->primaryVm.sprite)->widthPx,
+                                             (enemy->primaryVm.sprite)->heightPx) ==
                      0)) ||
                    ((enemy->trailFlags != 0 &&
                      ((GameManager::IsInBounds(
                            enemy->position.x, enemy->position.y,
-                           ((enemy->primaryVm).sprite)->widthPx,
-                           ((enemy->primaryVm).sprite)->heightPx) == 0 &&
+                           (enemy->primaryVm.sprite)->widthPx,
+                           (enemy->primaryVm.sprite)->heightPx) == 0 &&
                        (GameManager::IsInBounds(
                             enemy->enemyHistory[enemy->trailCount - 1].position.x,
                             enemy->enemyHistory[enemy->trailCount - 1].position.y,
-                            ((enemy->primaryVm).sprite)->widthPx,
-                            ((enemy->primaryVm).sprite)->heightPx) == 0)))))) &&
+                            (enemy->primaryVm.sprite)->widthPx,
+                            (enemy->primaryVm.sprite)->heightPx) == 0)))))) &&
                   (-1 < enemy->flags3))))
             {
                 enemy->flags1 &= 0x7f;
@@ -869,9 +868,9 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
         } while ((enemy->HandleLifeCallback() != 0) ||
                  ((-1 < enemy->timerCallbackThreshold &&
                    (enemy->HandleTimerCallback() != 0))));
-        (enemy->primaryVm).color = enemy->color;
+        enemy->primaryVm.color = enemy->color;
         g_AnmManager->ExecuteScript(&enemy->primaryVm);
-        enemy->color = (enemy->primaryVm).color;
+        enemy->color = enemy->primaryVm.color;
         for (local_38 = 0; local_38 < 2; local_38 += 1)
         {
             if ((-1 < enemy->vms[local_38].anmFileIdx) &&
@@ -1195,23 +1194,23 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
         {
             if (local_3c == 0)
             {
-                (enemy->primaryVm).flags = (enemy->primaryVm).flags & 0xfffeffff;
+                enemy->primaryVm.useColor2 = 0;
             }
             else
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_20, 0);
-                (enemy->primaryVm).color2.bytes.r = 0xff;
-                (enemy->primaryVm).color2.bytes.g = 0x80;
-                (enemy->primaryVm).color2.bytes.b = 0xc0;
-                (enemy->primaryVm).color2.bytes.a = (enemy->primaryVm).color.bytes.a;
-                (enemy->primaryVm).flags = (enemy->primaryVm).flags | 0x10000;
+                enemy->primaryVm.color2.bytes.r = 0xff;
+                enemy->primaryVm.color2.bytes.g = 0x80;
+                enemy->primaryVm.color2.bytes.b = 0xc0;
+                enemy->primaryVm.color2.bytes.a = enemy->primaryVm.color.bytes.a;
+                enemy->primaryVm.useColor2 = 1;
                 enemy->damageTintTimer = 1;
             }
         }
         else
         {
             enemy->damageTintTimer = enemy->damageTintTimer - 1;
-            (enemy->primaryVm).flags = (enemy->primaryVm).flags & 0xfffeffff;
+            enemy->primaryVm.useColor2 = 0;
         }
         if ((enemy->flags2 >> 6 & 1) != 0)
         {
@@ -1234,7 +1233,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                 g_AsciiManager.otherVms[uVar14 + 3].pos.y = 472.0;
                 g_AsciiManager.otherVms[uVar14 + 3].pos.z = 0.0f;
                 g_AsciiManager.bossDamageTint[enemy->bossId] =
-                    (enemy->primaryVm).flags >> 0x10 & 1;
+                    enemy->primaryVm.useColor2;
             }
         }
         enemy->UpdateEffects();
@@ -1316,7 +1315,7 @@ u32 EnemyManager::ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3)
                 if (local_20->vms[0].autoRotate)
                 {
                     local_20->vms[0].rotation.z = local_20->angle;
-                    local_20->vms[0].flags |= 4;
+                    local_20->vms[0].updateRotation = 1;
                 }
 
                 local_20->vms[0].pos = local_20->position + local_20->vms[0].offset;
@@ -1329,7 +1328,7 @@ u32 EnemyManager::ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3)
             if ((local_20->flags3 >> 4 & 1) != 0)
             {
                 local_20->primaryVm.rotation.z = local_20->angle;
-                local_20->primaryVm.flags |= 4;
+                local_20->primaryVm.updateRotation = 1;
             }
             local_20->primaryVm.pos = local_20->position + local_20->primaryVm.offset;
             local_20->primaryVm.pos.z = 0.29f;
@@ -1345,7 +1344,7 @@ u32 EnemyManager::ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3)
                 if (local_20->vms[1].autoRotate != 0)
                 {
                     local_20->vms[1].rotation.z = -local_20->angle;
-                    local_20->vms[1].flags = local_20->vms[1].flags | 4;
+                    local_20->vms[1].updateRotation = 1;
                 }
                 local_20->vms[1].pos = local_20->position + local_20->vms[1].offset;
                 local_20->vms[1].pos.z = 0.3f;
@@ -1371,7 +1370,7 @@ u32 EnemyManager::ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3)
                             {
                                 local_20->primaryVm.rotation.z =
                                     local_20->enemyHistory[local_1c].angle;
-                                local_20->primaryVm.flags = local_20->primaryVm.flags | 4;
+                                local_20->primaryVm.updateRotation = 1;
                             }
                             if ((local_20->trailFlags & 2) != 0)
                             {

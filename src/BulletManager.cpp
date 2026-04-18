@@ -722,7 +722,7 @@ Laser *BulletManager::SpawnLaserPattern(EnemyLaserShooter *laserShooter)
                 iVar2 = g_BulletSpriteOffset16Px[laserShooter->spriteOffset];
                 laser->vm1.Initialize();
                 g_AnmManager->SetActiveSprite(&laser->vm1, iVar2 + 0x292);
-                laser->vm1.flags |= 0x10;
+                laser->vm1.blendMode = 1;
                 laser->pos = laserShooter->position;
                 laser->color = laserShooter->spriteOffset;
                 laser->inUse = 1;
@@ -1190,7 +1190,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
                                      (laser->vm0.sprite)->heightPx;
                 laser->vm0.rotation.z =
                     utils::AddNormalizeAngle(laser->angle + 1.5707964f, 0.0f);
-                laser->vm0.flags = laser->vm0.flags | 4;
+                laser->vm0.updateRotation = 1;
                 if (laser->state == 0)
                 {
                     if ((laser->flags & 1) == 0)
@@ -1345,7 +1345,7 @@ void Bullet::Draw()
     if (vm->autoRotate != 0)
     {
         vm->rotation.z = utils::AddNormalizeAngle(this->angle + 1.5707964f, 0.0f);
-        vm->flags |= 4;
+        vm->updateRotation = 1;
     }
     g_AnmManager->Draw(vm);
 }
@@ -1379,7 +1379,7 @@ u32 BulletManager::OnDraw(BulletManager *arg)
                 laser->vm1.pos.y = local_c * laser->startOffset + (laser->pos).y;
                 laser->vm1.pos.z = 0.05f;
                 laser->vm1.color = laser->vm0.color;
-                laser->vm1.flags = laser->vm1.flags | 0x20;
+                laser->vm1.flag6 = 1;
                 laser->vm1.color.color =
                     (laser->vm1.color.color & 0xffffff) | 0xff000000;
                 laser->vm1.scale.x =
@@ -1466,16 +1466,11 @@ ZunResult BulletManager::AddedCallback(BulletManager *arg)
             local_3c = (i16)iVar6;
             pAVar1->anmFileIdx = local_3c;
             g_AnmManager->SetAndExecuteScript(pAVar1, g_AnmManager->scripts[iVar6]);
-            arg->bulletTypeTemplates[i].spriteBullet.flags =
-                arg->bulletTypeTemplates[i].spriteBullet.flags | 0x1000;
-            arg->bulletTypeTemplates[i].spriteSpawnEffectFast.flags =
-                arg->bulletTypeTemplates[i].spriteSpawnEffectFast.flags | 0x1000;
-            arg->bulletTypeTemplates[i].spriteSpawnEffectNormal.flags =
-                arg->bulletTypeTemplates[i].spriteSpawnEffectNormal.flags | 0x1000;
-            arg->bulletTypeTemplates[i].spriteSpawnEffectSlow.flags =
-                arg->bulletTypeTemplates[i].spriteSpawnEffectSlow.flags | 0x1000;
-            arg->bulletTypeTemplates[i].spriteSpawnEffectDonut.flags =
-                arg->bulletTypeTemplates[i].spriteSpawnEffectDonut.flags | 0x1000;
+            arg->bulletTypeTemplates[i].spriteBullet.zWriteDisable = 1;
+            arg->bulletTypeTemplates[i].spriteSpawnEffectFast.zWriteDisable = 1;
+            arg->bulletTypeTemplates[i].spriteSpawnEffectNormal.zWriteDisable = 1;
+            arg->bulletTypeTemplates[i].spriteSpawnEffectSlow.zWriteDisable = 1;
+            arg->bulletTypeTemplates[i].spriteSpawnEffectDonut.zWriteDisable = 1;
             arg->bulletTypeTemplates[i].spriteBullet.baseSpriteIdx =
                 arg->bulletTypeTemplates[i].spriteBullet.activeSpriteIdx;
             arg->bulletTypeTemplates[i].bulletHeight =
