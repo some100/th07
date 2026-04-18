@@ -6,7 +6,7 @@ struct GameErrorContext
 {
     char m_Buffer[8192];
     char *m_BufferEnd;
-    bool m_ShowMessageBox;
+    i8 m_ShowMessageBox;
 
     GameErrorContext()
     {

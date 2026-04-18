@@ -167,7 +167,7 @@ struct AnmManager
     void ReleaseTexture(i32 textureIdx);
     void ReleaseVertexBuffer();
     void ResetVertexBuffer();
-    ZunResult SetActiveSprite(AnmVm *vm, i32 param_2);
+    ZunResult SetActiveSprite(AnmVm *vm, i32 spriteIdx);
     void SetAndExecuteScript(AnmVm *vm, AnmRawInstr *beginningOfScript);
     void SetRenderStateForVm(AnmVm *vm);
     void SetupVertexBuffer();
@@ -191,12 +191,8 @@ struct AnmManager
 
     {
         vm->anmFileIdx = anmFileIdx;
-        vm->pos.x = 0.0f;
-        vm->pos.y = 0.0f;
-        vm->pos.z = 0.0f;
-        vm->offset.x = 0.0f;
-        vm->offset.y = 0.0f;
-        vm->offset.z = 0.0f;
+        vm->pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+        vm->offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
         vm->fontHeight = 15;
         vm->fontWidth = 15;
         SetAndExecuteScript(vm, this->scripts[anmFileIdx]);
@@ -209,6 +205,41 @@ struct AnmManager
         for (i32 i = 0; i < 0x20; i = i + 1)
         {
             SAFE_RELEASE(this->surfaces[i]);
+        }
+    }
+
+    void SetAnmIdxAndExecuteScript(AnmVm *vm, i32 anmIdx)
+    {
+        vm->anmFileIdx = anmIdx;
+        this->SetAndExecuteScript(vm, this->scripts[anmIdx]);
+    }
+
+    void InitializeAndSetActiveSprite(AnmVm *vm, i32 spriteIdx)
+    {
+        vm->Initialize();
+        this->SetActiveSprite(vm, spriteIdx);
+    }
+
+    i32 CreateScreenshotTexture(i32 x, i32 y, i32 height, i32 width)
+    {
+        if (this->screenshotTextureId >= 0)
+        {
+            return -1;
+        }
+        else
+        {
+            this->screenshotTextureId = 4;
+            this->screenshotSrcLeft = 0x20;
+            this->screenshotSrcTop = 0x10;
+            this->screenshotSrcWidth = 0x180;
+            this->screenshotSrcHeight = 0x1c0;
+            this->screenshotDstLeft = x;
+            this->screenshotDstTop = y;
+
+            // seems like ZUN accidentally swapped height and width
+            this->screenshotDstWidth = height;
+            this->screenshotDstHeight = width;
+            return 0;
         }
     }
 

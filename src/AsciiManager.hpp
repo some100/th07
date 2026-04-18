@@ -82,7 +82,8 @@ struct AsciiManager
 
     AnmVm vm0;
     AnmVm vm1;
-    AnmVm otherVms[7];
+    AnmVm otherVms[3];
+    AnmVm otherOtherVms[4];
     i32 bossDamageTint[4];
     AsciiManagerString strings[256];
     i32 numStrings;

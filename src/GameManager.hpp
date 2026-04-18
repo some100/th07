@@ -189,7 +189,7 @@ struct GameManager
     GameConfiguration *defaultCfg;
     ZunGlobals *globals;
     u8 isTimeStopped;
-    u8 slowModeSlowActive;
+    i8 slowModeSlowActive;
     // pad 2
     i32 difficulty;
     u32 difficultyMask;

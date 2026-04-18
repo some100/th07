@@ -3,6 +3,7 @@
 #include <d3d8.h>
 
 #include "inttypes.hpp"
+#include "ZunResult.hpp"
 
 typedef enum RenderResult
 {
@@ -15,7 +16,7 @@ typedef enum RenderResult
 #pragma pack(push, 4)
 struct GameWindow
 {
-    static i32 CheckForRunningGameInstance();
+    static ZunResult CheckForRunningGameInstance(HINSTANCE hInstance);
     static i32 ChecksumExecutable();
     static i32 CreateGameWindow(HINSTANCE hInstance);
     static char *FormatCapability(const char *capabilityName, u32 capabilityFlags,

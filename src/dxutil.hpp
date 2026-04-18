@@ -26,13 +26,14 @@
             (p) = NULL;      \
         }                    \
     }
-#define SAFE_FREE(p)    \
-    {                   \
-        if (p)          \
-        {               \
-            free(p);    \
-            (p) = NULL; \
-        }               \
+#define SAFE_FREE(p)         \
+    {                        \
+        if (p)               \
+        {                    \
+            void *tmp = (p); \
+            free(tmp);       \
+            (p) = NULL;      \
+        }                    \
     }
 #define SAFE_RELEASE(p)     \
     {                       \

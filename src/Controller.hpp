@@ -35,6 +35,10 @@ enum TouhouButton
     TH_BUTTON_ANY = 0xFFFF,
 };
 
+#define WAS_PRESSED_RAW(key) ((g_CurFrameRawInput & (key)) != 0) && ((g_CurFrameRawInput & (key)) != (g_LastFrameRawInput & (key)))
+#define WAS_PRESSED_GAME(key) ((g_CurFrameGameInput & (key)) != 0) && ((g_CurFrameGameInput & (key)) != (g_LastFrameGameInput & (key)))
+#define WAS_PRESSED_RAW_AND_IS_EIGHTH(key) (WAS_PRESSED_RAW(key) || (((g_CurFrameRawInput & (key)) != 0) && (g_IsEighthFrameOfHeldInput != 0)))
+
 namespace Controller
 {
 u16 GetControllerInput(u16 buttons);

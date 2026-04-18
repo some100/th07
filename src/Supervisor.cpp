@@ -37,7 +37,7 @@ u16 g_CurFrameRawInput;
 u16 g_CurFrameGameInput;
 
 // GLOBAL: TH07 0x004b9e54
-u16 g_LastFrameInput;
+u16 g_LastFrameRawInput;
 
 // GLOBAL: TH07 0x004b9e58
 u16 g_LastFrameGameInput;
@@ -182,10 +182,10 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
     }
     if (g_GameManager.slowModeSlowActive == 0)
     {
-        g_LastFrameInput = g_CurFrameRawInput;
+        g_LastFrameRawInput = g_CurFrameRawInput;
         g_CurFrameRawInput = Controller::GetInput();
         g_IsEighthFrameOfHeldInput = 0;
-        if (g_LastFrameInput == g_CurFrameRawInput)
+        if (g_LastFrameRawInput == g_CurFrameRawInput)
         {
             if ((0x1d < g_NumOfFramesInputsWereHeld) &&
                 (g_IsEighthFrameOfHeldInput =
@@ -422,7 +422,7 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
         }
     }
     g_IsEighthFrameOfHeldInput = 0;
-    g_LastFrameInput = 0;
+    g_LastFrameRawInput = 0;
     g_CurFrameRawInput = 0;
 LAB_004382b4:
     arg->wantedState = arg->curState;

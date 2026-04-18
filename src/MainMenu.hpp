@@ -49,8 +49,8 @@ struct MainMenu
     i32 DrawPracticeMenu();
 
     ZunResult ActualAddedCallback();
-    i32 MoveCursorHorizontal(i32 param_1);
-    i32 MoveCursorVertical(i32 param_1);
+    i32 MoveCursorHorizontal(i32 max);
+    i32 MoveCursorVertical(i32 max);
     ZunResult Release();
     void SwapMapping(i16 btnPressed, i16 oldMapping);
     static ZunResult UpdateMenuDigits(AnmVm *param_1, i16 param_2);

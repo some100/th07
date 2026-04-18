@@ -142,9 +142,9 @@ struct ResultScreen
     static void GetDate(char *out);
     ZunResult HandleReplaySaveKeyboard();
     ZunResult HandleResultKeyboard();
-    static i32 MoveCursor(ResultScreen *screen, i32 param_2);
-    static i32 MoveCursor2(ResultScreen *screen, i32 param_2);
-    static i32 MoveCursorHorizontally(ResultScreen *screen, i32 param_2);
+    static i32 MoveCursor(ResultScreen *screen, i32 max);
+    static i32 MoveCursor2(ResultScreen *screen, i32 max);
+    static i32 MoveCursorHorizontally(ResultScreen *screen, i32 max);
 
     static ScoreDat *OpenScore(const char *path);
     static i32 LinkScore(ScoreListNode *prevNode, Hscr *hscr);

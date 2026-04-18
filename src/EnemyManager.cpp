@@ -9,6 +9,7 @@
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
 #include "ZunResult.hpp"
+#include "d3dx8.h"
 #include "utils.hpp"
 
 // GLOBAL: TH07 0x009a9b00
@@ -1558,18 +1559,11 @@ ZunResult EnemyManager::DeletedCallback(EnemyManager *arg)
 {
     g_AnmManager->ReleaseAnm(0x10);
     g_AnmManager->ReleaseAnm(0xf);
-    g_AsciiManager.otherVms[3].pos.x = -999.0f;
-    g_AsciiManager.otherVms[3].pos.y = -999.0f;
-    g_AsciiManager.otherVms[3].pos.z = -999.0f;
-    g_AsciiManager.otherVms[4].pos.x = -999.0f;
-    g_AsciiManager.otherVms[4].pos.y = -999.0f;
-    g_AsciiManager.otherVms[4].pos.z = -999.0f;
-    g_AsciiManager.otherVms[5].pos.x = -999.0f;
-    g_AsciiManager.otherVms[5].pos.y = -999.0f;
-    g_AsciiManager.otherVms[5].pos.z = -999.0f;
-    g_AsciiManager.otherVms[6].pos.x = -999.0f;
-    g_AsciiManager.otherVms[6].pos.y = -999.0f;
-    g_AsciiManager.otherVms[6].pos.z = -999.0f;
+    D3DXVECTOR3 vec = D3DXVECTOR3(-999.0f, -999.0f, -999.0f);
+    g_AsciiManager.otherOtherVms[0].pos = vec;
+    g_AsciiManager.otherOtherVms[1].pos = vec;
+    g_AsciiManager.otherOtherVms[2].pos = vec;
+    g_AsciiManager.otherOtherVms[3].pos = vec;
     return ZUN_SUCCESS;
 }
 

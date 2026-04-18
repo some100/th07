@@ -38,9 +38,8 @@ const char *g_CharacterList[6] = {
 const char *g_TotalForAllProtagonists = "全主人公合計  　";
 
 // GLOBAL: TH07 0x0049ec30
-const char *g_AlphabetList =
-    // STRING: TH07 0x004969c8
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,:;_@abcdefghijklmnopqrstuvwxyz+-/*=%0123456789#!?'\"$(){}[]<>&\\|~^ --";
+// STRING: TH07 0x004969c8
+const char *g_AlphabetList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,:;_@abcdefghijklmnopqrstuvwxyz+-/*=%0123456789#!?'\"$(){}[]<>&\\|~^ --";
 
 // GLOBAL: TH07 0x0049f4ec
 const char *g_CharactersAndShotTypesStrings[6] = {
@@ -659,123 +658,81 @@ void ResultScreen::WriteScore()
 }
 
 // FUNCTION: TH07 0x00445a57
-i32 ResultScreen::MoveCursor(ResultScreen *screen, i32 param_2)
+i32 ResultScreen::MoveCursor(ResultScreen *screen, i32 max)
 {
-    if ((((g_CurFrameRawInput & TH_BUTTON_UP) == 0) ||
-         ((g_CurFrameRawInput & TH_BUTTON_UP) ==
-          (g_LastFrameInput & TH_BUTTON_UP))) &&
-        (((g_CurFrameRawInput & TH_BUTTON_UP) == 0 ||
-          (g_IsEighthFrameOfHeldInput == 0))))
-    {
-        if ((((g_CurFrameRawInput & TH_BUTTON_DOWN) == 0) ||
-             ((g_CurFrameRawInput & TH_BUTTON_DOWN) ==
-              (g_LastFrameInput & TH_BUTTON_DOWN))) &&
-            (((g_CurFrameRawInput & TH_BUTTON_DOWN) == 0 ||
-              (g_IsEighthFrameOfHeldInput == 0))))
-        {
-            return 0;
-        }
-        else
-        {
-            screen->cursor = screen->cursor + 1;
-            if (param_2 <= screen->cursor)
-            {
-                screen->cursor = screen->cursor - param_2;
-            }
-            g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
-            return 1;
-        }
-    }
-    else
+    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_UP))
     {
         screen->cursor = screen->cursor - 1;
         if (screen->cursor < 0)
         {
-            screen->cursor = screen->cursor + param_2;
+            screen->cursor = screen->cursor + max;
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
         return -1;
     }
+    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_DOWN))
+    {
+        screen->cursor = screen->cursor + 1;
+        if (screen->cursor >= max)
+        {
+            screen->cursor = screen->cursor - max;
+        }
+        g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
+        return 1;
+    }
+    return 0;
 }
 
 // FUNCTION: TH07 0x00445b56
-i32 ResultScreen::MoveCursor2(ResultScreen *screen, i32 param_2)
+i32 ResultScreen::MoveCursor2(ResultScreen *screen, i32 max)
 {
-    if ((((g_CurFrameRawInput & TH_BUTTON_UP) == 0) ||
-         ((g_CurFrameRawInput & TH_BUTTON_UP) ==
-          (g_LastFrameInput & TH_BUTTON_UP))) &&
-        (((g_CurFrameRawInput & TH_BUTTON_UP) == 0 ||
-          (g_IsEighthFrameOfHeldInput == 0))))
-    {
-        if ((((g_CurFrameRawInput & TH_BUTTON_DOWN) == 0) ||
-             ((g_CurFrameRawInput & TH_BUTTON_DOWN) ==
-              (g_LastFrameInput & TH_BUTTON_DOWN))) &&
-            (((g_CurFrameRawInput & TH_BUTTON_DOWN) == 0 ||
-              (g_IsEighthFrameOfHeldInput == 0))))
-        {
-            return 0;
-        }
-        else
-        {
-            screen->spellcardListPage = screen->spellcardListPage + 1;
-            if (param_2 <= screen->spellcardListPage)
-            {
-                screen->spellcardListPage = screen->spellcardListPage - param_2;
-            }
-            g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
-            return 1;
-        }
-    }
-    else
+    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_UP))
     {
         screen->spellcardListPage = screen->spellcardListPage - 1;
         if (screen->spellcardListPage < 0)
         {
-            screen->spellcardListPage = screen->spellcardListPage + param_2;
+            screen->spellcardListPage = screen->spellcardListPage + max;
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
         return -1;
     }
+    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_DOWN))
+    {
+        screen->spellcardListPage = screen->spellcardListPage + 1;
+        if (screen->spellcardListPage >= max)
+        {
+            screen->spellcardListPage = screen->spellcardListPage - max;
+        }
+        g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
+        return 1;
+    }
+    return 0;
 }
 
 // FUNCTION: TH07 0x00445c55
-i32 ResultScreen::MoveCursorHorizontally(ResultScreen *screen, i32 param_2)
+i32 ResultScreen::MoveCursorHorizontally(ResultScreen *screen, i32 max)
 {
-    if ((((g_CurFrameRawInput & TH_BUTTON_LEFT) == 0) ||
-         ((g_CurFrameRawInput & TH_BUTTON_LEFT) ==
-          (g_LastFrameInput & TH_BUTTON_LEFT))) &&
-        (((g_CurFrameRawInput & TH_BUTTON_LEFT) == 0 ||
-          (g_IsEighthFrameOfHeldInput == 0))))
-    {
-        if ((((g_CurFrameRawInput & TH_BUTTON_RIGHT) == 0) ||
-             ((g_CurFrameRawInput & TH_BUTTON_RIGHT) ==
-              (g_LastFrameInput & TH_BUTTON_RIGHT))) &&
-            (((g_CurFrameRawInput & TH_BUTTON_RIGHT) == 0 ||
-              (g_IsEighthFrameOfHeldInput == 0))))
-        {
-            return 0;
-        }
-        else
-        {
-            screen->cursor = screen->cursor + 1;
-            if (param_2 <= screen->cursor)
-            {
-                screen->cursor = screen->cursor - param_2;
-            }
-            g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
-            return 1;
-        }
-    }
-    else
+    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_LEFT))
     {
         screen->cursor = screen->cursor - 1;
         if (screen->cursor < 0)
         {
-            screen->cursor = screen->cursor + param_2;
+            screen->cursor = screen->cursor + max;
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
         return -1;
     }
+    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_RIGHT))
+    {
+        screen->cursor = screen->cursor + 1;
+        if (screen->cursor >= max)
+        {
+            screen->cursor = screen->cursor - max;
+        }
+        g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
+        return 1;
+    }
+    return 0;
 }
 
 // FUNCTION: TH07 0x00445d60
@@ -828,11 +785,11 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         {
             if (((g_CurFrameRawInput & TH_BUTTON_UP) == 0) ||
                 ((g_CurFrameRawInput & TH_BUTTON_UP) ==
-                 (g_LastFrameInput & TH_BUTTON_UP)))
+                 (g_LastFrameRawInput & TH_BUTTON_UP)))
             {
                 if (((g_CurFrameRawInput & TH_BUTTON_WRONG_CHEATCODE) != 0) &&
                     ((g_CurFrameRawInput & TH_BUTTON_WRONG_CHEATCODE) !=
-                     (g_LastFrameInput & TH_BUTTON_WRONG_CHEATCODE)))
+                     (g_LastFrameRawInput & TH_BUTTON_WRONG_CHEATCODE)))
                 {
                     arg->cheatCodeStep = 0;
                 }
@@ -846,11 +803,11 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         {
             if (((g_CurFrameRawInput & TH_BUTTON_D) == 0) ||
                 ((g_CurFrameRawInput & TH_BUTTON_D) ==
-                 (g_LastFrameInput & TH_BUTTON_D)))
+                 (g_LastFrameRawInput & TH_BUTTON_D)))
             {
                 if (((g_CurFrameRawInput & TH_BUTTON_WRONG_CHEATCODE) != 0) &&
                     ((g_CurFrameRawInput & TH_BUTTON_WRONG_CHEATCODE) !=
-                     (g_LastFrameInput & TH_BUTTON_WRONG_CHEATCODE)))
+                     (g_LastFrameRawInput & TH_BUTTON_WRONG_CHEATCODE)))
                 {
                     arg->cheatCodeStep = 0;
                 }
@@ -864,11 +821,11 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         {
             if (((g_CurFrameRawInput & TH_BUTTON_DOWN) == 0) ||
                 ((g_CurFrameRawInput & TH_BUTTON_DOWN) ==
-                 (g_LastFrameInput & TH_BUTTON_DOWN)))
+                 (g_LastFrameRawInput & TH_BUTTON_DOWN)))
             {
                 if (((g_CurFrameRawInput & TH_BUTTON_WRONG_CHEATCODE) != 0) &&
                     ((g_CurFrameRawInput & TH_BUTTON_WRONG_CHEATCODE) !=
-                     (g_LastFrameInput & TH_BUTTON_WRONG_CHEATCODE)))
+                     (g_LastFrameRawInput & TH_BUTTON_WRONG_CHEATCODE)))
                 {
                     arg->cheatCodeStep = 0;
                 }
@@ -882,11 +839,11 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         {
             if (((g_CurFrameRawInput & TH_BUTTON_Q) == 0) ||
                 ((g_CurFrameRawInput & TH_BUTTON_Q) ==
-                 (g_LastFrameInput & TH_BUTTON_Q)))
+                 (g_LastFrameRawInput & TH_BUTTON_Q)))
             {
                 if (((g_CurFrameRawInput & TH_BUTTON_WRONG_CHEATCODE) != 0) &&
                     ((g_CurFrameRawInput & TH_BUTTON_WRONG_CHEATCODE) !=
-                     (g_LastFrameInput & TH_BUTTON_WRONG_CHEATCODE)))
+                     (g_LastFrameRawInput & TH_BUTTON_WRONG_CHEATCODE)))
                 {
                     arg->cheatCodeStep = 0;
                 }
@@ -931,7 +888,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         }
         if (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) == 0) ||
             ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) ==
-             (g_LastFrameInput & TH_BUTTON_RETURNMENU)))
+             (g_LastFrameRawInput & TH_BUTTON_RETURNMENU)))
             break;
         g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
         arg->resultScreenState = 0;
@@ -1002,7 +959,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         }
         if (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) == 0) ||
             ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) ==
-             (g_LastFrameInput & TH_BUTTON_RETURNMENU)))
+             (g_LastFrameRawInput & TH_BUTTON_RETURNMENU)))
             break;
         g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
         arg->resultScreenState = 0;
@@ -1121,12 +1078,12 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         }
         if (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) == 0) ||
             ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) ==
-             (g_LastFrameInput & TH_BUTTON_RETURNMENU)))
+             (g_LastFrameRawInput & TH_BUTTON_RETURNMENU)))
         {
         LAB_00446123:
             if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) == 0) ||
                 ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) ==
-                 (g_LastFrameInput & TH_BUTTON_SELECTMENU)))
+                 (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
                 break;
             vm = arg->vms;
             if (arg->cursor < 0)
@@ -1284,7 +1241,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
     }
     if ((((g_CurFrameRawInput & TH_BUTTON_UP) != 0) &&
          ((g_CurFrameRawInput & TH_BUTTON_UP) !=
-          (g_LastFrameInput & TH_BUTTON_UP))) ||
+          (g_LastFrameRawInput & TH_BUTTON_UP))) ||
         (((g_CurFrameRawInput & TH_BUTTON_UP) != 0 &&
           (g_IsEighthFrameOfHeldInput != 0))))
     {
@@ -1300,7 +1257,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
     }
     if ((((g_CurFrameRawInput & TH_BUTTON_DOWN) != 0) &&
          ((g_CurFrameRawInput & TH_BUTTON_DOWN) !=
-          (g_LastFrameInput & TH_BUTTON_DOWN))) ||
+          (g_LastFrameRawInput & TH_BUTTON_DOWN))) ||
         (((g_CurFrameRawInput & TH_BUTTON_DOWN) != 0 &&
           (g_IsEighthFrameOfHeldInput != 0))))
     {
@@ -1316,7 +1273,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
     }
     if ((((g_CurFrameRawInput & TH_BUTTON_LEFT) != 0) &&
          ((g_CurFrameRawInput & TH_BUTTON_LEFT) !=
-          (g_LastFrameInput & TH_BUTTON_LEFT))) ||
+          (g_LastFrameRawInput & TH_BUTTON_LEFT))) ||
         (((g_CurFrameRawInput & TH_BUTTON_LEFT) != 0 &&
           (g_IsEighthFrameOfHeldInput != 0))))
     {
@@ -1336,7 +1293,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
     }
     if ((((g_CurFrameRawInput & TH_BUTTON_RIGHT) != 0) &&
          ((g_CurFrameRawInput & TH_BUTTON_RIGHT) !=
-          (g_LastFrameInput & TH_BUTTON_RIGHT))) ||
+          (g_LastFrameRawInput & TH_BUTTON_RIGHT))) ||
         (((g_CurFrameRawInput & TH_BUTTON_RIGHT) != 0 &&
           (g_IsEighthFrameOfHeldInput != 0))))
     {
@@ -1352,14 +1309,14 @@ ZunResult ResultScreen::HandleResultKeyboard()
     }
     if ((((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) == 0) ||
          ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) ==
-          (g_LastFrameInput & TH_BUTTON_SELECTMENU))) &&
+          (g_LastFrameRawInput & TH_BUTTON_SELECTMENU))) &&
         (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) == 0 ||
           (g_IsEighthFrameOfHeldInput == 0))))
     {
     LAB_0044700b:
         if ((((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) != 0) &&
              ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) !=
-              (g_LastFrameInput & TH_BUTTON_RETURNMENU))) ||
+              (g_LastFrameRawInput & TH_BUTTON_RETURNMENU))) ||
             (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) != 0 &&
               (g_IsEighthFrameOfHeldInput != 0))))
         {
@@ -1384,7 +1341,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
             return ZUN_SUCCESS;
         }
         if ((g_CurFrameRawInput & TH_BUTTON_MENU) ==
-            (g_LastFrameInput & TH_BUTTON_MENU))
+            (g_LastFrameRawInput & TH_BUTTON_MENU))
         {
             return ZUN_SUCCESS;
         }
@@ -1512,17 +1469,17 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
         MoveCursorHorizontally(this, 2);
         if ((((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) == 0) ||
              ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) ==
-              (g_LastFrameInput & TH_BUTTON_RETURNMENU))) &&
+              (g_LastFrameRawInput & TH_BUTTON_RETURNMENU))) &&
             (((g_CurFrameRawInput & TH_BUTTON_MENU) == 0 ||
               ((g_CurFrameRawInput & TH_BUTTON_MENU) ==
-               (g_LastFrameInput & TH_BUTTON_MENU)))))
+               (g_LastFrameRawInput & TH_BUTTON_MENU)))))
         {
             if ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) == 0)
             {
                 return ZUN_SUCCESS;
             }
             if ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) ==
-                (g_LastFrameInput & TH_BUTTON_SELECTMENU))
+                (g_LastFrameRawInput & TH_BUTTON_SELECTMENU))
             {
                 return ZUN_SUCCESS;
             }
@@ -1549,14 +1506,14 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
             }
             if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) == 0) ||
                 ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) ==
-                 (g_LastFrameInput & TH_BUTTON_SELECTMENU)))
+                 (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
             {
                 if ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) == 0)
                 {
                     return ZUN_SUCCESS;
                 }
                 if ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) ==
-                    (g_LastFrameInput & TH_BUTTON_RETURNMENU))
+                    (g_LastFrameRawInput & TH_BUTTON_RETURNMENU))
                 {
                     return ZUN_SUCCESS;
                 }
@@ -1582,7 +1539,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                 }
                 if ((((g_CurFrameRawInput & TH_BUTTON_UP) != 0) &&
                      ((g_CurFrameRawInput & TH_BUTTON_UP) !=
-                      (g_LastFrameInput & TH_BUTTON_UP))) ||
+                      (g_LastFrameRawInput & TH_BUTTON_UP))) ||
                     (((g_CurFrameRawInput & TH_BUTTON_UP) != 0 &&
                       (g_IsEighthFrameOfHeldInput != 0))))
                 {
@@ -1598,7 +1555,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                 }
                 if ((((g_CurFrameRawInput & TH_BUTTON_DOWN) != 0) &&
                      ((g_CurFrameRawInput & TH_BUTTON_DOWN) !=
-                      (g_LastFrameInput & TH_BUTTON_DOWN))) ||
+                      (g_LastFrameRawInput & TH_BUTTON_DOWN))) ||
                     (((g_CurFrameRawInput & TH_BUTTON_DOWN) != 0 &&
                       (g_IsEighthFrameOfHeldInput != 0))))
                 {
@@ -1614,7 +1571,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                 }
                 if ((((g_CurFrameRawInput & TH_BUTTON_LEFT) != 0) &&
                      ((g_CurFrameRawInput & TH_BUTTON_LEFT) !=
-                      (g_LastFrameInput & TH_BUTTON_LEFT))) ||
+                      (g_LastFrameRawInput & TH_BUTTON_LEFT))) ||
                     (((g_CurFrameRawInput & TH_BUTTON_LEFT) != 0 &&
                       (g_IsEighthFrameOfHeldInput != 0))))
                 {
@@ -1634,7 +1591,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                 }
                 if ((((g_CurFrameRawInput & TH_BUTTON_RIGHT) != 0) &&
                      ((g_CurFrameRawInput & TH_BUTTON_RIGHT) !=
-                      (g_LastFrameInput & TH_BUTTON_RIGHT))) ||
+                      (g_LastFrameRawInput & TH_BUTTON_RIGHT))) ||
                     (((g_CurFrameRawInput & TH_BUTTON_RIGHT) != 0 &&
                       (g_IsEighthFrameOfHeldInput != 0))))
                 {
@@ -1650,7 +1607,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                 }
                 if ((((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
                      ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-                      (g_LastFrameInput & TH_BUTTON_SELECTMENU))) ||
+                      (g_LastFrameRawInput & TH_BUTTON_SELECTMENU))) ||
                     (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0 &&
                       (g_IsEighthFrameOfHeldInput != 0))))
                 {
@@ -1695,7 +1652,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                 }
                 if ((((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) != 0) &&
                      ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) !=
-                      (g_LastFrameInput & TH_BUTTON_RETURNMENU))) ||
+                      (g_LastFrameRawInput & TH_BUTTON_RETURNMENU))) ||
                     (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) != 0 &&
                       (g_IsEighthFrameOfHeldInput != 0))))
                 {
@@ -1720,7 +1677,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                     return ZUN_SUCCESS;
                 }
                 if ((g_CurFrameRawInput & TH_BUTTON_MENU) ==
-                    (g_LastFrameInput & TH_BUTTON_MENU))
+                    (g_LastFrameRawInput & TH_BUTTON_MENU))
                 {
                     return ZUN_SUCCESS;
                 }
@@ -1753,17 +1710,17 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                 MoveCursorHorizontally(this, 2);
                 if ((((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) == 0) ||
                      ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) ==
-                      (g_LastFrameInput & TH_BUTTON_RETURNMENU))) &&
+                      (g_LastFrameRawInput & TH_BUTTON_RETURNMENU))) &&
                     (((g_CurFrameRawInput & TH_BUTTON_MENU) == 0 ||
                       ((g_CurFrameRawInput & TH_BUTTON_MENU) ==
-                       (g_LastFrameInput & TH_BUTTON_MENU)))))
+                       (g_LastFrameRawInput & TH_BUTTON_MENU)))))
                 {
                     if ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) == 0)
                     {
                         return ZUN_SUCCESS;
                     }
                     if ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) ==
-                        (g_LastFrameInput & TH_BUTTON_SELECTMENU))
+                        (g_LastFrameRawInput & TH_BUTTON_SELECTMENU))
                     {
                         return ZUN_SUCCESS;
                     }
@@ -1827,7 +1784,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
             this->chosenReplayIdx = this->cursor;
             if (((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
                 ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-                 (g_LastFrameInput & TH_BUTTON_SELECTMENU)))
+                 (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
                 this->chosenReplayIdx = this->cursor;
@@ -1869,7 +1826,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
             }
             if (((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) != 0) &&
                 ((g_CurFrameRawInput & TH_BUTTON_RETURNMENU) !=
-                 (g_LastFrameInput & TH_BUTTON_RETURNMENU)))
+                 (g_LastFrameRawInput & TH_BUTTON_RETURNMENU)))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
                 this->resultScreenState = 0xb;
@@ -1898,7 +1855,7 @@ ZunResult ResultScreen::CheckConfirmButton()
         if (((0x59 < this->frameTimer) &&
              ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0)) &&
             ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-             (g_LastFrameInput & TH_BUTTON_SELECTMENU)))
+             (g_LastFrameRawInput & TH_BUTTON_SELECTMENU)))
         {
             this->vms[0x28].pendingInterrupt = 2;
             this->frameTimer = 0;
@@ -2206,8 +2163,8 @@ i32 ResultScreen::DrawStats()
                                     TH_BUTTON_MENU | TH_BUTTON_ENTER)) != 0) &&
             ((g_CurFrameRawInput & (TH_BUTTON_SHOOT | TH_BUTTON_BOMB |
                                     TH_BUTTON_MENU | TH_BUTTON_ENTER)) !=
-             (g_LastFrameInput & (TH_BUTTON_SHOOT | TH_BUTTON_BOMB |
-                                  TH_BUTTON_MENU | TH_BUTTON_ENTER))))
+             (g_LastFrameRawInput & (TH_BUTTON_SHOOT | TH_BUTTON_BOMB |
+                                     TH_BUTTON_MENU | TH_BUTTON_ENTER))))
         {
             this->resultScreenState = 0x16;
             this->frameTimer = 0;

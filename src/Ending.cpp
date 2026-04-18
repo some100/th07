@@ -190,7 +190,7 @@ ZunResult Ending::ParseEndFile()
         {
             if ((((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
                  ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-                  (g_LastFrameInput & TH_BUTTON_SELECTMENU))) ||
+                  (g_LastFrameRawInput & TH_BUTTON_SELECTMENU))) ||
                 ((this->hasSeenEnding != 0 &&
                   ((g_CurFrameRawInput & TH_BUTTON_SKIP) != 0))))
             {
@@ -390,7 +390,7 @@ ZunResult Ending::ParseEndFile()
     {
         if ((((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) != 0) &&
              ((g_CurFrameRawInput & TH_BUTTON_SELECTMENU) !=
-              (g_LastFrameInput & TH_BUTTON_SELECTMENU))) ||
+              (g_LastFrameRawInput & TH_BUTTON_SELECTMENU))) ||
             ((this->hasSeenEnding != 0 &&
               ((g_CurFrameRawInput & TH_BUTTON_SKIP) != 0))))
         {

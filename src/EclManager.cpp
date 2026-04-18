@@ -1010,7 +1010,7 @@ ZunResult EclManager::RunEcl(Enemy *enemy)
     u8 uVar6;
 
 restart:
-    while (instr = enemy->currentContext.curInstr, -1 < enemy->runInterrupt)
+    while (instr = enemy->currentContext.curInstr, enemy->runInterrupt >= 0)
     {
     LAB_00414b54:
         enemy->currentContext.curInstr = (EclRawInstr *)((u8 *)instr + instr->size);
@@ -1026,12 +1026,12 @@ restart:
         }
         enemy->runInterrupt = -1;
     }
-    if (-1 < enemy->periodicCallbackSub)
+    if (enemy->periodicCallbackSub >= 0)
     {
         enemy->periodicCounter.previous = enemy->periodicCounter.current;
         g_Supervisor.TickTimer(&enemy->periodicCounter.current,
                                &enemy->periodicCounter.subFrame);
-        if ((enemy->periodicTimer).current <= enemy->periodicCounter.current)
+        if (enemy->periodicTimer.current <= enemy->periodicCounter.current)
         {
             enemy->periodicCounter.Initialize(0);
             enemy->savedContextStack[enemy->stackDepth] = enemy->currentContext;
@@ -1159,7 +1159,7 @@ restart:
                         enemy->shootIntervalTimer.Initialize(0);
                     }
                 }
-                if (-1 < enemy->anmExLeft)
+                if (enemy->anmExLeft >= 0)
                 {
                     uVar6 = 0;
                     if ((enemy->flags1 >> 6 & 1) == 0)
@@ -3033,7 +3033,7 @@ restart:
                 i32 local_284 = (instr->paramMask & 1) == 0
                                     ? instr->args[0].i
                                     : GetVarValue(enemy, instr->args[0].i);
-                (enemy->periodicTimer).Initialize(local_284);
+                enemy->periodicTimer.Initialize(local_284);
                 i32 local_6a4 = (instr->paramMask & 2) == 0
                                     ? instr->args[1].i
                                     : GetVarValue(enemy, instr->args[1].i);

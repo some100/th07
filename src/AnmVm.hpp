@@ -145,6 +145,11 @@ struct AnmVm : AnmVmBase
         memset(this, 0, sizeof(AnmVm));
         this->activeSpriteIdx = -1;
     }
+    
+    void ClearFlagBit0()
+    {
+        this->flags &= ~1;
+    }
 
     i32 *GetVar(i32 *paramId, u16 mask, u8 idx);
     f32 *GetFloatVar(f32 *param_1, u16 mask, u8 idx);

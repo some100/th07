@@ -1,4 +1,5 @@
 #include "GameWindow.hpp"
+#include "ZunResult.hpp"
 
 #include <d3d8.h>
 #include <direct.h>
@@ -110,7 +111,7 @@ void GameWindow::Present()
     g_AnmManager->TakeScreenshotIfRequested();
     if (((g_CurFrameRawInput & TH_BUTTON_HOME) != 0) &&
         ((g_CurFrameRawInput & TH_BUTTON_HOME) !=
-         (g_LastFrameInput & TH_BUTTON_HOME)))
+         (g_LastFrameRawInput & TH_BUTTON_HOME)))
     {
         // STRING: TH07 0x00497c1c
         _mkdir("snapshot");
@@ -781,10 +782,10 @@ void GameWindow::ResetRenderState()
     g_Stage.renderStateWasReset = 1;
 }
 
+#pragma var_order(exePath, startupInfo, resolvedPath, ext)
 // FUNCTION: TH07 0x00435bd0
-i32 GameWindow::CheckForRunningGameInstance()
+ZunResult GameWindow::CheckForRunningGameInstance(HINSTANCE hInstance)
 {
-    i32 ret;
     char *ext;
     char resolvedPath[264];
     STARTUPINFO startupInfo;
@@ -796,51 +797,44 @@ i32 GameWindow::CheckForRunningGameInstance()
     {
         // STRING: TH07 0x00497314
         g_GameErrorContext.Fatal("“ñ‚Â‚Í‹N“®‚Å‚«‚Ü‚¹‚ñ\r\n");
-        ret = -1;
+        return ZUN_ERROR;
     }
-    else
-    {
-        startupInfo.cb = sizeof(startupInfo);
-        memset(&startupInfo.lpReserved, 0, sizeof(startupInfo) - 4);
-        GetModuleFileNameA(NULL, exePath, 0x105);
-        GetConsoleTitleA(resolvedPath, 0x105);
-        GetStartupInfoA(&startupInfo);
-        if (startupInfo.lpTitle != NULL)
-        {
-            ext = strrchr(startupInfo.lpTitle, '.');
-            if ((FileSystem::CheckFileExists(startupInfo.lpTitle) != 0) &&
-                (ext != NULL))
-            {
-                // STRING: TH07 0x0049730c
-                if (_stricmp(ext, ".lnk") == 0)
-                {
-                    do
-                    {
-                        ResolveIt(startupInfo.lpTitle, resolvedPath, 0x104);
-                        ext = strrchr(resolvedPath, '.');
-                    } while (_stricmp(ext, ".lnk") == 0);
-                }
-                else
-                {
-                    strcpy(resolvedPath, startupInfo.lpTitle);
-                }
 
-                if (strcmp(exePath, resolvedPath) != 0)
+    startupInfo.cb = sizeof(startupInfo);
+    memset(&startupInfo.lpReserved, 0, sizeof(startupInfo) - 4);
+    GetModuleFileNameA(NULL, exePath, 0x105);
+    GetConsoleTitleA(resolvedPath, 0x105);
+    GetStartupInfoA(&startupInfo);
+    if (startupInfo.lpTitle != NULL)
+    {
+        ext = strrchr(startupInfo.lpTitle, '.');
+        if ((FileSystem::CheckFileExists(startupInfo.lpTitle) != 0) &&
+            (ext != NULL))
+        {
+            // STRING: TH07 0x0049730c
+            if (_stricmp(ext, ".lnk") == 0)
+            {
+                do
                 {
-                    g_GameWindow.usesRelativePath = true;
-                }
+                    ResolveIt(startupInfo.lpTitle, resolvedPath, 0x104);
+                    ext = strrchr(resolvedPath, '.');
+                } while (_stricmp(ext, ".lnk") == 0);
+            }
+            else
+            {
+                strcpy(resolvedPath, startupInfo.lpTitle);
+            }
+
+            if (strcmp(exePath, resolvedPath) != 0)
+            {
+                g_GameWindow.usesRelativePath = true;
             }
         }
-        if (g_Mutex == NULL)
-        {
-            ret = -1;
-        }
-        else
-        {
-            ret = 0;
-        }
     }
-    return ret;
+    if (g_Mutex == NULL)
+        return ZUN_ERROR;
+
+    return ZUN_SUCCESS;
 }
 
 #pragma var_order(local_8, local_c, idAttachTo)

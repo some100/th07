@@ -626,23 +626,23 @@ void AnmManager::LoadSprite(u32 spriteIdx, AnmLoadedSprite *sprite)
 }
 
 // FUNCTION: TH07 0x0044e8e0
-ZunResult AnmManager::SetActiveSprite(AnmVm *vm, i32 param_2)
+ZunResult AnmManager::SetActiveSprite(AnmVm *vm, i32 spriteIdx)
 {
-    if (this->sprites[param_2].sourceFileIndex < 0)
+    if (this->sprites[spriteIdx].sourceFileIndex < 0)
     {
         return ZUN_ERROR;
     }
     else
     {
-        vm->activeSpriteIdx = (i16)param_2;
-        vm->sprite = &this->sprites[param_2];
+        vm->activeSpriteIdx = (i16)spriteIdx;
+        vm->sprite = &this->sprites[spriteIdx];
         D3DXMatrixIdentity(&vm->matrix);
         D3DXMatrixIdentity(&vm->uvMatrix);
-        (vm->matrix).m[0][0] = vm->sprite->widthPx / 256.0f;
-        (vm->matrix).m[1][1] = vm->sprite->heightPx / 256.0f;
-        (vm->uvMatrix).m[0][0] =
+        vm->matrix.m[0][0] = vm->sprite->widthPx / 256.0f;
+        vm->matrix.m[1][1] = vm->sprite->heightPx / 256.0f;
+        vm->uvMatrix.m[0][0] =
             (vm->sprite->widthPx / vm->sprite->textureWidth) * vm->sprite->cols;
-        (vm->uvMatrix).m[1][1] =
+        vm->uvMatrix.m[1][1] =
             (vm->sprite->heightPx / vm->sprite->textureHeight) * vm->sprite->rows;
         vm->worldTransformMatrix = vm->matrix;
         return ZUN_SUCCESS;
@@ -2614,33 +2614,27 @@ void AnmManager::DrawVmTextFmt(AnmManager *manager, AnmVm *vm,
 void AnmManager::DrawStringFormat(AnmVm *vm, D3DCOLOR textColor,
                                   u32 outlineType, const char *text, ...)
 {
-    u32 fontWidth = vm->fontWidth == 0 ? 15 : (u32)vm->fontWidth;
-    char buf[516];
+    char buf[64];
     va_list args;
+
+    u32 fontWidth = vm->fontWidth <= 0 ? 15 : (u32)vm->fontWidth;
     va_start(args, text);
     vsprintf(buf, text, args);
     va_end(args);
 
-    f32 scaleX = vm->sprite->rows;
-    f32 scaleY = vm->sprite->cols;
-    u32 fontHeight = vm->fontHeight;
-    u32 textureHeight = vm->sprite->textureHeight;
-    u32 textureWidth = vm->sprite->textureWidth;
-    u32 y = vm->sprite->startPixelInclusive.y;
-    u32 x = vm->sprite->startPixelInclusive.x;
+    this->DrawTextToSprite(vm->sprite->sourceFileIndex, vm->sprite->startPixelInclusive.x,
+                           vm->sprite->startPixelInclusive.y, vm->sprite->textureWidth,
+                           vm->sprite->textureHeight, fontWidth, vm->fontHeight, textColor,
+                           outlineType, (char *)" ", vm->sprite->cols, vm->sprite->rows);
 
-    this->DrawTextToSprite(vm->sprite->sourceFileIndex, x, y, textureWidth,
-                           textureHeight, fontWidth, fontHeight, textColor,
-                           outlineType, (char *)" ", scaleY, scaleX);
-
-    u32 len = strlen(buf);
     u32 local_c = (vm->sprite->widthPx * vm->sprite->cols +
                    vm->sprite->startPixelInclusive.x) -
-                  ((f32)len * (f32)fontWidth * vm->sprite->cols) / 2.0f;
+                  ((f32)strlen(buf) * (f32)fontWidth * vm->sprite->cols) / 2.0f;
 
-    this->DrawTextToSprite(vm->sprite->sourceFileIndex, local_c, y, textureWidth,
-                           textureHeight, fontWidth, fontHeight, textColor,
-                           outlineType, buf, scaleY, scaleX);
+    this->DrawTextToSprite(vm->sprite->sourceFileIndex, local_c, vm->sprite->startPixelInclusive.y,
+                           vm->sprite->textureWidth, vm->sprite->textureHeight, fontWidth,
+                           vm->fontHeight, textColor, outlineType, buf, vm->sprite->cols,
+                           vm->sprite->rows);
 
     vm->flags |= 1;
 }
@@ -2649,33 +2643,26 @@ void AnmManager::DrawStringFormat(AnmVm *vm, D3DCOLOR textColor,
 void AnmManager::DrawStringFormat2(AnmVm *vm, D3DCOLOR textColor,
                                    u32 outlineType, const char *text, ...)
 {
-    u32 fontWidth = vm->fontWidth == 0 ? 15 : (u32)vm->fontWidth;
-    char buf[516];
+    char buf[64];
     va_list args;
+
+    u32 fontWidth = vm->fontWidth <= 0 ? 15 : (u32)vm->fontWidth;
     va_start(args, text);
     vsprintf(buf, text, args);
     va_end(args);
 
-    f32 scaleX = vm->sprite->rows;
-    f32 scaleY = vm->sprite->cols;
-    u32 fontHeight = (u32)vm->fontHeight;
-    u32 textureHeight = (u32)vm->sprite->textureHeight;
-    u32 textureWidth = (u32)vm->sprite->textureWidth;
-    u32 y = (u32)vm->sprite->startPixelInclusive.y;
-    u32 x = (u32)vm->sprite->startPixelInclusive.x;
+    this->DrawTextToSprite(vm->sprite->sourceFileIndex, vm->sprite->startPixelInclusive.x,
+                           vm->sprite->startPixelInclusive.y, vm->sprite->textureWidth,
+                           vm->sprite->textureHeight, fontWidth, vm->fontHeight, textColor,
+                           outlineType, (char *)" ", vm->sprite->cols, vm->sprite->rows);
 
-    this->DrawTextToSprite(vm->sprite->sourceFileIndex, x, y, textureWidth,
-                           textureHeight, fontWidth, fontHeight, textColor,
-                           outlineType, (char *)" ", scaleY, scaleX);
+    u32 x = (u32)(((vm->sprite->widthPx * vm->sprite->cols) / 2.0f +
+                   vm->sprite->startPixelInclusive.x) -
+                  ((f32)strlen(buf) * (f32)fontWidth * vm->sprite->cols) / 4.0f);
 
-    u32 len = strlen(buf);
-    u32 local_c = (u32)(((vm->sprite->widthPx * vm->sprite->cols) / 2.0f +
-                         vm->sprite->startPixelInclusive.x) -
-                        ((f32)len * (f32)fontWidth * vm->sprite->cols) / 4.0f);
-
-    this->DrawTextToSprite(vm->sprite->sourceFileIndex, local_c, y, textureWidth,
-                           textureHeight, fontWidth, fontHeight, textColor,
-                           outlineType, buf, scaleY, scaleX);
+    this->DrawTextToSprite(vm->sprite->sourceFileIndex, x, vm->sprite->startPixelInclusive.y,
+                           vm->sprite->textureWidth, vm->sprite->textureHeight, fontWidth, vm->fontHeight,
+                           textColor, outlineType, buf, vm->sprite->cols, vm->sprite->rows);
 
     vm->flags |= 1;
 }

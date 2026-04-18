@@ -173,7 +173,7 @@ extern Supervisor g_Supervisor;
 extern ControllerMapping g_ControllerMapping;
 extern u16 g_CurFrameRawInput;
 extern u16 g_CurFrameGameInput;
-extern u16 g_LastFrameInput;
+extern u16 g_LastFrameRawInput;
 extern u16 g_LastFrameGameInput;
 extern u16 g_IsEighthFrameOfHeldInput;
 extern u16 g_NumOfFramesInputsWereHeld;

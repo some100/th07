@@ -172,17 +172,17 @@ void GameManager::ExtendFromPoints()
     }
 }
 
+#pragma var_order(i, scoreIncrement, arg, isInMenu)
 // FUNCTION: TH07 0x0042d8d5
 u32 GameManager::OnUpdate(GameManager *arg)
 {
     i32 isInMenu;
-    u32 local_10;
+    u32 scoreIncrement;
+    u32 i;
 
-    if (((((arg->isInRetryMenu == 0) && (arg->isInGameMenu == 0)) &&
-          ((arg->flags >> 1 & 1) == 0)) &&
-         ((arg->slowModeSlowActive == 0 &&
-           ((g_CurFrameRawInput & TH_BUTTON_MENU) != 0)))) &&
-        ((g_CurFrameRawInput & TH_BUTTON_MENU) != (g_LastFrameInput & 8)))
+    if ((((arg->isInRetryMenu == 0 && arg->isInGameMenu == 0) &&
+          (arg->flags >> 1 & 1) == 0) &&
+         ((arg->slowModeSlowActive == 0 && WAS_PRESSED_RAW(TH_BUTTON_MENU)))))
     {
         arg->isInGameMenu = 1;
         g_GameManager.arcadeRegionTopLeftPos.x = 32.0f;
@@ -190,8 +190,9 @@ u32 GameManager::OnUpdate(GameManager *arg)
         g_GameManager.arcadeRegionSize.x = 384.0f;
         g_GameManager.arcadeRegionSize.y = 448.0f;
         arg->isPaused = 1;
-        if ((g_GameManager.currentStage != 6) || (299 < g_Gui.frameCounter))
+        if (g_GameManager.currentStage != 6 || g_Gui.frameCounter >= 300)
         {
+            // STRING: TH07 0x00498a40
             g_SoundPlayer.PushCommand(AUDIO_PAUSE, 0, "Pause");
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_37, 0);
@@ -209,19 +210,19 @@ u32 GameManager::OnUpdate(GameManager *arg)
          (g_Gui.HasCurrentMsgIdx() == 0)) &&
         (((((arg->bulletLagTime = arg->bulletLagTime + 1,
              g_Supervisor.curFps < 0x14 && (arg->bulletLagTime % 3 != 0)) ||
-            ((0x13 < g_Supervisor.curFps &&
+            ((g_Supervisor.curFps > 0x14 &&
               ((g_Supervisor.curFps < 0x1e &&
                 (arg->bulletLagTime % 2 != 0)))))) ||
-           ((0x1d < g_Supervisor.curFps &&
+           ((g_Supervisor.curFps > 0x1e &&
              ((g_Supervisor.curFps < 0x28 && (arg->bulletLagTime % 3 == 0)))))) ||
-          ((0x27 < g_Supervisor.curFps &&
+          ((g_Supervisor.curFps > 0x28 &&
             ((g_Supervisor.curFps < 0x32 && (arg->bulletLagTime % 6 == 0))))))))
     {
         return CHAIN_CALLBACK_RESULT_BREAK;
     }
     if ((arg->flags >> 1 & 1) != 0)
     {
-        if ((g_CurFrameRawInput != 0) && (g_CurFrameRawInput != g_LastFrameInput))
+        if (WAS_PRESSED_RAW(TH_BUTTON_ANY))
         {
             g_Supervisor.curState = 1;
         }
@@ -233,9 +234,9 @@ u32 GameManager::OnUpdate(GameManager *arg)
             BombEffects::RegisterChain(2, 0x78, 0, 0, 0);
             g_Supervisor.FadeOutMusic(3.0f);
         }
-        if ((((arg->demoIdx == 0) && (0x201b < arg->demoFrames)) ||
-             ((arg->demoIdx == 1 && (0x1be3 < arg->demoFrames)))) ||
-            ((arg->demoIdx == 2 && (0x1283 < arg->demoFrames))))
+        if ((((arg->demoIdx == 0) && (arg->demoFrames > 0x201b)) ||
+             ((arg->demoIdx == 1 && (arg->demoFrames > 0x1be4)))) ||
+            ((arg->demoIdx == 2 && (arg->demoFrames > 0x1283))))
         {
             g_Supervisor.curState = 1;
             return CHAIN_CALLBACK_RESULT_BREAK;
@@ -244,17 +245,17 @@ u32 GameManager::OnUpdate(GameManager *arg)
     g_GameManager.globals->curCsum = g_GameManager.globals->rng1[2];
     g_GameManager.csumFloat = (f32)arg->ComputeGameIntegrityCsum() +
                               (f32)g_GameManager.globals->rng2[3];
-    for (u32 i = 0; i < 7; i += 1)
+    for (i = 0; i < 7; i += 1)
     {
         if ((arg->globals->rng1[i] < 0x198f) || (0x1a02f < arg->globals->rng1[i]))
         {
             g_GameManager.csumFloat = -9999.0f;
         }
     }
-    for (u32 i = 0; i < 2; i += 1)
+    for (i = 0; i < 2; i += 1)
     {
         if ((arg->globals->rngFloat2[i] < 6543.0f) ||
-            (106543.0f < arg->globals->rngFloat2[i]))
+            (arg->globals->rngFloat2[i] > 106543.0f))
         {
             g_GameManager.csumFloat = -9999.0f;
         }
@@ -267,8 +268,8 @@ u32 GameManager::OnUpdate(GameManager *arg)
     {
         isInMenu = 0;
     }
-    arg->flags = (arg->flags & 0xfffffffb) | isInMenu << 2;
-    for (u32 i = 0; i < 2; i += 1)
+    arg->flags = ((arg->flags & ~1) << 2) | isInMenu << 2;
+    for (i = 0; i < 2; i += 1)
     {
         if ((arg->globals->rngFloat1[i] < 6543.0f) ||
             (106543.0f < arg->globals->rngFloat1[i]))
@@ -276,7 +277,7 @@ u32 GameManager::OnUpdate(GameManager *arg)
             g_GameManager.csumFloat = -9999.0f;
         }
     }
-    for (u32 i = 0; i < 8; i += 1)
+    for (i = 0; i < 8; i += 1)
     {
         if ((arg->globals->rng2[i] < 0x198f) || (0x1a02f < arg->globals->rng2[i]))
         {
@@ -286,104 +287,100 @@ u32 GameManager::OnUpdate(GameManager *arg)
     g_Supervisor.d3dDevice->Clear(0, NULL, 2, g_Stage.fogColor.color, 1.0f, 0);
     if (((arg->isInGameMenu == 1) || (arg->isInGameMenu == 2)) ||
         (arg->isInRetryMenu != 0))
-    {
         return CHAIN_CALLBACK_RESULT_BREAK;
-    }
-    else
+
+    if (arg->globals->score >= 999999999)
     {
-        if (999999999 < arg->globals->score)
-        {
-            arg->globals->score = 999999999;
-        }
-        if (arg->globals->guiScore != arg->globals->score)
-        {
-            if (arg->globals->score < arg->globals->guiScore)
-            {
-                arg->globals->score = arg->globals->guiScore;
-            }
-            local_10 = (arg->globals->score - arg->globals->guiScore) >> 5;
-            if (local_10 < 0x8d55e)
-            {
-                if (local_10 == 0)
-                {
-                    local_10 = 1;
-                }
-            }
-            else
-            {
-                local_10 = 0x8d55e;
-            }
-            if (arg->globals->guiScoreDifference < local_10)
-            {
-                arg->globals->guiScoreDifference = local_10;
-            }
-            if (arg->globals->score <
-                arg->globals->guiScore + arg->globals->guiScoreDifference)
-            {
-                arg->globals->guiScoreDifference =
-                    arg->globals->score - arg->globals->guiScore;
-            }
-            arg->globals->guiScore =
-                arg->globals->guiScore + arg->globals->guiScoreDifference;
-            if (arg->globals->score <= arg->globals->guiScore)
-            {
-                arg->globals->guiScoreDifference = 0;
-                arg->globals->guiScore = arg->globals->score;
-            }
-            if (arg->globals->highScore < arg->globals->guiScore)
-            {
-                arg->globals->highScore = arg->globals->guiScore;
-                arg->globals->highScoreNumContinues = arg->globals->numRetries;
-            }
-        }
-        for (u32 i = 0; i < 3; i += 1)
-        {
-            if ((arg->globals->rngFloat3[i] < 6543.0f) ||
-                (106543.0f < arg->globals->rngFloat3[i]))
-            {
-                g_GameManager.csumFloat = -9999.0f;
-            }
-        }
-        for (u32 i = 0; i < 2; i += 1)
-        {
-            if ((arg->globals->rngFloat4[i] < 6543.0f) ||
-                (106543.0f < arg->globals->rngFloat4[i]))
-            {
-                g_GameManager.csumFloat = -9999.0f;
-            }
-        }
-        for (u32 i = 0; i < 5; i += 1)
-        {
-            if ((arg->globals->csumData[i] < 0x198f) ||
-                (0x1a02f < arg->globals->csumData[i]))
-            {
-                g_GameManager.csumFloat = -9999.0f;
-            }
-        }
-        if ((g_GameManager.defaultCfg)->slowMode != 0)
-        {
-            g_GameManager.slowModeSlowActive = 0;
-            arg->bulletLagTime = arg->bulletLagTime + 1;
-            if ((((0x13f < g_BulletManager.bulletCount) &&
-                  (arg->bulletLagTime % 3 == 0)) ||
-                 ((g_BulletManager.bulletCount < 0x140 &&
-                   ((0xdf < g_BulletManager.bulletCount &&
-                     (arg->bulletLagTime % 4 == 0)))))) ||
-                ((g_BulletManager.bulletCount < 0xe0 &&
-                  ((0x7f < g_BulletManager.bulletCount &&
-                    (arg->bulletLagTime % 5 == 0))))))
-            {
-                g_GameManager.slowModeSlowActive = 1;
-                return CHAIN_CALLBACK_RESULT_BREAK;
-            }
-            if (g_BulletManager.bulletCount < 0x80)
-            {
-                arg->bulletLagTime = 0;
-            }
-        }
-        arg->framesThisStage = arg->framesThisStage + 1;
-        return CHAIN_CALLBACK_RESULT_CONTINUE;
+        arg->globals->score = 999999999;
     }
+    if (arg->globals->guiScore != arg->globals->score)
+    {
+        if (arg->globals->score < arg->globals->guiScore)
+        {
+            arg->globals->score = arg->globals->guiScore;
+        }
+        scoreIncrement = (arg->globals->score - arg->globals->guiScore) >> 5;
+        if (scoreIncrement < 0x8d55e)
+        {
+            if (scoreIncrement == 0)
+            {
+                scoreIncrement = 1;
+            }
+        }
+        else
+        {
+            scoreIncrement = 0x8d55e;
+        }
+        if (arg->globals->guiScoreDifference < scoreIncrement)
+        {
+            arg->globals->guiScoreDifference = scoreIncrement;
+        }
+        if (arg->globals->score <
+            arg->globals->guiScore + arg->globals->guiScoreDifference)
+        {
+            arg->globals->guiScoreDifference =
+                arg->globals->score - arg->globals->guiScore;
+        }
+        arg->globals->guiScore =
+            arg->globals->guiScore + arg->globals->guiScoreDifference;
+        if (arg->globals->score <= arg->globals->guiScore)
+        {
+            arg->globals->guiScoreDifference = 0;
+            arg->globals->guiScore = arg->globals->score;
+        }
+        if (arg->globals->highScore < arg->globals->guiScore)
+        {
+            arg->globals->highScore = arg->globals->guiScore;
+            arg->globals->highScoreNumContinues = arg->globals->numRetries;
+        }
+    }
+    for (i = 0; i < 3; i += 1)
+    {
+        if ((arg->globals->rngFloat3[i] < 6543.0f) ||
+            (106543.0f < arg->globals->rngFloat3[i]))
+        {
+            g_GameManager.csumFloat = -9999.0f;
+        }
+    }
+    for (i = 0; i < 2; i += 1)
+    {
+        if ((arg->globals->rngFloat4[i] < 6543.0f) ||
+            (106543.0f < arg->globals->rngFloat4[i]))
+        {
+            g_GameManager.csumFloat = -9999.0f;
+        }
+    }
+    for (i = 0; i < 5; i += 1)
+    {
+        if ((arg->globals->csumData[i] < 0x198f) ||
+            (0x1a02f < arg->globals->csumData[i]))
+        {
+            g_GameManager.csumFloat = -9999.0f;
+        }
+    }
+    if ((g_GameManager.defaultCfg)->slowMode != 0)
+    {
+        g_GameManager.slowModeSlowActive = 0;
+        arg->bulletLagTime = arg->bulletLagTime + 1;
+        if ((((g_BulletManager.bulletCount > 0x140) &&
+              (arg->bulletLagTime % 3 == 0)) ||
+             ((g_BulletManager.bulletCount < 0x140 &&
+               ((g_BulletManager.bulletCount > 0xe0 &&
+                 (arg->bulletLagTime % 4 == 0)))))) ||
+            ((g_BulletManager.bulletCount < 0xe0 &&
+              ((g_BulletManager.bulletCount > 0x80 &&
+                (arg->bulletLagTime % 5 == 0))))))
+        {
+            g_GameManager.slowModeSlowActive = 1;
+            return CHAIN_CALLBACK_RESULT_BREAK;
+        }
+        if (g_BulletManager.bulletCount < 0x80)
+        {
+            arg->bulletLagTime = 0;
+        }
+    }
+    arg->framesThisStage = arg->framesThisStage + 1;
+    return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
 // FUNCTION: TH07 0x0042e1d4
