@@ -740,7 +740,7 @@ void Player::UpdateShots()
                 bullet->pos.y +=
                     g_Supervisor.effectiveFramerateMultiplier * bullet->velocity.y;
                 if (((bullet->bulletState2 != 4) && (bullet->bulletState2 != 5)) &&
-                    (GameManager::IsInBounds(bullet->pos.x, bullet->pos.y,
+                    (g_GameManager.IsInBounds(bullet->pos.x, bullet->pos.y,
                                              bullet->vm.sprite->widthPx,
                                              bullet->vm.sprite->heightPx) == 0))
                 {

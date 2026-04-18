@@ -318,8 +318,8 @@ ZunResult Ending::ParseEndFile()
                     (this->textColor).color = DVar2;
                     break;
                 case 'm':
-                    Supervisor::LoadAudio(0, this->endFileDataPtr + 1);
-                    Supervisor::PlayLoadedAudio(0);
+                    g_Supervisor.LoadAudio(0, this->endFileDataPtr + 1);
+                    g_Supervisor.PlayLoadedAudio(0);
                     break;
                 case 'r':
                     this->endFileDataPtr = this->endFileDataPtr + 1;

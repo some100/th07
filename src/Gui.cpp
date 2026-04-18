@@ -153,7 +153,7 @@ u32 Gui::OnUpdate(Gui *arg)
         arg->frameCounter = arg->frameCounter + 1;
         if ((g_GameManager.currentStage == 6) && (arg->frameCounter == 300))
         {
-            Supervisor::PlayLoadedAudio(0);
+            g_Supervisor.PlayLoadedAudio(0);
         }
         if (IS_PRESSED_RAW(TH_BUTTON_SKIP) && g_Supervisor.renderSkipFrames < 8)
         {
@@ -726,7 +726,7 @@ ZunResult Gui::ActualAddedCallback()
     this->impl->enemySpellcardName.anmFileIdx = 0x705;
     g_AnmManager->SetAndExecuteScript(&this->impl->enemySpellcardName,
                                       g_AnmManager->scripts[0x705]);
-    AnmManager::ExecuteVmsAnms(this->impl->vms1, 0x800, 5);
+    g_AnmManager->ExecuteVmsAnms(this->impl->vms1, 0x800, 5);
     this->impl->bombSpellcardNameBg.anmFileIdx = 1;
     g_AnmManager->SetAndExecuteScript(&this->impl->bombSpellcardNameBg,
                                       g_AnmManager->scripts[1]);
@@ -1039,10 +1039,10 @@ ZunResult GuiImpl::RunMsg()
                 }
                 g_AnmManager->SetActiveSprite(
                     this->vms1, this->msg.curInstr->args.portrait.portrait + 0x803);
-                if (Supervisor::PlayLoadedAudio(
+                if (g_Supervisor.PlayLoadedAudio(
                         this->msg.curInstr->args.portrait.portrait) != ZUN_SUCCESS)
                 {
-                    Supervisor::PlayAudio(
+                    g_Supervisor.PlayAudio(
                         g_Stage.stdData
                             ->bgmPaths[this->msg.curInstr->args.portrait.portrait]);
                 }

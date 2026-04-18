@@ -226,7 +226,7 @@ struct BulletManager
 
     i32 DespawnBullets(i32 param_1, i32 turnIntoItem);
     void RemoveAllBullets(i32 param_1);
-    static void RemoveBulletsInRadius(D3DXVECTOR3 *centerPos, f32 radius);
+    void RemoveBulletsInRadius(D3DXVECTOR3 *centerPos, f32 radius);
     static void SetActiveSpriteByResolution(AnmVm *sprite,
                                             AnmVm *bulletTypeTemplate,
                                             Bullet *bullet, i32 spriteOffset);
@@ -234,7 +234,7 @@ struct BulletManager
     Laser *SpawnLaserPattern(struct EnemyLaserShooter *laserProps);
     i32 SpawnSingleBullet(EnemyBulletShooter *bulletProps, f32 x, f32 y,
                           f32 angle);
-    static void StopBulletMovement();
+    void StopBulletMovement();
 
     BulletTypeSprites bulletTypeTemplates[16];
     Bullet bullets[1025];

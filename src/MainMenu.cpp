@@ -279,7 +279,7 @@ u32 MainMenu::OnUpdatePreInput()
     if (this->prevGameState == STATE_PRE_INPUT &&
         g_Supervisor.wantedState2 != 5)
     {
-        Supervisor::PlayLoadedAudio(8);
+        g_Supervisor.PlayLoadedAudio(8);
     }
     if (((((this->prevGameState == STATE_PRE_INPUT) ||
            (this->prevGameState == 4)) ||
@@ -295,9 +295,9 @@ u32 MainMenu::OnUpdatePreInput()
     {
         this->vmCount = 0xa4;
         this->vmHead = new AnmVm[this->vmCount];
-        AnmManager::ExecuteVmsAnms(this->vmHead, 0x900, this->vmCount);
+        g_AnmManager->ExecuteVmsAnms(this->vmHead, 0x900, this->vmCount);
     }
-    AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 2);
+    g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 2);
     for (i32 i = 0; i < 8; i += 1)
     {
         g_AnmManager->SetActiveSprite(this->vmHead + i + 1,
@@ -319,7 +319,7 @@ u32 MainMenu::OnUpdatePreInput()
         this->stateTimer = 0;
         this->menuSubState = 0;
         this->idleFrames = 0;
-        AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 0xd);
+        g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 0xd);
         this->cursorVm->pendingInterrupt = 2;
         g_GameManager.flags = g_GameManager.flags & 0xfffffff7;
         return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -332,7 +332,7 @@ u32 MainMenu::OnUpdatePreInput()
         this->stateTimer = 0;
         this->menuSubState = 0;
         this->idleFrames = 0;
-        AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 5);
+        g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 5);
         this->cursorVm->pendingInterrupt = 2;
         return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
@@ -422,7 +422,7 @@ LAB_0045599d:
         this->stateTimer = 0;
         this->menuSubState = 0;
         this->idleFrames = 0;
-        AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 5);
+        g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 5);
         this->cursorVm->pendingInterrupt = 2;
         return CHAIN_CALLBACK_RESULT_CONTINUE;
         break;
@@ -437,7 +437,7 @@ LAB_0045599d:
             this->stateTimer = 0;
             this->menuSubState = 0;
             this->idleFrames = 0;
-            AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 5);
+            g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 5);
             this->cursorVm->pendingInterrupt = 2;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
@@ -454,7 +454,7 @@ LAB_0045599d:
         this->stateTimer = 0;
         this->menuSubState = 0;
         this->idleFrames = 0;
-        AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 5);
+        g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 5);
         this->cursorVm->pendingInterrupt = 2;
         return CHAIN_CALLBACK_RESULT_CONTINUE;
         break;
@@ -466,7 +466,7 @@ LAB_0045599d:
         this->stateTimer = 0;
         this->menuSubState = 0;
         this->idleFrames = 0;
-        AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 0xd);
+        g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 0xd);
         this->cursorVm->pendingInterrupt = 2;
         return CHAIN_CALLBACK_RESULT_CONTINUE;
         break;
@@ -512,7 +512,7 @@ LAB_0045599d:
     case 7:
         this->menuSubState = 2;
         this->inputDelayTimer = 0;
-        AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 1);
+        g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 1);
         if (g_Supervisor.cfg.musicMode == MUSIC_MIDI)
         {
             g_Supervisor.midiOutput->StopPlayback();
@@ -530,7 +530,7 @@ u32 MainMenu::OnUpdateOptionsMenu()
     {
         if (this->stateTimer == 0)
         {
-            AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 3);
+            g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 3);
             for (i32 i = 0; i < 9; i += 1)
             {
                 g_AnmManager->SetActiveSprite(this->vmHead + i + 9,
@@ -645,7 +645,7 @@ u32 MainMenu::OnUpdateOptionsMenu()
         }
         else if (this->cursor == 2)
         {
-            Supervisor::StopAudio();
+            g_Supervisor.StopAudio();
             if (g_Supervisor.cfg.musicMode == MUSIC_MIDI)
             {
                 g_Supervisor.midiOutput->StopPlayback();
@@ -666,8 +666,8 @@ u32 MainMenu::OnUpdateOptionsMenu()
                 g_SoundPlayer.StartBGM("thbgm.dat");
             }
             // STRING: TH07 0x0049580c
-            Supervisor::LoadAudio(8, "bgm/th07_01.mid");
-            Supervisor::PlayLoadedAudio(8);
+            g_Supervisor.LoadAudio(8, "bgm/th07_01.mid");
+            g_Supervisor.PlayLoadedAudio(8);
         }
         else if (this->cursor == 3)
         {
@@ -727,7 +727,7 @@ LAB_00456a2d:
         }
         else if (this->cursor == 2)
         {
-            Supervisor::StopAudio();
+            g_Supervisor.StopAudio();
             if (g_Supervisor.cfg.musicMode < MUSIC_MIDI)
             {
                 *(i32 *)&g_Supervisor.cfg.musicMode += 1;
@@ -736,8 +736,8 @@ LAB_00456a2d:
             {
                 g_Supervisor.cfg.musicMode = MUSIC_OFF;
             }
-            Supervisor::LoadAudio(8, "bgm/th07_01.mid");
-            Supervisor::PlayLoadedAudio(8);
+            g_Supervisor.LoadAudio(8, "bgm/th07_01.mid");
+            g_Supervisor.PlayLoadedAudio(8);
         }
         else if (this->cursor == 3)
         {
@@ -872,7 +872,7 @@ u32 MainMenu::OnUpdateKeyConfig()
     {
         if (this->stateTimer == 0)
         {
-            AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 4);
+            g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 4);
             for (i32 local_c = 0; local_c < 0xc; local_c += 1)
             {
                 g_AnmManager->SetActiveSprite(
@@ -1104,17 +1104,17 @@ u32 MainMenu::OnUpdateSelectDifficulty()
             {
                 if (g_GameManager.HasUnlockedPhantomAndMaxClears() == 0)
                 {
-                    AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 0xc);
+                    g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 0xc);
                     this->cursor = 4;
                 }
                 else
                 {
-                    AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 0x16);
+                    g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 0x16);
                 }
             }
             else
             {
-                AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 7);
+                g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 7);
             }
             if (this->gameState == STATE_EXTRA_SELECT_DIFFICULTY)
             {
@@ -1245,7 +1245,7 @@ u32 MainMenu::OnUpdateSelectDifficulty()
             g_SoundPlayer.ProcessQueues();
             this->menuSubState = 3;
             this->inputDelayTimer = 0;
-            AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 6);
+            g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 6);
         }
     }
     else if ((this->menuSubState == 3) && (0x1d < this->inputDelayTimer))
@@ -1279,7 +1279,7 @@ u32 MainMenu::OnUpdateSelectCharacter()
     {
         if (this->stateTimer == 0)
         {
-            AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 8);
+            g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 8);
             if (g_Supervisor.cfg.defaultDifficulty < 4)
             {
                 this->vmHead[g_Supervisor.cfg.defaultDifficulty + 0x43]
@@ -1567,7 +1567,7 @@ u32 MainMenu::OnUpdateSelectShotType()
     {
         if (this->stateTimer == 0)
         {
-            AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 10);
+            g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 10);
             if (g_Supervisor.cfg.defaultDifficulty < 4)
             {
                 this->vmHead[g_Supervisor.cfg.defaultDifficulty + 0x43]
@@ -1750,7 +1750,7 @@ u32 MainMenu::OnUpdateSelectShotType()
                 }
                 g_Supervisor.curState = 2;
                 g_GameManager.flags &= 0xfffffff7;
-                Supervisor::StopAudio();
+                g_Supervisor.StopAudio();
                 while (g_SoundPlayer.ProcessQueues() != 0)
                     ;
                 return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
@@ -1808,7 +1808,7 @@ u32 MainMenu::OnUpdateSelectPracticeStage()
     {
         if (this->stateTimer == 0)
         {
-            AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 0x12);
+            g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 0x12);
             this->vmHead[0x48].active = 0;
             this->vmHead[0x49].active = 0;
             this->vmHead[0x47].active = 0;
@@ -1876,7 +1876,7 @@ u32 MainMenu::OnUpdateSelectPracticeStage()
             g_GameManager.currentStage = this->cursor;
             g_Supervisor.curState = 2;
             g_GameManager.flags &= 0xfffffff7;
-            Supervisor::StopAudio();
+            g_Supervisor.StopAudio();
             while (g_SoundPlayer.ProcessQueues() != 0)
                 ;
             return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
@@ -1933,7 +1933,7 @@ u32 MainMenu::OnUpdateSelectReplay()
             {
                 return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
             }
-            AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 0xe);
+            g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 0xe);
             this->cursor = 0;
             this->menuSubState = 0;
             this->inputDelayTimer = 0;
@@ -2045,14 +2045,14 @@ u32 MainMenu::OnUpdateSelectReplay()
                     g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
                     this->menuSubState = 4;
                     this->inputDelayTimer = 0;
-                    AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 0x10);
+                    g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 0x10);
                 }
             }
             else if (this->replayFilesNum != 0)
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
                 this->menuSubState = 2;
-                AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 0xf);
+                g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 0xf);
                 this->vmHead[this->chosenReplay % 0xf + 0x87].pendingInterrupt = 0x11;
                 this->currentReplay = (ReplayHeaderAndData *)FileSystem::OpenFile(
                     this->replayFilenames[this->chosenReplay], 1);
@@ -2122,13 +2122,13 @@ u32 MainMenu::OnUpdateSelectReplay()
                 this->currentReplay = NULL;
                 this->menuSubState = 1;
                 this->stateTimer = 0;
-                AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 0xe);
+                g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 0xe);
                 this->cursor = this->chosenReplay;
             }
         }
         else
         {
-            AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 0x13);
+            g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 0x13);
             this->vmHead[this->chosenReplay % 0xf + 0x87].pendingInterrupt = 0x11;
             this->menuSubState = 3;
             this->cursor = 0;
@@ -2169,7 +2169,7 @@ u32 MainMenu::OnUpdateSelectReplay()
             }
             g_Supervisor.curState = 2;
             g_GameManager.replayStage = (u8)this->cursor;
-            Supervisor::StopAudio();
+            g_Supervisor.StopAudio();
             while (g_SoundPlayer.ProcessQueues() != 0)
                 ;
             return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
@@ -2179,7 +2179,7 @@ u32 MainMenu::OnUpdateSelectReplay()
             this->menuSubState = 2;
             this->stateTimer = 0;
             this->cursor = this->selectedStage;
-            AnmManager::SetInterruptActiveVms(this->vmHead, this->vmCount, 0xf);
+            g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 0xf);
             this->vmHead[this->chosenReplay % 0xf + 0x87].pendingInterrupt = 0x11;
         }
     }
@@ -2629,7 +2629,7 @@ LAB_0045c348:
         {
             if (g_Supervisor.wantedState2 != 5)
             {
-                Supervisor::LoadAudio(8, "bgm/th07_01.mid");
+                g_Supervisor.LoadAudio(8, "bgm/th07_01.mid");
             }
             if (g_Supervisor.startupTimeForMenuMusic == 0)
             {

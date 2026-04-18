@@ -118,7 +118,7 @@ i32 MusicRoom::ProcessInput()
         {
             g_SoundPlayer.StartBGM("thbgm.dat");
         }
-        Supervisor::PlayAudio(this->trackDescriptors[this->selectedIdx].path);
+        g_Supervisor.PlayAudio(this->trackDescriptors[this->selectedIdx].path);
         for (local_c = 0; local_c < 8; local_c += 1)
         {
             memset(local_54, 0, 0x40);

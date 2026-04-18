@@ -1148,7 +1148,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
     AnmVm *local_c;
     i32 local_8;
 
-    if ((Supervisor::CanSaveReplay() != 0) ||
+    if ((g_Supervisor.CanSaveReplay() != 0) ||
         ((g_Supervisor.flags >> 3 & 1) != 0))
     {
         this->resultScreenState = 0x10;
@@ -1366,7 +1366,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
     {
         if (this->frameTimer == 0x3c)
         {
-            if ((Supervisor::CanSaveReplay() == 0) &&
+            if ((g_Supervisor.CanSaveReplay() == 0) &&
                 ((g_Supervisor.flags >> 3 & 1) == 0))
             {
                 if (g_GameManager.globals->numRetries == 0)

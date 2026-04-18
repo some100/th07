@@ -85,7 +85,7 @@ struct Stage
     void SmoothBlendColor(ZunColor param_1);
     void UpdateCamera();
     ZunResult UpdateObjects();
-    static void SetupCameraStageBackground();
+    void SetupCameraStageBackground();
     static void UpdateScriptAndCamera(Stage *stage, i32 param_2,
                                       D3DXVECTOR3 *param_3, D3DXVECTOR3 *param_4,
                                       D3DXVECTOR3 *param_5, D3DXVECTOR3 *param_6,

@@ -944,7 +944,7 @@ void Bullet::UpdateBulletDirChangeAimAtPlayer()
 // FUNCTION: TH07 0x004258a0
 void Bullet::UpdateBulletBounce()
 {
-    if (GameManager::IsInBounds((this->pos).x, (this->pos).y,
+    if (g_GameManager.IsInBounds((this->pos).x, (this->pos).y,
                                 (this->sprites.spriteBullet.sprite)->widthPx,
                                 (this->sprites.spriteBullet.sprite)->heightPx) ==
         0)
@@ -1130,7 +1130,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
                     }
                     goto switchD_00425b82_default;
                 }
-                if (GameManager::IsInBounds(
+                if (g_GameManager.IsInBounds(
                         bullets->pos.x, bullets->pos.y,
                         ((bullets->sprites).spriteBullet.sprite)->widthPx,
                         ((bullets->sprites).spriteBullet.sprite)->heightPx) != 0)

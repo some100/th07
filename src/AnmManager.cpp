@@ -809,7 +809,7 @@ void AnmManager::SetRenderStateForVm(AnmVm *vm)
         this->currentCameraMode = vm->cameraMode;
         if (this->currentCameraMode == 0)
         {
-            Stage::SetupCameraStageBackground();
+            g_Stage.SetupCameraStageBackground();
             g_Supervisor.d3dDevice->SetViewport(&g_Supervisor.viewport);
         }
         else

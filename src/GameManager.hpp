@@ -180,7 +180,7 @@ struct GameManager
     void IncreaseSubrank(i32 amount);
     void InitializeRank();
     static void InitializeRngAndCsum();
-    static i32 IsInBounds(f32 x, f32 y, f32 widthPx, f32 heightPx);
+    i32 IsInBounds(f32 x, f32 y, f32 widthPx, f32 heightPx);
     void ResetRegionsPos();
 
     static void DrawLoadingSprite();

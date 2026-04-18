@@ -53,7 +53,7 @@ struct MainMenu
     i32 MoveCursorVertical(i32 max);
     ZunResult Release();
     void SwapMapping(i16 btnPressed, i16 oldMapping);
-    static ZunResult UpdateMenuDigits(AnmVm *param_1, i16 param_2);
+    ZunResult UpdateMenuDigits(AnmVm *param_1, i16 param_2);
     void SetGameState(GameState state);
 
     i32 cursor;

@@ -889,9 +889,9 @@ void EnemyEclInstr::ExInsYuyukoFadeOutMusic(Enemy *enemy, EclRawInstr *instr)
 void EnemyEclInstr::ExInsYuyukoPlayResurrectionButterflyBgm(Enemy *enemy,
                                                             EclRawInstr *instr)
 {
-    if (Supervisor::PlayLoadedAudio(2) != ZUN_SUCCESS)
+    if (g_Supervisor.PlayLoadedAudio(2) != ZUN_SUCCESS)
     {
-        Supervisor::PlayAudio("bgm/th07_13b.mid");
+        g_Supervisor.PlayAudio("bgm/th07_13b.mid");
     }
 }
 

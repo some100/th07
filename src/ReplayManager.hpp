@@ -97,7 +97,6 @@ struct ReplayManager
     static u32 OnUpdateDemoLowPrio(ReplayManager *arg);
     static u32 OnUpdateRng(ReplayManager *arg);
 
-    static i32 CanSaveReplay();
     static void SaveReplay(const char *param_1, char *param_2);
     static void SaveReplay2(const char *param_1);
     static void StopRecording();

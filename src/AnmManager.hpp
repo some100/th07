@@ -121,7 +121,7 @@ struct AnmManager
     AnmManager();
     ~AnmManager();
 
-    static ZunResult CalcBillboardTransform(AnmVm *vm);
+    ZunResult CalcBillboardTransform(AnmVm *vm);
     void CalcProjectedTransform(AnmVm *vm);
     void CopySurfaceToBackBuffer(i32 surfaceIdx, i32 left, i32 top, i32 x, i32 y);
     void CopyTexture(i32 param1, i32 param2, RECT *param3, RECT *param4);
@@ -176,15 +176,15 @@ struct AnmManager
                         i32 srcHeight, i32 dstLeft, i32 dstTop, i32 dstWidth,
                         i32 dstHeight);
     void TakeScreenshotIfRequested();
-    static void TranslateRotation(VertexTex1DiffuseXyzrwh *param_1, f32 width,
+    void TranslateRotation(VertexTex1DiffuseXyzrwh *param_1, f32 width,
                                   f32 height, f32 param_4, f32 param_5,
                                   f32 xOffset, f32 yOffset);
 
-    static void __stdcall SetInterruptActiveVms(AnmVm *vm, i32 vmCount,
+    void SetInterruptActiveVms(AnmVm *vm, i32 vmCount,
                                                 i16 interrupt);
     void ExecuteScripts(AnmVm *startVm, i32 count);
-    static void __stdcall ExecuteVmsAnms(AnmVm *vm, i32 idx, i32 vmCount);
-    static ZunResult __stdcall UpdateTrail(AnmVm *vm, VertexTex1DiffuseXyzrwh *vertices, i32 count);
+    void ExecuteVmsAnms(AnmVm *vm, i32 idx, i32 vmCount);
+    ZunResult UpdateTrail(AnmVm *vm, VertexTex1DiffuseXyzrwh *vertices, i32 count);
 
     // FUNCTION: TH07 0x00404f30
     void ExecuteAnmIdx(AnmVm *vm, i32 anmFileIdx)

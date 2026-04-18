@@ -695,7 +695,7 @@ u32 Stage::OnDrawLowPrio(Stage *arg)
         }
     }
     g_AnmManager->currentCameraMode = 0;
-    SetupCameraStageBackground();
+    arg->SetupCameraStageBackground();
     g_Supervisor.d3dDevice->SetViewport(&g_Supervisor.viewport);
     g_Supervisor.SetRenderState(D3DRS_FOGSTART, 0x447a0000);
     g_Supervisor.SetRenderState(D3DRS_FOGEND, 0x44fa0000);

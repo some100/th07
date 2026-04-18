@@ -89,20 +89,20 @@ struct Supervisor
     static void StopMidiTimer(MidiTimer *timer);
     HRESULT DisableFog();
     HRESULT EnableFog();
-    static i32 LoadAudio(i32 idx, const char *path);
+    i32 LoadAudio(i32 idx, const char *path);
     ZunResult LoadConfig(const char *configFilename);
     static ZunResult LoadGameData();
-    static ZunResult PlayAudio(const char *path);
-    static ZunResult PlayLoadedAudio(i32 idx);
+    ZunResult PlayAudio(const char *path);
+    ZunResult PlayLoadedAudio(i32 idx);
     void SetRenderState(D3DRENDERSTATETYPE stateType, DWORD param_2);
     ZunResult SetupDInput();
     i32 SnapshotScreen(const char *param_1);
-    static ZunResult StopAudio();
+    ZunResult StopAudio();
     void TickTimer(i32 *frames, f32 *subFrames);
     void UpdateStartupTime();
     void UpdateTime();
 
-    static i32 CanSaveReplay();
+    i32 CanSaveReplay();
 
     static i32 __stdcall ControllerCallback(LPCDIDEVICEOBJECTINSTANCE param_1,
                                             void *param_2);

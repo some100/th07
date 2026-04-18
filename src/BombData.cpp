@@ -1302,7 +1302,7 @@ void BombData::BombSakuyaACalc(Player *player)
                         g_AnmManager->ExecuteAnmIdx(local_c->vms, 0x460);
                         player->bombProjectiles[local_8].payload = 999;
                     }
-                    if (GameManager::IsInBounds((local_c->bombRegionPositions).x,
+                    if (g_GameManager.IsInBounds((local_c->bombRegionPositions).x,
                                                 (local_c->bombRegionPositions).y, 64.0f,
                                                 64.0f) == 0)
                     {
@@ -1581,7 +1581,7 @@ void BombData::BombSakuyaBCalc(Player *player)
             ComputeBombCherryDrain(player, 0x157c, 0.26f);
             player->verticalMovementSpeedMultiplierDuringBomb = 2.0f;
             player->horizontalMovementSpeedMultiplierDuringBomb = 2.0f;
-            BulletManager::StopBulletMovement();
+            g_BulletManager.StopBulletMovement();
         }
         if ((player->bombInfo.bombTimer.current ==
              player->bombInfo.bombTimer.previous) ||
@@ -1595,7 +1595,7 @@ void BombData::BombSakuyaBCalc(Player *player)
         }
         if (bVar1)
         {
-            BulletManager::StopBulletMovement();
+            g_BulletManager.StopBulletMovement();
         }
         if ((player->bombInfo.bombTimer.current ==
              player->bombInfo.bombTimer.previous) ||
@@ -1609,7 +1609,7 @@ void BombData::BombSakuyaBCalc(Player *player)
         }
         if (bVar1)
         {
-            BulletManager::StopBulletMovement();
+            g_BulletManager.StopBulletMovement();
         }
         if ((player->bombInfo.bombTimer.current ==
              player->bombInfo.bombTimer.previous) ||
@@ -1814,7 +1814,7 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
         if (bVar5)
         {
             BombEffects::RegisterChain(1, 0x3c, 1, 7, 0);
-            BulletManager::StopBulletMovement();
+            g_BulletManager.StopBulletMovement();
         }
         if ((player->bombInfo.bombTimer.current ==
              player->bombInfo.bombTimer.previous) ||
@@ -1828,7 +1828,7 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
         }
         if (bVar5)
         {
-            BulletManager::StopBulletMovement();
+            g_BulletManager.StopBulletMovement();
             BombEffects::RegisterChain(1, 0x46, 0x18, 0, 0);
         }
         local_c = player->bombInfo.subInfo;

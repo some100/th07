@@ -812,16 +812,16 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
                                 // STRING: TH07 0x00497e1c
                                 ReplayManager::RegisterChain(0, "replay/th7_00.rpy");
                             }
-                            Supervisor::LoadAudio(0, (g_Stage.stdData)->bgmPaths[0]);
-                            Supervisor::LoadAudio(1, (g_Stage.stdData)->bgmPaths[1]);
+                            g_Supervisor.LoadAudio(0, (g_Stage.stdData)->bgmPaths[0]);
+                            g_Supervisor.LoadAudio(1, (g_Stage.stdData)->bgmPaths[1]);
                             if (arg->currentStage == 6)
                             {
-                                Supervisor::StopAudio();
-                                Supervisor::LoadAudio(2, "bgm/th07_13b.mid");
+                                g_Supervisor.StopAudio();
+                                g_Supervisor.LoadAudio(2, "bgm/th07_13b.mid");
                             }
                             else
                             {
-                                Supervisor::PlayLoadedAudio(0);
+                                g_Supervisor.PlayLoadedAudio(0);
                             }
                             while (g_SoundPlayer.ProcessQueues() != 0)
                                 ;
@@ -889,7 +889,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
 // FUNCTION: TH07 0x0042f2e4
 ZunResult GameManager::DeletedCallback(GameManager *arg)
 {
-    Supervisor::StopAudio();
+    g_Supervisor.StopAudio();
     if ((g_Supervisor.cfg.musicMode == MUSIC_MIDI) &&
         (g_Supervisor.midiOutput != NULL))
     {

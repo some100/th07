@@ -2971,7 +2971,7 @@ restart:
                 enemy->trailNodeStep = local_750;
                 if ((enemy->trailFlags & 8) != 0)
                 {
-                    AnmManager::UpdateTrail(
+                    g_AnmManager->UpdateTrail(
                         &enemy->primaryVm, enemy->trailVertices,
                         (i32)enemy->trailCount / (i32)enemy->trailNodeStep << 1);
                 }
@@ -3026,7 +3026,7 @@ restart:
                 f32 local_764 = (instr->paramMask & 1) == 0
                                     ? instr->args[0].f
                                     : GetFloatVarValue(enemy, instr->args[0].f);
-                BulletManager::RemoveBulletsInRadius(&enemy->position, local_764);
+                g_BulletManager.RemoveBulletsInRadius(&enemy->position, local_764);
                 break;
             }
             case 0x90: {

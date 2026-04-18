@@ -836,7 +836,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
             }
             if ((((enemy->flags2 >> 3 & 1) == 0) &&
                  ((enemy->flags3 >> 3 & 1) == 0)) &&
-                (GameManager::IsInBounds(enemy->position.x, enemy->position.y,
+                (g_GameManager.IsInBounds(enemy->position.x, enemy->position.y,
                                          (enemy->primaryVm.sprite)->widthPx,
                                          (enemy->primaryVm.sprite)->heightPx) !=
                  0))
@@ -845,16 +845,16 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
             }
             if (((enemy->flags3 >> 3 & 1) == 1) &&
                 ((((enemy->trailFlags == 0 &&
-                    (GameManager::IsInBounds(enemy->position.x, enemy->position.y,
+                    (g_GameManager.IsInBounds(enemy->position.x, enemy->position.y,
                                              (enemy->primaryVm.sprite)->widthPx,
                                              (enemy->primaryVm.sprite)->heightPx) ==
                      0)) ||
                    ((enemy->trailFlags != 0 &&
-                     ((GameManager::IsInBounds(
+                     ((g_GameManager.IsInBounds(
                            enemy->position.x, enemy->position.y,
                            (enemy->primaryVm.sprite)->widthPx,
                            (enemy->primaryVm.sprite)->heightPx) == 0 &&
-                       (GameManager::IsInBounds(
+                       (g_GameManager.IsInBounds(
                             enemy->enemyHistory[enemy->trailCount - 1].position.x,
                             enemy->enemyHistory[enemy->trailCount - 1].position.y,
                             (enemy->primaryVm.sprite)->widthPx,
