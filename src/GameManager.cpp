@@ -57,7 +57,7 @@ void GameManager::AddLivesRemaining(i32 amount)
     {
         g_Supervisor.Nuke();
     }
-    this->globals->livesRemaining = (f32)amount + this->globals->livesRemaining;
+    this->globals->livesRemaining += (f32)amount;
     RegenerateGameIntegrityCsum();
 }
 
@@ -68,7 +68,7 @@ void GameManager::AddBombsRemaining(i32 amount)
     {
         g_Supervisor.Nuke();
     }
-    this->globals->bombsRemaining = (f32)amount + this->globals->bombsRemaining;
+    this->globals->bombsRemaining += (f32)amount;
     RegenerateGameIntegrityCsum();
 }
 

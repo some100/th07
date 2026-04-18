@@ -976,105 +976,114 @@ i32 Player::CheckCollisionWithEnemy(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
     return local_34;
 }
 
+#pragma var_order(bombTopLeft, bombY, bombX, i, bulletBottomRight, bulletTopLeft, bombProjectile, bombBottomRight)
 // FUNCTION: TH07 0x0043e0a0
 i32 Player::CheckBombGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
 {
-    f32 fVar1;
-    f32 fVar2;
     BombProjectile *bombProjectile;
     i32 i;
+    D3DXVECTOR3 bulletBottomRight;
+    D3DXVECTOR3 bulletTopLeft;
+    D3DXVECTOR3 bombBottomRight;
+    D3DXVECTOR3 bombTopLeft;
+    f32 bombY;
+    f32 bombX;
 
     bombProjectile = this->bombHitboxes;
-    i = 0;
-    while (true)
+    bulletTopLeft.x = center->x - size->x / 2.0f;
+    bulletTopLeft.y = center->y - size->y / 2.0f;
+    bulletBottomRight.x = center->x + size->x / 2.0f;
+    bulletBottomRight.y = center->y + size->y / 2.0f;
+    for (i = 0; i < 0x60; i++, bombProjectile++)
     {
-        if (0x5f < i)
+        if (bombProjectile->pos.z != 0.0f)
         {
-            return 0;
-        }
-        if ((bombProjectile->pos).z == 0.0f)
-        {
-            if (((bombProjectile->size).y != 0.0f) &&
-                (fVar1 = center->x - (bombProjectile->pos).x,
-                 fVar2 = center->y - (bombProjectile->pos).y,
-                 fVar2 * fVar2 + fVar1 * fVar1 <
-                     (bombProjectile->size).y * (bombProjectile->size).y))
+            bombTopLeft.x = bombProjectile->pos.x - bombProjectile->pos.z / 2.0f;
+            bombTopLeft.y = bombProjectile->pos.y - bombProjectile->size.x / 2.0f;
+            bombBottomRight.x = bombProjectile->pos.z / 2.0f + bombProjectile->pos.x;
+            bombBottomRight.y = bombProjectile->size.x / 2.0f + bombProjectile->pos.y;
+            if (!(bombTopLeft.x > bulletBottomRight.x ||
+                  bombBottomRight.x < bulletTopLeft.x ||
+                  bombTopLeft.y > bulletBottomRight.y ||
+                  bombBottomRight.y < bulletTopLeft.y))
             {
                 this->itemType = bombProjectile->payload;
                 return 2;
             }
         }
-        else if (((((bombProjectile->pos).x - (bombProjectile->pos).z / 2.0f <=
-                    size->x / 2.0f + center->x) &&
-                   (center->x - size->x / 2.0f <=
-                    (bombProjectile->pos).z / 2.0f + (bombProjectile->pos).x)) &&
-                  ((bombProjectile->pos).y - (bombProjectile->size).x / 2.0f <=
-                   size->y / 2.0f + center->y)) &&
-                 (center->y - size->y / 2.0f <=
-                  (bombProjectile->size).x / 2.0f + (bombProjectile->pos).y))
+        else if (bombProjectile->size.y != 0.0) // double used here for some reason
         {
-            this->itemType = bombProjectile->payload;
-            return 2;
+            bombX = center->x - bombProjectile->pos.x;
+            bombY = center->y - bombProjectile->pos.y;
+            if (bombX * bombX + bombY * bombY <
+                bombProjectile->size.y * bombProjectile->size.y)
+            {
+                this->itemType = bombProjectile->payload;
+                return 2;
+            }
         }
-        i += 1;
-        bombProjectile = bombProjectile + 1;
     }
+    return 0;
 }
 
+#pragma var_order(killboxBottomRight, killboxTopLeft)
 // FUNCTION: TH07 0x0043e260
-i32 Player::CalcKillboxCollision(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2)
+i32 Player::CalcKillboxCollision(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
 {
+    D3DXVECTOR3 killboxBottomRight;
+    D3DXVECTOR3 killboxTopLeft;
+
     this->itemType = ITEM_POINT_BULLET;
-    if (CheckBombGraze(param_1, param_2) != 0)
+    if (CheckBombGraze(center, size) != 0)
         return 2;
 
-    if ((((param_2->x / 2.0f + param_1->x < this->hitboxTopLeft.x) ||
-          (param_2->y / 2.0f + param_1->y < this->hitboxTopLeft.y)) ||
-         (this->hitboxBottomRight.x < param_1->x - param_2->x / 2.0f)) ||
-        (this->hitboxBottomRight.y < param_1->y - param_2->y / 2.0f))
-    {
+    killboxTopLeft.x = center->x - size->x / 2.0f;
+    killboxTopLeft.y = center->y - size->y / 2.0f;
+    killboxBottomRight.x = center->x + size->x / 2.0f;
+    killboxBottomRight.y = center->y + size->y / 2.0f;
+    if (this->hitboxTopLeft.x > killboxBottomRight.x ||
+        this->hitboxTopLeft.y > killboxBottomRight.y ||
+        this->hitboxBottomRight.x < killboxTopLeft.x ||
+        this->hitboxBottomRight.y < killboxTopLeft.y)
         return 0;
-    }
-    else
+
+    g_ReplayManager->replayEventFlags = g_ReplayManager->replayEventFlags | 2;
+    if (this->playerState == PLAYER_STATE_BORDER)
     {
-        g_ReplayManager->replayEventFlags = g_ReplayManager->replayEventFlags | 2;
-        if (this->playerState == PLAYER_STATE_BORDER)
-        {
-            g_Player.BreakBorder();
-            return 1;
-        }
-        else if (this->playerState == PLAYER_STATE_ALIVE)
-        {
-            g_GameManager.RerollRng();
-            Die();
-            return 1;
-        }
-        else
-        {
-            return 1;
-        }
+        g_Player.BreakBorder(0);
+        return 1;
     }
+    if (this->playerState != PLAYER_STATE_ALIVE)
+        return 1;
+
+    g_GameManager.RerollRng();
+    Die();
+    return 1;
 }
 
+#pragma var_order(bulletBottomRight, bulletTopLeft)
 // FUNCTION: TH07 0x0043e3b0
 i32 Player::CheckGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
 {
+    D3DXVECTOR3 bulletBottomRight;
+    D3DXVECTOR3 bulletTopLeft;
+
     this->itemType = ITEM_POINT_BULLET;
 
     if (CheckBombGraze(center, size) != 0)
         return 2;
 
-    f32 left = center->x - size->x / 2.0f - 20.0f;
-    f32 top = center->y - size->x / 2.0f - 20.0f;
-    f32 right = center->x + size->y / 2.0f + 20.0f;
-    f32 bottom = center->y + size->y / 2.0f + 20.0f;
+    bulletTopLeft.x = center->x - size->x / 2.0f - 20.0f;
+    bulletTopLeft.y = center->y - size->y / 2.0f - 20.0f;
+    bulletBottomRight.x = center->x + size->x / 2.0f + 20.0f;
+    bulletBottomRight.y = center->y + size->y / 2.0f + 20.0f;
 
     if (this->playerState == PLAYER_STATE_DEAD ||
         this->playerState == PLAYER_STATE_SPAWNING)
         return 0;
 
-    if (this->grazeTopLeft.x <= right || this->grazeBottomRight.x >= left ||
-        this->grazeTopLeft.y <= bottom)
+    if (this->grazeTopLeft.x > bulletBottomRight.x || this->grazeBottomRight.x < bulletTopLeft.x ||
+        this->grazeTopLeft.y > bulletBottomRight.y || this->grazeBottomRight.y < bulletTopLeft.y)
         return 0;
 
     ScoreGraze(center);
@@ -1171,7 +1180,7 @@ i32 Player::CalcLaserHitbox(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
         g_ReplayManager->replayEventFlags = g_ReplayManager->replayEventFlags | 2;
         if (this->playerState == PLAYER_STATE_BORDER)
         {
-            g_Player.BreakBorder();
+            g_Player.BreakBorder(0);
             return 1;
         }
         else if (this->playerState == PLAYER_STATE_ALIVE)
@@ -1778,7 +1787,7 @@ void Player::UpdateBorderAndBombState()
     }
     else
     {
-        BreakBorder();
+        BreakBorder(1);
         this->isBombing = 0;
         g_ItemManager.RemoveAllItems();
     }
@@ -1835,7 +1844,7 @@ i32 Player::UpdateDeath()
     {
         if (this->hasBorder == BORDER_ACTIVE)
         {
-            BreakBorder();
+            BreakBorder(0);
             return 0;
         }
         this->respawnTimer = this->respawnTimer - 1;
@@ -2128,7 +2137,7 @@ void Player::ActivateBorder()
         {
             if (this->respawnTimer != 0)
             {
-                BreakBorder();
+                BreakBorder(0);
                 return;
             }
             this->hasBorder = BORDER_READY;
@@ -2176,7 +2185,7 @@ void Player::ActivateBorder()
 
 #pragma var_order(effect, local_c, local_10)
 // FUNCTION: TH07 0x00441bd0
-void Player::BreakBorder()
+void Player::BreakBorder(u32 unused)
 {
     Effect *effect;
     f32 local_10;

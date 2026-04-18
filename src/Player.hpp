@@ -154,7 +154,7 @@ struct Player
 
     void ActivateBorder();
     f32 AngleToPlayer(D3DXVECTOR3 *pos);
-    void BreakBorder();
+    void BreakBorder(u32 unused);
     void BreakBorderNaturally();
 
     i32 CalcItemBoxCollision(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2);
@@ -205,7 +205,7 @@ struct Player
     i32 borderInvulnerabilityTime;
     i32 bulletGracePeriod;
     i32 itemType;
-    u8 playerState;
+    i8 playerState;
     u8 initParam;
     u8 orbState;
     i8 isFocus;

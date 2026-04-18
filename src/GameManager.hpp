@@ -136,7 +136,7 @@ struct GameManager
         {
             g_Supervisor.Nuke();
         }
-        this->globals->deaths = (f32)amount + this->globals->deaths;
+        this->globals->deaths += (f32)amount;
         RegenerateGameIntegrityCsum();
     }
 
@@ -148,7 +148,7 @@ struct GameManager
         {
             g_Supervisor.Nuke();
         }
-        this->globals->bombsUsed = (f32)amount + this->globals->bombsUsed;
+        this->globals->bombsUsed += (f32)amount;
         RegenerateGameIntegrityCsum();
     }
 
