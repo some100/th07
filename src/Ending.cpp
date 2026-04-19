@@ -50,7 +50,7 @@ u32 Ending::OnUpdate(Ending *arg)
         {
             return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
         }
-        for (i = 0; i < 15; i += 1)
+        for (i = 0; i < 15; i++)
         {
             g_AnmManager->ExecuteScript(&arg->sprites[i]);
         }
@@ -73,7 +73,7 @@ u32 Ending::OnDraw(Ending *arg)
     width = 0x280;
     g_AnmManager->DrawEndingRect(0, 0, 0, arg->backgroundPos.x,
                                  arg->backgroundPos.y, width, height);
-    for (i32 i = 0; i < 0xf; i += 1)
+    for (i32 i = 0; i < 0xf; i++)
     {
         g_AnmManager->Draw(&arg->sprites[i]);
     }
@@ -201,7 +201,7 @@ ZunResult Ending::ParseEndFile()
         }
         if (0 < this->timer3.current)
             goto LAB_0041e331;
-        for (i = 0; i < 0xf; i += 1)
+        for (i = 0; i < 0xf; i++)
         {
             this->sprites[i].pendingInterrupt = 2;
         }
@@ -423,8 +423,7 @@ switchD_0041d980_caseD_0:
     }
     this->possiblyTimesFileParsed = this->possiblyTimesFileParsed + 1;
 LAB_0041e331:
-    this->timer1.previous = this->timer1.current;
-    g_Supervisor.TickTimer(&this->timer1.current, &this->timer1.subFrame);
+    this->timer1.Tick();
     this->backgroundPos.y -= this->backgroundScrollSpeed;
     if (this->backgroundPos.y <= 0.0f)
     {
@@ -469,7 +468,7 @@ ZunResult Ending::AddedCallback(Ending *arg)
     i32 i;
     const char *local_8;
 
-    g_GameManager.flags |= 0x10;
+    g_GameManager.finished = 1;
     g_Supervisor.isInEnding = 1;
     g_AnmManager->LoadAnms(0x31, "data/staff01.anm", 0x600);
     g_AnmManager->currentTexture = NULL;
@@ -496,7 +495,7 @@ ZunResult Ending::AddedCallback(Ending *arg)
     }
     g_GameManager.clrd[shotType]
         .difficultyClearedWithoutRetries[g_GameManager.difficulty] = 99;
-    for (i = 0; i < 0xf; i += 1)
+    for (i = 0; i < 0xf; i++)
     {
         g_AnmManager->ExecuteAnmIdx(arg->sprites + i, i + 0x70f);
         pDVar1 = &arg->sprites[i].pos;

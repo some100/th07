@@ -80,6 +80,12 @@ struct AsciiManager
     void InitializeOtherVms();
     void UpdateScripts();
 
+    void SetFadeState(i32 fadeState)
+    {
+        this->otherVms[0].pendingInterrupt = fadeState;
+        this->uiFadeState = fadeState;
+    }
+
     AnmVm vm0;
     AnmVm vm1;
     AnmVm otherVms[3];

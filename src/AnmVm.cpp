@@ -21,8 +21,7 @@ i32 g_TextureBytesPerPixel[7] = {4, 4, 2, 2, 3, 2, 0};
 // FUNCTION: TH07 0x004010b0
 i32 ZunTimer::NextTick()
 {
-    this->previous = this->current;
-    g_Supervisor.TickTimer(&this->current, &this->subFrame);
+    this->Tick();
     return this->current;
 }
 

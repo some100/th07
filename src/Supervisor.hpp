@@ -109,11 +109,6 @@ struct Supervisor
     static i32 __stdcall EnumGameControllersCb(LPCDIDEVICEINSTANCEA param_1,
                                                void *param_2);
 
-    inline void Nuke()
-    {
-        memset(this, -1, sizeof(Supervisor)); // nuke everything
-    }
-
     HINSTANCE hInstance;
     IDirect3D8 *d3dIface;
     LPDIRECT3DDEVICE8 d3dDevice;
@@ -168,6 +163,8 @@ struct Supervisor
 #pragma pack(pop)
 
 C_ASSERT(sizeof(Supervisor) == 0x2d0);
+
+#define NUKE_SUPERVISOR() memset(&g_Supervisor, -1, sizeof(g_Supervisor))
 
 extern Supervisor g_Supervisor;
 extern ControllerMapping g_ControllerMapping;

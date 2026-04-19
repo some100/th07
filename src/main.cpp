@@ -166,7 +166,7 @@ stop:
             WINNLSEnableIME(0, 1);
         }
         i32 i = 0;
-        while (i < 0x3c)
+        while (i < 60)
         {
             if (PeekMessageA(&msg, NULL, 0, 0, 1) != 0)
             {

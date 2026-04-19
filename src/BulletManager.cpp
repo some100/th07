@@ -1,5 +1,6 @@
 #include "BulletManager.hpp"
 
+#include "AnmManager.hpp"
 #include "AsciiManager.hpp"
 #include "Chain.hpp"
 #include "GameManager.hpp"
@@ -144,7 +145,7 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, f32 x,
         {
             bullet = this->bullets;
         }
-        i += 1;
+        i++;
     }
     if (i < 0x400)
     {
@@ -510,7 +511,7 @@ void BulletManager::RemoveAllBullets(i32 param_1)
     D3DXVECTOR3 local_10;
 
     bullet = g_BulletManager.bullets;
-    for (i = 0; i < 0x400; i += 1)
+    for (i = 0; i < 0x400; i++)
     {
         if ((bullet->state != BULLET_INACTIVE) &&
             (bullet->state != BULLET_DESPAWN))
@@ -535,7 +536,7 @@ void BulletManager::RemoveAllBullets(i32 param_1)
         bullet = bullet + 1;
     }
     laser = this->lasers;
-    for (i = 0; i < 0x40; i += 1)
+    for (i = 0; i < 0x40; i++)
     {
         if ((laser->inUse != 0) && (((laser->flags & 4) == 0 || (param_1 == 10))))
         {
@@ -590,7 +591,7 @@ i32 BulletManager::DespawnBullets(i32 param_1, i32 turnIntoItem)
     local_8 = 2000;
     local_10 = 0;
     bullet = g_BulletManager.bullets;
-    for (i = 0; i < 0x400; i += 1)
+    for (i = 0; i < 0x400; i++)
     {
         if (bullet->state != BULLET_INACTIVE)
         {
@@ -609,7 +610,7 @@ i32 BulletManager::DespawnBullets(i32 param_1, i32 turnIntoItem)
         bullet = bullet + 1;
     }
     laser = this->lasers;
-    for (i = 0; i < 0x40; i += 1)
+    for (i = 0; i < 0x40; i++)
     {
         if (laser->inUse != 0)
         {
@@ -651,7 +652,7 @@ void BulletManager::RemoveBulletsInRadius(D3DXVECTOR3 *centerPos, f32 radius)
     i32 i;
 
     bullet = g_BulletManager.bullets;
-    for (i = 0; i < 0x400; i += 1)
+    for (i = 0; i < 0x400; i++)
     {
         if (((bullet->state != BULLET_INACTIVE) &&
              (bullet->state != BULLET_DESPAWN)) &&
@@ -695,66 +696,57 @@ i32 BulletManager::SpawnBulletPattern(EnemyBulletShooter *bulletProps)
     return 0;
 }
 
+#pragma var_order(i, laser)
 // FUNCTION: TH07 0x00424e00
 Laser *BulletManager::SpawnLaserPattern(EnemyLaserShooter *laserShooter)
 {
-    u16 uVar1;
-    i32 iVar2;
-    i16 local_10;
     Laser *laser;
     i32 i;
 
     laser = this->lasers;
-    if ((this->screenClearTime == 0) || ((laserShooter->flags & 4) != 0))
+    if (this->screenClearTime != 0 && (laserShooter->flags & 4) == 0)
+        return laser;
+
+    for (i = 0; i < 0x40; i++, laser++)
     {
-        for (i = 0; i < 0x40; i += 1)
+        if (laser->inUse != 0)
+            continue;
+
+        g_AnmManager->SetAnmIdxAndExecuteScript(&laser->vm0, laserShooter->sprite + 0x20a);
+        g_AnmManager->SetActiveSprite(&laser->vm0,
+                                      (i32)laser->vm0.activeSpriteIdx +
+                                          (i32)laserShooter->spriteOffset);
+        g_AnmManager->InitializeAndSetActiveSprite(&laser->vm1, g_BulletSpriteOffset16Px[laserShooter->spriteOffset] + 0x292);
+        laser->vm1.blendMode = 1;
+        laser->pos = laserShooter->position;
+        laser->color = laserShooter->spriteOffset;
+        laser->inUse = 1;
+        laser->angle = laserShooter->angle1;
+        if (laserShooter->type == 0)
         {
-            if (laser->inUse == 0)
-            {
-                uVar1 = laserShooter->sprite;
-                local_10 = uVar1 + 0x20a;
-                laser->vm0.anmFileIdx = local_10;
-                g_AnmManager->SetAndExecuteScript(
-                    &laser->vm0, g_AnmManager->scripts[(i16)uVar1 + 0x20a]);
-                g_AnmManager->SetActiveSprite(&laser->vm0,
-                                              (i32)laser->vm0.activeSpriteIdx +
-                                                  (i32)laserShooter->spriteOffset);
-                iVar2 = g_BulletSpriteOffset16Px[laserShooter->spriteOffset];
-                laser->vm1.Initialize();
-                g_AnmManager->SetActiveSprite(&laser->vm1, iVar2 + 0x292);
-                laser->vm1.blendMode = 1;
-                laser->pos = laserShooter->position;
-                laser->color = laserShooter->spriteOffset;
-                laser->inUse = 1;
-                laser->angle = laserShooter->angle1;
-                if (laserShooter->type == 0)
-                {
-                    laser->angle =
-                        g_Player.AngleToPlayer(&laserShooter->position) + laser->angle;
-                }
-                laser->flags = laserShooter->flags;
-                laser->timer.Initialize(0);
-                laser->startOffset = laserShooter->startOffset;
-                laser->endOffset = laserShooter->endOffset;
-                laser->startLength = laserShooter->startLength;
-                laser->width = laserShooter->width;
-                laser->speed = laserShooter->speed1;
-                laser->startTime = laserShooter->startTime;
-                laser->duration = laserShooter->duration;
-                laser->endTime = laserShooter->endTime;
-                laser->grazeDelay = laserShooter->grazeDelay;
-                laser->grazeInterval = laserShooter->aimMode;
-                laser->hideWarning = 0;
-                if (laser->startTime == 0)
-                {
-                    laser->state = 1;
-                    return laser;
-                }
-                laser->state = 0;
-                return laser;
-            }
-            laser = laser + 1;
+            laser->angle =
+                g_Player.AngleToPlayer(&laserShooter->position) + laser->angle;
         }
+        laser->flags = laserShooter->flags;
+        laser->timer.InitializeForPopup();
+        laser->startOffset = laserShooter->startOffset;
+        laser->endOffset = laserShooter->endOffset;
+        laser->startLength = laserShooter->startLength;
+        laser->width = laserShooter->width;
+        laser->speed = laserShooter->speed1;
+        laser->startTime = laserShooter->startTime;
+        laser->duration = laserShooter->duration;
+        laser->endTime = laserShooter->endTime;
+        laser->grazeDelay = laserShooter->grazeDelay;
+        laser->grazeInterval = laserShooter->aimMode;
+        laser->hideWarning = 0;
+        if (laser->startTime == 0)
+        {
+            laser->state = 1;
+            break;
+        }
+        laser->state = 0;
+        break;
     }
     return laser;
 }
@@ -776,9 +768,7 @@ void Bullet::UpdateBulletBurstSpeed()
     {
         this->exFlags = this->exFlags ^ 1;
     }
-    this->commandStates[0].timer.previous = this->commandStates[0].timer.current;
-    g_Supervisor.TickTimer(&this->commandStates[0].timer.current,
-                           &this->commandStates[0].timer.subFrame);
+    this->commandStates[0].timer.Tick();
 }
 
 // FUNCTION: TH07 0x004251a0
@@ -807,9 +797,7 @@ void Bullet::UpdateBulletTargetVelocity()
         this->exFlags = this->exFlags & 0xffef;
     }
 LAB_004252d1:
-    this->commandStates[1].timer.previous = this->commandStates[1].timer.current;
-    g_Supervisor.TickTimer(&this->commandStates[1].timer.current,
-                           &this->commandStates[1].timer.subFrame);
+    this->commandStates[1].timer.Tick();
 }
 
 // FUNCTION: TH07 0x00425310
@@ -830,9 +818,7 @@ void Bullet::UpdateBulletTargetAngle()
     {
         this->exFlags = this->exFlags & 0xffdf;
     }
-    this->commandStates[2].timer.previous = this->commandStates[2].timer.current;
-    g_Supervisor.TickTimer(&this->commandStates[2].timer.current,
-                           &this->commandStates[2].timer.subFrame);
+    this->commandStates[2].timer.Tick();
 }
 
 // FUNCTION: TH07 0x00425400
@@ -865,9 +851,7 @@ void Bullet::UpdateBulletDirChangeAndResume()
     }
     AngleToVector(&this->velocity, this->angle,
                   local_8 * g_Supervisor.effectiveFramerateMultiplier);
-    this->commandStates[3].timer.previous = this->commandStates[3].timer.current;
-    g_Supervisor.TickTimer(&this->commandStates[3].timer.current,
-                           &this->commandStates[3].timer.subFrame);
+    this->commandStates[3].timer.Tick();
 }
 
 // FUNCTION: TH07 0x00425580
@@ -900,9 +884,7 @@ void Bullet::UpdateBulletDirChangeAbsoluteAndResume()
     }
     AngleToVector(&this->velocity, this->angle,
                   local_8 * g_Supervisor.effectiveFramerateMultiplier);
-    this->commandStates[3].timer.previous = this->commandStates[3].timer.current;
-    g_Supervisor.TickTimer(&this->commandStates[3].timer.current,
-                           &this->commandStates[3].timer.subFrame);
+    this->commandStates[3].timer.Tick();
 }
 
 // FUNCTION: TH07 0x00425700
@@ -936,17 +918,15 @@ void Bullet::UpdateBulletDirChangeAimAtPlayer()
     }
     AngleToVector(&this->velocity, this->angle,
                   local_8 * g_Supervisor.effectiveFramerateMultiplier);
-    this->commandStates[3].timer.previous = this->commandStates[3].timer.current;
-    g_Supervisor.TickTimer(&this->commandStates[3].timer.current,
-                           &this->commandStates[3].timer.subFrame);
+    this->commandStates[3].timer.Tick();
 }
 
 // FUNCTION: TH07 0x004258a0
 void Bullet::UpdateBulletBounce()
 {
     if (g_GameManager.IsInBounds((this->pos).x, (this->pos).y,
-                                (this->sprites.spriteBullet.sprite)->widthPx,
-                                (this->sprites.spriteBullet.sprite)->heightPx) ==
+                                 (this->sprites.spriteBullet.sprite)->widthPx,
+                                 (this->sprites.spriteBullet.sprite)->heightPx) ==
         0)
     {
         if (-1 < this->soundIdx)
@@ -1001,7 +981,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
         arg->bulletsHeadPtrs[2] = NULL;
         arg->bulletsHeadPtrs[1] = NULL;
         arg->bulletsHeadPtrs[0] = NULL;
-        for (i = 0; i < 0x400; i += 1)
+        for (i = 0; i < 0x400; i++)
         {
             if (bullets->state == BULLET_INACTIVE)
                 goto bulletLoopContinue;
@@ -1043,12 +1023,8 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
             if (iVar3 == 0)
             {
             switchD_00425b82_default:
-                bullets->timer1.previous = bullets->timer1.current;
-                g_Supervisor.TickTimer(&bullets->timer1.current,
-                                       &bullets->timer1.subFrame);
-                (bullets->timer2).previous = (bullets->timer2).current;
-                g_Supervisor.TickTimer(&(bullets->timer2).current,
-                                       &(bullets->timer2).subFrame);
+                bullets->timer1.Tick();
+                bullets->timer2.Tick();
                 bullets->next = arg->bulletsHeadPtrs[(bullets->sprites).collisionType];
                 arg->bulletsHeadPtrs[(bullets->sprites).collisionType] = bullets;
             }
@@ -1165,7 +1141,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
             bullets = bullets - 1;
         }
         laser = arg->lasers;
-        for (i = 0; i < 0x40; i += 1)
+        for (i = 0; i < 0x40; i++)
         {
             if (laser->inUse != 0)
             {
@@ -1302,8 +1278,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
                 {
                     laser->inUse = 0;
                 }
-                laser->timer.previous = laser->timer.current;
-                g_Supervisor.TickTimer(&laser->timer.current, &laser->timer.subFrame);
+                laser->timer.Tick();
                 g_AnmManager->ExecuteScript(&laser->vm0);
             }
         LAB_004263d8:
@@ -1313,8 +1288,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
         {
             arg->screenClearTime = arg->screenClearTime - 1;
         }
-        (arg->time).previous = (arg->time).current;
-        g_Supervisor.TickTimer(&(arg->time).current, &(arg->time).subFrame);
+        arg->time.Tick();
         arg->updateCount = arg->updateCount + 1;
     }
     return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -1358,7 +1332,7 @@ u32 BulletManager::OnDraw(BulletManager *arg)
     f32 local_c;
 
     Laser *laser = arg->lasers;
-    for (i32 i = 0; i < 0x40; i += 1)
+    for (i32 i = 0; i < 0x40; i++)
     {
         if (laser->inUse != 0)
         {
@@ -1398,7 +1372,7 @@ u32 BulletManager::OnDraw(BulletManager *arg)
         laser = laser + 1;
     }
     g_ItemManager.OnDraw();
-    for (i32 i = 0; i < 6; i += 1)
+    for (i32 i = 0; i < 6; i++)
     {
         for (Bullet *bullet = arg->bulletsHeadPtrs[i]; bullet != NULL;
              bullet = bullet->next)
@@ -1438,7 +1412,7 @@ ZunResult BulletManager::AddedCallback(BulletManager *arg)
     }
     else
     {
-        for (i = 0; i < 0xb; i += 1)
+        for (i = 0; i < 0xb; i++)
         {
             iVar6 = g_BulletTypeInfos[i].anmFileIdx;
             local_c = (i16)iVar6;
@@ -1605,7 +1579,7 @@ void BulletManager::CutChain()
 void BulletManager::StopBulletMovement()
 {
     Bullet *bullet = g_BulletManager.bullets;
-    for (i32 i = 0; i < 0x400; i += 1)
+    for (i32 i = 0; i < 0x400; i++)
     {
         if (bullet->state != BULLET_INACTIVE)
         {

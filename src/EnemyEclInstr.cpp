@@ -69,7 +69,7 @@ void EnemyEclInstr::ExInsAliceCurveBullets(Enemy *enemy, EclRawInstr *instr)
     bullet = g_BulletManager.bullets;
     BombEffects::RegisterChain(1, 0x1e, 0xc, 0, 0);
     BombEffects::RegisterChain(3, 4, 3, 0x80ffcfcf, 0);
-    for (i = 0; i < 0x400; i += 1)
+    for (i = 0; i < 0x400; i++)
     {
         if (((((bullet->state != BULLET_INACTIVE) &&
                (bullet->state != BULLET_DESPAWN)) &&
@@ -98,7 +98,7 @@ void EnemyEclInstr::ExInsAliceCurveBullets(Enemy *enemy, EclRawInstr *instr)
             memset(bullet->commands, 0, sizeof(bullet->commands));
             if (g_GameManager.difficulty < 3)
             {
-                bullet->AddAngleAccelCommand(0, 0, 0x3c, local_10, 0.016666668f);
+                bullet->AddAngleAccelCommand(0, 0, 60, local_10, 0.016666668f);
             }
             else
             {
@@ -139,7 +139,7 @@ void EnemyEclInstr::ExInsTurnBulletsIntoOtherBullets(Enemy *enemy,
     case 3:
         local_e4 = 999.0;
     }
-    for (i = 0; i < 0x400; i += 1)
+    for (i = 0; i < 0x400; i++)
     {
         if ((((bullet->state != BULLET_INACTIVE) &&
               (bullet->state != BULLET_DESPAWN)) &&
@@ -162,7 +162,7 @@ void EnemyEclInstr::ExInsTurnBulletsIntoOtherBullets(Enemy *enemy,
             local_dc.aimMode = 6;
             angle = 1.5707964f;
             local_dc.AddTargetVelocityCommand(
-                0, 0, 0xb4, g_Rng.GetRandomFloatInRange(0.005f) + 0.013f, angle);
+                0, 0, 180, g_Rng.GetRandomFloatInRange(0.005f) + 0.013f, angle);
             g_BulletManager.SpawnBulletPattern(&local_dc);
             bullet->Initialize();
         }
@@ -227,7 +227,7 @@ void EnemyEclInstr::ExInsSplitBulletsOrShootBackwards(Enemy *enemy,
     bullet = g_BulletManager.bullets;
     memset(&local_dc, 0, sizeof(EnemyBulletShooter));
     local_dc.soundOverride = -1;
-    for (i = 0; i < 0x400; i += 1)
+    for (i = 0; i < 0x400; i++)
     {
         if ((((bullet->state != BULLET_INACTIVE) &&
               (bullet->state != BULLET_DESPAWN)) &&
@@ -516,7 +516,7 @@ void EnemyEclInstr::ExInsYoumuSetGameSpeed(Enemy *enemy, EclRawInstr *instr)
     g_Stage.spellcardVms[0].pendingInterrupt = 2;
     g_Stage.spellcardVms[1].pendingInterrupt = 2;
     bullet = g_BulletManager.bullets;
-    for (i = 0; i < 0x400; i += 1)
+    for (i = 0; i < 0x400; i++)
     {
         if (bullet->state != BULLET_INACTIVE)
         {
@@ -540,7 +540,7 @@ void EnemyEclInstr::ExInsYoumuRestoreGameSpeed(Enemy *enemy, EclRawInstr *instr)
     i32 i;
 
     bullet = g_BulletManager.bullets;
-    for (i = 0; i < 0x400; i += 1)
+    for (i = 0; i < 0x400; i++)
     {
         if (bullet->state != BULLET_INACTIVE)
         {
@@ -596,7 +596,7 @@ void EnemyEclInstr::ExInsBurstLargeBullets(Enemy *enemy, EclRawInstr *instr)
         }
         local_100 = local_104;
     }
-    for (i = 0; i < 0x400; i += 1)
+    for (i = 0; i < 0x400; i++)
     {
         if ((bullet->state != BULLET_INACTIVE) &&
             (((((g_GameManager.difficulty < 2 &&
@@ -662,7 +662,7 @@ void EnemyEclInstr::ExInsYoumuCurveBulletsBelow(Enemy *enemy,
     i32 i;
 
     bullet = g_BulletManager.bullets;
-    for (i = 0; i < 0x400; i += 1)
+    for (i = 0; i < 0x400; i++)
     {
         if ((((bullet->state != BULLET_INACTIVE) && (bullet->state2 == 0)) &&
              (enemy->position.y < bullet->pos.y)) &&
@@ -695,7 +695,7 @@ void EnemyEclInstr::ExInsYoumuRedirectBulletsToPlayer(Enemy *enemy,
 
     bullet = g_BulletManager.bullets;
     BombEffects::RegisterChain(3, 0x10, 1, 0x50cfcfff, 0);
-    for (i = 0; i < 0x400; i += 1)
+    for (i = 0; i < 0x400; i++)
     {
         if ((bullet->state != BULLET_INACTIVE) && (bullet->state2 == 1))
         {
@@ -725,7 +725,7 @@ void EnemyEclInstr::ExInsYuyukoTransformButterflyBullets(Enemy *enemy,
     bullet = g_BulletManager.bullets;
     memset(&local_e4, 0, sizeof(EnemyBulletShooter));
     local_e4.soundOverride = -1;
-    for (i = 0; i < 0x400; i += 1)
+    for (i = 0; i < 0x400; i++)
     {
         if ((((bullet->state != BULLET_INACTIVE) && (bullet->state2 == 0)) &&
              (0x277 < bullet->sprites.spriteBullet.activeSpriteIdx)) &&
@@ -793,7 +793,7 @@ void EnemyEclInstr::ExInsYuyukoCountButterflyBullets(Enemy *enemy,
 
     bullet = g_BulletManager.bullets;
     enemy->currentContext.eclContextArgs.intVars1[0] = 0;
-    for (i = 0; i < 0x400; i += 1)
+    for (i = 0; i < 0x400; i++)
     {
         if (((bullet->state != BULLET_INACTIVE) && (bullet->state2 == 0)) &&
             (bullet->sprites.spriteBullet.activeSpriteIdx == 0x27c))
@@ -827,7 +827,7 @@ void EnemyEclInstr::ExInsBurstLargeBullets2(Enemy *enemy, EclRawInstr *instr)
         local_104 = 180.0f;
     }
     BombEffects::RegisterChain(3, 8, 1, 0x50cfcfff, 0);
-    for (i = 0; i < 0x400; i += 1)
+    for (i = 0; i < 0x400; i++)
     {
         if ((((bullet->state != BULLET_INACTIVE) &&
               (48.0f < (bullet->sprites.spriteBullet.sprite)->heightPx)) &&
@@ -908,7 +908,7 @@ void EnemyEclInstr::ExInsSpawnBulletsWithDirChange(Enemy *enemy,
     local_e4.soundOverride = -1;
     if (enemy->timer.current % 3 != 0)
     {
-        for (i = 0; i < 0x400; i += 1)
+        for (i = 0; i < 0x400; i++)
         {
             if ((((bullet->state != BULLET_INACTIVE) &&
                   ((bullet->exFlags & 0x40U) == 0)) &&
@@ -944,7 +944,7 @@ void EnemyEclInstr::ExInsSpawnBulletsWithDirChange(Enemy *enemy,
                 local_e4.soundOverride = SOUND_25;
                 if (enemy->timer.current % 2 != 0)
                 {
-                    local_e4.AddDirChangeCommand(0, 0, 0x3c, 1, 0.0f, 3.1f);
+                    local_e4.AddDirChangeCommand(0, 0, 60, 1, 0.0f, 3.1f);
                 }
                 g_BulletManager.SpawnBulletPattern(&local_e4);
             }
@@ -968,7 +968,7 @@ void EnemyEclInstr::ExInsSpawnBulletsWithDirChange2(Enemy *enemy,
     if (enemy->timer.current % 3 != 2)
     {
         iVar1 = enemy->timer.current % 3;
-        for (i = 0; i < 0x400; i += 1)
+        for (i = 0; i < 0x400; i++)
         {
             if ((((bullet->state != BULLET_INACTIVE) &&
                   ((bullet->exFlags & 0x40U) == 0)) &&

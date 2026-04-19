@@ -100,15 +100,18 @@ struct GameManager
     i32 CheckGameIntegrity()
 
     {
-        if ((this->globals->curCsum ==
-             this->globals->csumData[2] *
-                     ((i32)this->globals + (0x130 - (i32)this->globals->rng1)) +
-                 this->globals->rng1[2]) &&
-            (this->globals->csumAsSum + this->globals->rng2[3] ==
-             (i32)this->csumFloat))
+        if (this->globals->curCsum ==
+            this->globals->csumData[2] *
+                    ((i32)this->globals + (0x130 - (i32)this->globals->rng1)) +
+                this->globals->rng1[2])
         {
-            return 0;
+            if (this->globals->csumAsSum + this->globals->rng2[3] ==
+                (i32)this->csumFloat)
+            {
+                return 0;
+            }
         }
+
         return 1;
     }
 
@@ -134,7 +137,7 @@ struct GameManager
     {
         if (CheckGameIntegrity() != 0)
         {
-            g_Supervisor.Nuke();
+            memset(&g_Supervisor, -1, sizeof(Supervisor));
         }
         this->globals->deaths += (f32)amount;
         RegenerateGameIntegrityCsum();
@@ -146,7 +149,7 @@ struct GameManager
     {
         if (CheckGameIntegrity() != 0)
         {
-            g_Supervisor.Nuke();
+            NUKE_SUPERVISOR();
         }
         this->globals->bombsUsed += (f32)amount;
         RegenerateGameIntegrityCsum();
@@ -203,9 +206,19 @@ struct GameManager
     u8 character;
     u8 shotType;
     u8 shotTypeAndCharacter;
-    u32 flags;
-    u8 isInGameMenu;
+    union {
+        u32 flags;
+        struct
+        {
+            u32 practice : 1;
+            u32 demo : 1;
+            u32 notInMenu : 1;
+            u32 replay : 1;
+            u32 finished : 1;
+        };
+    };
     u8 isInRetryMenu;
+    u8 isInPauseMenu;
     u8 demoIdx;
     u8 replayStage;
     i32 demoFrames;

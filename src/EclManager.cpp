@@ -41,6 +41,8 @@ EclGlobalVars g_GlobalEclVars;
 // FUNCTION: TH07 0x0040e420
 ZunResult EclManager::Load(const char *path)
 {
+    i32 i;
+
     this->eclFile = (EclRawHeader *)FileSystem::OpenFile(path, 0);
     if (this->eclFile == NULL)
     {
@@ -48,22 +50,19 @@ ZunResult EclManager::Load(const char *path)
         g_GameErrorContext.Log("敵データの読み込みに失敗しました、データが壊れてるか失われています\r\n");
         return ZUN_ERROR;
     }
-    else
+
+    for (i = 0; i < 0x10; i++)
     {
-        for (i32 i = 0; i < 0x10; i += 1)
-        {
-            this->eclFile->timelinePtr[i] =
-                (EclTimelineInstr *)((u8 *)this->eclFile +
-                                     (i32)this->eclFile->timelinePtr[i]);
-        }
-        this->subTable = (EclRawInstr **)(this->eclFile + 1);
-        for (i32 i = 0; i < this->eclFile->subCount; i += 1)
-        {
-            this->subTable[i] =
-                (EclRawInstr *)((u8 *)this->eclFile + (i32)this->subTable[i]);
-        }
-        return ZUN_SUCCESS;
+        this->eclFile->timelinePtr[i] =
+            (EclTimelineInstr *)((i32)this->eclFile->timelinePtr[i] + (i32)this->eclFile);
     }
+    this->subTable = this->eclFile->subTable;
+    for (i = 0; i < this->eclFile->subCount; i++)
+    {
+        this->subTable[i] =
+            (EclRawInstr *)((i32)this->subTable[i] + (i32)this->eclFile);
+    }
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x0040e4f0
@@ -766,7 +765,7 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
     g_EnemyManager.spellcardInfo.grazeBonusScore = 0;
     g_EnemyManager.spellcardInfo.scoreDrainRate =
         (i32)g_EnemyManager.spellcardInfo.captureScore /
-        (enemy->timerCallbackThreshold / 0x3c + 10);
+        (enemy->timerCallbackThreshold / 60 + 10);
     g_EnemyManager.timer.Initialize(0);
     enemy->bulletRankSpeedLow = -0.5f;
     enemy->bulletRankSpeedHigh = 0.5f;
@@ -786,7 +785,7 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
     enemy->specialEffect->pos1 = enemy->position;
     enemy->flags4 = enemy->flags4 & 0xfd;
     uVar3 = g_EnemyManager.spellcardInfo.spellcardIdx;
-    if ((g_GameManager.flags >> 3 & 1) == 0)
+    if (g_GameManager.replay == 0)
     {
         iVar6 = g_EnemyManager.spellcardInfo.spellcardIdx * 0x78;
         local_44 = 0;
@@ -799,7 +798,7 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
             local_44 += g_GameManager.catk[uVar3].name[i];
         }
         local_48 = local_44;
-        for (i = 0; i < 7; i += 1)
+        for (i = 0; i < 7; i++)
         {
             local_44 = local_44 +
                        (u32)g_GameManager.catk[iVar6].numSuccessesPerShot[i] +
@@ -808,7 +807,7 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
         }
         if (g_GameManager.catk[uVar3].nameCsum != (char)local_44)
         {
-            for (i = 0; i < 7; i += 1)
+            for (i = 0; i < 7; i++)
             {
                 g_GameManager.catk[iVar6].numSuccessesPerShot[i] = 0;
                 g_GameManager.catk[iVar6].numAttemptsPerShot[i] = 0;
@@ -826,7 +825,7 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
             g_GameManager.catk[uVar3].numAttemptsPerShot[6] =
                 g_GameManager.catk[uVar3].numAttemptsPerShot[6] + 1;
         }
-        for (i = 0; i < 7; i += 1)
+        for (i = 0; i < 7; i++)
         {
             local_48 = local_48 +
                        (u32)g_GameManager.catk[iVar6].numSuccessesPerShot[i] +
@@ -867,7 +866,7 @@ void EclManager::EndSpellcard()
                 g_Gui.ShowSpellcardBonus(fmtArg);
                 g_GameManager.globals->score =
                     (i32)fmtArg / 10 + g_GameManager.globals->score;
-                if ((g_GameManager.flags >> 3 & 1) == 0)
+                if (g_GameManager.replay == 0)
                 {
                     local_18 = 0;
                     local_10 = strlen(
@@ -955,7 +954,7 @@ void EclManager::EndSpellcard()
             }
         }
         g_EnemyManager.spellcardInfo.isActive = 0;
-        for (i = 0; i < 8; i += 1)
+        for (i = 0; i < 8; i++)
         {
             if ((g_EnemyManager.bosses[i] != NULL) &&
                 (g_EnemyManager.bosses[i]->specialEffect != NULL))
@@ -1028,9 +1027,7 @@ restart:
     }
     if (enemy->periodicCallbackSub >= 0)
     {
-        enemy->periodicCounter.previous = enemy->periodicCounter.current;
-        g_Supervisor.TickTimer(&enemy->periodicCounter.current,
-                               &enemy->periodicCounter.subFrame);
+        enemy->periodicCounter.Tick();
         if (enemy->periodicTimer.current <= enemy->periodicCounter.current)
         {
             enemy->periodicCounter.Initialize(0);
@@ -1148,10 +1145,7 @@ restart:
             {
                 if (0 < enemy->shootInterval)
                 {
-                    enemy->shootIntervalTimer.previous =
-                        enemy->shootIntervalTimer.current;
-                    g_Supervisor.TickTimer(&enemy->shootIntervalTimer.current,
-                                           &enemy->shootIntervalTimer.subFrame);
+                    enemy->shootIntervalTimer.Tick();
                     if (enemy->shootInterval <= enemy->shootIntervalTimer.current)
                     {
                         enemy->bulletProps.position = enemy->position + enemy->shootOffset;
@@ -1248,9 +1242,7 @@ restart:
                 {
                     if (local_fc->fn != NULL)
                     {
-                        local_fc->timer.previous = local_fc->timer.current;
-                        g_Supervisor.TickTimer(&local_fc->timer.current,
-                                               &local_fc->timer.subFrame);
+                        local_fc->timer.Tick();
                         if (local_fc->args[0].i <= local_fc->timer.current)
                         {
                             local_fc->timer.Initialize(local_fc->args[0].i);
@@ -1311,9 +1303,7 @@ restart:
                 }
             }
             enemy->currentContext.curInstr = instr;
-            enemy->currentContext.time.previous = enemy->currentContext.time.current;
-            g_Supervisor.TickTimer(&enemy->currentContext.time.current,
-                                   &enemy->currentContext.time.subFrame);
+            enemy->currentContext.time.Tick();
             if ((((enemy->flags2 >> 6 & 1) != 0) && (enemy->bossId == 0)) &&
                 ((g_EnemyManager.spellcardInfo.isActive != 0 &&
                   (g_EnemyManager.spellcardInfo.isCapturing != 0))))
@@ -1329,9 +1319,7 @@ restart:
                             60.0;
                     g_EnemyManager.spellcardInfo.captureScore = uVar17 - (i32)uVar17 % 10;
                 }
-                g_EnemyManager.timer.previous = g_EnemyManager.timer.current;
-                g_Supervisor.TickTimer(&g_EnemyManager.timer.current,
-                                       &g_EnemyManager.timer.subFrame);
+                g_EnemyManager.timer.Tick();
             }
             if (((enemy->flags2 >> 6 & 1) != 0) && (6 < g_GameManager.currentStage))
             {
@@ -2083,7 +2071,7 @@ restart:
                 enemy->moveInterpTimer.Initialize(local_1d4);
                 break;
             }
-            case 0x3c: {
+            case 60: {
                 enemy->flags1 = enemy->flags1 | 3;
                 i32 local_1dc = (instr->paramMask & 1) == 0
                                     ? instr->args[0].i

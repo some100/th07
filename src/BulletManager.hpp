@@ -94,7 +94,7 @@ struct EnemyBulletShooter
 
 struct EnemyLaserShooter
 {
-    u16 sprite;
+    i16 sprite;
     i16 spriteOffset;
     D3DXVECTOR3 position;
     f32 angle1;
@@ -112,7 +112,7 @@ struct EnemyLaserShooter
     i32 grazeDelay;
     i32 aimMode;
     i32 unused_bc;
-    i16 type;
+    u16 type;
     i16 unused_c2;
     u32 flags;
     i32 unused_c8;

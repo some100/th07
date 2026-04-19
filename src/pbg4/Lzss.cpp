@@ -352,11 +352,11 @@ void Lzss::InitializeDictionary()
 {
     i32 i;
 
-    for (i = 0; i < 0x2000; i = i + 1)
+    for (i = 0; i < 0x2000; i++)
     {
         g_LzssDictionary[i] = 0;
     }
-    for (i = 0; i < 0x2001; i = i + 1)
+    for (i = 0; i < 0x2001; i++)
     {
         g_LzssTree[i].parent = 0;
         g_LzssTree[i].leftChild = 0;

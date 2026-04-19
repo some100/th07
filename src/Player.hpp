@@ -157,8 +157,8 @@ struct Player
     void BreakBorder(u32 unused);
     void BreakBorderNaturally();
 
-    i32 CalcItemBoxCollision(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2);
-    i32 CalcKillboxCollision(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2);
+    i32 CalcItemBoxCollision(D3DXVECTOR3 *center, D3DXVECTOR3 *size);
+    i32 CalcKillboxCollision(D3DXVECTOR3 *center, D3DXVECTOR3 *size);
     i32 CalcLaserHitbox(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
                         D3DXVECTOR3 *param_3, f32 param_4, i32 canGraze);
     i32 CheckBombGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size);

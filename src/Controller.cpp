@@ -403,7 +403,7 @@ void Controller::ResetKeyboard()
     u8 key_states[256];
 
     GetKeyboardState(key_states);
-    for (i32 i = 0; i < 0x100; i = i + 1)
+    for (i32 i = 0; i < 0x100; i++)
     {
         key_states[i] = key_states[i] & 0x7f;
     }

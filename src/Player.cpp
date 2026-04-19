@@ -14,6 +14,7 @@
 #include "SoundPlayer.hpp"
 #include "Stage.hpp"
 #include "ZunMath.hpp"
+#include "d3dx8.h"
 #include "dxutil.hpp"
 #include "utils.hpp"
 
@@ -467,7 +468,7 @@ i32 ShtData::UpdatePlayerLaser(Player *player, PlayerBullet *bullet)
         {
             bullet->vm.pendingInterrupt = 1;
         }
-        for (i32 i = 0; i < bullet->trailLength; i += 1)
+        for (i32 i = 0; i < bullet->trailLength; i++)
         {
             if (-900.0f <= bullet->posHistory[i].x)
             {
@@ -699,7 +700,7 @@ void Player::UpdateShots()
     }
     if (this->playerState == PLAYER_STATE_DEAD)
     {
-        for (i32 i = 0; i < 3; i += 1)
+        for (i32 i = 0; i < 3; i++)
         {
             if (this->timers[i].bullet != NULL)
             {
@@ -708,7 +709,7 @@ void Player::UpdateShots()
             }
         }
     }
-    for (i32 i = 0; i < 3; i += 1)
+    for (i32 i = 0; i < 3; i++)
     {
         if (this->timers[i].bullet != NULL)
         {
@@ -716,7 +717,7 @@ void Player::UpdateShots()
             {
                 this->timers[i].Decrement(1);
             }
-            if (((this->fireBulletTimer).current < 0) &&
+            if ((this->fireBulletTimer.current < 0) &&
                 (0x32 < this->timers[i].current))
             {
                 this->timers[i].Initialize(0x32);
@@ -728,7 +729,7 @@ void Player::UpdateShots()
         }
     }
     bullet = this->bullets;
-    for (i32 i = 0; i < 0x60; i += 1)
+    for (i32 i = 0; i < 0x60; i++)
     {
         if (bullet->bulletState != 0)
         {
@@ -741,8 +742,8 @@ void Player::UpdateShots()
                     g_Supervisor.effectiveFramerateMultiplier * bullet->velocity.y;
                 if (((bullet->bulletState2 != 4) && (bullet->bulletState2 != 5)) &&
                     (g_GameManager.IsInBounds(bullet->pos.x, bullet->pos.y,
-                                             bullet->vm.sprite->widthPx,
-                                             bullet->vm.sprite->heightPx) == 0))
+                                              bullet->vm.sprite->widthPx,
+                                              bullet->vm.sprite->heightPx) == 0))
                 {
                     bullet->bulletState = 0;
                 }
@@ -750,8 +751,7 @@ void Player::UpdateShots()
                 {
                     bullet->bulletState = 0;
                 }
-                bullet->timer.previous = bullet->timer.current;
-                g_Supervisor.TickTimer(&bullet->timer.current, &bullet->timer.subFrame);
+                bullet->timer.Tick();
             }
             else
             {
@@ -766,7 +766,7 @@ void Player::UpdateShots()
 void Player::DrawBullets()
 {
     PlayerBullet *bullet = this->bullets;
-    for (i32 i = 0; i < 0x60; i += 1)
+    for (i32 i = 0; i < 0x60; i++)
     {
         if (bullet->bulletState == 1)
         {
@@ -793,7 +793,7 @@ void Player::DrawBullets()
 void Player::DrawBulletExplosions()
 {
     PlayerBullet *bullet = this->bullets;
-    for (i32 i = 0; i < 0x60; i += 1)
+    for (i32 i = 0; i < 0x60; i++)
     {
         if (bullet->bulletState == 2)
         {
@@ -815,24 +815,22 @@ void Player::DrawBulletExplosions()
 // FUNCTION: TH07 0x0043d880
 void Player::UpdateFireBulletTimer()
 {
-    if (-1 < (this->fireBulletTimer).current)
+    if (-1 < this->fireBulletTimer.current)
     {
-        if (((this->fireBulletTimer).current != (this->fireBulletTimer).previous) &&
+        if ((this->fireBulletTimer.current != this->fireBulletTimer.previous) &&
             (((g_Player.bombInfo.isInUse == 0 ||
                (g_GameManager.character != CHAR_MARISA)) ||
               (g_GameManager.shotType != 1))))
         {
-            SpawnBullets(this, (this->fireBulletTimer).current);
+            SpawnBullets(this, this->fireBulletTimer.current);
         }
-        (this->fireBulletTimer).previous = (this->fireBulletTimer).current;
-        g_Supervisor.TickTimer(&(this->fireBulletTimer).current,
-                               &(this->fireBulletTimer).subFrame);
-        if (((0x1d < (this->fireBulletTimer).current) ||
+        this->fireBulletTimer.Tick();
+        if (((0x1d < this->fireBulletTimer.current) ||
              (this->playerState == PLAYER_STATE_DEAD)) ||
             (this->playerState == PLAYER_STATE_SPAWNING))
         {
 
-            (this->fireBulletTimer).Initialize(-1);
+            this->fireBulletTimer.Initialize(-1);
         }
     }
 }
@@ -840,7 +838,7 @@ void Player::UpdateFireBulletTimer()
 // FUNCTION: TH07 0x0043d990
 void Player::StartFireBulletTimer()
 {
-    if ((this->fireBulletTimer).current < 0)
+    if (this->fireBulletTimer.current < 0)
     {
         this->fireBulletTimer.Initialize(0);
     }
@@ -881,7 +879,7 @@ i32 Player::CheckCollisionWithEnemy(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
         {
             *param_3 = 0;
         }
-        for (i = 0; i < 0x60; i += 1)
+        for (i = 0; i < 0x60; i++)
         {
             if ((bullet->bulletState != 0) &&
                 ((bullet->bulletState == 1 || (bullet->bulletState2 == 3))))
@@ -937,7 +935,7 @@ i32 Player::CheckCollisionWithEnemy(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
         LAB_0043da96:
             bullet = bullet + 1;
         }
-        for (i = 0; i < 0x70; i += 1)
+        for (i = 0; i < 0x70; i++)
         {
             fVar3 = this->bombProjectiles[i].size.x;
             if (fVar3 < 0.0f == (fVar3 == 0.0f))
@@ -1090,110 +1088,89 @@ i32 Player::CheckGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
     return 1;
 }
 
+#pragma var_order(itemBottomRight, itemTopLeft)
 // FUNCTION: TH07 0x0043e4e0
-i32 Player::CalcItemBoxCollision(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2)
+i32 Player::CalcItemBoxCollision(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
 {
-    if (((this->playerState == PLAYER_STATE_ALIVE) ||
-         (this->playerState == PLAYER_STATE_INVULNERABLE)) ||
-        (this->playerState == PLAYER_STATE_BORDER))
-    {
-        if (((param_2->x * 0.5f + param_1->x < this->grabItemTopLeft.x) ||
-             (this->grabItemBottomRight.x < param_1->x - param_2->x * 0.5f)) ||
-            ((param_2->y * 0.5f + param_1->y < this->grabItemTopLeft.y ||
-              (this->grabItemBottomRight.y < param_1->y - param_2->y * 0.5f))))
-        {
-            return 0;
-        }
-        else
-        {
-            return 1;
-        }
-    }
-    else
-    {
+    D3DXVECTOR3 itemBottomRight;
+    D3DXVECTOR3 itemTopLeft;
+
+    if (this->playerState != PLAYER_STATE_ALIVE &&
+        this->playerState != PLAYER_STATE_INVULNERABLE &&
+        this->playerState != PLAYER_STATE_BORDER)
         return 0;
-    }
+
+    memcpy(&itemTopLeft, &(*center - *size / 2.0f), sizeof(D3DXVECTOR3));
+    memcpy(&itemBottomRight, &(*center + *size / 2.0f), sizeof(D3DXVECTOR3));
+
+    if (this->grabItemTopLeft.x > itemBottomRight.x ||
+        this->grabItemBottomRight.x < itemTopLeft.x ||
+        this->grabItemTopLeft.y > itemBottomRight.y ||
+        this->grabItemBottomRight.y < itemTopLeft.y)
+        return 0;
+
+    return 1;
 }
 
+#pragma var_order(playerRelativeTopLeft, laserBottomRight, laserTopLeft, playerRelativeBottomRight)
 // FUNCTION: TH07 0x0043e6b0
 i32 Player::CalcLaserHitbox(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
                             D3DXVECTOR3 *param_3, f32 param_4, i32 canGraze)
 {
-    f32 fVar1;
-    f32 fVar2;
-    D3DXVECTOR3 local_28;
-    D3DXVECTOR3 local_1c;
-    f32 local_10;
-    f32 local_c;
-    f32 local_8;
+    D3DXVECTOR3 playerRelativeTopLeft;
+    D3DXVECTOR3 playerRelativeBottomRight;
+    D3DXVECTOR3 laserTopLeft;
+    D3DXVECTOR3 laserBottomRight;
 
-    local_28.z = this->positionCenter.z - param_3->z;
-    local_28.y = this->positionCenter.y - param_3->y;
-    local_28.x = this->positionCenter.x - param_3->x;
-    utils::Rotate(&local_1c, &local_28, param_4);
-    local_1c.y = local_1c.y + param_3->y;
-    local_1c.x = local_1c.x + param_3->x;
-    local_8 = (param_3->z + 0.0f) - this->hitboxSize.z;
-    local_c = local_1c.y - this->hitboxSize.y;
-    local_10 = local_1c.x - this->hitboxSize.x;
-    fVar1 = local_1c.y + this->hitboxSize.y;
-    fVar2 = local_1c.x + this->hitboxSize.x;
-    local_28.z = param_1->z - param_2->z * 0.5f;
-    local_28.y = param_1->y - param_2->y * 0.5f;
-    local_28.x = param_1->x - param_2->x * 0.5f;
-    local_1c.z = param_2->z * 0.5f + param_1->z;
-    local_1c.y = param_2->y * 0.5f + param_1->y;
-    local_1c.x = param_2->x * 0.5f + param_1->x;
-    if ((((local_1c.x < local_10) || (fVar2 < local_28.x)) ||
-         (local_1c.y < local_c)) ||
-        (fVar1 < local_28.y))
+    laserTopLeft = this->positionCenter - *param_3;
+    utils::Rotate(&laserBottomRight, &laserTopLeft, param_4);
+    laserBottomRight.z = 0;
+    laserTopLeft = laserBottomRight + *param_3;
+    playerRelativeTopLeft = laserTopLeft - this->hitboxSize;
+    playerRelativeBottomRight = laserTopLeft + this->hitboxSize;
+
+    laserTopLeft = *param_1 - *param_2 / 2.0f;
+    laserBottomRight = *param_1 + *param_2 / 2.0f;
+    if (!(playerRelativeTopLeft.x > laserBottomRight.x ||
+          playerRelativeBottomRight.x < laserTopLeft.x ||
+          playerRelativeTopLeft.y > laserBottomRight.y ||
+          playerRelativeBottomRight.y < laserTopLeft.y))
+        goto LASER_COLLISION;
+
+    if (canGraze == 0)
+        return 0;
+
+    laserTopLeft.x -= 48.0f;
+    laserTopLeft.y -= 48.0f;
+    laserBottomRight.x += 48.0f;
+    laserBottomRight.y += 48.0f;
+    if (playerRelativeTopLeft.x > laserBottomRight.x ||
+        playerRelativeBottomRight.x < laserTopLeft.x ||
+        playerRelativeTopLeft.y > laserBottomRight.y ||
+        playerRelativeBottomRight.y < laserTopLeft.y)
+        return 0;
+
+    if ((this->playerState == PLAYER_STATE_DEAD) ||
+        (this->playerState == PLAYER_STATE_SPAWNING))
+        return 0;
+
+    ScoreGraze(&this->positionCenter);
+    return 2;
+
+LASER_COLLISION:
+    g_ReplayManager->replayEventFlags = g_ReplayManager->replayEventFlags | 2;
+    if (this->playerState == PLAYER_STATE_BORDER)
     {
-        if (canGraze == 0)
-        {
-            return 0;
-        }
-        else
-        {
-            local_28.x = local_28.x - 48.0f;
-            local_28.y = local_28.y - 48.0f;
-            local_1c.x = local_1c.x + 48.0f;
-            local_1c.y = local_1c.y + 48.0f;
-            if (((local_1c.x < local_10) || (fVar2 < local_28.x)) ||
-                ((local_1c.y < local_c || (fVar1 < local_28.y))))
-            {
-                return 0;
-            }
-            else if ((this->playerState == PLAYER_STATE_DEAD) ||
-                     (this->playerState == PLAYER_STATE_SPAWNING))
-            {
-                return 0;
-            }
-            else
-            {
-                ScoreGraze(&this->positionCenter);
-                return 2;
-            }
-        }
+        // this is already a member function of Player though
+        g_Player.BreakBorder(0);
+        return 1;
     }
-    else
-    {
-        g_ReplayManager->replayEventFlags = g_ReplayManager->replayEventFlags | 2;
-        if (this->playerState == PLAYER_STATE_BORDER)
-        {
-            g_Player.BreakBorder(0);
-            return 1;
-        }
-        else if (this->playerState == PLAYER_STATE_ALIVE)
-        {
-            g_GameManager.RerollRng();
-            Die();
-            return 1;
-        }
-        else
-        {
-            return 0;
-        }
-    }
+    if (this->playerState != PLAYER_STATE_ALIVE)
+        return 0;
+
+    g_GameManager.RerollRng();
+    Die();
+    return 1;
 }
 
 // FUNCTION: TH07 0x0043eb90
@@ -1460,9 +1437,7 @@ void Player::HandlePlayerInputs()
             }
             break;
         case ORB_FOCUSING:
-            this->focusMovementTimer.previous = this->focusMovementTimer.current;
-            g_Supervisor.TickTimer(&this->focusMovementTimer.current,
-                                   &this->focusMovementTimer.subFrame);
+            this->focusMovementTimer.Tick();
             fVar1 = ((f32)this->focusMovementTimer.current +
                      this->focusMovementTimer.subFrame) /
                     8.0f;
@@ -1482,9 +1457,7 @@ void Player::HandlePlayerInputs()
                 this->focusEffect->vm.pendingInterrupt = 1;
             }
         switchD_0043f936_caseD_4:
-            this->focusMovementTimer.previous = this->focusMovementTimer.current;
-            g_Supervisor.TickTimer(&this->focusMovementTimer.current,
-                                   &this->focusMovementTimer.subFrame);
+            this->focusMovementTimer.Tick();
             fVar1 = ((f32)this->focusMovementTimer.current +
                      this->focusMovementTimer.subFrame) /
                     8.0f;
@@ -1559,9 +1532,7 @@ void Player::HandlePlayerInputs()
                 }
                 goto CASE_ORB_UNFOCUSING;
             }
-            this->focusMovementTimer.previous = this->focusMovementTimer.current;
-            g_Supervisor.TickTimer(&this->focusMovementTimer.current,
-                                   &this->focusMovementTimer.subFrame);
+            this->focusMovementTimer.Tick();
             fVar1 = ((f32)this->focusMovementTimer.current +
                      this->focusMovementTimer.subFrame) /
                     8.0f;
@@ -1599,9 +1570,7 @@ void Player::HandlePlayerInputs()
         case ORB_UNFOCUSING:
             if (this->isFocus == 0)
             {
-                this->focusMovementTimer.previous = this->focusMovementTimer.current;
-                g_Supervisor.TickTimer(&this->focusMovementTimer.current,
-                                       &this->focusMovementTimer.subFrame);
+                this->focusMovementTimer.Tick();
                 fVar1 = 1.0f - ((f32)this->focusMovementTimer.current +
                                 this->focusMovementTimer.subFrame) /
                                    8.0f;
@@ -1682,12 +1651,12 @@ switchD_0043fe16_default:
 // FUNCTION: TH07 0x00440940
 void Player::UpdateBombProjectiles()
 {
-    for (i32 i = 0; i < 0x70; i += 1)
+    for (i32 i = 0; i < 0x70; i++)
     {
         this->bombProjectiles[i].size.x = 0.0f;
     }
     BombProjectile *local_c = this->bombHitboxes;
-    for (i32 i = 0; i < 0x60; i += 1)
+    for (i32 i = 0; i < 0x60; i++)
     {
         if (local_c->lifetime < 1)
         {
@@ -1837,7 +1806,7 @@ i32 Player::UpdateDeath()
                 g_Gui.flags = (g_Gui.flags & 0xfffffff3) | 8;
                 return 1;
             }
-            g_GameManager.isInRetryMenu = 1;
+            g_GameManager.isInPauseMenu = 1;
         }
     }
     else
@@ -1911,7 +1880,7 @@ i32 Player::UpdateDeath()
 // FUNCTION: TH07 0x004411c0
 void Player::Respawn()
 {
-    this->bulletGracePeriod = 0x3c;
+    this->bulletGracePeriod = 60;
     f32 fVar1 = 1.0f - ((f32)this->invulnerabilityTimer.current +
                         this->invulnerabilityTimer.subFrame) /
                            30.0f;
@@ -1982,7 +1951,7 @@ void Player::UpdateState()
             this->borderEffect->pos1 = this->positionCenter;
         }
         g_GameManager.cherryPlus = (this->invulnerabilityTimer.current * 50000) /
-                                   (this->borderTimer).current;
+                                   this->borderTimer.current;
         if (g_GameManager.cherryPlus < 0)
         {
             g_GameManager.cherryPlus = 0;
@@ -2035,9 +2004,7 @@ void Player::UpdateState()
     }
     else
     {
-        this->invulnerabilityTimer.previous = this->invulnerabilityTimer.current;
-        g_Supervisor.TickTimer(&this->invulnerabilityTimer.current,
-                               &this->invulnerabilityTimer.subFrame);
+        this->invulnerabilityTimer.Tick();
     }
 }
 
@@ -2146,9 +2113,7 @@ void Player::ActivateBorder()
         if (this->playerState != PLAYER_STATE_INVULNERABLE)
         {
             this->invulnerabilityTimer.Initialize(0x21c);
-            (this->borderTimer).previous = this->invulnerabilityTimer.previous;
-            (this->borderTimer).subFrame = this->invulnerabilityTimer.subFrame;
-            (this->borderTimer).current = this->invulnerabilityTimer.current;
+            this->borderTimer = this->invulnerabilityTimer;
             this->hasBorder = BORDER_ACTIVE;
             this->playerState = PLAYER_STATE_BORDER;
             if (this->borderEffect != NULL)
@@ -2321,7 +2286,7 @@ u32 Player::OnDrawHighPrio(Player *arg)
             arg->bombInfo.drawFocus(arg);
         }
     }
-    if (g_GameManager.isInRetryMenu == 0)
+    if (g_GameManager.isInPauseMenu == 0)
     {
         (arg->playerSprite).pos.x =
             g_GameManager.arcadeRegionTopLeftPos.x + arg->positionCenter.x;
@@ -2477,7 +2442,7 @@ ZunResult Player::AddedCallback(Player *arg)
             arg->positionCenter.z = 0.49f;
             arg->orbsPosition[0].z = 0.49f;
             arg->orbsPosition[1].z = 0.49f;
-            for (i = 0; i < 0x80; i += 1)
+            for (i = 0; i < 0x80; i++)
             {
                 arg->bombProjectiles[i].size.x = 0.0f;
             }
@@ -2501,7 +2466,7 @@ ZunResult Player::AddedCallback(Player *arg)
             g_AnmManager->SetAndExecuteScript(arg->orbsSprite + 1,
                                               g_AnmManager->scripts[0x481]);
             bullet = arg->bullets;
-            for (i = 0; i < 0x60; i += 1)
+            for (i = 0; i < 0x60; i++)
             {
                 bullet->bulletState = 0;
                 bullet = bullet + 1;
@@ -2629,7 +2594,7 @@ ZunResult ShtData::LoadShtData(ShtData **data, const char *shtPath)
     }
     else
     {
-        for (i32 i = 0; i < (i32)(u32)(*data)->entryCount; i += 1)
+        for (i32 i = 0; i < (i32)(u32)(*data)->entryCount; i++)
         {
             (&(*data)->levels)[i].entry =
                 (ShtEntry *)((u8 *)&(*data)->numLevels +

@@ -383,7 +383,7 @@ ZunResult ResultScreen::ParseClrd(ScoreDat *scoreDat, Clrd *clrd)
     }
     else
     {
-        for (i = 0; i < 6; i = i + 1)
+        for (i = 0; i < 6; i++)
         {
             memset(clrd + i, 0, sizeof(Clrd));
             clrd[i].magic = 'CLRD';
@@ -538,7 +538,7 @@ void ResultScreen::WriteScore()
         if (5 < i)
         {
             clrd = g_GameManager.clrd;
-            for (i = 0; i < 6; i += 1)
+            for (i = 0; i < 6; i++)
             {
                 clrd->magic = 'CLRD';
                 clrd->th7kLen2 = sizeof(Clrd);
@@ -549,7 +549,7 @@ void ResultScreen::WriteScore()
                 clrd = clrd + 1;
             }
             catk = g_GameManager.catk;
-            for (i = 0; i < 0x8d; i += 1)
+            for (i = 0; i < 0x8d; i++)
             {
                 if (catk->magic == 'CATK')
                 {
@@ -563,7 +563,7 @@ void ResultScreen::WriteScore()
                 catk = catk + 1;
             }
             pscr = &g_GameManager.pscr[0][0][0];
-            for (i = 0; i < 6; i += 1)
+            for (i = 0; i < 6; i++)
             {
                 for (j = 0; j < 6; j += 1)
                 {
@@ -653,7 +653,7 @@ void ResultScreen::WriteScore()
                 local_c += 1;
             } while (local_c < 10);
         }
-        i += 1;
+        i++;
     }
 }
 
@@ -763,7 +763,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
     case 1:
         goto switchD_00445ddb_caseD_1;
     case 2:
-        if (0x3b < arg->frameTimer)
+        if (arg->frameTimer > 60)
         {
             g_Supervisor.curState = 1;
             return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
@@ -839,7 +839,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         }
         else
         {
-            for (i = 0; i < 6; i += 1)
+            for (i = 0; i < 6; i++)
             {
                 for (j = 0; j < 6; j += 1)
                 {
@@ -1176,7 +1176,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
         this->curScore.numRetries = g_GameManager.globals->numRetries;
         this->curScore.version = 1;
         this->curScore.magic = *(u32 *)&"HSCR";
-        if ((g_GameManager.flags >> 4 & 1) == 0)
+        if (g_GameManager.finished == 0)
         {
             this->curScore.stage = (u8)g_GameManager.currentStage;
         }
@@ -1364,7 +1364,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
 
     if (this->resultScreenState == 0xb)
     {
-        if (this->frameTimer == 0x3c)
+        if (this->frameTimer == 60)
         {
             if ((g_Supervisor.CanSaveReplay() == 0) &&
                 ((g_Supervisor.flags >> 3 & 1) == 0))
@@ -1743,7 +1743,7 @@ ZunResult ResultScreen::CheckConfirmButton()
     }
     else if ((this->resultScreenState == 0x11) && (0x1d < this->frameTimer))
     {
-        this->frameTimer = 0x3b;
+        this->frameTimer = 60;
         this->resultScreenState = 0xb;
     }
     return ZUN_SUCCESS;
@@ -2028,7 +2028,7 @@ i32 ResultScreen::DrawStats()
     }
     else if (this->resultScreenState == 0x15)
     {
-        if ((this->frameTimer % 0x3c == 0) &&
+        if ((this->frameTimer % 60 == 0) &&
             (g_Supervisor.UpdateStartupTime(),
              g_GameManager.plst.totalSeconds != this->lastTotalSeconds))
         {
@@ -2109,7 +2109,7 @@ ZunResult ResultScreen::DrawFinalStats()
                                  g_DifficultyNameTable[g_GameManager.difficulty]);
         local_14.x = local_14.x + 14.0f;
         local_14.y = local_14.y + 22.0f;
-        if ((g_GameManager.flags >> 4 & 1) == 0)
+        if (g_GameManager.finished == 0)
         {
             if (1.0f <= local_30)
             {
@@ -2520,7 +2520,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
     AnmVm *local_c;
 
     g_GameManager.HasUnlockedPhantomAndMaxClears();
-    for (i32 i = 0; i < 6; i = i + 1)
+    for (i32 i = 0; i < 6; i++)
     {
         for (i32 j = 0; j < 6; j = j + 1)
         {
@@ -2559,7 +2559,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
             return ZUN_ERROR;
         }
         local_c = arg->vms;
-        for (i32 i = 0; i < 0x29; i = i + 1)
+        for (i32 i = 0; i < 0x29; i++)
         {
             local_c->pos.x = 0.0f;
             local_c->pos.y = 0.0f;
@@ -2576,7 +2576,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
         arg->rightArrowVm.Initialize();
         g_AnmManager->SetActiveSprite(&arg->rightArrowVm, 0x910);
         local_c = arg->spellcardListVms;
-        for (i32 i = 0; i < 0xf; i = i + 1)
+        for (i32 i = 0; i < 0xf; i++)
         {
             local_c->Initialize();
             g_AnmManager->SetActiveSprite(local_c, i + 0x715);
@@ -2591,7 +2591,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
     }
     arg->prevCursor = 0;
     arg->scoreDat = OpenScore("score.dat");
-    for (i32 i = 0; i < 6; i = i + 1)
+    for (i32 i = 0; i < 6; i++)
     {
         for (i32 j = 0; j < 6; j = j + 1)
         {
@@ -2627,7 +2627,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
         arg->resultScreenState = 0xb;
         strcpy(arg->replayName, arg->lsnmHeader.name);
     }
-    for (i32 i = 0; i < 7; i = i + 1)
+    for (i32 i = 0; i < 7; i++)
     {
         local_18 = g_GameManager.catk;
         arg->totalPlayCountPerCharacter[i + 1] = 0;
@@ -2666,7 +2666,7 @@ ZunResult ResultScreen::DeletedCallback(ResultScreen *arg)
         ReleaseScoreDat(arg->scoreDat);
     }
     arg->scoreDat = NULL;
-    for (i32 i = 0; i < 6; i = i + 1)
+    for (i32 i = 0; i < 6; i++)
     {
         for (i32 j = 0; j < 6; j = j + 1)
         {
@@ -2699,7 +2699,7 @@ ZunResult ResultScreen::RegisterChain(u32 param_1)
                             g_GameManager.activeFrameCounter);
     if (param_1 == 1)
     {
-        if ((g_GameManager.flags & 1) == 0)
+        if (g_GameManager.practice == 0)
         {
             resultScreen->resultScreenState = 10;
         }

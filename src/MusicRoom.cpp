@@ -27,7 +27,7 @@ ZunResult MusicRoom::CheckInputEnable()
 
     if (this->waitFramesCounter == 0)
     {
-        for (i = 0; i < 0x1f; i += 1)
+        for (i = 0; i < 0x1f; i++)
         {
             if (this->cursor == i)
             {
@@ -38,7 +38,7 @@ ZunResult MusicRoom::CheckInputEnable()
                 this->titleSprites[i].pendingInterrupt = 2;
             }
         }
-        for (i = 0; i < 8; i += 1)
+        for (i = 0; i < 8; i++)
         {
             this->descriptionSprites[i].pendingInterrupt = 1;
         }
@@ -177,11 +177,11 @@ u32 MusicRoom::OnUpdate(MusicRoom *arg)
         arg->waitFramesCounter = 0;
     }
     g_AnmManager->ExecuteScript(&arg->vm);
-    for (i = 0; i < 0x1f; i += 1)
+    for (i = 0; i < 0x1f; i++)
     {
         g_AnmManager->ExecuteScript(arg->titleSprites + i);
     }
-    for (i = 0; i < 8; i += 1)
+    for (i = 0; i < 8; i++)
     {
         g_AnmManager->ExecuteScript(arg->descriptionSprites + i);
     }
@@ -202,7 +202,7 @@ u32 MusicRoom::OnDraw(MusicRoom *arg)
     g_AnmManager->CopySurfaceToBackBuffer(0, 0, 0, 0, 0);
     g_AnmManager->DrawNoRotation(&arg->vm);
     for (i = arg->listingOffset;
-         (i < arg->listingOffset + 10 && (i < arg->numDescriptors)); i += 1)
+         (i < arg->listingOffset + 10 && (i < arg->numDescriptors)); i++)
     {
         g_AsciiManager.color = arg->titleSprites[i].color.color;
         arg->titleSprites[i].pos.x = 93.0f;
@@ -222,7 +222,7 @@ u32 MusicRoom::OnDraw(MusicRoom *arg)
         // STRING: TH07 0x00496c04
         AsciiManager::AddFormatText(&g_AsciiManager, &local_18, "%2d.", i + 1);
     }
-    for (i = 0; i < 8; i += 1)
+    for (i = 0; i < 8; i++)
     {
         g_AnmManager->DrawNoRotation(arg->descriptionSprites + i);
     }

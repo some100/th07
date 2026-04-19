@@ -93,7 +93,7 @@ struct EclRawHeader
     i16 subCount;
     i16 timelineCount;
     struct EclTimelineInstr *timelinePtr[16];
-    u32 subTable[];
+    EclRawInstr *subTable[];
 };
 
 struct EclRawInstr

@@ -202,7 +202,7 @@ FormatInfo *TextHelper::GetFormatInfo(D3DFORMAT format)
 
     for (i = 0; (g_FormatInfoArray[i].format != -1 &&
                  (g_FormatInfoArray[i].format != format));
-         i = i + 1)
+         i++)
     {
     }
     if (format == -1)

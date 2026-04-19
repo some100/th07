@@ -209,7 +209,7 @@ MidiOutput::~MidiOutput()
 {
     StopPlayback();
     ClearTracks();
-    for (i32 i = 0; i < 0x20; i = i + 1)
+    for (i32 i = 0; i < 0x20; i++)
     {
         ReleaseFileData(i);
     }
@@ -248,7 +248,7 @@ void MidiOutput::ClearTracks()
 {
     i32 i;
 
-    for (i = 0; i < this->numTracks; i = i + 1)
+    for (i = 0; i < this->numTracks; i++)
     {
         free(this->tracks[i].trackData);
     }
@@ -283,7 +283,7 @@ ZunResult MidiOutput::ParseFile(i32 fileIdx)
         this->numTracks = Ntohs(fileData->numTracks);
         this->tracks = (MidiTrack *)malloc(this->numTracks << 5);
         memset(this->tracks, 0, this->numTracks * sizeof(MidiTrack));
-        for (i = 0; i < this->numTracks; i += 1)
+        for (i = 0; i < this->numTracks; i++)
         {
             trackLength = Ntohl(*(u32 *)(currentCursor + 4));
             this->tracks[i].trackLength = trackLength;
@@ -326,7 +326,7 @@ void MidiOutput::LoadTracks()
     this->fadeOutFlag = 0;
     this->volume = 0;
     this->field_0x130 = 0;
-    for (i32 i = 0; i < this->numTracks; i = i + 1)
+    for (i32 i = 0; i < this->numTracks; i++)
     {
         track->curTrackDataCursor = track->trackData;
         track->savedTrackDataCursor = track->curTrackDataCursor;
@@ -356,7 +356,7 @@ ZunResult MidiOutput::StopPlayback()
     if (this->tracks == NULL)
         return ZUN_ERROR;
 
-    for (i32 i = 0; i < 0x20; i = i + 1)
+    for (i32 i = 0; i < 0x20; i++)
     {
         if (this->midiHeaders[this->midiHeadersCursor] != NULL)
         {
@@ -529,7 +529,7 @@ void MidiOutput::ProcessMsg(MidiTrack *track)
             *pmh->lpData = -0x10;
             pmh->dwFlags = 0;
             pmh->dwBufferLength = iVar4 + 1;
-            for (i = 0; i < iVar4; i += 1)
+            for (i = 0; i < iVar4; i++)
             {
                 pmh->lpData[i + 1] = *track->curTrackDataCursor;
                 track->curTrackDataCursor = track->curTrackDataCursor + 1;
@@ -559,7 +559,7 @@ void MidiOutput::ProcessMsg(MidiTrack *track)
                     (this->volume * this->divisions * 1000) / this->tempo;
                 this->volume = 0;
                 this->tempo = 0;
-                for (i = 0; i < iVar4; i += 1)
+                for (i = 0; i < iVar4; i++)
                 {
                     this->tempo += this->tempo * 0x100 + (u32)*track->curTrackDataCursor;
                     track->curTrackDataCursor = track->curTrackDataCursor + 1;
@@ -596,7 +596,7 @@ void MidiOutput::ProcessMsg(MidiTrack *track)
             break;
         case 2:
             local_2c = this->tracks;
-            for (i = 0; i < this->numTracks; i += 1)
+            for (i = 0; i < this->numTracks; i++)
             {
                 local_2c->savedTrackDataCursor = local_2c->curTrackDataCursor;
                 local_2c->savedTrackLengthOther = local_2c->trackLengthOther;
@@ -608,7 +608,7 @@ void MidiOutput::ProcessMsg(MidiTrack *track)
             break;
         case 4:
             local_30 = this->tracks;
-            for (i = 0; i < this->numTracks; i += 1)
+            for (i = 0; i < this->numTracks; i++)
             {
                 local_30->curTrackDataCursor = local_30->savedTrackDataCursor;
                 local_30->trackLengthOther = local_30->savedTrackLengthOther;
@@ -662,7 +662,7 @@ void MidiOutput::FadeOutSetVolume(i32 vol)
 
     if (this->disableFadeOut == 0)
     {
-        for (i32 i = 0; i < 0x10; i = i + 1)
+        for (i32 i = 0; i < 0x10; i++)
         {
             local_18 = (i32)((f32)this->channels[i].channelVolume *
                              this->fadeOutVolumeMultiplier) +

@@ -251,7 +251,7 @@ Pbg4Entry *Pbg4Archive::AllocEntries(LPVOID param_1, i32 count, u32 dataOffset)
     }
 
     u8 *entryData = (u8 *)param_1;
-    for (i32 i = 0; i < count; i = i + 1)
+    for (i32 i = 0; i < count; i++)
     {
         buffer[i].filename = CopyFileName((char *)entryData);
         local_3c = entryData;

@@ -86,17 +86,17 @@ void Supervisor::CheckTiming()
         QueryPerformanceCounter(&this->curPerfCounter);
         GetLocalTime(&this->curTime);
         local_14 = (f64)(this->curTime).wSecond +
-                   (f64)((u32)(this->curTime).wMinute * 0x3c) +
+                   (f64)((u32)(this->curTime).wMinute * 60) +
                    (f64)((u32)(this->curTime).wHour * 0xe10) +
                    (f64)(this->curTime).wDay * 24.0 * 60.0 * 60.0;
         dVar1 = (f64)(this->prevTime).wSecond +
-                (f64)((u32)(this->prevTime).wMinute * 0x3c) +
+                (f64)((u32)(this->prevTime).wMinute * 60) +
                 (f64)((u32)(this->prevTime).wHour * 0xe10) +
                 (f64)(this->prevTime).wDay * 24.0 * 60.0 * 60.0;
         if (local_14 < dVar1)
         {
             local_14 = (f64)(this->curTime).wSecond +
-                       (f64)((u32)(this->curTime).wMinute * 0x3c) +
+                       (f64)((u32)(this->curTime).wMinute * 60) +
                        (f64)((u32)(this->curTime).wHour * 0xe10) +
                        (f64)((this->prevTime).wDay + 1) * 24.0 * 60.0 * 60.0;
         }
@@ -323,7 +323,7 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
         else if (state == 10)
         {
             GameManager::CutChain();
-            if (((g_GameManager.flags & 1) == 0) && (g_GameManager.difficulty < 4))
+            if ((g_GameManager.practice == 0) && (g_GameManager.difficulty < 4))
             {
                 g_GameManager.currentStage = 0;
             }
@@ -720,7 +720,7 @@ ZunResult Supervisor::AddedCallback(Supervisor *arg)
         }
         else
         {
-            for (i = 0; i < 4; i = i + 1)
+            for (i = 0; i < 4; i++)
             {
                 g_Supervisor.d3dDevice->BeginScene();
                 g_AnmManager->CopySurfaceToBackBuffer(0, 0, 0, 0, 0);
@@ -957,7 +957,7 @@ void Supervisor::DrawFpsCounter(i32 param_1)
         g_NumFramesSinceLastTime = 0;
         // STRING: TH07 0x00496fa0
         sprintf(g_FpsCounterBuffer, "%.02ffps", (f64)fps);
-        if (((g_GameManager.flags >> 2 & 1) != 0) && (param_1 != 0))
+        if ((g_GameManager.notInMenu != 0) && (param_1 != 0))
         {
             g_Supervisor.fpsAccumulator = g_Supervisor.fpsAccumulator + 60.0f;
             if (fps <= 54.0f)
@@ -986,7 +986,7 @@ void Supervisor::DrawFpsCounter(i32 param_1)
                 g_Supervisor.framerateMultiplier =
                     g_Supervisor.framerateMultiplier + 60.0f;
             }
-            if ((g_GameManager.flags >> 3 & 1) == 0)
+            if (g_GameManager.replay == 0)
             {
                 g_Supervisor.curFps = (fps + 0.5f);
             }
@@ -1004,8 +1004,8 @@ LAB_00439350:
         local_28.y = 464.0f;
         local_28.z = 0.0f;
         g_AsciiManager.AddString(&local_28, g_FpsCounterBuffer);
-        if (((g_GameManager.flags >> 3 & 1) != 0) &&
-            ((g_GameManager.flags >> 2 & 1) != 0))
+        if ((g_GameManager.replay != 0) &&
+            (g_GameManager.notInMenu != 0))
         {
             local_34.x = 384.0f;
             local_34.y = 448.0f;
@@ -1624,15 +1624,15 @@ void Supervisor::UpdateStartupTime()
             g_GameManager.plst.totalMilliseconds / 1000;
         g_GameManager.plst.totalMilliseconds %= 1000;
     }
-    if (0x3b < g_GameManager.plst.totalSeconds)
+    if (g_GameManager.plst.totalSeconds > 60)
     {
-        g_GameManager.plst.totalMinutes += g_GameManager.plst.totalSeconds / 0x3c;
-        g_GameManager.plst.totalSeconds %= 0x3c;
+        g_GameManager.plst.totalMinutes += g_GameManager.plst.totalSeconds / 60;
+        g_GameManager.plst.totalSeconds %= 60;
     }
-    if (0x3b < g_GameManager.plst.totalMinutes)
+    if (g_GameManager.plst.totalMinutes > 60)
     {
-        g_GameManager.plst.totalHours += g_GameManager.plst.totalMinutes / 0x3c;
-        g_GameManager.plst.totalMinutes %= 0x3c;
+        g_GameManager.plst.totalHours += g_GameManager.plst.totalMinutes / 60;
+        g_GameManager.plst.totalMinutes %= 60;
     }
     this->startupTimeForMenuMusic = time;
 }
@@ -1658,15 +1658,15 @@ void Supervisor::UpdateTime()
             g_GameManager.plst.gameMilliseconds / 1000;
         g_GameManager.plst.gameMilliseconds %= 1000;
     }
-    if (0x3b < g_GameManager.plst.gameSeconds)
+    if (g_GameManager.plst.gameSeconds > 60)
     {
-        g_GameManager.plst.gameMinutes += g_GameManager.plst.gameSeconds / 0x3c;
-        g_GameManager.plst.gameSeconds %= 0x3c;
+        g_GameManager.plst.gameMinutes += g_GameManager.plst.gameSeconds / 60;
+        g_GameManager.plst.gameSeconds %= 60;
     }
-    if (0x3b < g_GameManager.plst.gameMinutes)
+    if (g_GameManager.plst.gameMinutes > 60)
     {
-        g_GameManager.plst.gameHours += g_GameManager.plst.gameMinutes / 0x3c;
-        g_GameManager.plst.gameMinutes %= 0x3c;
+        g_GameManager.plst.gameHours += g_GameManager.plst.gameMinutes / 60;
+        g_GameManager.plst.gameMinutes %= 60;
     }
     this->currentTime = time;
 }

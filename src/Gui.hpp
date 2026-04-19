@@ -150,7 +150,7 @@ struct Gui
 
     ZunResult ActualAddedCallback();
     void ClearActiveSprites();
-    static void CopyTemplateSpriteToSpriteProbably(i32 spriteIdx);
+    static void CopyTemplateSpriteToSprite(i32 spriteIdx);
     void DrawGameScene();
     void DrawStageElements();
     void FreeMsgFile();

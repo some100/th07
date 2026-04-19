@@ -74,11 +74,11 @@ void EnemyManager::Initialize()
 {
     memset(this, 0, sizeof(EnemyManager));
     memset(&this->enemyTemplate, 0, sizeof(Enemy));
-    for (i32 i = 0; i < 2; i += 1)
+    for (i32 i = 0; i < 2; i++)
     {
         this->enemyTemplate.vms[i].anmFileIdx = -1;
     }
-    for (i32 i = 0; i < 0x60; i += 1)
+    for (i32 i = 0; i < 0x60; i++)
     {
         this->enemyTemplate.enemyHistory[i].position.x = -999.0f;
     }
@@ -124,7 +124,7 @@ void EnemyManager::Initialize()
     this->enemyTemplate.flags2 = this->enemyTemplate.flags2 & 0x7f;
     this->enemyTemplate.effectsNum = 0;
     this->enemyTemplate.runInterrupt = -1;
-    for (i32 i = 0; i < 4; i += 1)
+    for (i32 i = 0; i < 4; i++)
     {
         this->enemyTemplate.lifeCallbackThreshold[i] = -1;
     }
@@ -275,7 +275,7 @@ void Enemy::UpdateEffects()
 // FUNCTION: TH07 0x0041f670
 void Enemy::ResetEffectArray()
 {
-    for (i32 i = 0; i < this->effectsNum; i += 1)
+    for (i32 i = 0; i < this->effectsNum; i++)
     {
         if (this->effects[i] == NULL)
             continue;
@@ -302,9 +302,7 @@ void EnemyManager::RunEclTimeline(EclTimeline *timeline)
         if (timeline->timelineInstr->time < 0)
         {
         LAB_0041fd08:
-            (timeline->timelineTime).previous = (timeline->timelineTime).current;
-            g_Supervisor.TickTimer(&(timeline->timelineTime).current,
-                                   &(timeline->timelineTime).subFrame);
+            timeline->timelineTime.Tick();
             return;
         }
         if ((timeline->timelineTime).current ==
@@ -556,7 +554,7 @@ i32 Enemy::HandleTimerCallback()
     if (((this->flags2 >> 6 & 1) != 0) && (this->bossId == 0))
     {
         g_Gui.spellcardSecondsRemaining =
-            (this->timerCallbackThreshold - (this->timer).current) / 0x3c;
+            (this->timerCallbackThreshold - (this->timer).current) / 60;
     }
     if ((this->timer).current < this->timerCallbackThreshold)
     {
@@ -565,7 +563,7 @@ i32 Enemy::HandleTimerCallback()
     else
     {
         local_c = 0;
-        for (i = 0; i < 4; i += 1)
+        for (i = 0; i < 4; i++)
         {
             if ((-1 < this->lifeCallbackThreshold[i]) &&
                 (local_c < this->lifeCallbackThreshold[i]))
@@ -752,11 +750,11 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
         }
         g_GameManager.activeFrameCounter += 1;
     }
-    for (i = 0; i < 4; i += 1)
+    for (i = 0; i < 4; i++)
     {
         arg->enemyHead[i] = NULL;
     }
-    for (i = 0; i < g_EclManager.eclFile->timelineCount; i += 1)
+    for (i = 0; i < g_EclManager.eclFile->timelineCount; i++)
     {
         if (arg->timelines[i].timelineInstr == NULL)
         {
@@ -778,9 +776,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
             }
             else
             {
-                arg->timelineTime.previous = arg->timelineTime.current;
-                g_Supervisor.TickTimer(&arg->timelineTime.current,
-                                       &arg->timelineTime.subFrame);
+                arg->timelineTime.Tick();
                 return CHAIN_CALLBACK_RESULT_CONTINUE;
             }
         }
@@ -1239,8 +1235,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
         enemy->UpdateEffects();
         if (g_GameManager.isTimeStopped == 0)
         {
-            (enemy->timer).previous = (enemy->timer).current;
-            g_Supervisor.TickTimer(&(enemy->timer).current, &(enemy->timer).subFrame);
+            enemy->timer.Tick();
         }
         if (0 < enemy->invincibilityTimer.current)
         {
@@ -1252,7 +1247,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
             arg->enemyHead[enemy->zLayer] = enemy;
         }
     LAB_004207d0:
-        i += 1;
+        i++;
         enemy = enemy + 1;
     }
 }
@@ -1620,7 +1615,7 @@ i32 EnemyManager::RemoveAllEnemies(i32 scoreMax, i32 scoreMin)
     local_10 = this->enemies;
     local_c = scoreMin;
     local_8 = 2000;
-    for (i = 0; i < 0x1e0; i += 1)
+    for (i = 0; i < 0x1e0; i++)
     {
         if ((local_10->flags1 < 0) && ((local_10->flags2 >> 6 & 1) == 0))
         {

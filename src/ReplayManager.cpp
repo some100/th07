@@ -35,7 +35,7 @@ u32 ReplayManager::OnUpdate(ReplayManager *arg)
     i32 stage;
 
     u16 uVar1 = g_CurFrameRawInput;
-    if ((g_GameManager.flags >> 2 & 1) != 0)
+    if (g_GameManager.notInMenu != 0)
     {
         g_LastFrameGameInput = g_CurFrameGameInput;
         g_CurFrameGameInput = g_CurFrameRawInput;
@@ -71,7 +71,7 @@ u32 ReplayManager::OnUpdate(ReplayManager *arg)
 // FUNCTION: TH07 0x00442e50
 u32 ReplayManager::OnUpdateDemoLowPrio(ReplayManager *arg)
 {
-    if ((g_GameManager.flags >> 2 & 1) != 0)
+    if (g_GameManager.notInMenu != 0)
     {
         if (((g_Gui.HasCurrentMsgIdx() != 0) &&
              (g_Gui.IsDialogueSkippable() != 0)) &&
@@ -92,7 +92,7 @@ u32 ReplayManager::OnUpdateDemoLowPrio(ReplayManager *arg)
 // FUNCTION: TH07 0x00442ee0
 u32 ReplayManager::OnUpdateDemoHighPrio(ReplayManager *arg)
 {
-    if (((g_GameManager.flags >> 2 & 1) != 0) &&
+    if ((g_GameManager.notInMenu != 0) &&
         (g_GameManager.defaultCfg->slowMode == 0))
     {
         g_LastFrameGameInput = g_CurFrameGameInput;
@@ -155,7 +155,7 @@ ZunResult ReplayManager::AddedCallback(ReplayManager *arg)
         // STRING: TH07 0x00496aa0
         strncpy(arg->data->data.name, "NO NAME", 4);
         arg->data->data.cfg = *g_GameManager.defaultCfg;
-        for (i = 0; i < 7; i += 1)
+        for (i = 0; i < 7; i++)
         {
             arg->data->head.stageReplayData[i].data = NULL;
             arg->data->head.stageEndData[i].data = NULL;
@@ -235,7 +235,7 @@ ReplayManager::ValidateReplayData(ReplayHeaderAndData *data, i32 size)
     {
         curByte = &data->head.replaySize;
         obfOffset = data->head.key;
-        for (i = 0; i < size - 0x10; i += 1)
+        for (i = 0; i < size - 0x10; i++)
         {
             *(u8 *)curByte = (char)*curByte - obfOffset;
             obfOffset += 7;
@@ -243,7 +243,7 @@ ReplayManager::ValidateReplayData(ReplayHeaderAndData *data, i32 size)
         }
         local_20 = &data->head.key;
         checksumBase = 0x3f000318;
-        for (i = 0; i < size - 0xd; i += 1)
+        for (i = 0; i < size - 0xd; i++)
         {
             checksumBase += (u32)*local_20;
             local_20 = local_20 + 1;
@@ -278,14 +278,14 @@ ZunResult ReplayManager::AddedCallbackDemo(ReplayManager *arg)
     if (arg->data == NULL)
     {
         arg->data = (ReplayHeaderAndData *)FileSystem::OpenFile(
-            arg->replayFilename, ((g_GameManager.flags >> 1 & 1) == 0));
+            arg->replayFilename, (g_GameManager.demo == 0));
         arg->data = ValidateReplayData(arg->data, g_LastFileSize);
         if (arg->data == NULL)
         {
             return ZUN_ERROR;
         }
         arg->unused_40 = NULL;
-        for (i = 0; i < 7; i += 1)
+        for (i = 0; i < 7; i++)
         {
             arg->stageReplayDataSize[i] = 0;
             arg->stageEndDataSize[i] = 0;
@@ -531,7 +531,7 @@ void ReplayManager::SaveReplay(const char *param_1, char *param_2)
     local_c = g_ReplayManager;
     if (g_ReplayManager->isDemo != 0)
         goto LAB_004444a9;
-    if (((g_GameManager.flags & 1) == 0) && ((i32)g_GameManager.difficulty < 4))
+    if ((g_GameManager.practice == 0) && ((i32)g_GameManager.difficulty < 4))
     {
         bool bVar9 = true;
 
@@ -566,7 +566,7 @@ void ReplayManager::SaveReplay(const char *param_1, char *param_2)
             local_c->data->head.stageReplayData[i].data->score =
                 g_GameManager.globals->score;
             replaySize = sizeof(ReplayHeaderAndData);
-            for (i = 0; i < 7; i += 1)
+            for (i = 0; i < 7; i++)
             {
                 if (local_c->data->head.stageReplayData[i].data != NULL)
                 {
@@ -580,7 +580,7 @@ void ReplayManager::SaveReplay(const char *param_1, char *param_2)
                                         local_c->data->head.stageReplayData[i].offset);
                 }
             }
-            for (i = 0; i < 7; i += 1)
+            for (i = 0; i < 7; i++)
             {
                 if (local_c->data->head.stageEndData[i].data != NULL)
                 {
@@ -629,13 +629,13 @@ void ReplayManager::SaveReplay(const char *param_1, char *param_2)
             free(replayData);
             local_11c = &replayCopy.head.key;
             local_118 = 0x3f000318;
-            for (i = 0; i < 0x47; i += 1)
+            for (i = 0; i < 0x47; i++)
             {
                 local_118 += (u32)*local_11c;
                 local_11c = local_11c + 1;
             }
             local_11c = lpBuffer;
-            for (i = 0; i < replayCopy.head.compressedSize; i += 1)
+            for (i = 0; i < replayCopy.head.compressedSize; i++)
             {
                 local_118 += (u32)*local_11c;
                 local_11c = local_11c + 1;
@@ -643,14 +643,14 @@ void ReplayManager::SaveReplay(const char *param_1, char *param_2)
             replayCopy.head.checksum = local_118;
             local_124 = (u8 *)&replayCopy.head.replaySize;
             local_11d = replayCopy.head.key;
-            for (i = 0; i < 0x44; i += 1)
+            for (i = 0; i < 0x44; i++)
             {
                 *local_124 = *local_124 + local_11d;
                 local_11d += 7;
                 local_124 = local_124 + 1;
             }
             local_124 = lpBuffer;
-            for (i = 0; i < compressedSize; i += 1)
+            for (i = 0; i < compressedSize; i++)
             {
                 *local_124 = *local_124 + local_11d;
                 local_11d += 7;
@@ -669,7 +669,7 @@ void ReplayManager::SaveReplay(const char *param_1, char *param_2)
             }
         }
     }
-    for (i = 0; i < 7; i += 1)
+    for (i = 0; i < 7; i++)
     {
         if (g_ReplayManager->data->head.stageReplayData[i].data != NULL)
         {
@@ -705,7 +705,7 @@ void ReplayManager::SaveReplay2(const char *param_1)
         return;
     }
     local_c = g_ReplayManager;
-    if (((g_GameManager.flags & 1) == 0) && (g_GameManager.difficulty < 4))
+    if ((g_GameManager.practice == 0) && (g_GameManager.difficulty < 4))
     {
         if (memcmp(&g_Supervisor.cfg, &g_ReplayManager->data->data.cfg,
                    sizeof(GameConfiguration)) != 0)
@@ -725,7 +725,7 @@ void ReplayManager::SaveReplay2(const char *param_1)
         local_c->data->head.stageReplayData[i].data->score =
             g_GameManager.globals->score;
         local_114 = sizeof(ReplayHeaderAndData);
-        for (i = 0; (i32)i < 7; i += 1)
+        for (i = 0; (i32)i < 7; i++)
         {
             if (local_c->data->head.stageReplayData[i].data != NULL)
             {
@@ -736,7 +736,7 @@ void ReplayManager::SaveReplay2(const char *param_1)
                 local_114 += local_c->stageReplayDataSize[i];
             }
         }
-        for (i = 0; (i32)i < 7; i += 1)
+        for (i = 0; (i32)i < 7; i++)
         {
             if (local_c->data->head.stageEndData[i].data != NULL)
             {
@@ -763,13 +763,13 @@ void ReplayManager::SaveReplay2(const char *param_1)
         free(src);
         local_11c = &replayCopy.head.key;
         local_118 = 0x3f000318;
-        for (i = 0; i < 0x47; i += 1)
+        for (i = 0; i < 0x47; i++)
         {
             local_118 += (u32)*local_11c;
             local_11c = local_11c + 1;
         }
         local_11c = pbVar5;
-        for (i = 0; (i32)i < replayCopy.head.compressedSize; i += 1)
+        for (i = 0; (i32)i < replayCopy.head.compressedSize; i++)
         {
             local_118 += (u32)*local_11c;
             local_11c = local_11c + 1;
@@ -777,14 +777,14 @@ void ReplayManager::SaveReplay2(const char *param_1)
         replayCopy.head.checksum = local_118;
         local_124 = &replayCopy.head.replaySize;
         local_11d = replayCopy.head.key;
-        for (i = 0; i < 0x44; i += 1)
+        for (i = 0; i < 0x44; i++)
         {
             *(u8 *)local_124 = (char)*local_124 + local_11d;
             local_11d += 7;
             local_124 = (i32 *)((i32)local_124 + 1);
         }
         local_124 = (i32 *)pbVar5;
-        for (i = 0; (i32)i < replayCopy.head.compressedSize; i += 1)
+        for (i = 0; (i32)i < replayCopy.head.compressedSize; i++)
         {
             *(u8 *)local_124 = (u8)*local_124 + local_11d;
             local_11d += 7;

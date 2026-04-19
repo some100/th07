@@ -54,8 +54,7 @@ u32 BombEffects::OnUpdateFadeOut(BombEffects *arg)
     bool bVar1 = arg->timer.current < arg->duration;
     if (bVar1)
     {
-        arg->timer.previous = arg->timer.current;
-        g_Supervisor.TickTimer(&arg->timer.current, &arg->timer.subFrame);
+        arg->timer.Tick();
     }
     return bVar1;
 }
@@ -210,8 +209,7 @@ u32 BombEffects::OnUpdateFadeIn(BombEffects *arg)
     bool bVar1 = arg->timer.current < arg->duration;
     if (bVar1)
     {
-        arg->timer.previous = arg->timer.current;
-        g_Supervisor.TickTimer(&arg->timer.current, &arg->timer.subFrame);
+        arg->timer.Tick();
     }
     return bVar1;
 }
@@ -254,8 +252,7 @@ u32 BombEffects::OnUpdatePulse(BombEffects *arg)
         }
         arg->timer.Initialize(0);
     }
-    arg->timer.previous = arg->timer.current;
-    g_Supervisor.TickTimer(&arg->timer.current, &arg->timer.subFrame);
+    arg->timer.Tick();
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
@@ -284,8 +281,7 @@ u32 BombEffects::OnUpdateScreenShake(BombEffects *arg)
         return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
     }
 
-    arg->timer.previous = arg->timer.current;
-    g_Supervisor.TickTimer(&arg->timer.current, &arg->timer.subFrame);
+    arg->timer.Tick();
     if (arg->duration >= arg->timer.current)
         return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
 

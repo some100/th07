@@ -122,7 +122,7 @@ void Gui::ShowSpellcardBonus(i32 fmtArg)
 }
 
 // FUNCTION: TH07 0x00427d92
-void Gui::CopyTemplateSpriteToSpriteProbably(i32 spriteIdx)
+void Gui::CopyTemplateSpriteToSprite(i32 spriteIdx)
 {
     RECT local_24;
     RECT local_14;
@@ -203,8 +203,8 @@ u32 Gui::OnDraw(Gui *arg)
                                     arg->impl->clearCherryMax * 10);
         if ((6 < g_GameManager.currentStage) ||
             (((g_GameManager.currentStage == 6 &&
-               ((g_GameManager.flags & 1) == 0)) &&
-              (((g_GameManager.flags >> 3 & 1) == 0 ||
+               (g_GameManager.practice == 0)) &&
+              ((g_GameManager.replay == 0 ||
                 (g_ReplayManager->data->head.stageReplayData[4].data != NULL))))))
         {
             stringPos.y = stringPos.y + 16.0f;
@@ -256,7 +256,7 @@ u32 Gui::OnDraw(Gui *arg)
                                         "Phantasm Rank*2.0");
         }
         stringPos.y = stringPos.y + 16.0f;
-        if ((g_GameManager.difficulty < 4) && ((g_GameManager.flags & 1) == 0))
+        if ((g_GameManager.difficulty < 4) && (g_GameManager.practice == 0))
         {
             if ((g_GameManager.defaultCfg)->lifeCount == 3)
             {
@@ -358,25 +358,17 @@ u32 Gui::OnDraw(Gui *arg)
 // FUNCTION: TH07 0x0042868d
 void Gui::ShowBombNamePortrait(i32 sprite, const char *name)
 {
-    this->impl->bombSpellcardPortrait.anmFileIdx = 0x4a1;
-    g_AnmManager->SetAndExecuteScript(&this->impl->bombSpellcardPortrait,
-                                      g_AnmManager->scripts[0x4a1]);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&this->impl->bombSpellcardPortrait, 0x4a1);
     g_AnmManager->SetActiveSprite(&this->impl->bombSpellcardPortrait, sprite);
-    this->impl->bombSpellcardDecorLeft.anmFileIdx = 0x4a4;
-    g_AnmManager->SetAndExecuteScript(&this->impl->bombSpellcardDecorLeft,
-                                      g_AnmManager->scripts[0x4a4]);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&this->impl->bombSpellcardDecorLeft, 0x4a4);
     g_AnmManager->SetActiveSprite(&this->impl->bombSpellcardDecorLeft, 0x4ac);
-    this->impl->bombSpellcardDecorRight.anmFileIdx = 0x4a6;
-    g_AnmManager->SetAndExecuteScript(&this->impl->bombSpellcardDecorRight,
-                                      g_AnmManager->scripts[0x4a6]);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&this->impl->bombSpellcardDecorRight, 0x4a6);
     g_AnmManager->SetActiveSprite(&this->impl->bombSpellcardDecorRight, 0x4ac);
-    this->impl->bombSpellcardName.anmFileIdx = 0x704;
-    g_AnmManager->SetAndExecuteScript(&this->impl->bombSpellcardName,
-                                      g_AnmManager->scripts[0x704]);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&this->impl->bombSpellcardName, 0x704);
     AnmManager::DrawVmTextFmt(g_AnmManager, &this->impl->bombSpellcardName,
                               0xf0f0ff, 0, name);
     this->bombNameBarLength = (f32)(u32)((strlen(name)) * 0xf) / 2.0f + 16.0f;
-    this->impl->bombSpellcardNameBg.pendingInterrupt = 1;
+    this->impl->bombSpellcardNameBg.SetPendingInterrupt(1);
     g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB, 0);
     g_Supervisor.renderSkipFrames = 2;
 }
@@ -552,7 +544,7 @@ ZunResult Gui::ActualAddedCallback()
     switch (g_GameManager.currentStage)
     {
     case 1:
-        CopyTemplateSpriteToSpriteProbably(0x60e);
+        CopyTemplateSpriteToSprite(0x60e);
         if (g_AnmManager->LoadAnms(0x1c, "data/face_01_00.anm", 0x4ad) !=
             ZUN_SUCCESS)
         {
@@ -569,7 +561,7 @@ ZunResult Gui::ActualAddedCallback()
         }
         break;
     case 2:
-        CopyTemplateSpriteToSpriteProbably(0x610);
+        CopyTemplateSpriteToSprite(0x610);
         if (g_AnmManager->LoadAnms(0x1c, "data/face_02_00.anm", 0x4ad) !=
             ZUN_SUCCESS)
         {
@@ -586,7 +578,7 @@ ZunResult Gui::ActualAddedCallback()
         }
         break;
     case 3:
-        CopyTemplateSpriteToSpriteProbably(0x612);
+        CopyTemplateSpriteToSprite(0x612);
         if (g_AnmManager->LoadAnms(0x1c, "data/face_03_00.anm", 0x4ad) !=
             ZUN_SUCCESS)
         {
@@ -603,7 +595,7 @@ ZunResult Gui::ActualAddedCallback()
         }
         break;
     case 4:
-        CopyTemplateSpriteToSpriteProbably(0x614);
+        CopyTemplateSpriteToSprite(0x614);
         if (g_AnmManager->LoadAnms(0x1c, "data/face_04_00.anm", 0x4ad) !=
             ZUN_SUCCESS)
         {
@@ -620,7 +612,7 @@ ZunResult Gui::ActualAddedCallback()
         }
         break;
     case 5:
-        CopyTemplateSpriteToSpriteProbably(0x616);
+        CopyTemplateSpriteToSprite(0x616);
         if (g_AnmManager->LoadAnms(0x1c, "data/face_05_00.anm", 0x4ad) !=
             ZUN_SUCCESS)
         {
@@ -637,7 +629,7 @@ ZunResult Gui::ActualAddedCallback()
         }
         break;
     case 6:
-        CopyTemplateSpriteToSpriteProbably(0x618);
+        CopyTemplateSpriteToSprite(0x618);
         if (g_AnmManager->LoadAnms(0x1c, "data/face_06_00.anm", 0x4ad) !=
             ZUN_SUCCESS)
         {
@@ -654,7 +646,7 @@ ZunResult Gui::ActualAddedCallback()
         }
         break;
     case 7:
-        CopyTemplateSpriteToSpriteProbably(0x61a);
+        CopyTemplateSpriteToSprite(0x61a);
         if (g_AnmManager->LoadAnms(0x1c, "data/face_07_00.anm", 0x4ad) !=
             ZUN_SUCCESS)
         {
@@ -671,7 +663,7 @@ ZunResult Gui::ActualAddedCallback()
         }
         break;
     case 8:
-        CopyTemplateSpriteToSpriteProbably(0x61c);
+        CopyTemplateSpriteToSprite(0x61c);
         if (g_AnmManager->LoadAnms(0x1c, "data/face_08_00.anm", 0x4ad) !=
             ZUN_SUCCESS)
         {
@@ -840,33 +832,33 @@ void GuiImpl::MsgRead(i32 msgIdx)
             switch (g_GameManager.currentStage)
             {
             case 1:
-                Gui::CopyTemplateSpriteToSpriteProbably(0x60f);
+                Gui::CopyTemplateSpriteToSprite(0x60f);
                 break;
             case 2:
-                Gui::CopyTemplateSpriteToSpriteProbably(0x611);
+                Gui::CopyTemplateSpriteToSprite(0x611);
                 break;
             case 3:
-                Gui::CopyTemplateSpriteToSpriteProbably(0x613);
+                Gui::CopyTemplateSpriteToSprite(0x613);
                 break;
             case 4:
-                Gui::CopyTemplateSpriteToSpriteProbably(0x615);
+                Gui::CopyTemplateSpriteToSprite(0x615);
                 break;
             case 5:
-                Gui::CopyTemplateSpriteToSpriteProbably(0x617);
+                Gui::CopyTemplateSpriteToSprite(0x617);
                 break;
             case 6:
-                Gui::CopyTemplateSpriteToSpriteProbably(0x619);
+                Gui::CopyTemplateSpriteToSprite(0x619);
                 g_Stage.spellcardVmsIdx = 2;
                 g_BulletManager.itemType = ITEM_STAR;
                 break;
             case 7:
-                Gui::CopyTemplateSpriteToSpriteProbably(0x61b);
+                Gui::CopyTemplateSpriteToSprite(0x61b);
                 g_Stage.spellcardVmsIdx = 1;
                 g_Stage.numSpellcardVms = 2;
                 g_BulletManager.itemType = ITEM_STAR;
                 break;
             case 8:
-                Gui::CopyTemplateSpriteToSpriteProbably(0x61d);
+                Gui::CopyTemplateSpriteToSprite(0x61d);
                 g_Stage.spellcardVmsIdx = 2;
                 g_BulletManager.itemType = ITEM_STAR;
             }
@@ -877,45 +869,61 @@ void GuiImpl::MsgRead(i32 msgIdx)
 // FUNCTION: TH07 0x00429c42
 ZunResult GuiImpl::RunMsg()
 {
-    i16 local_3c;
-    i16 local_20;
-    i16 local_14;
-
     if (this->msg.currentMsgIdx < 0)
-    {
         return ZUN_ERROR;
-    }
-    else
+
+    if (this->msg.ignoreWaitCounter != 0)
     {
-        if (this->msg.ignoreWaitCounter != 0)
+        this->msg.ignoreWaitCounter = this->msg.ignoreWaitCounter - 1;
+    }
+    if (this->msg.dialogueSkippable != 0 && IS_PRESSED_GAME(TH_BUTTON_SKIP))
+    {
+        this->msg.timer.Initialize2((u32)this->msg.curInstr->time);
+    }
+    if (g_Player.hasBorder != BORDER_NONE)
+    {
+        g_Player.BreakBorderNaturally();
+    }
+    if (g_Player.playerState != PLAYER_STATE_DEAD)
+    {
+        g_ItemManager.RemoveAllItems();
+    }
+    while ((i32)(this->msg.timer.current >= this->msg.curInstr->time))
+    {
+        switch (this->msg.curInstr->opcode)
         {
-            this->msg.ignoreWaitCounter = this->msg.ignoreWaitCounter - 1;
-        }
-        if (this->msg.dialogueSkippable != 0 && IS_PRESSED_GAME(TH_BUTTON_SKIP))
-        {
-            this->msg.timer.Initialize2((u32)this->msg.curInstr->time);
-        }
-        if (g_Player.hasBorder != BORDER_NONE)
-        {
-            g_Player.BreakBorderNaturally();
-        }
-        if (g_Player.playerState != PLAYER_STATE_DEAD)
-        {
-            g_ItemManager.RemoveAllItems();
-        }
-        while ((i32)(u32)this->msg.curInstr->time <= this->msg.timer.current)
-        {
-            switch (this->msg.curInstr->opcode)
+        case MSG_DELETE:
+            this->msg.currentMsgIdx = -1;
+            return ZUN_ERROR;
+        case MSG_SHOW_PORTRAIT:
+            g_AnmManager->SetAnmIdxAndExecuteScript(
+                &this->msg.portraits[this->msg.curInstr->args.dialogue.textColor],
+                this->msg.curInstr->args.dialogue.textLine +
+                    (this->msg.curInstr->args.dialogue.textColor != 0 ? 2 : 0) +
+                    0x4a0);
+            if ((this->msg.portraits[this->msg.curInstr->args.dialogue.textColor]
+                     .sprite)
+                    ->widthPx <= 128.0f)
             {
-            case MSG_DELETE:
-                this->msg.currentMsgIdx = -1;
-                return ZUN_ERROR;
-            case MSG_SHOW_PORTRAIT:
-                g_AnmManager->SetAnmIdxAndExecuteScript(
-                    &this->msg.portraits[this->msg.curInstr->args.dialogue.textColor],
-                    this->msg.curInstr->args.dialogue.textLine +
-                        (this->msg.curInstr->args.dialogue.textColor != 0 ? 2 : 0) +
-                        0x4a0);
+                this->msg.portraits[this->msg.curInstr->args.dialogue.textColor]
+                    .offset.x = 0.0f;
+            }
+            else
+            {
+                this->msg.portraits[this->msg.curInstr->args.dialogue.textColor]
+                    .offset.x = -112.0f;
+            }
+            break;
+        case MSG_CHANGE_FACE:
+            g_AnmManager->SetActiveSprite(
+                this->msg.portraits + this->msg.curInstr->args.dialogue.textColor,
+                (i32)this->msg.curInstr->args.dialogue.textLine +
+                    (this->msg.curInstr->args.dialogue.textColor != 0 ? 13 : 0) +
+                    0x4a0);
+            if ((this->msg.portraits[this->msg.curInstr->args.dialogue.textColor]
+                     .sprite)
+                    ->widthPx <= 256.0f)
+            {
                 if ((this->msg.portraits[this->msg.curInstr->args.dialogue.textColor]
                          .sprite)
                         ->widthPx <= 128.0f)
@@ -926,261 +934,231 @@ ZunResult GuiImpl::RunMsg()
                 else
                 {
                     this->msg.portraits[this->msg.curInstr->args.dialogue.textColor]
-                        .offset.x = -112.0f;
+                        .offset.x = -80.0f;
                 }
-                break;
-            case MSG_CHANGE_FACE:
-                g_AnmManager->SetActiveSprite(
-                    this->msg.portraits + this->msg.curInstr->args.dialogue.textColor,
-                    (i32)this->msg.curInstr->args.dialogue.textLine +
-                        (this->msg.curInstr->args.dialogue.textColor != 0 ? 13 : 0) +
-                        0x4a0);
-                if ((this->msg.portraits[this->msg.curInstr->args.dialogue.textColor]
-                         .sprite)
-                        ->widthPx <= 256.0f)
-                {
-                    if ((this->msg.portraits[this->msg.curInstr->args.dialogue.textColor]
-                             .sprite)
-                            ->widthPx <= 128.0f)
-                    {
-                        this->msg.portraits[this->msg.curInstr->args.dialogue.textColor]
-                            .offset.x = 0.0f;
-                    }
-                    else
-                    {
-                        this->msg.portraits[this->msg.curInstr->args.dialogue.textColor]
-                            .offset.x = -80.0f;
-                    }
-                }
-                else
-                {
-                    this->msg.portraits[this->msg.curInstr->args.dialogue.textColor]
-                        .offset.x = -208.0f;
-                    this->msg.portraits[this->msg.curInstr->args.dialogue.textColor]
-                        .offset.y = -50.0f;
-                }
-                break;
-            case MSG_DIALOGUE:
-                if ((this->msg.curInstr->args.dialogue.textLine == 0) &&
-                    (-1 < this->msg.dialogueLines[1].anmFileIdx))
-                {
-                    AnmManager::DrawVmTextFmt(
-                        g_AnmManager, this->msg.dialogueLines + 1,
-                        this->msg.textColorsA[this->msg.curInstr->args.dialogue.textColor]
-                            .color,
-                        this->msg.textColorsB[this->msg.curInstr->args.dialogue.textColor]
-                            .color,
-                        " ");
-                }
-                g_AnmManager->SetAnmIdxAndExecuteScript(
-                    &this->msg.dialogueLines[this->msg.curInstr->args.dialogue.textLine],
-                    this->msg.curInstr->args.dialogue.textLine + 0x700);
-                this->msg.dialogueLines[this->msg.curInstr->args.dialogue.textLine]
-                    .fontHeight = (u8)this->msg.fontSize;
-                this->msg.dialogueLines[this->msg.curInstr->args.dialogue.textLine]
-                    .fontWidth =
-                    this->msg.dialogueLines[this->msg.curInstr->args.dialogue.textLine]
-                        .fontHeight;
+            }
+            else
+            {
+                this->msg.portraits[this->msg.curInstr->args.dialogue.textColor]
+                    .offset.x = -208.0f;
+                this->msg.portraits[this->msg.curInstr->args.dialogue.textColor]
+                    .offset.y = -50.0f;
+            }
+            break;
+        case MSG_DIALOGUE:
+            if ((this->msg.curInstr->args.dialogue.textLine == 0) &&
+                (-1 < this->msg.dialogueLines[1].anmFileIdx))
+            {
                 AnmManager::DrawVmTextFmt(
-                    g_AnmManager,
-                    this->msg.dialogueLines +
-                        this->msg.curInstr->args.dialogue.textLine,
+                    g_AnmManager, this->msg.dialogueLines + 1,
                     this->msg.textColorsA[this->msg.curInstr->args.dialogue.textColor]
                         .color,
                     this->msg.textColorsB[this->msg.curInstr->args.dialogue.textColor]
                         .color,
-                    this->msg.curInstr->args.dialogue.text);
-                this->msg.framesElapsedDuringPause = 0;
-                break;
-            case MSG_PAUSE:
-                if (this->msg.dialogueSkippable == 0 || !IS_PRESSED_GAME(TH_BUTTON_SKIP))
+                    " ");
+            }
+            g_AnmManager->SetAnmIdxAndExecuteScript(
+                &this->msg.dialogueLines[this->msg.curInstr->args.dialogue.textLine],
+                this->msg.curInstr->args.dialogue.textLine + 0x700);
+            this->msg.dialogueLines[this->msg.curInstr->args.dialogue.textLine]
+                .fontHeight = (u8)this->msg.fontSize;
+            this->msg.dialogueLines[this->msg.curInstr->args.dialogue.textLine]
+                .fontWidth =
+                this->msg.dialogueLines[this->msg.curInstr->args.dialogue.textLine]
+                    .fontHeight;
+            AnmManager::DrawVmTextFmt(
+                g_AnmManager,
+                this->msg.dialogueLines +
+                    this->msg.curInstr->args.dialogue.textLine,
+                this->msg.textColorsA[this->msg.curInstr->args.dialogue.textColor]
+                    .color,
+                this->msg.textColorsB[this->msg.curInstr->args.dialogue.textColor]
+                    .color,
+                this->msg.curInstr->args.dialogue.text);
+            this->msg.framesElapsedDuringPause = 0;
+            break;
+        case MSG_PAUSE:
+            if (this->msg.dialogueSkippable == 0 || !IS_PRESSED_GAME(TH_BUTTON_SKIP))
+            {
+                if (!WAS_PRESSED_GAME(TH_BUTTON_SHOOT) ||
+                    (this->msg.framesElapsedDuringPause < 0xc))
                 {
-                    if (!WAS_PRESSED_GAME(TH_BUTTON_SHOOT) ||
-                        (this->msg.framesElapsedDuringPause < 0xc))
-                    {
-                        if (this->msg.framesElapsedDuringPause >= this->msg.curInstr->args.pause.duration)
-                            break;
-                        this->msg.framesElapsedDuringPause =
-                            this->msg.framesElapsedDuringPause + 1;
-                        goto LAB_0042a766;
-                    }
+                    if (this->msg.framesElapsedDuringPause >= this->msg.curInstr->args.pause.duration)
+                        break;
+                    this->msg.framesElapsedDuringPause =
+                        this->msg.framesElapsedDuringPause + 1;
+                    goto SKIP_TIME_INCREMENT;
                 }
-                break;
-            case MSG_SWITCH:
-                if ((this->msg.curInstr->args.msgSwitch).portraitIdx < 2)
-                {
-                    // these are exactly the same?
-                    this->msg.portraits[(this->msg.curInstr->args.msgSwitch).portraitIdx]
-                        .pendingInterrupt =
-                        (u16)this->msg.curInstr->args.msgSwitch.interrupt;
-                }
-                else
-                {
-                    this->msg.portraits[(this->msg.curInstr->args.msgSwitch).portraitIdx]
-                        .pendingInterrupt =
-                        (u16)this->msg.curInstr->args.msgSwitch.interrupt;
-                }
-                break;
-            case MSG_APPEAR_ENEMY:
-                this->msg.ignoreWaitCounter = this->msg.ignoreWaitCounter + 1;
-                break;
-            case MSG_MUSIC:
-                if (g_GameManager.currentStage == 6)
-                {
-                    this->vms1[0].anmFileIdx = 0x805;
-                    g_AnmManager->SetAnmIdxAndExecuteScript(&this->vms1[0],
-                                                            0x805);
-                }
-                else
-                {
-                    this->vms1[0].anmFileIdx = 0x804;
-                    g_AnmManager->SetAnmIdxAndExecuteScript(&this->vms1[0],
-                                                            0x804);
-                }
-                g_AnmManager->SetActiveSprite(
-                    this->vms1, this->msg.curInstr->args.portrait.portrait + 0x803);
-                if (g_Supervisor.PlayLoadedAudio(
-                        this->msg.curInstr->args.portrait.portrait) != ZUN_SUCCESS)
-                {
-                    g_Supervisor.PlayAudio(
-                        g_Stage.stdData
-                            ->bgmPaths[this->msg.curInstr->args.portrait.portrait]);
-                }
-                break;
-            case MSG_TEXT_INTRODUCE:
-                g_AnmManager->SetAnmIdxAndExecuteScript(
-                    &this->msg.introLines[this->msg.curInstr->args.dialogue.textLine],
-                    this->msg.curInstr->args.dialogue.textLine + 0x702);
-                g_AnmManager->DrawStringFormat(
-                    this->msg.introLines + this->msg.curInstr->args.dialogue.textLine,
-                    this->msg.textColorsA[this->msg.curInstr->args.dialogue.textColor]
-                        .color,
-                    this->msg.textColorsB[this->msg.curInstr->args.dialogue.textColor]
-                        .color,
-                    this->msg.curInstr->args.dialogue.text);
-                this->msg.framesElapsedDuringPause = 0;
-                break;
-            case MSG_STAGERESULTS:
-                this->clearPower = g_GameManager.globals->currentPower;
-                this->clearPointItems =
-                    g_GameManager.globals->pointItemsCollectedThisStage;
-                this->clearCherryMax =
-                    g_GameManager.cherryMax - g_GameManager.globals->cherryStart;
-                this->clearGraze = g_GameManager.globals->grazeInStage;
-                this->finishedStage = 1;
+            }
+            break;
+        case MSG_SWITCH:
+            if ((this->msg.curInstr->args.msgSwitch).portraitIdx < 2)
+            {
+                // these are exactly the same?
+                this->msg.portraits[(this->msg.curInstr->args.msgSwitch).portraitIdx]
+                    .SetPendingInterrupt(this->msg.curInstr->args.msgSwitch.interrupt);
+            }
+            else
+            {
+                this->msg.portraits[(this->msg.curInstr->args.msgSwitch).portraitIdx]
+                    .SetPendingInterrupt(this->msg.curInstr->args.msgSwitch.interrupt);
+            }
+            break;
+        case MSG_APPEAR_ENEMY:
+            this->msg.ignoreWaitCounter = this->msg.ignoreWaitCounter + 1;
+            break;
+        case MSG_MUSIC:
+            if (g_GameManager.currentStage == 6)
+            {
+                g_AnmManager->SetAnmIdxAndExecuteScript(&this->vms1[0],
+                                                        0x805);
+            }
+            else
+            {
+                g_AnmManager->SetAnmIdxAndExecuteScript(&this->vms1[0],
+                                                        0x804);
+            }
+            g_AnmManager->SetActiveSprite(
+                this->vms1, this->msg.curInstr->args.portrait.portrait + 0x803);
+            if (g_Supervisor.PlayLoadedAudio(
+                    this->msg.curInstr->args.portrait.portrait) != ZUN_SUCCESS)
+            {
+                g_Supervisor.PlayAudio(
+                    g_Stage.stdData
+                        ->bgmPaths[this->msg.curInstr->args.portrait.portrait]);
+            }
+            break;
+        case MSG_TEXT_INTRODUCE:
+            g_AnmManager->SetAnmIdxAndExecuteScript(
+                &this->msg.introLines[this->msg.curInstr->args.dialogue.textLine],
+                this->msg.curInstr->args.dialogue.textLine + 0x702);
+            g_AnmManager->DrawStringFormat(
+                this->msg.introLines + this->msg.curInstr->args.dialogue.textLine,
+                this->msg.textColorsA[this->msg.curInstr->args.dialogue.textColor]
+                    .color,
+                this->msg.textColorsB[this->msg.curInstr->args.dialogue.textColor]
+                    .color,
+                this->msg.curInstr->args.dialogue.text);
+            this->msg.framesElapsedDuringPause = 0;
+            break;
+        case MSG_STAGERESULTS:
+            this->clearPower = g_GameManager.globals->currentPower;
+            this->clearPointItems =
+                g_GameManager.globals->pointItemsCollectedThisStage;
+            this->clearCherryMax =
+                g_GameManager.cherryMax - g_GameManager.globals->cherryStart;
+            this->clearGraze = g_GameManager.globals->grazeInStage;
+            this->finishedStage = 1;
+            if (g_GameManager.currentStage < 6)
+            {
+                g_AnmManager->SetAnmIdxAndExecuteScript(&this->stageClearTextVm, 0x61e);
+                g_AnmManager->SetAnmIdxAndExecuteScript(&this->stageTransitionSnapshotVm, 0x725);
+                g_AnmManager->CreateScreenshotTexture(
+                    this->stageTransitionSnapshotVm.sprite->startPixelInclusive.x,
+                    this->stageTransitionSnapshotVm.sprite->startPixelInclusive.y,
+                    this->stageTransitionSnapshotVm.sprite->widthPx,
+                    this->stageTransitionSnapshotVm.sprite->heightPx);
+            }
+            else
+            {
+                g_GameManager.globals->extendsFromPointItems = -1;
+            }
+            break;
+        case MSG_FREEZE:
+            goto SKIP_TIME_INCREMENT;
+        case MSG_NEXT_LEVEL:
+            g_Supervisor.checkTiming = 0;
+            g_GameManager.globals->guiScore = g_GameManager.globals->score;
+            if (g_GameManager.practice != 0)
+            {
+                g_GameManager.globals->guiScore = g_GameManager.globals->score;
+                g_Supervisor.curState = 6;
+            }
+            else
+            {
                 if (g_GameManager.currentStage < 6)
                 {
-                    g_AnmManager->SetAnmIdxAndExecuteScript(&this->stageClearTextVm, 0x61e);
-                    g_AnmManager->SetAnmIdxAndExecuteScript(&this->stageTransitionSnapshotVm, 0x725);
-                    g_AnmManager->CreateScreenshotTexture(
-                        this->stageTransitionSnapshotVm.sprite->startPixelInclusive.x,
-                        this->stageTransitionSnapshotVm.sprite->startPixelInclusive.y,
-                        this->stageTransitionSnapshotVm.sprite->widthPx,
-                        this->stageTransitionSnapshotVm.sprite->heightPx);
-                }
-                else
-                {
-                    g_GameManager.globals->extendsFromPointItems = -1;
-                }
-                break;
-            case MSG_FREEZE:
-                goto LAB_0042a766;
-            case MSG_NEXT_LEVEL:
-                g_Supervisor.checkTiming = 0;
-                g_GameManager.globals->guiScore = g_GameManager.globals->score;
-                if ((g_GameManager.flags & 1) != 0)
-                {
-                    g_GameManager.globals->guiScore = g_GameManager.globals->score;
-                    g_Supervisor.curState = 6;
-                }
-                else
-                {
-                    if (g_GameManager.currentStage < 6)
+                    if ((g_GameManager.replay == 0) ||
+                        (g_ReplayManager->data->head
+                             .stageReplayData[g_GameManager.currentStage]
+                             .data != NULL))
                     {
-                        if (((g_GameManager.flags >> 3 & 1) == 0) ||
-                            (g_ReplayManager->data->head
-                                 .stageReplayData[g_GameManager.currentStage]
-                                 .data != NULL))
-                        {
-                            this->stageClearBonusTextVm.Initialize();
-                            g_AnmManager->SetActiveSprite(&this->stageClearBonusTextVm,
-                                                          0x10c);
-                            this->transitionToScoreScreen = 1;
-                            this->msg.currentMsgIdx = -2;
-                        }
-                        else
-                        {
-                            g_Supervisor.curState = 7;
-                        }
-                    }
-                    else if ((g_GameManager.flags >> 3 & 1) == 0)
-                    {
-                        if (g_GameManager.difficulty < 4)
-                        {
-                            g_GameManager.flags |= 0x10;
-                            g_GameManager.globals->guiScore = g_GameManager.globals->score;
-                            g_Supervisor.curState = 9;
-                        }
-                        else
-                        {
-                            if (g_GameManager.difficulty == DIFF_EXTRA)
-                            {
-                                g_GameManager.clrd[g_GameManager.shotTypeAndCharacter]
-                                    .difficultyClearedWithRetries[4] = 99;
-                            }
-                            ((Plst *)(g_GameManager.pscr + 6))
-                                ->playDataByDifficulty[g_GameManager.difficulty]
-                                .noContinueClearCount =
-                                ((Plst *)(g_GameManager.pscr + 6))
-                                    ->playDataByDifficulty[g_GameManager.difficulty]
-                                    .noContinueClearCount +
-                                1;
-                            g_GameManager.flags |= 0x10;
-                            g_GameManager.globals->guiScore = g_GameManager.globals->score;
-                            g_Supervisor.curState = 6;
-                        }
+                        g_AnmManager->InitializeAndSetActiveSprite(&this->stageClearBonusTextVm, 0x10c);
+                        this->transitionToScoreScreen = 1;
+                        this->msg.currentMsgIdx = -2;
                     }
                     else
                     {
-                        if ((g_GameManager.currentStage == 8) &&
-                            (g_GameManager.globals->score !=
-                             g_ReplayManager->data->data.score))
-                        {
-                            ReplayManager::SaveReplay2(g_GameManager.replayFilename);
-                        }
                         g_Supervisor.curState = 7;
                     }
                 }
-                goto LAB_0042a766;
-            case MSG_FADEOUT_MUSIC:
-                g_Supervisor.FadeOutMusic(4.0f);
-                break;
-            case MSG_ALLOW_SKIP:
-                this->msg.dialogueSkippable = *(u8 *)&this->msg.curInstr->args;
-                break;
-            case MSG_FADE_IN_EFFECT:
-                BombEffects::RegisterChain(4, 0x192, 0xffffff, 0, 0);
-                g_Supervisor.renderSkipFrames = 0x192;
+                else if (g_GameManager.replay == 0)
+                {
+                    if (g_GameManager.difficulty < 4)
+                    {
+                        g_GameManager.finished = 1;
+                        g_GameManager.globals->guiScore = g_GameManager.globals->score;
+                        g_Supervisor.curState = 9;
+                    }
+                    else
+                    {
+                        if (g_GameManager.difficulty == DIFF_EXTRA)
+                        {
+                            g_GameManager.clrd[g_GameManager.shotTypeAndCharacter]
+                                .difficultyClearedWithRetries[4] = 99;
+                        }
+                        ((Plst *)(g_GameManager.pscr + 6))
+                            ->playDataByDifficulty[g_GameManager.difficulty]
+                            .noContinueClearCount =
+                            ((Plst *)(g_GameManager.pscr + 6))
+                                ->playDataByDifficulty[g_GameManager.difficulty]
+                                .noContinueClearCount +
+                            1;
+                        g_GameManager.finished = 1;
+                        g_GameManager.globals->guiScore = g_GameManager.globals->score;
+                        g_Supervisor.curState = 6;
+                    }
+                }
+                else
+                {
+                    if ((g_GameManager.currentStage == 8) &&
+                        (g_GameManager.globals->score !=
+                         g_ReplayManager->data->data.score))
+                    {
+                        ReplayManager::SaveReplay2(g_GameManager.replayFilename);
+                    }
+                    g_Supervisor.curState = 7;
+                }
             }
-            this->msg.curInstr = (MsgRawInstr *)((u8 *)&this->msg.curInstr->args +
-                                                 this->msg.curInstr->argsize);
+            goto SKIP_TIME_INCREMENT;
+        case MSG_FADEOUT_MUSIC:
+            g_Supervisor.FadeOutMusic(4.0f);
+            break;
+        case MSG_ALLOW_SKIP:
+            this->msg.dialogueSkippable = *(u8 *)&this->msg.curInstr->args;
+            break;
+        case MSG_FADE_IN_EFFECT:
+            BombEffects::RegisterChain(4, 0x192, 0xffffff, 0, 0);
+            g_Supervisor.renderSkipFrames = 0x192;
         }
-        this->msg.timer.NextTick();
-    LAB_0042a766:
-        g_AnmManager->ExecuteScript(this->msg.portraits);
-        g_AnmManager->ExecuteScript(this->msg.portraits + 1);
-        g_AnmManager->ExecuteScript(this->msg.dialogueLines);
-        g_AnmManager->ExecuteScript(this->msg.dialogueLines + 1);
-        g_AnmManager->ExecuteScript(this->msg.introLines);
-        g_AnmManager->ExecuteScript(this->msg.introLines + 1);
-        if (((this->msg.timer.current < 0x3c) &&
-             (this->msg.dialogueSkippable != 0)) &&
-            IS_PRESSED_GAME(TH_BUTTON_SKIP))
-        {
-            this->msg.timer.Initialize2(0x3c);
-        }
-        return ZUN_SUCCESS;
+        this->msg.curInstr = (MsgRawInstr *)((u8 *)&this->msg.curInstr->args +
+                                             this->msg.curInstr->argsize);
     }
+    this->msg.timer.NextTick();
+SKIP_TIME_INCREMENT:
+    g_AnmManager->ExecuteScript(this->msg.portraits);
+    g_AnmManager->ExecuteScript(this->msg.portraits + 1);
+    g_AnmManager->ExecuteScript(this->msg.dialogueLines);
+    g_AnmManager->ExecuteScript(this->msg.dialogueLines + 1);
+    g_AnmManager->ExecuteScript(this->msg.introLines);
+    g_AnmManager->ExecuteScript(this->msg.introLines + 1);
+    if (((i32)(this->msg.timer.current < 60) &&
+         (this->msg.dialogueSkippable != 0)) &&
+        IS_PRESSED_GAME(TH_BUTTON_SKIP))
+    {
+        this->msg.timer.Initialize2(60);
+    }
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x0042a876
@@ -1204,7 +1182,7 @@ ZunResult GuiImpl::DrawDialogue()
     }
     else
     {
-        if (this->msg.timer.current < 0x3c)
+        if (this->msg.timer.current < 60)
         {
             local_8 =
                 (((f32)this->msg.timer.current + this->msg.timer.subFrame) * 48.0f) /
@@ -1487,8 +1465,8 @@ void Gui::UpdateGui()
                    this->impl->clearPointItems * 5000 + this->impl->clearCherryMax;
         if ((6 < g_GameManager.currentStage) ||
             (((g_GameManager.currentStage == 6 &&
-               ((g_GameManager.flags & 1) == 0)) &&
-              (((g_GameManager.flags >> 3 & 1) == 0 ||
+               (g_GameManager.practice == 0)) &&
+              ((g_GameManager.replay == 0 ||
                 (g_ReplayManager->data->head.stageReplayData[4].data != NULL))))))
         {
             local_10 = local_10 + g_GameManager.globals->livesRemaining * 2000000 +
@@ -1893,7 +1871,7 @@ void Gui::DrawStageElements()
     i32 local_18;
     i32 i;
 
-    for (i = 0; i < 5; i += 1)
+    for (i = 0; i < 5; i++)
     {
         g_AnmManager->Draw(this->impl->vms1 + i);
     }
@@ -1940,7 +1918,7 @@ void Gui::DrawStageElements()
         }
         this->impl->captureBonusVm.pos = this->impl->spellcardBonusIndicator.pos;
         this->impl->captureBonusVm.pos.x -= 40.0f;
-        for (i = 0; i < 8; i += 1)
+        for (i = 0; i < 8; i++)
         {
             if (local_18 / local_24 != 0)
             {
@@ -2007,7 +1985,7 @@ void Gui::DrawStageElements()
     }
     if (this->impl->activeTransitionQuads != 0)
     {
-        for (i = 0; i < 0xa8; i += 1)
+        for (i = 0; i < 0xa8; i++)
         {
             g_AnmManager->DrawProjected(this->impl->transitionQuads + i);
             g_AnmManager->currentSprite = NULL;

@@ -81,7 +81,7 @@ void GameManager::AddCurrentPower(i32 amount)
 {
     if (CheckGameIntegrity() != 0)
     {
-        g_Supervisor.Nuke();
+        NUKE_SUPERVISOR();
     }
     this->globals->currentPower = (f32)amount + this->globals->currentPower;
     RegenerateGameIntegrityCsum();
@@ -123,7 +123,7 @@ void ItemManager::SpawnItem(D3DXVECTOR3 *heading, i32 itemType, i32 state)
             this->nextIndex = 0;
             item = this->items;
         }
-        i += 1;
+        i++;
     }
     if (1099 < this->nextIndex)
     {
@@ -206,9 +206,9 @@ void ItemManager::OnUpdate()
             this->activeItemCount = this->activeItemCount + 1;
             if (item->state == 2)
             {
-                if (0x3b < item->timer.current)
+                if (item->timer.current > 60)
                 {
-                    if (item->timer.current == 0x3c)
+                    if (item->timer.current == 60)
                     {
                         item->startPosition.x = 0.0f;
                         item->startPosition.y = 0.0f;
@@ -280,8 +280,7 @@ void ItemManager::OnUpdate()
             if (g_Player.CalcItemBoxCollision(&item->currentPosition, &local_20) ==
                 0)
             {
-                item->timer.previous = item->timer.current;
-                g_Supervisor.TickTimer(&item->timer.current, &item->timer.subFrame);
+                item->timer.Tick();
                 if (item->sprite.currentInstruction != NULL)
                 {
                     g_AnmManager->ExecuteScript(&item->sprite);
@@ -639,7 +638,7 @@ void ItemManager::OnUpdate()
             }
         }
     LAB_00432a1b:
-        i += 1;
+        i++;
         item = item + 1;
     }
 }
@@ -648,7 +647,7 @@ void ItemManager::OnUpdate()
 void ItemManager::RemoveAllItems()
 {
     Item *item = this->items;
-    for (i32 i = 0; i < 0x44c; i += 1)
+    for (i32 i = 0; i < 0x44c; i++)
     {
         if (item->isInUse != 0)
         {
@@ -665,7 +664,7 @@ void ItemManager::RemoveAllItems()
 void ItemManager::DespawnAllItems(i32 param_1)
 {
     Item *item = this->items;
-    for (i32 i = 0; i < 0x44c; i += 1)
+    for (i32 i = 0; i < 0x44c; i++)
     {
         if (((item->isInUse != 0) && (i != param_1)) &&
             ((item->itemType == 0 || (item->itemType == 2))))
@@ -690,7 +689,7 @@ void ItemManager::DespawnAllItems(i32 param_1)
 void ItemManager::ActivateAllItems()
 {
     Item *item = this->items;
-    for (i32 i = 0; i < 0x44c; i += 1)
+    for (i32 i = 0; i < 0x44c; i++)
     {
         if ((item->isInUse == 1) && (item->state == 1))
         {

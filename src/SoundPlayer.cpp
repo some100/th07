@@ -95,7 +95,7 @@ ZunResult SoundPlayer::InitializeDSound(HWND gameWindow)
     DSBUFFERDESC bufdesc;
 
     memset(this, 0, sizeof(SoundPlayer));
-    for (i32 i = 0; i < 0x80; i = i + 1)
+    for (i32 i = 0; i < 0x80; i++)
     {
         this->unusedSoundVolRelated[i] = -1;
     }
@@ -157,7 +157,7 @@ ZunResult SoundPlayer::Release()
 {
     if (this->manager != NULL)
     {
-        for (i32 i = 0; i < 0x80; i = i + 1)
+        for (i32 i = 0; i < 0x80; i++)
         {
             SAFE_RELEASE(this->duplicateSoundBuffers[i]);
             SAFE_RELEASE(this->soundBuffers[i]);
@@ -169,7 +169,7 @@ ZunResult SoundPlayer::Release()
         SAFE_RELEASE(this->initSoundBuffer);
         SAFE_DELETE(this->backgroundMusic);
         SAFE_DELETE(this->manager);
-        for (i32 i = 0; i < 0x10; i = i + 1)
+        for (i32 i = 0; i < 0x10; i++)
         {
             SAFE_FREE(this->bgmPreloadData[i]);
         }
@@ -591,11 +591,11 @@ ZunResult SoundPlayer::InitSoundBuffers()
     }
     else
     {
-        for (i32 i = 0; i < 5; i = i + 1)
+        for (i32 i = 0; i < 5; i++)
         {
             this->soundQueue[i] = -1;
         }
-        for (i32 i = 0; i < 0x1e; i = i + 1)
+        for (i32 i = 0; i < 0x1e; i++)
         {
             if (LoadSound(i, g_SFXList[i]) != ZUN_SUCCESS)
             {
@@ -606,7 +606,7 @@ ZunResult SoundPlayer::InitSoundBuffers()
                 return ZUN_ERROR;
             }
         }
-        for (i32 i = 0; i < 0x26; i = i + 1)
+        for (i32 i = 0; i < 0x26; i++)
         {
             this->directSoundHdl->DuplicateSoundBuffer(
                 this->soundBuffers[SOUND_BUFFER_IDX_VOL[i].bufferIdx],
@@ -626,7 +626,7 @@ void SoundPlayer::PlaySoundByIdx(i32 idx, u32 param_2)
     i32 i;
 
     sVar1 = SOUND_BUFFER_IDX_VOL[idx].field2_0x6;
-    for (i = 0; (i < 5 && (-1 < this->soundQueue[i])); i = i + 1)
+    for (i = 0; (i < 5 && (-1 < this->soundQueue[i])); i++)
     {
         if (this->soundQueue[i] == idx)
         {
@@ -900,7 +900,7 @@ loop:
     while (i < 0x1f && commandCursor->opcode != 0)
     {
         commandCursor[0] = commandCursor[1];
-        i = i + 1;
+        i++;
         commandCursor = commandCursor + 1;
     }
     if (!loopAgain)
@@ -912,7 +912,7 @@ loop:
         }
         else
         {
-            for (i = 0; (i < 5 && (-1 < this->soundQueue[i])); i = i + 1)
+            for (i = 0; (i < 5 && (-1 < this->soundQueue[i])); i++)
             {
                 tmp = this->soundQueue[i];
                 this->soundQueue[i] = -1;

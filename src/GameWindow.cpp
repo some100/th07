@@ -87,7 +87,7 @@ LRESULT __stdcall GameWindow::WindowProc(HWND hWnd, u32 uMsg, WPARAM wParam,
             }
             return 1;
         }
-        if ((uMsg == 0x3c9) && (g_Supervisor.midiOutput != NULL))
+        if ((uMsg == 609) && (g_Supervisor.midiOutput != NULL))
         {
             g_Supervisor.midiOutput->UnprepareHeader((LPMIDIHDR)lParam);
         }
@@ -113,7 +113,7 @@ void GameWindow::Present()
     {
         // STRING: TH07 0x00497c1c
         _mkdir("snapshot");
-        for (i = 0; i < 1000; i = i + 1)
+        for (i = 0; i < 1000; i++)
         {
             // STRING: TH07 0x00497c08
             sprintf(local_10c, "snapshot/th%.3d.bmp", i);
@@ -883,7 +883,7 @@ i32 GameWindow::ChecksumExecutable()
         else
         {
             dataCursor = dataBase;
-            for (u32 i = 0; i < (g_LastFileSize >> 2) - 1; i = i + 1)
+            for (u32 i = 0; i < (g_LastFileSize >> 2) - 1; i++)
             {
                 checksum = checksum + *(i32 *)dataCursor;
                 dataCursor = dataCursor + 4;

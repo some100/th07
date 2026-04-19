@@ -60,53 +60,49 @@ void IncrementCapped(u32 *param, u32 param_2)
     }
 }
 
+#pragma var_order(i, curPopup)
 // FUNCTION: TH07 0x004017e0
 u32 AsciiManager::OnUpdate(AsciiManager *arg)
 {
-    AsciiManagerPopup *curPopup;
     i32 i;
+    AsciiManagerPopup *curPopup;
 
-    if ((g_GameManager.isInGameMenu == 0) && (g_GameManager.isInRetryMenu == 0))
+    if ((g_GameManager.isInRetryMenu == 0) && (g_GameManager.isInPauseMenu == 0))
     {
         curPopup = arg->popups;
-        for (i = 0; i < 0x2d3; i += 1)
+        for (i = 0; i < 0x2d3; i++, curPopup++)
         {
-            if (curPopup->inUse != 0)
+            if (curPopup->inUse == 0)
+                continue;
+
+            curPopup->position.y -= 0.5f * g_Supervisor.effectiveFramerateMultiplier;
+            curPopup->timer.Tick();
+            if ((curPopup->timer.current > 60) != 0)
             {
-                curPopup->position.y = curPopup->position.y -
-                                       g_Supervisor.effectiveFramerateMultiplier * 0.5f;
-                curPopup->timer.previous = curPopup->timer.current;
-                g_Supervisor.TickTimer(&curPopup->timer.current,
-                                       &curPopup->timer.subFrame);
-                if (0x3c < curPopup->timer.current)
-                {
-                    curPopup->inUse = 0;
-                }
+                curPopup->inUse = 0;
             }
-            curPopup = curPopup + 1;
         }
     }
-    else if (g_GameManager.isInGameMenu != 0)
+    else if (g_GameManager.isInRetryMenu != 0)
     {
         arg->retryMenu.OnUpdate();
     }
-    if (g_GameManager.isInRetryMenu != 0)
+    if (g_GameManager.isInPauseMenu != 0)
     {
         arg->pauseMenu.OnUpdate();
     }
     arg->UpdateScripts();
-    if ((g_GameManager.flags >> 1 & 1) == 0)
-    {
-        arg->vm.anmFileIdx = 0;
-    }
-    else
+    if (g_GameManager.demo != 0)
     {
         if (arg->vm.anmFileIdx == 0)
         {
-            arg->vm.anmFileIdx = 7;
-            g_AnmManager->SetAndExecuteScript(&arg->vm, g_AnmManager->scripts[7]);
+            g_AnmManager->SetAnmIdxAndExecuteScript(&arg->vm, 7);
         }
         g_AnmManager->ExecuteScript(&arg->vm);
+    }
+    else
+    {
+        arg->vm.anmFileIdx = 0;
     }
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
@@ -155,6 +151,8 @@ void AsciiManager::InitializeVms()
     this->scale.x = 1.0f;
     this->scale.y = 1.0f;
     this->vm1.anchor = 3;
+    // TODO: this should probably be using InitializeAndSetActiveSprite, but
+    // for some reason i just cannot get it to fully match
     AnmVm *vm1 = &this->vm1;
     AnmManager *uselessAnmMgr = g_AnmManager;
     vm1->Initialize();
@@ -354,7 +352,7 @@ void AsciiManager::DrawStrings()
             text++;
         }
     }
-    for (i = 0; i < 4; i += 1)
+    for (i = 0; i < 4; i++)
     {
         if ((this->otherOtherVms[i].pos.x >= 56.0f) &&
             (this->otherOtherVms[i].pos.x <= 392.0f))
@@ -424,7 +422,7 @@ void AsciiManager::CreatePopup1(D3DXVECTOR3 *position, i32 value,
     popup->position = *position;
     popup->position.x += g_GameManager.arcadeRegionTopLeftPos.x;
     popup->position.y += g_GameManager.arcadeRegionTopLeftPos.y;
-    this->nextPopupIndex1 = this->nextPopupIndex1 + 1;
+    this->nextPopupIndex1++;
 }
 
 // FUNCTION: TH07 0x00402630
@@ -463,7 +461,7 @@ void AsciiManager::CreatePopup2(D3DXVECTOR3 *position, i32 value,
     popup->position = *position;
     popup->position.x += g_GameManager.arcadeRegionTopLeftPos.x;
     popup->position.y += g_GameManager.arcadeRegionTopLeftPos.y;
-    this->nextPopupIndex2 = this->nextPopupIndex2 + 1;
+    this->nextPopupIndex2++;
 }
 
 // FUNCTION: TH07 0x00402780
@@ -475,7 +473,7 @@ i32 RetryMenu::OnUpdate()
     {
         g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
         this->curState = 4;
-        for (i = 0; i < 10; i = i + 1)
+        for (i = 0; i < 10; i++)
         {
             if (this->menuSprites[i].visible != 0)
             {
@@ -490,7 +488,7 @@ i32 RetryMenu::OnUpdate()
     {
         g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
         this->curState = 9;
-        for (i = 0; i < 10; i = i + 1)
+        for (i = 0; i < 10; i++)
         {
             if (this->menuSprites[i].visible != 0)
             {
@@ -499,13 +497,13 @@ i32 RetryMenu::OnUpdate()
         }
         this->numFrames = 0;
     }
-    if (((g_GameManager.flags >> 3 & 1) == 0) &&
+    if ((g_GameManager.replay == 0) &&
         WAS_PRESSED_RAW(TH_BUTTON_RESET) &&
         this->curState != 9)
     {
         g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
         this->curState = 10;
-        for (i = 0; i < 10; i = i + 1)
+        for (i = 0; i < 10; i++)
         {
             if (this->menuSprites[i].visible != 0)
             {
@@ -517,17 +515,17 @@ i32 RetryMenu::OnUpdate()
     switch (this->curState)
     {
     case 0:
-        for (i = 0; i < 10; i = i + 1)
+        for (i = 0; i < 10; i++)
         {
             g_AnmManager->SetAnmIdxAndExecuteScript(&this->menuSprites[i], i + 0xfe);
         }
-        for (i = 0; (i32)i < 4; i = i + 1)
+        for (i = 0; (i32)i < 4; i++)
         {
             this->menuSprites[i].pendingInterrupt = 1;
         }
         g_AnmManager->SetActiveSprite(this->menuSprites + 7,
                                       g_GameManager.difficulty + 0x10d);
-        if ((g_GameManager.flags & 1) == 0)
+        if (g_GameManager.practice == 0)
         {
             this->menuSprites[8].SetInvisible();
         }
@@ -535,11 +533,11 @@ i32 RetryMenu::OnUpdate()
         {
             this->menuSprites[9].SetInvisible();
         }
-        if ((g_GameManager.flags >> 3 & 1) != 0)
+        if (g_GameManager.replay != 0)
         {
             this->menuSprites[3].currentInstruction = NULL;
         }
-        this->curState = this->curState + 1;
+        this->curState++;
         this->numFrames = 0;
         if ((g_Supervisor.flags >> 1 & 1) != 0)
         {
@@ -564,7 +562,7 @@ i32 RetryMenu::OnUpdate()
         this->menuSprites[2].offset = this->menuSprites[3].offset;
         if (this->numFrames >= 4)
         {
-            if ((g_GameManager.flags >> 3 & 1) == 0)
+            if (g_GameManager.replay == 0)
             {
                 if (WAS_PRESSED_RAW(TH_BUTTON_UP))
                 {
@@ -585,7 +583,7 @@ i32 RetryMenu::OnUpdate()
             if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                for (i = 0; (i32)i < 4; i = i + 1)
+                for (i = 0; (i32)i < 4; i++)
                 {
                     this->menuSprites[i].pendingInterrupt = 2;
                 }
@@ -609,7 +607,7 @@ i32 RetryMenu::OnUpdate()
                 this->curState = 1;
                 g_SoundPlayer.PlaySoundByIdx(SOUND_0, 0);
             }
-            if ((g_GameManager.flags >> 3 & 1) != 0)
+            if (g_GameManager.replay != 0)
             {
                 if (WAS_PRESSED_RAW(TH_BUTTON_DOWN))
                 {
@@ -628,7 +626,7 @@ i32 RetryMenu::OnUpdate()
             if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                for (i = 0; (i32)i < 4; i = i + 1)
+                for (i = 0; (i32)i < 4; i++)
                 {
                     this->menuSprites[i].pendingInterrupt = 2;
                 }
@@ -663,7 +661,7 @@ i32 RetryMenu::OnUpdate()
             if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                for (i = 0; (i32)i < 4; i = i + 1)
+                for (i = 0; (i32)i < 4; i++)
                 {
                     this->menuSprites[i].pendingInterrupt = 2;
                 }
@@ -680,8 +678,8 @@ i32 RetryMenu::OnUpdate()
         if (this->numFrames >= 0x14)
         {
             this->curState = 0;
-            g_GameManager.isInGameMenu = 0;
-            for (i = 0; i < 10; i = i + 1)
+            g_GameManager.isInRetryMenu = 0;
+            for (i = 0; i < 10; i++)
             {
                 this->menuSprites[i].SetInvisible();
             }
@@ -716,7 +714,7 @@ i32 RetryMenu::OnUpdate()
             if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                for (i = 4; (i32)i < 7; i = i + 1)
+                for (i = 4; (i32)i < 7; i++)
                 {
                     this->menuSprites[i].pendingInterrupt = 2;
                 }
@@ -755,7 +753,7 @@ i32 RetryMenu::OnUpdate()
             if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                for (i = 0; (i32)i < 4; i = i + 1)
+                for (i = 0; (i32)i < 4; i++)
                 {
                     this->menuSprites[i].pendingInterrupt = 1;
                 }
@@ -779,9 +777,9 @@ i32 RetryMenu::OnUpdate()
         if (this->numFrames >= 0x14)
         {
             this->curState = 0;
-            g_GameManager.isInGameMenu = 0;
+            g_GameManager.isInRetryMenu = 0;
             g_Supervisor.curState = 1;
-            for (i = 0; i < 10; i = i + 1)
+            for (i = 0; i < 10; i++)
             {
                 this->menuSprites[i].SetInvisible();
             }
@@ -792,16 +790,16 @@ i32 RetryMenu::OnUpdate()
         if (this->numFrames >= 0x14)
         {
             this->curState = 0;
-            g_GameManager.isInGameMenu = 0;
+            g_GameManager.isInRetryMenu = 0;
             g_Supervisor.curState = 10;
-            for (i = 0; i < 10; i = i + 1)
+            for (i = 0; i < 10; i++)
             {
                 this->menuSprites[i].SetInvisible();
             }
             g_Supervisor.currentTime = timeGetTime();
         }
     }
-    for (i = 0; i < 10; i = i + 1)
+    for (i = 0; i < 10; i++)
     {
         g_AnmManager->ExecuteScript(&this->menuSprites[i]);
     }
@@ -809,7 +807,7 @@ i32 RetryMenu::OnUpdate()
     {
         g_AnmManager->ExecuteScript(&this->menuBackground);
     }
-    this->numFrames = this->numFrames + 1;
+    this->numFrames++;
     return 0;
 }
 
@@ -818,7 +816,7 @@ void RetryMenu::OnDraw()
 {
     u32 i;
 
-    if (g_GameManager.isInGameMenu != 0)
+    if (g_GameManager.isInRetryMenu != 0)
     {
         g_AnmManager->Flush();
         g_Supervisor.viewport.X = (u32)(g_GameManager.arcadeRegionTopLeftPos.x);
@@ -832,7 +830,7 @@ void RetryMenu::OnDraw()
             local_25c.zWriteDisable = 1;
             g_AnmManager->DrawNoRotation(&local_25c);
         }
-        for (i = 0; i < 10; i = i + 1)
+        for (i = 0; i < 10; i++)
         {
             if (this->menuSprites[i].visible != 0)
             {
@@ -847,16 +845,16 @@ i32 PauseMenu::OnUpdate()
 {
     i32 i;
 
-    if ((g_GameManager.flags & 1) != 0)
+    if (g_GameManager.practice != 0)
     {
-        g_GameManager.isInRetryMenu = 0;
+        g_GameManager.isInPauseMenu = 0;
         g_GameManager.globals->guiScore = g_GameManager.globals->score;
         g_Supervisor.curState = 6;
         return 1;
     }
-    if ((g_GameManager.flags >> 3 & 1) != 0)
+    if (g_GameManager.replay != 0)
     {
-        g_GameManager.isInRetryMenu = 0;
+        g_GameManager.isInPauseMenu = 0;
         g_Supervisor.curState = 7;
         g_GameManager.globals->guiScore = g_GameManager.globals->score;
         return 1;
@@ -864,7 +862,7 @@ i32 PauseMenu::OnUpdate()
     if (((i32)(u32)g_GameManager.globals->numRetries >= g_GameManager.maxRetries) ||
         (g_GameManager.difficulty >= 4))
     {
-        g_GameManager.isInRetryMenu = 0;
+        g_GameManager.isInPauseMenu = 0;
         g_Supervisor.curState = 6;
         g_GameManager.globals->guiScore = g_GameManager.globals->score;
         return 1;
@@ -875,7 +873,7 @@ i32 PauseMenu::OnUpdate()
         if (this->numFrames == 0)
         {
             g_SoundPlayer.PushCommand(AUDIO_PAUSE, 0, "Pause");
-            for (i = 0; i < 4; i += 1)
+            for (i = 0; i < 4; i++)
             {
                 g_AnmManager->SetAnmIdxAndExecuteScript(&this->menuSprites[i], i + 0x108);
                 this->menuSprites[i].pendingInterrupt = 1;
@@ -920,7 +918,7 @@ i32 PauseMenu::OnUpdate()
             if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                for (i = 0; i < 5; i += 1)
+                for (i = 0; i < 5; i++)
                 {
                     this->menuSprites[i].pendingInterrupt = 2;
                 }
@@ -945,7 +943,7 @@ i32 PauseMenu::OnUpdate()
             if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                for (i = 0; i < 5; i += 1)
+                for (i = 0; i < 5; i++)
                 {
                     this->menuSprites[i].pendingInterrupt = 2;
                 }
@@ -959,9 +957,9 @@ i32 PauseMenu::OnUpdate()
         {
             this->curState = 0;
             this->numFrames = 0;
-            g_GameManager.isInRetryMenu = 0;
+            g_GameManager.isInPauseMenu = 0;
             g_Supervisor.curState = 6;
-            for (i = 0; i < 5; i += 1)
+            for (i = 0; i < 5; i++)
             {
                 this->menuSprites[i].SetInvisible();
             }
@@ -975,8 +973,8 @@ i32 PauseMenu::OnUpdate()
         {
             this->curState = 0;
             this->numFrames = 0;
-            g_GameManager.isInRetryMenu = 0;
-            for (i = 0; i < 5; i += 1)
+            g_GameManager.isInPauseMenu = 0;
+            for (i = 0; i < 5; i++)
             {
                 this->menuSprites[i].SetInvisible();
             }
@@ -1026,7 +1024,7 @@ i32 PauseMenu::OnUpdate()
         }
         break;
     }
-    for (i = 0; i < 5; i += 1)
+    for (i = 0; i < 5; i++)
     {
         g_AnmManager->ExecuteScript(this->menuSprites + i);
     }
@@ -1034,7 +1032,7 @@ i32 PauseMenu::OnUpdate()
     {
         g_AnmManager->ExecuteScript(&this->menuBackground);
     }
-    this->numFrames = this->numFrames + 1;
+    this->numFrames++;
     return 0;
 }
 
@@ -1043,7 +1041,7 @@ void PauseMenu::OnDraw()
 {
     i32 i;
 
-    if (g_GameManager.isInRetryMenu != 0)
+    if (g_GameManager.isInPauseMenu != 0)
     {
         g_AnmManager->Flush();
         g_Supervisor.viewport.X = g_GameManager.arcadeRegionTopLeftPos.x;
@@ -1060,7 +1058,7 @@ void PauseMenu::OnDraw()
         {
             g_AnmManager->DrawNoRotation(&this->menuSprites[4]);
         }
-        for (i = 0; i < 5; i += 1)
+        for (i = 0; i < 5; i++)
         {
             if (this->menuSprites[i].visible != 0)
             {
@@ -1093,7 +1091,7 @@ void AsciiManager::DrawPopups()
         g_Supervisor.DisableFog();
     }
     g_Supervisor.SetRenderState(D3DRS_ZFUNC, 8);
-    for (i = 0; i < 0x2d3; i += 1)
+    for (i = 0; i < 0x2d3; i++)
     {
         if (local_8->inUse != 0)
         {
@@ -1176,7 +1174,7 @@ void AsciiManager::DrawPopups()
             this->otherVms[1].color.bytes.g = 0xd0;
             this->otherVms[1].color.bytes.b = 0x80;
         }
-        for (i = 0; i < 6; i += 1)
+        for (i = 0; i < 6; i++)
         {
             iVar5 = local_30 / local_3c;
             local_30 %= local_3c;
@@ -1257,7 +1255,7 @@ void AsciiManager::DrawPopups()
             this->otherVms[1].pos.y -= 2.0f;
         }
         local_3c = 10000;
-        for (i = 0; i < 5; i += 1)
+        for (i = 0; i < 5; i++)
         {
             iVar5 = local_30 / local_3c;
             local_30 %= local_3c;

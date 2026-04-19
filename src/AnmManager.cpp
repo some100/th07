@@ -37,7 +37,7 @@ AnmManager::AnmManager()
 
     memset(this, 0, sizeof(AnmManager));
 
-    for (spriteIndex = 0; spriteIndex < 0xa00; spriteIndex = spriteIndex + 1)
+    for (spriteIndex = 0; spriteIndex < 0xa00; spriteIndex++)
     {
         this->sprites[spriteIndex].sourceFileIndex = -1;
     }
@@ -207,7 +207,7 @@ ZunResult AnmManager::LoadTextureEmbedded(u32 textureIdx,
         (i32)imageInfo->width, (i32)imageInfo->height,
         g_TextureFormatD3D8Mapping[imageInfo->format], &surf);
     surf->LockRect(&lockedRect, NULL, 0);
-    for (i32 i = 0; i < info->height; i = i + 1)
+    for (i32 i = 0; i < info->height; i++)
     {
         u32 uVar3 = (i32)info->width * g_TextureBytesPerPixel[info->format];
         memcpy((u8 *)((i32)lockedRect.pBits + i * lockedRect.Pitch),
@@ -667,7 +667,7 @@ void AnmManager::SetAndExecuteScript(AnmVm *vm, AnmRawInstr *beginningOfScript)
         vm->currentTimeInScript.Initialize2(0);
         vm->visible = 0;
         ExecuteScript(vm);
-        this->scriptsExecutedThisFrame = this->scriptsExecutedThisFrame + 1;
+        this->scriptsExecutedThisFrame++;
     }
 }
 
@@ -1054,7 +1054,7 @@ void AnmManager::Flush()
         sizeof(VertexTex1DiffuseXyzrwh));
     this->vertexBufferStartPtr = this->vertexBufferCurPtr;
     this->spritesToDraw = 0;
-    this->flushesThisFrame = this->flushesThisFrame + 1;
+    this->flushesThisFrame++;
 }
 
 // FUNCTION: TH07 0x0044f690
@@ -1068,7 +1068,7 @@ ZunResult AnmManager::PushSprite(VertexTex1DiffuseXyzrwh *spriteVertex)
     this->vertexBufferCurPtr[5] = spriteVertex[3];
 
     this->vertexBufferCurPtr = this->vertexBufferCurPtr + 6;
-    this->spritesToDraw = this->spritesToDraw + 1;
+    this->spritesToDraw++;
     return ZUN_SUCCESS;
 }
 
@@ -2433,9 +2433,7 @@ execute_timers:
     {
         if (vm->interpEndTimes[i].current > 0)
         {
-            vm->interpStartTimes[i].previous = vm->interpStartTimes[i].current;
-            g_Supervisor.TickTimer(&vm->interpStartTimes[i].current,
-                                   &vm->interpStartTimes[i].subFrame);
+            vm->interpStartTimes[i].Tick();
             f32 t;
             if (vm->interpStartTimes[i].current < vm->interpEndTimes[i].current)
             {
@@ -2560,9 +2558,7 @@ execute_timers:
     }
     else
         vm->uvScrollPos.y -= 1.0f;
-    vm->currentTimeInScript.previous = vm->currentTimeInScript.current;
-    g_Supervisor.TickTimer(&vm->currentTimeInScript.current,
-                           &vm->currentTimeInScript.subFrame);
+    vm->currentTimeInScript.Tick();
     this->scriptTicksThisFrame += 1;
     return 0;
 }

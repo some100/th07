@@ -245,7 +245,7 @@ void EffectManager::DoSomethingWithEffects(D3DXVECTOR3 *param_1)
     Effect *effect;
 
     effect = g_EffectManager.effects;
-    for (i = 0; i < 400; i += 1)
+    for (i = 0; i < 400; i++)
     {
         if ((effect->effectId == 0x14) || (effect->effectId == 0x1f))
         {
@@ -262,7 +262,7 @@ void EffectManager::ModifyEffect1eAcceleration()
     Effect *effect;
 
     effect = g_EffectManager.effects;
-    for (i = 0; i < 400; i += 1)
+    for (i = 0; i < 400; i++)
     {
         if (effect->effectId == 0x1e)
         {
@@ -715,9 +715,7 @@ u32 EffectManager::OnUpdate(EffectManager *arg)
             {
                 if (g_AnmManager->ExecuteScript(&effect->vm) == 0)
                 {
-                    effect->timer.previous = effect->timer.current;
-                    g_Supervisor.TickTimer(&effect->timer.current,
-                                           &effect->timer.subFrame);
+                    effect->timer.Tick();
                     effect->head = NULL;
                     if ((effect->is2D == 1) || (effect->is2D == 3))
                     {

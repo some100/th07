@@ -202,10 +202,16 @@ struct AnmManager
     void ReleaseSurfaces()
 
     {
-        for (i32 i = 0; i < 0x20; i = i + 1)
+        for (i32 i = 0; i < 0x20; i++)
         {
             SAFE_RELEASE(this->surfaces[i]);
         }
+    }
+
+    void SetColor(D3DCOLOR color)
+    {
+        this->colorMulEnabled = 0;
+        this->color.color = color;
     }
 
     void SetAnmIdxAndExecuteScript(AnmVm *vm, i32 anmIdx)

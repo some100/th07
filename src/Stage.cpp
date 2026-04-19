@@ -87,9 +87,7 @@ void Stage::UpdateScriptAndCamera(Stage *stage, i32 param_2,
 
     if (stage->timers[param_2].current < stage->timersMax[param_2])
     {
-        stage->timers[param_2].previous = stage->timers[param_2].current;
-        g_Supervisor.TickTimer(&stage->timers[param_2].current,
-                               &stage->timers[param_2].subFrame);
+        stage->timers[param_2].Tick();
         local_8 = ((f32)stage->timers[param_2].current +
                    stage->timers[param_2].subFrame) /
                   (f32)stage->timersMax[param_2];
@@ -230,7 +228,7 @@ LAB_0040578a:
             arg->fogFarPlaneEnd = arg->skyFog.farPlane;
             arg->fogColorEnd = arg->fogColor;
             arg->skyFogInterpDuration = local_8->args[0].i;
-            (arg->skyFogInterpTimer).Initialize(0);
+            arg->skyFogInterpTimer.Initialize(0);
             break;
         case 3:
             if (arg->scriptWaitTime == 0)
@@ -258,9 +256,7 @@ LAB_0040578a:
                 {
                     if (arg->timers[3].current < arg->timersMax[3])
                     {
-                        arg->timers[3].previous = arg->timers[3].current;
-                        g_Supervisor.TickTimer(&arg->timers[3].current,
-                                               &arg->timers[3].subFrame);
+                        arg->timers[3].Tick();
                         local_30 = ((f32)arg->timers[3].current + arg->timers[3].subFrame) /
                                    (f32)arg->timersMax[3];
                     }
@@ -297,11 +293,9 @@ LAB_0040578a:
                 D3DXVec3Normalize(&arg->camLookAtDir, &arg->camLookAt);
                 if (arg->skyFogInterpDuration != 0)
                 {
-                    (arg->skyFogInterpTimer).previous = (arg->skyFogInterpTimer).current;
-                    g_Supervisor.TickTimer(&(arg->skyFogInterpTimer).current,
-                                           &(arg->skyFogInterpTimer).subFrame);
-                    local_34 = ((f32)(arg->skyFogInterpTimer).current +
-                                (arg->skyFogInterpTimer).subFrame) /
+                    arg->skyFogInterpTimer.Tick();
+                    local_34 = ((f32)arg->skyFogInterpTimer.current +
+                                arg->skyFogInterpTimer.subFrame) /
                                (f32)arg->skyFogInterpDuration;
                     if (1.0f <= local_34)
                     {
@@ -321,21 +315,19 @@ LAB_0040578a:
                     arg->skyFog.farPlane =
                         (arg->fogFarPlaneStart - arg->fogFarPlaneEnd) * local_34 +
                         arg->fogFarPlaneEnd;
-                    if (arg->skyFogInterpDuration <= (arg->skyFogInterpTimer).current)
+                    if (arg->skyFogInterpDuration <= arg->skyFogInterpTimer.current)
                     {
                         arg->skyFogInterpDuration = 0;
                     }
                 }
                 if (local_8->opcode != 3)
                 {
-                    arg->scriptTime.previous = arg->scriptTime.current;
-                    g_Supervisor.TickTimer(&arg->scriptTime.current,
-                                           &arg->scriptTime.subFrame);
+                    arg->scriptTime.Tick();
                 }
                 arg->UpdateObjects();
                 if (0 < arg->spellCardState)
                 {
-                    if (arg->ticksSinceSpellcardStarted == 0x3c)
+                    if (arg->ticksSinceSpellcardStarted == 60)
                     {
                         arg->spellCardState = arg->spellCardState + 1;
                     }
@@ -676,7 +668,7 @@ u32 Stage::OnDrawLowPrio(Stage *arg)
                     g_Supervisor.SetRenderState(D3DRS_FOGENABLE, 0);
                 }
                 ScreenEffect::DrawSquare(
-                    &local_1c, (arg->ticksSinceSpellcardStarted * 0xff) / 0x3c << 0x18);
+                    &local_1c, (arg->ticksSinceSpellcardStarted * 0xff) / 60 << 0x18);
             }
         }
     }
@@ -688,7 +680,7 @@ u32 Stage::OnDrawLowPrio(Stage *arg)
     }
     if (0 < arg->spellCardState)
     {
-        for (i32 i = 0; i < arg->numSpellcardVms; i += 1)
+        for (i32 i = 0; i < arg->numSpellcardVms; i++)
         {
             g_AnmManager->Draw(arg->spellcardVms + i);
             g_AnmManager->Flush();
@@ -816,7 +808,7 @@ ZunResult Stage::AddedCallback(Stage *arg)
         arg->fov = ZUN_PI / 6.0f;
         arg->camPosEnd = arg->camPos;
         arg->camPosStart = arg->camPos;
-        for (i = 0; i < 4; i += 1)
+        for (i = 0; i < 4; i++)
         {
             arg->timersMax[i] = 0;
             arg->timers[i].Initialize(0);
@@ -904,14 +896,14 @@ ZunResult Stage::LoadStageData(const char *stdPath)
         this->beginningOfScript =
             (StdRawInstr *)((u8 *)this->stdData + this->stdData->scriptOffset);
         this->objects = (StdRawObject **)(this->stdData + 1);
-        for (i = 0; i < this->objectsCount; i += 1)
+        for (i = 0; i < this->objectsCount; i++)
         {
             this->objects[i] =
                 (StdRawObject *)((u8 *)this->stdData + (i32)this->objects[i]);
         }
         this->quadVms = (AnmVm *)malloc(this->quadCount * sizeof(AnmVm));
         local_8 = 0;
-        for (i = 0; i < this->objectsCount; i += 1)
+        for (i = 0; i < this->objectsCount; i++)
         {
             this->objects[i]->flags = 1;
             local_14 = &this->objects[i]->firstQuad;
@@ -937,7 +929,7 @@ ZunResult Stage::UpdateObjects()
     i32 local_c;
     StdRawObject *object;
 
-    for (i = 0; i < this->objectsCount; i += 1)
+    for (i = 0; i < this->objectsCount; i++)
     {
         object = this->objects[i];
         if ((object->flags & 1) != 0)
