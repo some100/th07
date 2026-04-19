@@ -136,15 +136,15 @@ i32 EffectManager::UpdateOrbitEffect(Effect *effect)
 
     D3DXVec3Normalize(&local_64, &effect->direction);
     fVar2 = sinf(effect->angularVelocity);
-    (effect->rotationQuat).x = local_64.x * fVar2;
-    (effect->rotationQuat).y = local_64.y * fVar2;
-    (effect->rotationQuat).z = local_64.z * fVar2;
-    (effect->rotationQuat).w = cosf(effect->angularVelocity);
+    effect->rotationQuat.x = local_64.x * fVar2;
+    effect->rotationQuat.y = local_64.y * fVar2;
+    effect->rotationQuat.z = local_64.z * fVar2;
+    effect->rotationQuat.w = cosf(effect->angularVelocity);
     D3DXMatrixRotationQuaternion(&local_54, &effect->rotationQuat);
     local_10.x = local_64.y * 1.0f - local_64.z * 0.0f;
     local_10.y = local_64.z * 0.0f - local_64.x * 1.0f;
     local_10.z = local_64.x * 0.0f - local_64.y * 0.0f;
-    if (1e-05f <= local_10.x * local_10.x + local_10.y * local_10.y +
+    if (0.00001f <= local_10.x * local_10.x + local_10.y * local_10.y +
                       local_10.z * local_10.z)
     {
         D3DXVec3Normalize(&local_10, &local_10);

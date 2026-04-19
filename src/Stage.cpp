@@ -13,6 +13,12 @@
 #include "dxutil.hpp"
 #include "utils.hpp"
 
+// GLOBAL: TH07 0x01347ac0
+ChainElem g_UnusedChain;
+
+// GLOBAL: TH07 0x01347ae0
+ChainElem g_StageOnDrawHighPrioChain;
+
 // GLOBAL: TH07 0x01347b00
 Stage g_Stage;
 
@@ -21,9 +27,6 @@ ChainElem g_StageOnDrawLowPrioChain;
 
 // GLOBAL: TH07 0x0134cdd4
 ChainElem g_StageCalcChain;
-
-// GLOBAL: TH07 0x01347ae0
-ChainElem g_StageOnDrawHighPrioChain;
 
 // GLOBAL: TH07 0x0049f588
 StageAnms g_AnmStageFiles[9] = {

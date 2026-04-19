@@ -22,7 +22,7 @@ cd build
 reccmp-project detect --what recompiled
 ```
 
-Now, you can finally start diffing. After each (re)build, run `reccmp-reccmp --target TH07 --html index.html` to get a matching summary of all files in the program, and output a webpage showing the diff of every function in the program. Or, alternatively, run `reccmp-reccmp --target TH07 --verbose 0x00FNADDR` on a particular function to diff that function in specific.
+Now, you can finally start diffing. After each (re)build, run `reccmp-reccmp --target TH07 --html index.html --nolib` to get a matching summary of all files in the program, and output a webpage showing the diff of every function in the program. Or, alternatively, run `reccmp-reccmp --target TH07 --verbose 0x00FNADDR` on a particular function to diff that function in specific. You'll get a lot of "\[ERROR\] Failed to match xyz" errors in the console. These can be ignored.
 
 # Matching
 
@@ -150,33 +150,12 @@ void EclManager::Unload() {
 Now, rerun the diff command from earlier to get this result:
 
 ```
----
-+++
-@@ -0x40e4f3,17 +0x40d493,17 @@
-0x40e4f3 : sub esp, 8
-0x40e4f6 : mov dword ptr [ebp - 8], ecx
-0x40e4f9 : mov eax, dword ptr [ebp - 8] 	(EclManager.cpp:67)
-0x40e4fc : cmp dword ptr [eax], 0
-0x40e4ff : je 0x14
-0x40e501 : mov ecx, dword ptr [ebp - 8] 	(EclManager.cpp:68)
-0x40e504 : mov edx, dword ptr [ecx]
-0x40e506 : mov dword ptr [ebp - 4], edx
-0x40e509 : mov eax, dword ptr [ebp - 4] 	(EclManager.cpp:69)
-0x40e50c : push eax
-0x40e50d : -call <OFFSET1>
-         : +call free (FUNCTION)
-0x40e512 : add esp, 4
-0x40e515 : mov ecx, dword ptr [ebp - 8] 	(EclManager.cpp:71)
-0x40e518 : mov dword ptr [ecx], 0
-0x40e51e : mov esp, ebp 	(EclManager.cpp:72)
-0x40e520 : pop ebp
-0x40e521 : ret
+0x40e4f0: EclManager::Unload 100% match.
 
-
-EclManager::Unload is only 94.74% similar to the original, diff above
+OK! 
 ```
 
-Congrats, you've matched a function. While it shows that it's not 100% matching, that's because `reccmp` has no knowledge of `free` as a function in the original binary, it replaces it with `<OFFSET1>`, which shows up as a difference. The correct thing to do would be to annotate it in some header or put it in a csv, but I'm too lazy to do that. For all intents and purposes, it's 100% matching.
+Congrats, you've matched a function!
 
 Let's look at another example, this time `AnmManager::LoadSurface`.
 
@@ -577,104 +556,12 @@ err:
 Now, after rerunning the diff command:
 
 ```
----
-+++
-@@ -0x45484b,21 +0x453d2b,21 @@
-0x45484b : push 1
-0x45484d : push 0
-0x45484f : mov eax, dword ptr [g_LastFileSize (DATA)]
-0x454854 : push eax
-0x454855 : mov ecx, dword ptr [ebp - 8]
-0x454858 : push ecx
-0x454859 : push 0
-0x45485b : push 0
-0x45485d : mov edx, dword ptr [ebp - 4]
-0x454860 : push edx
-0x454861 : -call <OFFSET9>
-         : +call _D3DXLoadSurfaceFromFileInMemory@36 (FUNCTION)
-0x454866 : test eax, eax
-0x454868 : je 0x5
-0x45486a : jmp 0x16a 	(AnmManager.cpp:2502)
-0x45486f : mov eax, dword ptr [ebp + 8] 	(AnmManager.cpp:2508)
-0x454872 : mov ecx, dword ptr [ebp - 0xc]
-0x454875 : lea edx, [ecx + eax*4 + 0x2e148]
-0x45487c : push edx
-0x45487d : push 1
-0x45487f : push 0
-0x454881 : mov eax, dword ptr [g_Supervisor+232 (OFFSET)]
+0x4547b0: AnmManager::LoadSurface 100% match.
 
----
-+++
-@@ -0x454962,60 +0x453e42,60 @@
-0x454962 : push 0
-0x454964 : push 0
-0x454966 : mov eax, dword ptr [ebp - 4]
-0x454969 : push eax
-0x45496a : push 0
-0x45496c : push 0
-0x45496e : mov ecx, dword ptr [ebp + 8]
-0x454971 : mov edx, dword ptr [ebp - 0xc]
-0x454974 : mov eax, dword ptr [edx + ecx*4 + 0x2e148]
-0x45497b : push eax
-0x45497c : -call <OFFSET10>
-         : +call _D3DXLoadSurfaceFromSurface@32 (FUNCTION)
-0x454981 : test eax, eax
-0x454983 : je 0x2
-0x454985 : jmp 0x52 	(AnmManager.cpp:2525)
-0x454987 : push 0 	(AnmManager.cpp:2527)
-0x454989 : push 1
-0x45498b : push 0
-0x45498d : push 0
-0x45498f : mov ecx, dword ptr [ebp - 4]
-0x454992 : push ecx
-0x454993 : push 0
-0x454995 : push 0
-0x454997 : mov edx, dword ptr [ebp + 8]
-0x45499a : mov eax, dword ptr [ebp - 0xc]
-0x45499d : mov ecx, dword ptr [eax + edx*4 + 0x2e1c8]
-0x4549a4 : push ecx
-0x4549a5 : -call <OFFSET10>
-         : +call _D3DXLoadSurfaceFromSurface@32 (FUNCTION)
-0x4549aa : test eax, eax
-0x4549ac : je 0x2
-0x4549ae : jmp 0x29 	(AnmManager.cpp:2528)
-0x4549b0 : cmp dword ptr [ebp - 4], 0 	(AnmManager.cpp:2530)
-0x4549b4 : je 0x13
-0x4549b6 : mov edx, dword ptr [ebp - 4]
-0x4549b9 : mov eax, dword ptr [edx]
-0x4549bb : mov ecx, dword ptr [ebp - 4]
-0x4549be : push ecx
-0x4549bf : call dword ptr [eax + 8]
-0x4549c2 : mov dword ptr [ebp - 4], 0
-0x4549c9 : mov edx, dword ptr [ebp - 8] 	(AnmManager.cpp:2531)
-0x4549cc : push edx
-0x4549cd : -call <OFFSET11>
-         : +call free (FUNCTION)
-0x4549d2 : add esp, 4
-0x4549d5 : xor eax, eax 	(AnmManager.cpp:2532)
-0x4549d7 : jmp 0x28
-0x4549d9 : cmp dword ptr [ebp - 4], 0 	(AnmManager.cpp:2535)
-0x4549dd : je 0x13
-0x4549df : mov eax, dword ptr [ebp - 4]
-0x4549e2 : mov ecx, dword ptr [eax]
-0x4549e4 : mov edx, dword ptr [ebp - 4]
-0x4549e7 : push edx
-0x4549e8 : call dword ptr [ecx + 8]
-0x4549eb : mov dword ptr [ebp - 4], 0
-0x4549f2 : mov eax, dword ptr [ebp - 8] 	(AnmManager.cpp:2536)
-0x4549f5 : push eax
-0x4549f6 : -call <OFFSET11>
-         : +call free (FUNCTION)
-0x4549fb : add esp, 4
-0x4549fe : or eax, 0xffffffff 	(AnmManager.cpp:2537)
-0x454a01 : mov esp, ebp 	(AnmManager.cpp:2538)
-0x454a03 : pop ebp
-0x454a04 : ret 8
-
-AnmManager::LoadSurface is only 97.45% similar to the original, diff above
+OK!
 ```
 
-This function is now effectively 100% matching.
+This function is now 100% matching.
 
 # Renaming
 

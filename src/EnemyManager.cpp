@@ -1433,8 +1433,8 @@ u32 EnemyManager::ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3)
                                           .angle,
                                       local_20->enemyHistory[local_20->trailNodeStep].angle,
                                       0.5f),
-                                  1e-05f <= fabsf(local_38 - local_44) ||
-                                      (1e-05f <= fabsf(local_44 - fVar12)))))
+                                  0.00001f <= fabsf(local_38 - local_44) ||
+                                      (0.00001f <= fabsf(local_44 - fVar12)))))
                             {
                                 local_38 = local_44;
                                 fVar12 = sinf(local_44);
