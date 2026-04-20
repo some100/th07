@@ -1252,13 +1252,14 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
     }
 }
 
+#pragma var_order(local_8, local_c)
 // FUNCTION: TH07 0x004220f0
 f32 AngleLerp(f32 start, f32 target, f32 t)
 {
     f32 local_c;
     f32 local_8;
 
-    if (start > target)
+    if (start < target)
     {
         local_c = target - start;
         local_8 = (start + ZUN_2PI) - target;
@@ -1271,7 +1272,7 @@ f32 AngleLerp(f32 start, f32 target, f32 t)
     }
     if (local_c < local_8)
     {
-        local_8 = local_c;
+        return local_c * t + start;
     }
     return local_8 * t + start;
 }
@@ -1665,7 +1666,7 @@ i32 EnemyManager::RemoveAllEnemies(i32 scoreMax, i32 scoreMin)
 // FUNCTION: TH07 0x004232a0
 i32 EnemyManager::HasActiveBoss()
 {
-    for (i32 i = 0; 7 < i; ++i)
+    for (i32 i = 0; i < 8; ++i)
     {
         if (this->bosses[i] != NULL)
             return 1;

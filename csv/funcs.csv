@@ -693,9 +693,9 @@ address|name|type
 0045fb50|Pbg4Archive::OpenArchive|function
 0045fde0|Pbg4Archive::AllocEntries|function
 0045ffc0|Pbg4Archive::CopyFileName|function
-00461a90|DINPUT8.DLL::__DirectInput8Create@20|library
-00461a96|DSOUND.DLL::__DirectSoundCreate8@12|library
-00461a9c|D3D8.DLL::__Direct3DCreate8@4|library
+00461a90|_DirectInput8Create@20|library
+00461a96|_DirectSoundCreate8@12|library
+00461a9c|_Direct3DCreate8@4|library
 00461aa2|_D3DXMatrixMultiply@12|library
 00461b85|_D3DXMatrixRotationX@8|library
 00461bff|_D3DXMatrixRotationY@8|library
@@ -1109,7 +1109,7 @@ address|name|type
 0047bd10|FUN_0047bd10|library
 0047c0b9|FUN_0047c0b9|library
 0047ce8c|FUN_0047ce8c|library
-0047d136|USER32.DLL::WINNLSEnableIME|library
+0047d136|WINNLSEnableIME|library
 0047d13c|vsprintf|library
 0047d193|_onexit_lk|library
 0047d213|__onexitinit|library
@@ -1124,7 +1124,7 @@ address|name|type
 0047d39d|malloc|library
 0047d3af|atol|library
 0047d437|atol|library
-0047d43c|free|library
+0047d43c|operator delete|library
 0047d441|operator new|library
 0047d44f|sprintf|library
 0047d4b0|strrchr|library
@@ -1150,9 +1150,9 @@ address|name|type
 0047e8e9|rand|library
 0047e90b|_purecall|library
 0047e914|_ArrayUnwind|library
-0047e972|Pbg4Archive::`eh vector destructor iterator'|library
+0047e972|`eh vector destructor iterator'|library
 0047e9ba|FUN_0047e9ba|library
-0047e9d2|Pbg4Archive::`eh vector constructor iterator'|library
+0047e9d2|`eh vector constructor iterator'|library
 0047ea1c|FUN_0047ea1c|library
 0047ea34|_amsg_exit|library
 0047ea59|fast_error_exit|library
@@ -1189,7 +1189,7 @@ address|name|type
 0047f7ea|_abnormal_termination|library
 0047f80d|_NLG_Notify1|library
 0047f816|FUN_0047f816|library
-0047f830|FUN_0047f830|library
+0047f830|__EH_prolog|library
 0047f84f|__crtExitProcess|library
 0047f87f|FUN_0047f87f|library
 0047f888|FUN_0047f888|library
@@ -1465,7 +1465,7 @@ address|name|type
 0048b7bc|_freebuf|library
 0048b7e7|_strdup|library
 0048b812|_mbschr|library
-0048b890|KERNEL32.DLL::RtlUnwind|library
+0048b890|RtlUnwind|library
 0048b8a0|_ftol2|library
 0048b920|_CItan|library
 0048b93d|tan|library
@@ -1524,39 +1524,39 @@ address|name|type
 0048c620|FUN_0048c620|library
 0048c640|FUN_0048c640|library
 0048c660|FUN_0048c660|library
-0048c680|Stage::InitializeGlobalStage|library
+0048c680|InitializeGlobalStage|library
 0048c6a0|FUN_0048c6a0|library
 0048c6c0|FUN_0048c6c0|library
 0048c6e0|FUN_0048c6e0|library
 0048c700|FUN_0048c700|library
 0048c720|FUN_0048c720|library
-0048c770|EffectManager::InitializeGlobalEffectManager|library
+0048c770|InitializeGlobalEffectManager|library
 0048c790|FUN_0048c790|library
 0048c7b0|FUN_0048c7b0|library
 0048c7d0|FUN_0048c7d0|library
 0048c7f0|FUN_0048c7f0|library
 0048c810|FUN_0048c810|library
-0048c830|EnemyManager::InitializeGlobalEnemyManager|library
+0048c830|InitializeGlobalEnemyManager|library
 0048c840|FUN_0048c840|library
 0048c860|FUN_0048c860|library
-0048c880|BulletManager::InitializeGlobalBulletManager|library
+0048c880|InitializeGlobalBulletManager|library
 0048c88f|FUN_0048c88f|library
 0048c8a9|FUN_0048c8a9|library
-0048c8c3|GameManager::InitializeGlobalGameManager|library
+0048c8c3|InitializeGlobalGameManager|library
 0048c8d2|FUN_0048c8d2|library
 0048c8ec|FUN_0048c8ec|library
-0048c910|Chain::InitializeGlobalChain|library
+0048c910|InitializeGlobalChain|library
 0048c930|FUN_0048c930|library
-0048c950|Pbg4Archive::InitializeGlobalPbg4Archive|library
-0048c970|GameErrorContext::InitializeGlobalGameErrorContext|library
-0048c9b0|ItemManager::InitializeGlobalItemManager|library
+0048c950|InitializeGlobalPbg4Archive|library
+0048c970|InitializeGlobalGameErrorContext|library
+0048c9b0|InitializeGlobalItemManager|library
 0048c9d0|FUN_0048c9d0|library
 0048c9f0|FUN_0048c9f0|library
-0048ca10|GameWindow::InitializeGlobalGameWindow|library
+0048ca10|InitializeGlobalGameWindow|library
 0048ca25|FUN_0048ca25|library
-0048ca40|Player::InitializeGlobalPlayer|library
+0048ca40|InitializeGlobalPlayer|library
 0048ca60|FUN_0048ca60|library
-0048ca90|SoundPlayer::InitializeGlobalSoundPlayer|library
+0048ca90|InitializeGlobalSoundPlayer|library
 0048cab0|FUN_0048cab0|library
 0048caf0|FUN_0048caf0|library
 0048cb30|FUN_0048cb30|library
@@ -1579,7 +1579,7 @@ address|name|type
 0048cc8e|FUN_0048cc8e|library
 0048cc9d|FUN_0048cc9d|library
 0048ccac|FUN_0048ccac|library
-0048ccc0|Chain::ReleaseGlobalChain|library
+0048ccc0|ReleaseGlobalChain|library
 0048ccd0|FUN_0048ccd0|library
 0048cce0|FUN_0048cce0|library
 0048ccf0|FUN_0048ccf0|library

@@ -600,18 +600,19 @@ u8 *Pbg4Archive::ReadDecompressEntry(const char *filename, u8 *buf) {
     goto err;
 
   pbVar5 = Lzss::Decompress(local_14, dwBytes, buf, dstLen);
-  if (local_14 != NULL)
+  if (local_14 != NULL) {
     GlobalFree(local_14);
+    local_14 = NULL;
+  }
 
-  local_14 = NULL;
   return pbVar5;
 err:
   // STRING: TH07 0x004950b8
   DebugPrint("info : %s error\r\n", this->filename);
   if (local_14 != NULL) {
     GlobalFree(local_14);
+    local_14 = NULL;
   }
-  local_14 = NULL;
   return NULL;
 }
 ```
@@ -684,18 +685,18 @@ u8 *Pbg4Archive::ReadDecompressEntry(const char *filename, u8 *buf) {
     goto err;
 
   dstBuf = Lzss::Decompress(srcBuf, dwBytes, buf, dstLen);
-  if (srcBuf != NULL)
+  if (srcBuf != NULL) {
     GlobalFree(srcBuf);
-
-  srcBuf = NULL;
+    srcBuf = NULL;
+  }
   return dstBuf;
 err:
   // STRING: TH07 0x004950b8
   DebugPrint("info : %s error\r\n", this->filename);
   if (srcBuf != NULL) {
     GlobalFree(srcBuf);
+    srcBuf = NULL;
   }
-  srcBuf = NULL;
   return NULL;
 }
 ```

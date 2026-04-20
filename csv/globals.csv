@@ -1,11 +1,13 @@
 address|name|type
 0048d46c|c_dfDIJoystick2|global
 0048d674|c_dfDIKeyboard|global
+004903f8|IID_IDirectSoundNotify|global
 00490408|GUID_SysKeyboard|global
 004904a8|IID_IDirectInput8A|global
 004904b8|IID_IShellLinkA|global
 004904c8|CLSID_ShellLink|global
 004904d8|IID_IPersistFile|global
+004904e8|GUID_NULL|global
 00495120|g_SeekModes|global
 0049512c|g_TextureFormatD3D8Mapping|global
 00495144|g_TextureBytesPerPixel|global

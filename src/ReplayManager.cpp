@@ -71,21 +71,22 @@ u32 ReplayManager::OnUpdate(ReplayManager *arg)
 // FUNCTION: TH07 0x00442e50
 u32 ReplayManager::OnUpdateDemoLowPrio(ReplayManager *arg)
 {
-    if (g_GameManager.notInMenu != 0)
+    if (g_GameManager.notInMenu == 0)
+        return CHAIN_CALLBACK_RESULT_CONTINUE;
+
+    if (((g_Gui.HasCurrentMsgIdx() != 0) &&
+         (g_Gui.IsDialogueSkippable() != 0)) &&
+        (arg->frameId % 3 != 2))
     {
-        if (((g_Gui.HasCurrentMsgIdx() != 0) &&
-             (g_Gui.IsDialogueSkippable() != 0)) &&
-            (arg->frameId % 3 != 2))
-        {
-            return CHAIN_CALLBACK_RESULT_RESTART_FROM_FIRST_JOB;
-        }
-        if (((g_GameManager.replayStage == 2) &&
-             (g_EnemyManager.HasActiveBoss() == 0)) &&
-            (arg->frameId % 5 != 4))
-        {
-            return CHAIN_CALLBACK_RESULT_RESTART_FROM_FIRST_JOB;
-        }
+        return CHAIN_CALLBACK_RESULT_RESTART_FROM_FIRST_JOB;
     }
+    if (((g_GameManager.replayStage == 2) &&
+         (g_EnemyManager.HasActiveBoss() == 0)) &&
+        (arg->frameId % 5 != 4))
+    {
+        return CHAIN_CALLBACK_RESULT_RESTART_FROM_FIRST_JOB;
+    }
+
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 

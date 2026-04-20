@@ -18,12 +18,6 @@
         }                                    \
     }
 
-#define safe_mod(out, x, mod) \
-    if (mod == 0)             \
-        out = 0;              \
-    else                      \
-        out = x % mod;
-
 // FUNCTION: TH07 0x00417af0
 inline void sincosf(f32 *outSin, f32 *outCos, f32 angle)
 {

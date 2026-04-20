@@ -376,46 +376,39 @@ void Gui::ShowBombNamePortrait(i32 sprite, const char *name)
 // FUNCTION: TH07 0x00428887
 void Gui::ShowSpellcard(i32 spellcardSprite, const char *spellcardName)
 {
-    if (-1 < spellcardSprite)
+    if (spellcardSprite >= 0)
     {
-        this->impl->enemySpellcardPortrait.anmFileIdx = 0x4a3;
-        g_AnmManager->SetAndExecuteScript(&this->impl->enemySpellcardPortrait,
-                                          g_AnmManager->scripts[0x4a3]);
+        g_AnmManager->SetAnmIdxAndExecuteScript(&this->impl->enemySpellcardPortrait,
+                                                0x4a3);
         g_AnmManager->SetActiveSprite(&this->impl->enemySpellcardPortrait,
                                       spellcardSprite + 0x4ad);
-        if (this->impl->enemySpellcardPortrait.sprite->widthPx <= 256.0f)
-        {
-            if (this->impl->enemySpellcardPortrait.sprite->widthPx <= 128.0f)
-            {
-                this->impl->enemySpellcardPortrait.offset.x = 0.0f;
-            }
-            else
-            {
-                this->impl->enemySpellcardPortrait.offset.x = -112.0f;
-            }
-        }
-        else
+        if (this->impl->enemySpellcardPortrait.sprite->widthPx > 256.0f)
         {
             this->impl->enemySpellcardPortrait.offset.x = -288.0f;
         }
+        else
+        {
+            if (this->impl->enemySpellcardPortrait.sprite->widthPx > 128.0f)
+            {
+                this->impl->enemySpellcardPortrait.offset.x = -112.0f;
+            }
+            else
+            {
+                this->impl->enemySpellcardPortrait.offset.x = 0.0f;
+            }
+        }
     }
-    (this->impl->enemySpellcardRelated1).anmFileIdx = 0x4a5;
-    g_AnmManager->SetAndExecuteScript(&this->impl->enemySpellcardRelated1,
-                                      g_AnmManager->scripts[0x4a5]);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&this->impl->enemySpellcardRelated1, 0x4a5);
     g_AnmManager->SetActiveSprite(&this->impl->enemySpellcardRelated1, 0x4ac);
-    (this->impl->enemySpellcardRelated2).anmFileIdx = 0x4a7;
-    g_AnmManager->SetAndExecuteScript(&this->impl->enemySpellcardRelated2,
-                                      g_AnmManager->scripts[0x4a7]);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&this->impl->enemySpellcardRelated2, 0x4a7);
     g_AnmManager->SetActiveSprite(&this->impl->enemySpellcardRelated2, 0x4ac);
-    this->impl->enemySpellcardName.anmFileIdx = 0x705;
-    g_AnmManager->SetAndExecuteScript(&this->impl->enemySpellcardName,
-                                      g_AnmManager->scripts[0x705]);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&this->impl->enemySpellcardName, 0x705);
     g_AnmManager->DrawStringFormat(&this->impl->enemySpellcardName, 0xfff0f0, 0,
                                    spellcardName);
     this->spellcardBarLength =
         (f32)(u32)((strlen(spellcardName)) * 0xf) / 2.0f + 16.0f;
-    this->impl->enemySpellcardNameBg.pendingInterrupt = 1;
-    this->impl->spellcardBonusIndicator.pendingInterrupt = 1;
+    this->impl->enemySpellcardNameBg.SetPendingInterrupt(1);
+    this->impl->spellcardBonusIndicator.SetPendingInterrupt(1);
     g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB, 0);
     g_Supervisor.renderSkipFrames = 2;
 }

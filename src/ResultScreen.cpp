@@ -549,7 +549,7 @@ void ResultScreen::WriteScore()
                 clrd = clrd + 1;
             }
             catk = g_GameManager.catk;
-            for (i = 0; i < 0x8d; i++)
+            for (i = 0; i < 141; i++)
             {
                 if (catk->magic == 'CATK')
                 {
@@ -893,7 +893,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
             arg->prevSpellcardListPage = arg->spellcardListPage;
             for (curVmIdx = arg->lastSpellcardSelected * 10;
                  (curVmIdx < arg->lastSpellcardSelected * 10 + 10 &&
-                  (curVmIdx < 0x8d));
+                  (curVmIdx < 141));
                  curVmIdx += 1)
             {
                 if (g_GameManager.catk[curVmIdx].numAttemptsPerShot[6] == 0)
@@ -915,7 +915,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
                 g_AnmManager, arg->spellcardListVms + 10, 0xffffff, 0,
                 // STRING: TH07 0x004967ec
                 "%s %3d–‡’†%3d–‡Žæ“¾iƒLƒƒƒ‰Ø‚è‘Ö‚¦«ªj",
-                g_CharacterList[arg->prevSpellcardListPage], 0x8d,
+                g_CharacterList[arg->prevSpellcardListPage], 141,
                 arg->totalPlayCountPerCharacter[arg->spellcardListPage + 1]);
             arg->spellcardListVms[10].color.bytes.a = 0xff;
         }
@@ -2204,7 +2204,7 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
             for (local_14 = 0;
                  (local_14 < 10 &&
                   (local_40 = arg->lastSpellcardSelected * 10 + local_14,
-                  local_40 < 0x8d));
+                  local_40 < 141));
                  local_14 += 1)
             {
                 local_3c = local_38.x;
@@ -2631,7 +2631,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
     {
         local_18 = g_GameManager.catk;
         arg->totalPlayCountPerCharacter[i + 1] = 0;
-        for (local_1c = 0; local_1c < 0x8d; local_1c = local_1c + 1)
+        for (local_1c = 0; local_1c < 141; local_1c = local_1c + 1)
         {
             if (((local_18->magic == 'CATK') && (local_18->version == 1)) &&
                 (local_18->numSuccessesPerShot[i] != 0))

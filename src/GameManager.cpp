@@ -88,35 +88,19 @@ void GameManager::ResetRegionsPos()
 // FUNCTION: TH07 0x0042d6d8
 i32 GameManager::IsInBounds(f32 x, f32 y, f32 widthPx, f32 heightPx)
 {
-    if (0.0f <= widthPx / 2.0f + x)
-    {
-        if (x - widthPx / 2.0f <= 384.0f)
-        {
-            if (0.0f <= heightPx / 2.0f + y)
-            {
-                if (y - heightPx / 2.0f <= 448.0f)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            else
-            {
-                return 0;
-            }
-        }
-        else
-        {
-            return 0;
-        }
-    }
-    else
-    {
+    if (widthPx / 2.0f + x < 0.0f)
         return 0;
-    }
+
+    if (x - widthPx / 2.0f > 384.0f)
+        return 0;
+
+    if (heightPx / 2.0f + y < 0.0f)
+        return 0;
+
+    if (y - heightPx / 2.0f > 448.0f)
+        return 0;
+
+    return 1;
 }
 
 // FUNCTION: TH07 0x0042d75a
@@ -153,7 +137,7 @@ i32 GameManager::ComputeGameIntegrityCsum()
 // FUNCTION: TH07 0x0042d83a
 void GameManager::ExtendFromPoints()
 {
-    if (this->globals->livesRemaining < 8)
+    if ((i32)this->globals->livesRemaining < 8)
     {
         AddLivesRemaining(1);
         g_SoundPlayer.PlaySoundByIdx(SOUND_EXTEND, 0);
@@ -162,7 +146,7 @@ void GameManager::ExtendFromPoints()
     }
     else
     {
-        if (this->globals->bombsRemaining < 8)
+        if ((i32)this->globals->bombsRemaining < 8)
         {
             AddBombsRemaining(1);
             g_SoundPlayer.PlaySoundByIdx(SOUND_EXTEND, 0);
@@ -494,7 +478,7 @@ ZunResult ResultScreen::ParseScores()
     local_8 = g_GameManager.catk;
     RegisterChain(2);
     memset(g_GameManager.catk, 0, sizeof(g_GameManager.catk));
-    for (local_c = 0; local_c < 0x8d; local_c++, local_8++)
+    for (local_c = 0; local_c < 141; local_c++, local_8++)
     {
         local_8->magic = 0x4b544143;
         local_8->th7kLen2 = sizeof(Catk);
@@ -1065,14 +1049,14 @@ i32 GameManager::HasReachedMaxClears(i32 shotType)
 i32 GameManager::HasUnlockedPhantom(i32 shotType)
 {
     i32 local_8 = 0;
-    for (i32 i = 0; i < 0x8d; i++)
+    for (i32 i = 0; i < 141; i++)
     {
-        if (this->catk[i].numSuccessesPerShot[6] != 0)
+        if (this->catk[i].numSuccessesPerShot[6] > 0)
         {
             local_8 += 1;
         }
     }
-    if ((local_8 > 60) &&
+    if ((local_8 >= 60) &&
         (this->clrd[shotType].difficultyClearedWithRetries[4] == 99))
     {
         this->clrd[shotType].difficultyClearedWithRetries[5] = 99;
@@ -1100,7 +1084,7 @@ i32 GameManager::HasUnlockedPhantomAndMaxClears()
     i32 local_8;
 
     local_8 = 0;
-    for (i32 i = 0; i < 0x8d; i++)
+    for (i32 i = 0; i < 141; i++)
     {
         if (this->catk[i].numSuccessesPerShot[6] != 0)
         {

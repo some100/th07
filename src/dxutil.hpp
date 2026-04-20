@@ -7,6 +7,8 @@
 //-----------------------------------------------------------------------------
 #pragma once
 
+#include "ZunMemory.hpp"
+
 //-----------------------------------------------------------------------------
 // Miscellaneous helper functions
 //-----------------------------------------------------------------------------
@@ -26,14 +28,13 @@
             (p) = NULL;      \
         }                    \
     }
-#define SAFE_FREE(p)         \
-    {                        \
-        if (p)               \
-        {                    \
-            void *tmp = (p); \
-            free(tmp);       \
-            (p) = NULL;      \
-        }                    \
+#define SAFE_FREE(p)            \
+    {                           \
+        if (p)                  \
+        {                       \
+            ZunMemory::Free(p); \
+            (p) = NULL;         \
+        }                       \
     }
 #define SAFE_RELEASE(p)     \
     {                       \

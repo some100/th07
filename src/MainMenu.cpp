@@ -823,7 +823,7 @@ LAB_00456cc0:
 }
 
 // FUNCTION: TH07 0x00456e40
-void MainMenu::SwapMapping(i16 btnPressed, i16 oldMapping)
+void MainMenu::SwapMapping(i16 btnPressed, i16 oldMapping, i16 idk)
 {
     if (this->controlMapping[0] == btnPressed)
     {
@@ -961,39 +961,39 @@ u32 MainMenu::OnUpdateKeyConfig()
         switch (this->cursor)
         {
         case 0:
-            SwapMapping(btnPressed, this->controlMapping[0]);
+            SwapMapping(btnPressed, this->controlMapping[0], 1);
             this->controlMapping[0] = btnPressed;
             break;
         case 1:
-            SwapMapping(btnPressed, this->controlMapping[1]);
+            SwapMapping(btnPressed, this->controlMapping[1], 0);
             this->controlMapping[1] = btnPressed;
             break;
         case 2:
-            SwapMapping(btnPressed, this->controlMapping[2]);
+            SwapMapping(btnPressed, this->controlMapping[2], 1);
             this->controlMapping[2] = btnPressed;
             break;
         case 3:
-            SwapMapping(btnPressed, this->controlMapping[8]);
+            SwapMapping(btnPressed, this->controlMapping[8], 0);
             this->controlMapping[8] = btnPressed;
             break;
         case 4:
-            SwapMapping(btnPressed, this->controlMapping[3]);
+            SwapMapping(btnPressed, this->controlMapping[3], 1);
             this->controlMapping[3] = btnPressed;
             break;
         case 5:
-            SwapMapping(btnPressed, this->controlMapping[4]);
+            SwapMapping(btnPressed, this->controlMapping[4], 0);
             this->controlMapping[4] = btnPressed;
             break;
         case 6:
-            SwapMapping(btnPressed, this->controlMapping[5]);
+            SwapMapping(btnPressed, this->controlMapping[5], 1);
             this->controlMapping[5] = btnPressed;
             break;
         case 7:
-            SwapMapping(btnPressed, this->controlMapping[6]);
+            SwapMapping(btnPressed, this->controlMapping[6], 0);
             this->controlMapping[6] = btnPressed;
             break;
         case 8:
-            SwapMapping(btnPressed, this->controlMapping[7]);
+            SwapMapping(btnPressed, this->controlMapping[7], 1);
             this->controlMapping[7] = btnPressed;
             break;
         default:

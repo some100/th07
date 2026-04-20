@@ -69,11 +69,16 @@ public class ExportReccmpCsv extends GhidraScript {
             Function func = funcs.next();
             if (func.isExternal()) continue;
             String address = func.getEntryPoint().toString(false);
-            String name = cleanFuncName(func.getName(true));
-            String type =
-                func.getEntryPoint().getOffset() <= 0x0045ffc0
-                    ? "function"
-                    : "library";
+
+            String name;
+            String type;
+            if (func.getEntryPoint().getOffset() <= 0x0045ffc0) {
+                name = cleanFuncName(func.getName(true));
+                type = "function";
+            } else {
+                name = cleanFuncName(func.getSymbol().getName());
+                type = "library";
+            }
             csvFile
                 .append(address)
                 .append("|")

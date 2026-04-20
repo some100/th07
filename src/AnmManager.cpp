@@ -1131,8 +1131,8 @@ void AnmManager::TranslateRotation(VertexTex1DiffuseXyzrwh *param_1, f32 width,
                                    f32 height, f32 param_4, f32 param_5,
                                    f32 xOffset, f32 yOffset)
 {
-    (param_1->pos).x = (width * param_5 - height * param_4) + xOffset;
-    (param_1->pos).y = height * param_5 + width * param_4 + yOffset;
+    param_1->pos.x = (width * param_5 - height * param_4) + xOffset;
+    param_1->pos.y = width * param_4 + height * param_5 + yOffset;
 }
 
 // FUNCTION: TH07 0x0044f9a0

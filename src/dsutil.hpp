@@ -88,6 +88,11 @@ class CWaveFile
     DWORD GetSize();
     HRESULT ResetFile(bool bLoop);
     HRESULT Reopen(ThBgmFormat *pzwf);
+
+    ThBgmFormat *GetFormat()
+    {
+        return this->m_pzwf;
+    }
 };
 
 //-----------------------------------------------------------------------------
@@ -194,6 +199,19 @@ class CStreamingSound : public CSound
     HRESULT Reset();
     HRESULT InitSoundBuffers();
     HRESULT UpdateFadeOut();
+
+    void FadeOut(f32 duration)
+    {
+        this->m_dwIsFadingOut = 1;
+        this->m_iCurFadeoutProgress = (duration * 60.0f);
+        this->m_iTotalFadeout =
+            this->m_iCurFadeoutProgress;
+    }
+
+    CWaveFile *GetWaveFile()
+    {
+        return this->m_pWaveFile;
+    }
 };
 C_ASSERT(sizeof(CStreamingSound) == 0x78);
 

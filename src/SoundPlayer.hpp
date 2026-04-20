@@ -66,12 +66,12 @@ struct SoundPlayer
 
     static DWORD __stdcall BackgroundMusicPlayerThread(LPVOID lpThreadParameter);
     i32 GetFmtIndexByName(const char *param_1);
-    WAVEFORMATEX *GetWavFormatData(u8 *soundData, const char *formatString,
-                                   i32 *formatSize, i32 fileSizeExcludingFormat);
+    static WAVEFORMATEX *GetWavFormatData(u8 *soundData, const char *formatString,
+                                          i32 *formatSize, u32 fileSizeExcludingFormat);
     ZunResult InitializeDSound(HWND gameWindow);
     ZunResult InitSoundBuffers();
-    i32 LoadBGM(i32 idx);
-    i32 LoadFmt(const char *path);
+    ZunResult LoadBGM(i32 idx);
+    ZunResult LoadFmt(const char *path);
     ZunResult LoadSound(i32 idx, const char *path);
     void PlaySoundByIdx(i32 idx, u32 param_2);
     ZunResult PreloadBGM(i32 idx, const char *path);
@@ -81,6 +81,14 @@ struct SoundPlayer
     ZunResult ReopenBGM(const char *name);
     ZunResult StartBGM(const char *path);
     void StopBGM();
+
+    void FadeOut(f32 duration)
+    {
+        if (this->backgroundMusic != NULL)
+        {
+            this->backgroundMusic->FadeOut(duration);
+        }
+    }
 
     LPDIRECTSOUND8 directSoundHdl;
     i32 unused_4;

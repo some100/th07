@@ -490,72 +490,68 @@ i32 __stdcall Supervisor::ControllerCallback(LPCDIDEVICEOBJECTINSTANCE param_1,
 ZunResult Supervisor::SetupDInput()
 {
     HINSTANCE hInstance = (HINSTANCE)GetWindowLongA(this->hwndGameWindow, -6);
-    if ((this->cfg.opts >> 0xb & 1) == 0)
+    if ((this->cfg.opts >> 0xb & 1) != 0)
+        return ZUN_ERROR;
+
+    if (FAILED(DirectInput8Create(hInstance, 0x800, IID_IDirectInput8A,
+                                  (LPVOID *)&this->directInput, NULL)))
     {
-        if (FAILED(DirectInput8Create(hInstance, 0x800, IID_IDirectInput8A,
-                                      (LPVOID *)&this->directInput, NULL)))
+        this->directInput = NULL;
+        // STRING: TH07 0x00497208
+        g_GameErrorContext.Log("DirectInput が使用できません\r\n");
+        return ZUN_ERROR;
+    }
+    else
+    {
+        if (FAILED(this->directInput->CreateDevice(GUID_SysKeyboard,
+                                                   &this->keyboard, NULL)))
         {
-            this->directInput = NULL;
-            // STRING: TH07 0x00497208
+            SAFE_RELEASE(this->directInput);
             g_GameErrorContext.Log("DirectInput が使用できません\r\n");
             return ZUN_ERROR;
         }
         else
         {
-            if (FAILED(this->directInput->CreateDevice(GUID_SysKeyboard,
-                                                       &this->keyboard, NULL)))
+            if (FAILED(this->keyboard->SetDataFormat(&c_dfDIKeyboard)))
             {
+                SAFE_RELEASE(this->keyboard);
                 SAFE_RELEASE(this->directInput);
-                g_GameErrorContext.Log("DirectInput が使用できません\r\n");
+                // STRING: TH07 0x004971d8
+                g_GameErrorContext.Log("DirectInput SetDataFormat が使用できません\r\n");
                 return ZUN_ERROR;
             }
             else
             {
-                if (FAILED(this->keyboard->SetDataFormat(&c_dfDIKeyboard)))
+                if (FAILED(this->keyboard->SetCooperativeLevel(
+                        this->hwndGameWindow,
+                        DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY)))
                 {
                     SAFE_RELEASE(this->keyboard);
                     SAFE_RELEASE(this->directInput);
-                    // STRING: TH07 0x004971d8
-                    g_GameErrorContext.Log("DirectInput SetDataFormat が使用できません\r\n");
+                    // STRING: TH07 0x004971a4
+                    g_GameErrorContext.Log("DirectInput SetCooperativeLevel が使用できません\r\n");
                     return ZUN_ERROR;
                 }
                 else
                 {
-                    if (FAILED(this->keyboard->SetCooperativeLevel(
-                            this->hwndGameWindow,
-                            DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY)))
+                    this->keyboard->Acquire();
+                    // STRING: TH07 0x0049717c
+                    g_GameErrorContext.Log("DirectInput は正常に初期化されました\r\n");
+                    this->directInput->EnumDevices(4, EnumGameControllersCb, NULL, 1);
+                    if (this->controller != NULL)
                     {
-                        SAFE_RELEASE(this->keyboard);
-                        SAFE_RELEASE(this->directInput);
-                        // STRING: TH07 0x004971a4
-                        g_GameErrorContext.Log("DirectInput SetCooperativeLevel が使用できません\r\n");
-                        return ZUN_ERROR;
+                        this->controller->SetDataFormat(&c_dfDIJoystick2);
+                        this->controller->SetCooperativeLevel(this->hwndGameWindow, 10);
+                        g_Supervisor.controllerCaps.dwSize = 0x2c;
+                        this->controller->GetCapabilities(&g_Supervisor.controllerCaps);
+                        this->controller->EnumObjects(ControllerCallback, NULL, 0);
+                        // STRING: TH07 0x0049715c
+                        g_GameErrorContext.Log("有効なパッドを発見しました\r\n");
                     }
-                    else
-                    {
-                        this->keyboard->Acquire();
-                        // STRING: TH07 0x0049717c
-                        g_GameErrorContext.Log("DirectInput は正常に初期化されました\r\n");
-                        this->directInput->EnumDevices(4, EnumGameControllersCb, NULL, 1);
-                        if (this->controller != NULL)
-                        {
-                            this->controller->SetDataFormat(&c_dfDIJoystick2);
-                            this->controller->SetCooperativeLevel(this->hwndGameWindow, 10);
-                            g_Supervisor.controllerCaps.dwSize = 0x2c;
-                            this->controller->GetCapabilities(&g_Supervisor.controllerCaps);
-                            this->controller->EnumObjects(ControllerCallback, NULL, 0);
-                            // STRING: TH07 0x0049715c
-                            g_GameErrorContext.Log("有効なパッドを発見しました\r\n");
-                        }
-                        return ZUN_SUCCESS;
-                    }
+                    return ZUN_SUCCESS;
                 }
             }
         }
-    }
-    else
-    {
-        return ZUN_ERROR;
     }
 }
 

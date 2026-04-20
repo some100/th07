@@ -83,7 +83,7 @@ void GameManager::AddCurrentPower(i32 amount)
     {
         NUKE_SUPERVISOR();
     }
-    this->globals->currentPower = (f32)amount + this->globals->currentPower;
+    this->globals->currentPower += (f32)amount;
     RegenerateGameIntegrityCsum();
 }
 

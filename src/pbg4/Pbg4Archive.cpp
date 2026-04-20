@@ -103,9 +103,10 @@ u8 *Pbg4Archive::ReadDecompressEntry(const char *filename, u8 *buf)
 
     dstBuf = Lzss::Decompress(srcBuf, dwBytes, buf, dstLen);
     if (srcBuf != NULL)
+    {
         GlobalFree(srcBuf);
-
-    srcBuf = NULL;
+        srcBuf = NULL;
+    }
     return dstBuf;
 err:
     // STRING: TH07 0x004950b8
@@ -113,8 +114,8 @@ err:
     if (srcBuf != NULL)
     {
         GlobalFree(srcBuf);
+        srcBuf = NULL;
     }
-    srcBuf = NULL;
     return NULL;
 }
 

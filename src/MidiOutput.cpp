@@ -303,16 +303,13 @@ ZunResult MidiOutput::ParseFile(i32 fileIdx)
 // FUNCTION: TH07 0x004369c0
 ZunResult MidiOutput::LoadFile(const char *path)
 {
-    if (ReadFileData(0x1f, path) == ZUN_SUCCESS)
-    {
-        ParseFile(0x1f);
-        ReleaseFileData(0x1f);
-        return ZUN_SUCCESS;
-    }
-    else
-    {
+    if (ReadFileData(0x1f, path) != ZUN_SUCCESS)
         return ZUN_ERROR;
-    }
+
+    ParseFile(0x1f);
+    ReleaseFileData(0x1f);
+    return ZUN_SUCCESS;
+
 }
 
 // FUNCTION: TH07 0x00436a00
