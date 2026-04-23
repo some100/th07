@@ -123,8 +123,9 @@ struct PlayerBullet
 };
 C_ASSERT(sizeof(PlayerBullet) == 0x364);
 
-struct PlayerBulletTimer : ZunTimer
+struct PlayerBulletTimer
 {
+    ZunTimer timer;
     PlayerBullet *bullet;
 };
 
@@ -207,7 +208,7 @@ struct Player
     i32 itemType;
     i8 playerState;
     u8 initParam;
-    u8 orbState;
+    i8 orbState;
     i8 isFocus;
     u8 bombParticleTime;
     i8 hasBorder;

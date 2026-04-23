@@ -131,7 +131,7 @@ void BombData::BombReimuACalc(Player *player)
         {
             g_Gui.ShowBombNamePortrait(0x4a1, "霊符「夢想封印　集」");
             player->bombInfo.bombDuration = 0x8c;
-            player->invulnerabilityTimer.Initialize(200);
+            player->invulnerabilityTimer = 200;
             SpawnBombInvulnEffect(player);
             for (local_10 = 0; local_10 < 0x20; local_10 += 1)
             {
@@ -326,7 +326,7 @@ void BombData::BombReimuACalcFocus(Player *player)
         {
             g_Gui.ShowBombNamePortrait(0x4a1, "夢符「封魔陣」");
             player->bombInfo.bombDuration = 300;
-            player->invulnerabilityTimer.Initialize(0x168);
+            player->invulnerabilityTimer = 360;
             SpawnBombInvulnEffect(player);
             for (local_14 = 0; local_14 < 8; local_14 += 1)
             {
@@ -531,7 +531,7 @@ void BombData::BombReimuBCalc(Player *player)
         {
             if (player->bombInfo.bombTimer.current == 60)
             {
-                BombEffects::RegisterChain(1, 0x50, 0x14, 0, 0);
+                BombEffects::RegisterChain(1, 0x50, 20, 0, 0);
             }
             local_28[0] = player->SpawnBombProjectile(&player->positionCenter, 62.0f,
                                                       448.0f, 6);
@@ -572,7 +572,7 @@ void BombData::BombReimuBCalc(Player *player)
             g_ItemManager.RemoveAllItems();
             g_Gui.ShowBombNamePortrait(0x4a1, "夢符「二重結界」");
             player->bombInfo.bombDuration = 0x8c;
-            player->invulnerabilityTimer.Initialize(200);
+            player->invulnerabilityTimer = 200;
             SpawnBombInvulnEffect(player);
             for (local_8 = 0; local_8 < 4; local_8 += 1)
             {
@@ -642,7 +642,7 @@ void BombData::BombReimuBCalcFocus(Player *player)
         {
             if (player->bombInfo.bombTimer.current == 60)
             {
-                BombEffects::RegisterChain(1, 0x50, 0x14, 0, 0);
+                BombEffects::RegisterChain(1, 0x50, 20, 0, 0);
             }
             g_AnmManager->ExecuteScript(player->bombInfo.subInfo[0].vms);
             g_AnmManager->ExecuteScript(player->bombInfo.subInfo[0].vms + 1);
@@ -665,7 +665,7 @@ void BombData::BombReimuBCalcFocus(Player *player)
             g_ItemManager.RemoveAllItems();
             g_Gui.ShowBombNamePortrait(0x4a1, "夢符「二重結界」");
             player->bombInfo.bombDuration = 0xbe;
-            player->invulnerabilityTimer.Initialize(0xfa);
+            player->invulnerabilityTimer = 250;
             SpawnBombInvulnEffect(player);
             local_c = player->bombInfo.subInfo[0].vms;
             for (local_8 = 0; local_8 < 3; local_8 += 1)
@@ -750,7 +750,7 @@ void BombData::BombMarisaACalc(Player *player)
             g_ItemManager.RemoveAllItems();
             g_Gui.ShowBombNamePortrait(0x4a3, "魔符「スターダストレヴァリエ」");
             player->bombInfo.bombDuration = 200;
-            player->invulnerabilityTimer.Initialize(0xfa);
+            player->invulnerabilityTimer = 250;
             SpawnBombInvulnEffect(player);
             for (i = 0; i < 8; i++)
             {
@@ -833,7 +833,7 @@ void BombData::BombMarisaACalcFocus(Player *player)
             g_ItemManager.RemoveAllItems();
             g_Gui.ShowBombNamePortrait(0x4a2, "魔符「ミルキーウェイ」");
             player->bombInfo.bombDuration = 260;
-            player->invulnerabilityTimer.Initialize(310);
+            player->invulnerabilityTimer = 310;
             SpawnBombInvulnEffect(player);
             for (i = 0; i < 0x18; i++)
             {
@@ -1025,7 +1025,7 @@ void BombData::BombMarisaBCalc(Player *player)
                 g_AnmManager->ExecuteScript(local_c->vms);
                 local_c = local_c + 1;
             }
-            if (player->bombInfo.bombTimer.current == 0x14)
+            if (player->bombInfo.bombTimer.current == 20)
             {
                 BombEffects::RegisterChain(1, 60, 1, 7, 0);
             }
@@ -1040,7 +1040,7 @@ void BombData::BombMarisaBCalc(Player *player)
             player->bombStartPos = player->positionCenter;
             g_Gui.ShowBombNamePortrait(0x4a1, "恋符「ノンディレクショナルレーザー」");
             player->bombInfo.bombDuration = 300;
-            player->invulnerabilityTimer.Initialize(300);
+            player->invulnerabilityTimer = 300;
             SpawnBombInvulnEffect(player);
             local_c = player->bombInfo.subInfo;
             for (local_8 = 0; local_8 < 3; local_8 += 1)
@@ -1138,7 +1138,7 @@ void BombData::BombMarisaBCalcFocus(Player *player)
             g_ItemManager.RemoveAllItems();
             g_Gui.ShowBombNamePortrait(0x4a2, "恋符「マスタースパーク」");
             player->bombInfo.bombDuration = 0x154;
-            player->invulnerabilityTimer.Initialize(0x186);
+            player->invulnerabilityTimer = 390;
             SpawnBombInvulnEffect(player);
             local_c = player->bombInfo.subInfo[0].vms;
             for (local_8 = 0; local_8 < 4; local_8 += 1)
@@ -1217,7 +1217,7 @@ void BombData::BombSakuyaACalc(Player *player)
             g_ItemManager.RemoveAllItems();
             g_Gui.ShowBombNamePortrait(0x4a1, "幻符「インディスクリミネイト」");
             player->bombInfo.bombDuration = 0xa0;
-            player->invulnerabilityTimer.Initialize(0xd2);
+            player->invulnerabilityTimer = 210;
             SpawnBombInvulnEffect(player);
             player->bombStartPos = player->positionCenter;
             local_c = player->bombInfo.subInfo;
@@ -1228,7 +1228,7 @@ void BombData::BombSakuyaACalc(Player *player)
             }
             ComputeBombCherryDrain(player, 6000, 0.28f);
             player->bombInfo.subInfo[0].effect = g_EffectManager.SpawnParticles(
-                0x15, &player->positionCenter, 1, 0xffffffff);
+                21, &player->positionCenter, 1, 0xffffffff);
             g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_SAKUYA_A, 0);
         }
         if (player->bombInfo.bombTimer.current > 60)
@@ -1352,7 +1352,7 @@ void BombData::BombSakuyaACalcFocus(Player *player)
             g_ItemManager.RemoveAllItems();
             g_Gui.ShowBombNamePortrait(0x4a1, "幻符「殺人ドール」");
             player->bombInfo.bombDuration = 0xfa;
-            player->invulnerabilityTimer.Initialize(0x122);
+            player->invulnerabilityTimer = 290;
             SpawnBombInvulnEffect(player);
             local_c = player->bombInfo.subInfo;
             for (local_8 = 0; local_8 < 0x60; local_8 += 1)
@@ -1364,7 +1364,7 @@ void BombData::BombSakuyaACalcFocus(Player *player)
             player->verticalMovementSpeedMultiplierDuringBomb = 0.3f;
             player->horizontalMovementSpeedMultiplierDuringBomb = 0.3f;
             player->bombInfo.subInfo[0].effect = g_EffectManager.SpawnParticles(
-                0x15, &player->positionCenter, 1, 0xffffffff);
+                21, &player->positionCenter, 1, 0xffffffff);
             g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_SAKUYA_A, 0);
         }
         if ((-1 < player->bombInfo.bombTimer.current) &&
@@ -1381,7 +1381,7 @@ void BombData::BombSakuyaACalcFocus(Player *player)
                 if ((player->bombInfo.bombTimer.current ==
                      player->bombInfo.bombTimer.previous) ||
                     (player->bombInfo.bombTimer.current !=
-                     (local_8 % 0x30) * 2 + 0x14))
+                     (local_8 % 0x30) * 2 + 20))
                 {
                     bVar4 = false;
                 }
@@ -1402,7 +1402,7 @@ void BombData::BombSakuyaACalcFocus(Player *player)
                     (local_c->bombRegionVelocities).y = sinf(local_c->angle) * 24.0f;
                     local_c->bombRegionPositions =
                         player->positionCenter + local_c->bombRegionVelocities;
-                    (local_c->timer).Initialize(0);
+                    (local_c->timer) = 0;
                     (local_c->bombRegionVelocities).z = 0.0f;
                     player->bombProjectiles[local_8].payload = 0;
                 }
@@ -1544,7 +1544,7 @@ void BombData::BombSakuyaBCalc(Player *player)
             g_ItemManager.RemoveAllItems();
             g_Gui.ShowBombNamePortrait(0x4a3, "時符「パーフェクトスクウェア」");
             player->bombInfo.bombDuration = 0xa0;
-            player->invulnerabilityTimer.Initialize(0x104);
+            player->invulnerabilityTimer = 260;
             SpawnBombInvulnEffect(player);
             local_c = player->bombInfo.subInfo;
             for (local_8 = 0; local_8 < 4; local_8 += 1)
@@ -1738,7 +1738,7 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
             g_ItemManager.RemoveAllItems();
             g_Gui.ShowBombNamePortrait(0x4a3, "時符「プライベートスクウェア」");
             player->bombInfo.bombDuration = 300;
-            player->invulnerabilityTimer.Initialize(0x1a4);
+            player->invulnerabilityTimer = 420;
             SpawnBombInvulnEffect(player);
             player->isBombing = 0;
             local_c = player->bombInfo.subInfo;

@@ -220,8 +220,8 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, f32 x,
         bullet->state = BULLET_NORMAL;
         bullet->spawned = 1;
         bullet->grazed = 0;
-        bullet->timer1.Initialize(0);
-        bullet->timer2.Initialize(0);
+        bullet->timer1 = 0;
+        bullet->timer2 = 0;
         bullet->speed = bulletSpeed;
         bullet->angle = utils::AddNormalizeAngle(bulletAngle, 0.0f);
         bullet->pos = bulletProps->position;
@@ -444,7 +444,7 @@ void Bullet::RunCommands()
             local_28 = pBVar1->angle;
         }
         this->commandStates[3].speed = local_28;
-        this->commandStates[3].timer.Initialize(0);
+        this->commandStates[3].timer = 0;
         this->commandStates[3].duration = pBVar1->duration;
         this->commandStates[3].maxTimes = pBVar1->loopCount;
         this->commandStates[3].minTimes = 0;
@@ -455,7 +455,7 @@ void Bullet::RunCommands()
         {
         case 1:
             this->exFlags = this->exFlags | 1;
-            this->commandStates[0].timer.Initialize(0);
+            this->commandStates[0].timer = 0;
             this->commandStates[0].vec3.z = 0.0f;
             break;
         case 0x10:
@@ -470,7 +470,7 @@ void Bullet::RunCommands()
                 local_24 = pBVar1->angle;
             }
             this->commandStates[1].angle = local_24;
-            this->commandStates[1].timer.Initialize(0);
+            this->commandStates[1].timer = 0;
             this->commandStates[1].duration = pBVar1->duration;
             AngleToVector(&this->commandStates[1].vec3, this->commandStates[1].angle,
                           g_Supervisor.effectiveFramerateMultiplier *
@@ -484,7 +484,7 @@ void Bullet::RunCommands()
             this->exFlags = this->exFlags | 0x20;
             this->commandStates[2].speed = pBVar1->speed;
             this->commandStates[2].angle = pBVar1->angle;
-            this->commandStates[2].timer.Initialize(0);
+            this->commandStates[2].timer = 0;
             this->commandStates[2].duration = pBVar1->duration;
             if ((this->curCmdIdx != 0) && (-1 < this->soundIdx))
             {
@@ -543,7 +543,7 @@ void BulletManager::RemoveAllBullets(i32 param_1)
             if (laser->state < 2)
             {
                 laser->state = 2;
-                laser->timer.Initialize(0);
+                laser->timer = 0;
                 laser->width = laser->targetWidth;
                 if ((param_1 != 0) && (param_1 < 9))
                 {
@@ -600,7 +600,7 @@ i32 BulletManager::DespawnBullets(i32 param_1, i32 turnIntoItem)
                                         ((local_8 < param_1) - 1 & 0xffffff01) - 1);
             local_c += local_8;
             local_10 += 1;
-            local_8 += 0x14;
+            local_8 += 20;
             if (param_1 < local_8)
             {
                 local_8 = param_1;
@@ -617,7 +617,7 @@ i32 BulletManager::DespawnBullets(i32 param_1, i32 turnIntoItem)
             if (laser->state < 2)
             {
                 laser->state = 2;
-                laser->timer.Initialize(0);
+                laser->timer = 0;
                 laser->width = laser->targetWidth;
                 if (turnIntoItem != 0)
                 {
@@ -847,7 +847,7 @@ void Bullet::UpdateBulletDirChangeAndResume()
         this->angle = this->angle + this->commandStates[3].angle;
         this->speed = this->commandStates[3].speed;
         local_8 = this->speed;
-        this->commandStates[3].timer.Initialize(0);
+        this->commandStates[3].timer = 0;
     }
     AngleToVector(&this->velocity, this->angle,
                   local_8 * g_Supervisor.effectiveFramerateMultiplier);
@@ -880,7 +880,7 @@ void Bullet::UpdateBulletDirChangeAbsoluteAndResume()
         this->angle = this->commandStates[3].angle;
         this->speed = this->commandStates[3].speed;
         local_8 = this->speed;
-        this->commandStates[3].timer.Initialize(0);
+        this->commandStates[3].timer = 0;
     }
     AngleToVector(&this->velocity, this->angle,
                   local_8 * g_Supervisor.effectiveFramerateMultiplier);
@@ -914,7 +914,7 @@ void Bullet::UpdateBulletDirChangeAimAtPlayer()
                                                this->commandStates[3].angle);
         this->speed = this->commandStates[3].speed;
         local_8 = this->speed;
-        this->commandStates[3].timer.Initialize(0);
+        this->commandStates[3].timer = 0;
     }
     AngleToVector(&this->velocity, this->angle,
                   local_8 * g_Supervisor.effectiveFramerateMultiplier);
@@ -1212,7 +1212,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
                     }
                     if (laser->startTime <= laser->timer.current)
                     {
-                        laser->timer.Initialize(0);
+                        laser->timer = 0;
                         laser->state = laser->state + 1;
                         laser->targetWidth = laser->width;
                         goto LAB_004267a8;
@@ -1228,7 +1228,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
                                                  (laser->timer.current % 0xc == 0));
                         if (laser->timer.current < laser->duration)
                             goto LAB_004269d9;
-                        laser->timer.Initialize(0);
+                        laser->timer = 0;
                         laser->state = laser->state + 1;
                         if (laser->endTime == 0)
                         {

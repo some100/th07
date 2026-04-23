@@ -80,8 +80,8 @@ void EclManager::Unload()
 ZunResult EclManager::CallEclSub(EnemyEclContext *param_1, i16 subId)
 {
     param_1->curInstr = this->subTable[subId];
-    param_1->time.Initialize2(0);
-    param_1->timer2.Initialize2(0);
+    param_1->time = 0;
+    param_1->timer2 = 0;
     param_1->subId = subId;
     return ZUN_SUCCESS;
 }
@@ -620,7 +620,7 @@ void EclManager::MoveDirTime(Enemy *enemy, EclRawInstr *instr)
         local_c = GetVarValue(enemy, instr->args[0].i);
     }
     enemy->moveInterpStartTime = local_c;
-    (enemy->moveInterpTimer).Initialize(local_c);
+    (enemy->moveInterpTimer) = local_c;
     if ((instr->paramMask & 2) == 0)
     {
         local_38 = (u8)instr->args[1].i;
@@ -683,7 +683,7 @@ void EclManager::MovePosTime(Enemy *enemy, EclRawInstr *instr)
         local_3c = GetVarValue(enemy, instr->args[0].i);
     }
     enemy->moveInterpStartTime = local_3c;
-    (enemy->moveInterpTimer).Initialize(local_3c);
+    (enemy->moveInterpTimer) = local_3c;
     if ((instr->paramMask & 2) == 0)
     {
         local_58 = (u8)instr->args[1].i;
@@ -766,7 +766,7 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
     g_EnemyManager.spellcardInfo.scoreDrainRate =
         (i32)g_EnemyManager.spellcardInfo.captureScore /
         (enemy->timerCallbackThreshold / 60 + 10);
-    g_EnemyManager.timer.Initialize(0);
+    g_EnemyManager.timer = 0;
     enemy->bulletRankSpeedLow = -0.5f;
     enemy->bulletRankSpeedHigh = 0.5f;
     enemy->bulletRankAmount1Low = 0;
@@ -775,9 +775,8 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
     enemy->bulletRankAmount2High = 0;
     enemy->specialEffect =
         g_EffectManager.SpawnEffect(0x19, &enemy->position, 1, 1, 0xffffffff);
-    enemy->specialEffect->vm.interpStartTimes[4].Initialize(0);
-    enemy->specialEffect->vm.interpEndTimes[4].Initialize(
-        enemy->timerCallbackThreshold);
+    enemy->specialEffect->vm.interpStartTimes[4] = 0;
+    enemy->specialEffect->vm.interpEndTimes[4] = enemy->timerCallbackThreshold;
     enemy->specialEffect->vm.interpModes[4] = 0;
     enemy->specialEffect->vm.scaleInterpInitial = enemy->specialEffect->vm.scale;
     enemy->specialEffect->vm.scaleInterpFinal.x = 0.125;
@@ -1030,7 +1029,7 @@ restart:
         enemy->periodicCounter.Tick();
         if (enemy->periodicTimer.current <= enemy->periodicCounter.current)
         {
-            enemy->periodicCounter.Initialize(0);
+            enemy->periodicCounter = 0;
             enemy->savedContextStack[enemy->stackDepth] = enemy->currentContext;
             enemy->currentContext.eclContextArgs = enemy->savedEclContextArgs;
             g_EclManager.CallEclSub(&enemy->currentContext,
@@ -1150,7 +1149,7 @@ restart:
                     {
                         enemy->bulletProps.position = enemy->position + enemy->shootOffset;
                         g_BulletManager.SpawnBulletPattern(&enemy->bulletProps);
-                        enemy->shootIntervalTimer.Initialize(0);
+                        enemy->shootIntervalTimer = 0;
                     }
                 }
                 if (enemy->anmExLeft >= 0)
@@ -1245,7 +1244,7 @@ restart:
                         local_fc->timer.Tick();
                         if (local_fc->args[0].i <= local_fc->timer.current)
                         {
-                            local_fc->timer.Initialize(local_fc->args[0].i);
+                            local_fc->timer = local_fc->args[0].i;
                         }
                         local_f4 =
                             ((f32)local_fc->timer.current + local_fc->timer.subFrame) /
@@ -1508,7 +1507,7 @@ restart:
                     local_3d0 + local_3d4;
                 break;
             }
-            case 0x14: {
+            case 20: {
                 f32 local_3e4 = (instr->paramMask & 2) == 0
                                     ? instr->args[1].f
                                     : GetFloatVarValue(enemy, instr->args[1].f);
@@ -1592,7 +1591,7 @@ restart:
                     if ((local_18->fn == NULL) ||
                         (local_18->args[7].f == instr->args[0].f))
                     {
-                        (local_18->timer).Initialize(0);
+                        (local_18->timer) = 0;
                         local_18->args[7] = instr->args[0];
                         i32 local_464 = (instr->paramMask & 2) == 0
                                             ? instr->args[1].i
@@ -1839,7 +1838,7 @@ restart:
                 i32 local_18c = (instr->paramMask & 1) == 0
                                     ? instr->args[0].i
                                     : GetVarValue(enemy, instr->args[0].i);
-                enemy->currentContext.timer2.Initialize(local_18c);
+                enemy->currentContext.timer2 = local_18c;
                 break;
             }
             case 0x2e: {
@@ -1991,7 +1990,7 @@ restart:
                                         ? instr->args[0].i
                                         : GetVarValue(enemy, instr->args[0].i);
                     enemy->moveInterpStartTime = local_25c;
-                    enemy->moveInterpTimer.Initialize(local_25c);
+                    enemy->moveInterpTimer = local_25c;
                 }
                 else
                 {
@@ -2008,7 +2007,7 @@ restart:
                                     ? instr->args[0].i
                                     : GetVarValue(enemy, instr->args[0].i);
                 enemy->moveInterpStartTime = local_264;
-                enemy->moveInterpTimer.Initialize(local_264);
+                enemy->moveInterpTimer = local_264;
                 f32 local_5fc = (instr->paramMask & 2) == 0
                                     ? instr->args[1].f
                                     : GetFloatVarValue(enemy, instr->args[1].f);
@@ -2068,7 +2067,7 @@ restart:
                                     ? instr->args[0].i
                                     : GetVarValue(enemy, instr->args[0].i);
                 enemy->moveInterpStartTime = local_1d4;
-                enemy->moveInterpTimer.Initialize(local_1d4);
+                enemy->moveInterpTimer = local_1d4;
                 break;
             }
             case 60: {
@@ -2077,7 +2076,7 @@ restart:
                                     ? instr->args[0].i
                                     : GetVarValue(enemy, instr->args[0].i);
                 enemy->moveInterpStartTime = local_1dc;
-                enemy->moveInterpTimer.Initialize(local_1dc);
+                enemy->moveInterpTimer = local_1dc;
                 break;
             }
             case 0x3d: {
@@ -2086,7 +2085,7 @@ restart:
                                     ? instr->args[0].i
                                     : GetVarValue(enemy, instr->args[0].i);
                 enemy->moveInterpStartTime = local_1e4;
-                enemy->moveInterpTimer.Initialize(local_1e4);
+                enemy->moveInterpTimer = local_1e4;
                 break;
             }
             case 0x3e: {
@@ -2229,7 +2228,7 @@ restart:
                         (-enemy->shootInterval / 5 - iVar19) * g_GameManager.rank.rank;
                     enemy->shootInterval =
                         (i32)(iVar13 / 32) + iVar19 + enemy->shootInterval;
-                    enemy->shootIntervalTimer.Initialize(0);
+                    enemy->shootIntervalTimer = 0;
                 }
                 break;
             }
@@ -2246,7 +2245,7 @@ restart:
                     enemy->shootInterval =
                         (i32)(iVar13 / 32) + iVar19 + enemy->shootInterval;
                     i32 local_220 = g_Rng.GetRandomU32InRange(enemy->shootInterval);
-                    enemy->shootIntervalTimer.Initialize(local_220);
+                    enemy->shootIntervalTimer = local_220;
                 }
                 break;
             }
@@ -2461,7 +2460,7 @@ restart:
                     (enemy->lasers[local_5c8]->state < 2))
                 {
                     enemy->lasers[local_5c8]->state = 2;
-                    enemy->lasers[local_5c8]->timer.Initialize(0);
+                    enemy->lasers[local_5c8]->timer = 0;
                     enemy->lasers[local_5c8]->width =
                         enemy->lasers[local_5c8]->targetWidth;
                 }
@@ -2721,7 +2720,7 @@ restart:
                 i32 local_278 = (instr->paramMask & 1) == 0
                                     ? instr->args[0].i
                                     : GetVarValue(enemy, instr->args[0].i);
-                enemy->timer.Initialize(local_278);
+                enemy->timer = local_278;
                 break;
             }
             case 0x70: {
@@ -2743,7 +2742,7 @@ restart:
                                     ? instr->args[0].i
                                     : GetVarValue(enemy, instr->args[0].i);
                 enemy->timerCallbackThreshold = local_69c;
-                enemy->timer.Initialize(0);
+                enemy->timer = 0;
                 break;
             }
             case 0x73: {
@@ -2920,7 +2919,7 @@ restart:
             }
             case 0x85: {
                 enemy->timerCallbackSub = enemy->deathCallbackSub;
-                enemy->timer.Initialize(0);
+                enemy->timer = 0;
                 break;
             }
             case 0x86: {
@@ -3007,7 +3006,7 @@ restart:
                 i32 local_2a0 = (instr->paramMask & 1) == 0
                                     ? instr->args[0].i
                                     : GetVarValue(enemy, instr->args[0].i);
-                enemy->invincibilityTimer.Initialize(local_2a0);
+                enemy->invincibilityTimer = local_2a0;
                 break;
             }
             case 0x8f: {
@@ -3021,12 +3020,12 @@ restart:
                 i32 local_284 = (instr->paramMask & 1) == 0
                                     ? instr->args[0].i
                                     : GetVarValue(enemy, instr->args[0].i);
-                enemy->periodicTimer.Initialize(local_284);
+                enemy->periodicTimer = local_284;
                 i32 local_6a4 = (instr->paramMask & 2) == 0
                                     ? instr->args[1].i
                                     : GetVarValue(enemy, instr->args[1].i);
                 enemy->periodicCallbackSub = local_6a4;
-                enemy->periodicCounter.Initialize(0);
+                enemy->periodicCounter = 0;
                 enemy->savedEclContextArgs = enemy->currentContext.eclContextArgs;
                 break;
             }

@@ -136,7 +136,7 @@ void ItemManager::SpawnItem(D3DXVECTOR3 *heading, i32 itemType, i32 state)
     item->startPosition.z = 0.0f;
     item->itemType = (u8)itemType;
     item->state = (u8)state;
-    item->timer.Initialize(0);
+    item->timer = 0;
     if (state == 2)
     {
         item->targetPosition.x = g_Rng.GetRandomFloatInRange(288.0f) + 48.0f;
@@ -551,7 +551,7 @@ void ItemManager::OnUpdate()
                         local_10 / 10 + g_GameManager.globals->score;
                     if (g_Player.bombInfo.isInUse == 0)
                     {
-                        g_GameManager.AddCherryPlus(0x14);
+                        g_GameManager.AddCherryPlus(20);
                     }
                     else if ((i & 1) == 0)
                     {

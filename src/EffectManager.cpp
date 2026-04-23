@@ -247,7 +247,7 @@ void EffectManager::DoSomethingWithEffects(D3DXVECTOR3 *param_1)
     effect = g_EffectManager.effects;
     for (i = 0; i < 400; i++)
     {
-        if ((effect->effectId == 0x14) || (effect->effectId == 0x1f))
+        if ((effect->effectId == 20) || (effect->effectId == 0x1f))
         {
             effect->basePosition += *param_1;
         }
@@ -540,7 +540,7 @@ Effect *EffectManager::SpawnParticles(i32 effectId, D3DXVECTOR3 *pos,
             effect->vm.zWriteDisable = 1;
             effect->vm.color.color = color;
             effect->callback = g_EffectMapping[effectId].updateCallback;
-            effect->timer.Initialize(0);
+            effect->timer = 0;
             effect->isFadingOut = 0;
             effect->fadeOutTime = 0;
             effect->custom.x = 0.0f;
@@ -610,7 +610,7 @@ Effect *EffectManager::SpawnMovingParticles(i32 effectId, D3DXVECTOR3 *pos,
                 &effect->vm, g_AnmManager->scripts[g_EffectMapping[effectId].anmId]);
             effect->vm.color.color = color;
             effect->callback = g_EffectMapping[effectId].updateCallback;
-            effect->timer.Initialize(0);
+            effect->timer = 0;
             effect->isFadingOut = 0;
             effect->fadeOutTime = 0;
             effect->custom = *velocity;
@@ -674,7 +674,7 @@ Effect *EffectManager::SpawnEffect(i32 effectId, D3DXVECTOR3 *pos, i32 param_3,
     effect->vm.zWriteDisable = 1;
     effect->vm.color.color = color;
     effect->callback = g_EffectMapping[effectId].updateCallback;
-    effect->timer.Initialize(0);
+    effect->timer = 0;
     effect->isFadingOut = 0;
     effect->fadeOutTime = 0;
     effect->custom.x = 0.0f;
@@ -817,7 +817,7 @@ i32 EffectManager::UpdateSpecialEffect()
                 ((bVar1 = (bool)(bVar1 ^ 1),
                   g_Supervisor.cfg.effectQuality != QUALITY_MEDIUM || (!bVar1)))))
         {
-            if (effect->effectId == 0x14)
+            if (effect->effectId == 20)
             {
                 local_1c = (f32)effect->vm.color.bytes.r;
                 local_18 = (f32)effect->vm.color.bytes.g;
@@ -857,7 +857,7 @@ i32 EffectManager::UpdateSpecialEffect()
             {
                 g_AnmManager->DrawProjected(&effect->vm);
             }
-            if (effect->effectId == 0x14)
+            if (effect->effectId == 20)
             {
                 effect->vm.color.bytes.r = (u8)local_1c;
                 effect->vm.color.bytes.g = (u8)local_18;

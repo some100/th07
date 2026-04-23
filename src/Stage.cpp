@@ -97,7 +97,7 @@ void Stage::UpdateScriptAndCamera(Stage *stage, i32 param_2,
     }
     else
     {
-        stage->timers[param_2].Initialize(stage->timersMax[param_2]);
+        stage->timers[param_2] = stage->timersMax[param_2];
         local_8 = 1.0f;
         stage->timersMax[param_2] = 0;
     }
@@ -177,7 +177,7 @@ u32 Stage::OnUpdate(Stage *arg)
         if (local_8->frame != -1)
         {
             arg->instructionIndex = local_18 + 1;
-            arg->scriptTime.Initialize(local_8->frame);
+            arg->scriptTime = local_8->frame;
             arg->scriptWaitTime = 0;
         }
     }
@@ -231,7 +231,7 @@ LAB_0040578a:
             arg->fogFarPlaneEnd = arg->skyFog.farPlane;
             arg->fogColorEnd = arg->fogColor;
             arg->skyFogInterpDuration = local_8->args[0].i;
-            arg->skyFogInterpTimer.Initialize(0);
+            arg->skyFogInterpTimer = 0;
             break;
         case 3:
             if (arg->scriptWaitTime == 0)
@@ -265,7 +265,7 @@ LAB_0040578a:
                     }
                     else
                     {
-                        arg->timers[3].Initialize(arg->timersMax[3]);
+                        arg->timers[3] = arg->timersMax[3];
                         local_30 = 1.0f;
                         arg->timersMax[3] = 0;
                     }
@@ -378,7 +378,7 @@ LAB_0040578a:
             break;
         case 6:
             arg->timersMax[0] = local_8->args[0].i;
-            arg->timers[0].Initialize(0);
+            arg->timers[0] = 0;
             arg->interpModes[0] = local_8->args[1].i;
             break;
         case 7:
@@ -391,7 +391,7 @@ LAB_0040578a:
             break;
         case 8:
             arg->timersMax[1] = local_8->args[0].i;
-            arg->timers[1].Initialize(0);
+            arg->timers[1] = 0;
             arg->interpModes[1] = local_8->args[1].i;
             break;
         case 9:
@@ -405,7 +405,7 @@ LAB_0040578a:
         case 10:
             arg->timersMax[2] = local_8->args[0].i;
             arg->interpModes[2] = local_8->args[1].i;
-            arg->timers[2].Initialize(0);
+            arg->timers[2] = 0;
             break;
         case 0xb:
             arg->fovStart = arg->fovEnd;
@@ -417,7 +417,7 @@ LAB_0040578a:
             break;
         case 0xc:
             arg->timersMax[3] = local_8->args[0].i;
-            arg->timers[3].Initialize(0);
+            arg->timers[3] = 0;
             arg->interpModes[3] = local_8->args[1].i;
             break;
         case 0xd:
@@ -437,7 +437,7 @@ LAB_0040578a:
             break;
         case 0x12:
             arg->timersMax[0] = local_8->args[0].i;
-            arg->timers[0].Initialize(0);
+            arg->timers[0] = 0;
             arg->interpModes[0] = 7;
             break;
         case 0x13:
@@ -454,7 +454,7 @@ LAB_0040578a:
             break;
         case 0x17:
             arg->timersMax[1] = local_8->args[0].i;
-            arg->timers[1].Initialize(0);
+            arg->timers[1] = 0;
             arg->interpModes[1] = 7;
             break;
         case 0x18:
@@ -471,7 +471,7 @@ LAB_0040578a:
             break;
         case 0x1c:
             arg->timersMax[2] = local_8->args[0].i;
-            arg->timers[2].Initialize(0);
+            arg->timers[2] = 0;
             arg->interpModes[2] = 7;
             break;
         case 0x1d:
@@ -498,7 +498,7 @@ LAB_0040578a:
     }
 switchD_004057f2_caseD_4:
     arg->instructionIndex = local_8->args[0].i;
-    arg->scriptTime.Initialize(local_8->args[1].i);
+    arg->scriptTime = local_8->args[1].i;
     arg->timersMax[0] = 0;
     arg->pendingCameraShake = 1;
     goto LAB_0040578a;
@@ -708,7 +708,7 @@ ZunResult Stage::AddedCallback(Stage *arg)
 {
     i32 i;
 
-    arg->scriptTime.Initialize(0);
+    arg->scriptTime = 0;
     arg->instructionIndex = 0;
     arg->position.x = 0.0f;
     arg->position.y = 0.0f;
@@ -814,7 +814,7 @@ ZunResult Stage::AddedCallback(Stage *arg)
         for (i = 0; i < 4; i++)
         {
             arg->timersMax[i] = 0;
-            arg->timers[i].Initialize(0);
+            arg->timers[i] = 0;
         }
         arg->scriptWaitTime = 0;
         return ZUN_SUCCESS;
@@ -876,12 +876,14 @@ void Stage::CutChain()
     g_Chain.Cut(&g_StageOnDrawLowPrioChain);
 }
 
+#pragma var_order(vmIdx, i, obj, quad)
 // FUNCTION: TH07 0x00407610
 ZunResult Stage::LoadStageData(const char *stdPath)
 {
-    StdRawQuadBasic *local_14;
+    StdRawQuadBasic *quad;
+    StdRawObject *obj;
     i32 i;
-    i32 local_8;
+    i32 vmIdx;
 
     this->stdData = (StdRawHeader *)FileSystem::OpenFile(stdPath, 0);
     if (this->stdData == NULL)
@@ -890,37 +892,34 @@ ZunResult Stage::LoadStageData(const char *stdPath)
         g_GameErrorContext.Log("ステージデータが見つかりません。データが壊れています\r\n");
         return ZUN_ERROR;
     }
-    else
+
+    this->objectsCount = this->stdData->objectsCount;
+    this->quadCount = this->stdData->quadCount;
+    this->objectInstances =
+        (StdRawInstance *)(this->stdData->facesOffset + (i32)this->stdData);
+    this->beginningOfScript =
+        (StdRawInstr *)(this->stdData->scriptOffset + (i32)this->stdData);
+    this->objects = (StdRawObject **)(this->stdData + 1);
+    for (i = 0; i < this->objectsCount; i++)
     {
-        this->objectsCount = this->stdData->objectsCount;
-        this->quadCount = this->stdData->quadCount;
-        this->objectInstances =
-            (StdRawInstance *)((u8 *)this->stdData + this->stdData->facesOffset);
-        this->beginningOfScript =
-            (StdRawInstr *)((u8 *)this->stdData + this->stdData->scriptOffset);
-        this->objects = (StdRawObject **)(this->stdData + 1);
-        for (i = 0; i < this->objectsCount; i++)
-        {
-            this->objects[i] =
-                (StdRawObject *)((u8 *)this->stdData + (i32)this->objects[i]);
-        }
-        this->quadVms = (AnmVm *)malloc(this->quadCount * sizeof(AnmVm));
-        local_8 = 0;
-        for (i = 0; i < this->objectsCount; i++)
-        {
-            this->objects[i]->flags = 1;
-            local_14 = &this->objects[i]->firstQuad;
-            while (-1 < local_14->type)
-            {
-                g_AnmManager->ExecuteAnmIdx(&this->quadVms[local_8],
-                                            local_14->anmScript + 0x300);
-                local_14->vmIndex = local_8;
-                local_8 += 1;
-                local_14 = (StdRawQuadBasic *)((u8 *)local_14 + local_14->byteSize);
-            }
-        }
-        return ZUN_SUCCESS;
+        this->objects[i] =
+            (StdRawObject *)((i32)this->objects[i] + (i32)this->stdData);
     }
+    this->quadVms = (AnmVm *)ZunMemory::Alloc(this->quadCount * sizeof(AnmVm));
+    for (i = 0, vmIdx = 0; i < this->objectsCount; i++)
+    {
+        obj = this->objects[i];
+        obj->flags = 1;
+        quad = &obj->firstQuad;
+        while (quad->type >= 0)
+        {
+            g_AnmManager->ExecuteAnmIdx(&this->quadVms[vmIdx],
+                                        quad->anmScript + 0x300);
+            quad->vmIndex = vmIdx++;
+            quad = (StdRawQuadBasic *)((i32)quad + quad->byteSize);
+        }
+    }
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x004077f0

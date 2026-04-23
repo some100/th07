@@ -151,6 +151,13 @@ struct MidiOutput : MidiTimer
         return *(const u32 *)tmp;
     }
 
+    __forceinline void Stop()
+    {
+        this->StopPlayback();
+        this->ParseFile(0x1e);
+        this->Play();
+    }
+
     MIDIHDR *midiHeaders[32];
     i32 midiHeadersCursor;
     u8 *midiFileData[32];

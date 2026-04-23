@@ -56,6 +56,13 @@ struct MainMenu
     ZunResult UpdateMenuDigits(AnmVm *param_1, i16 param_2);
     void SetGameState(GameState state);
 
+    // i have no idea why this exists but mainmenu::registerchain's stack layout
+    // wouldnt match without this
+    static void AnInlineFunctionThatAllocates20BytesAndNothingElse()
+    {
+        i32 idk[5];
+    }
+
     i32 cursor;
     i32 selected;
     i32 menuSubState;

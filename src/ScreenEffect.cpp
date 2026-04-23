@@ -250,7 +250,7 @@ u32 BombEffects::OnUpdatePulse(BombEffects *arg)
         {
             return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
         }
-        arg->timer.Initialize(0);
+        arg->timer = 0;
     }
     arg->timer.Tick();
     return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -317,7 +317,7 @@ u32 BombEffects::OnUpdateScreenShake(BombEffects *arg)
 // FUNCTION: TH07 0x0044b280
 ZunResult BombEffects::AddedCallback(BombEffects *arg)
 {
-    arg->timer.Initialize2(0);
+    arg->timer = 0;
     return ZUN_SUCCESS;
 }
 

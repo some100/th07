@@ -310,8 +310,8 @@ destroy_elem:
             if (toRemove->deletedCallback != NULL)
             {
                 ChainLifecycleCallback deletedCallback = toRemove->deletedCallback;
-                deletedCallback(toRemove->arg);
                 toRemove->deletedCallback = NULL;
+                deletedCallback(toRemove->arg);
             }
         }
     }

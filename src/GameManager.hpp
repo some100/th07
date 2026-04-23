@@ -191,7 +191,7 @@ struct GameManager
     void *tmpBuffer;
     GameConfiguration *defaultCfg;
     ZunGlobals *globals;
-    u8 isTimeStopped;
+    i8 isTimeStopped;
     i8 slowModeSlowActive;
     // pad 2
     i32 difficulty;

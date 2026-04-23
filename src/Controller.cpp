@@ -97,7 +97,7 @@ u16 Controller::GetControllerInput(u16 buttons)
         {
             if (DVar1 != 0)
             {
-                if (g_FocusButtonConflictState < 0x14)
+                if (g_FocusButtonConflictState < 20)
                 {
                     g_FocusButtonConflictState++;
                 }
@@ -199,7 +199,7 @@ u16 Controller::GetControllerInput(u16 buttons)
             {
                 if (DVar2 != 0)
                 {
-                    if (g_FocusButtonConflictState < 0x14)
+                    if (g_FocusButtonConflictState < 20)
                     {
                         g_FocusButtonConflictState++;
                     }

@@ -85,13 +85,13 @@ typedef enum AnmOpcode
     ANM_JUMP_IF_LT_FLOAT = 72,
     ANM_JUMP_IF_LEQ = 73,
     ANM_JUMP_IF_LEQ_FLOAT = 74,
-    ANM_JUMP_IF_LT_2 = 75,
-    ANM_JUMP_IF_FLOAT_2 = 76,
-    ANM_JUMP_IF_LEQ_2 = 77,
-    ANM_JUMP_IF_LEQ_FLOAT_2 = 78,
+    ANM_JUMP_IF_GT = 75,
+    ANM_JUMP_IF_GT_FLOAT = 76,
+    ANM_JUMP_IF_GEQ = 77,
+    ANM_JUMP_IF_GEQ_FLOAT = 78,
     ANM_WAIT = 79,
-    ANM_47 = 80,
-    ANM_48 = 81
+    ANM_SET_SCROLLVEL_X = 80,
+    ANM_SET_SCROLLVEL_Y = 81
 } AnmOpcode;
 
 struct AnmLoadedSprite

@@ -15,6 +15,7 @@
 #include "Supervisor.hpp"
 #include "TextHelper.hpp"
 #include "ZunMath.hpp"
+#include "d3dx8.h"
 #include "dxutil.hpp"
 #include "utils.hpp"
 
@@ -179,14 +180,18 @@ ZunResult AnmManager::LoadTexture(i32 textureIdx, const char *texturePath,
     return ZUN_SUCCESS;
 }
 
+#pragma var_order(surf, texSurf, info, lockedRect, i, src, dst)
 // FUNCTION: TH07 0x0044d9e0
 ZunResult AnmManager::LoadTextureEmbedded(u32 textureIdx,
                                           ZunImageInfoEmbedded *imageInfo,
                                           D3DCOLOR formatIdx)
 {
+    u8 *dst;
+    u8 *src;
+    i32 i;
     D3DLOCKED_RECT lockedRect;
     ZunImageInfoEmbedded *info;
-    IDirect3DSurface8 *local_c;
+    IDirect3DSurface8 *texSurf;
     IDirect3DSurface8 *surf;
 
     ReleaseTexture(textureIdx);
@@ -204,62 +209,68 @@ ZunResult AnmManager::LoadTextureEmbedded(u32 textureIdx,
     }
     info = imageInfo;
     g_Supervisor.d3dDevice->CreateImageSurface(
-        (i32)imageInfo->width, (i32)imageInfo->height,
-        g_TextureFormatD3D8Mapping[imageInfo->format], &surf);
+        (i32)info->width, (i32)info->height,
+        g_TextureFormatD3D8Mapping[info->format], &surf);
     surf->LockRect(&lockedRect, NULL, 0);
-    for (i32 i = 0; i < info->height; i++)
+    for (i = 0; i < info->height; i++)
     {
-        u32 uVar3 = (i32)info->width * g_TextureBytesPerPixel[info->format];
-        memcpy((u8 *)((i32)lockedRect.pBits + i * lockedRect.Pitch),
-               &imageInfo
-                    ->data[i * info->width * g_TextureBytesPerPixel[info->format]],
-               uVar3);
+        dst = (u8 *)lockedRect.pBits + i * lockedRect.Pitch;
+        src = &imageInfo->data[i * info->width * g_TextureBytesPerPixel[info->format]];
+        memcpy(dst, src, info->width * g_TextureBytesPerPixel[info->format]);
     }
     surf->UnlockRect();
     if (D3DXCreateTexture(g_Supervisor.d3dDevice, (i32)info->width,
                           (i32)info->height, 1, 0,
                           g_TextureFormatD3D8Mapping[formatIdx], D3DPOOL_MANAGED,
-                          this->textures + textureIdx) == 0)
-    {
-        this->textures[textureIdx]->GetSurfaceLevel(0, &local_c);
-        if (D3DXLoadSurfaceFromSurface(local_c, 0, NULL, surf, 0, NULL, 3, 0) ==
-            0)
-        {
-            SAFE_RELEASE(surf);
-            if (local_c != NULL)
-            {
-                local_c->Release();
-            }
-            return ZUN_SUCCESS;
-        }
-        else
-        {
-            return ZUN_ERROR;
-        }
-    }
-    else
-    {
+                          this->textures + textureIdx) != 0)
         return ZUN_ERROR;
-    }
+
+    this->textures[textureIdx]->GetSurfaceLevel(0, &texSurf);
+    if (D3DXLoadSurfaceFromSurface(texSurf, 0, NULL, surf, 0, NULL, 3, 0) !=
+        0)
+        return ZUN_ERROR;
+
+    SAFE_RELEASE(surf);
+    SAFE_RELEASE(texSurf);
+    return ZUN_SUCCESS;
 }
 
+#pragma var_order(surfaceDesc, data, lockedRectDst, lockedRectSrc, textureSrc,      \
+                  dstData0, srcData0, y0, x0, dstData1, srcData1, y1, x1, dstData2, \
+                  srcData2, y2, x2)
 // FUNCTION: TH07 0x0044dbe0
 ZunResult AnmManager::LoadTextureAlphaChannel(i32 textureIdx,
                                               const char *texturePath,
                                               i32 formatIdx, D3DCOLOR colorKey)
 {
+    struct Argb1555Pixel
+    {
+        u16 b : 5;
+        u16 g : 5;
+        u16 r : 5;
+        u16 a : 1;
+    };
+
+    struct Argb4444Pixel
+    {
+        u16 b : 4;
+        u16 g : 4;
+        u16 r : 4;
+        u16 a : 4;
+    };
+
     u32 x2;
     u32 y2;
-    i16 *a4r4g4b4_src_data;
-    u16 *a4r4g4b4_dst_data;
+    Argb4444Pixel *srcData2;
+    Argb4444Pixel *dstData2;
     u32 x1;
     u32 y1;
-    u16 *a1r5g5b5_src_data;
-    u16 *a1r5g5b5_dst_data;
+    Argb1555Pixel *srcData1;
+    Argb1555Pixel *dstData1;
     u32 x0;
     u32 y0;
-    u8 *a8r8g8b8_src_data;
-    u8 *a8r8g8b8_dst_data;
+    u8 *srcData0;
+    u8 *dstData0;
     LPDIRECT3DTEXTURE8 textureSrc;
     D3DLOCKED_RECT lockedRectSrc;
     D3DLOCKED_RECT lockedRectDst;
@@ -268,87 +279,81 @@ ZunResult AnmManager::LoadTextureAlphaChannel(i32 textureIdx,
 
     textureSrc = NULL;
     data = FileSystem::OpenFile(texturePath, 0);
-    if (data != NULL)
+    if (data == NULL)
+        return ZUN_ERROR;
+
+    this->textures[textureIdx]->GetLevelDesc(0, &surfaceDesc);
+    if (((surfaceDesc.Format != D3DFMT_A8R8G8B8) &&
+         (surfaceDesc.Format != D3DFMT_A4R4G4B4)) &&
+        (surfaceDesc.Format != D3DFMT_A1R5G5B5))
     {
-        this->textures[textureIdx]->GetLevelDesc(0, &surfaceDesc);
-        if (((surfaceDesc.Format == D3DFMT_A8R8G8B8) ||
-             (surfaceDesc.Format == D3DFMT_A4R4G4B4)) ||
-            (surfaceDesc.Format == D3DFMT_A1R5G5B5))
+        // STRING: TH07 0x00495cb8
+        g_GameErrorContext.Fatal("error : イメージがαを持っていません\r\n");
+        goto err;
+    }
+
+    if (D3DXCreateTextureFromFileInMemoryEx(
+            g_Supervisor.d3dDevice, data, g_LastFileSize, 0, 0, 0, 0,
+            surfaceDesc.Format, D3DPOOL_SYSTEMMEM, 3, 0xffffffff, colorKey,
+            NULL, NULL, &textureSrc) != 0)
+        goto err;
+
+    if (this->textures[textureIdx]->LockRect(0, &lockedRectDst, NULL, 0) != 0)
+        goto err;
+
+    if (textureSrc->LockRect(0, &lockedRectSrc, NULL, 0x8000) != 0)
+        goto err;
+
+    switch (surfaceDesc.Format)
+    {
+    case D3DFMT_A8R8G8B8:
+        for (y0 = 0; y0 < surfaceDesc.Height; y0 = y0 + 1)
         {
-            if (((D3DXCreateTextureFromFileInMemoryEx(
-                      g_Supervisor.d3dDevice, data, g_LastFileSize, 0, 0, 0, 0,
-                      surfaceDesc.Format, D3DPOOL_SYSTEMMEM, 3, 0xffffffff, colorKey,
-                      NULL, NULL, &textureSrc) == 0) &&
-                 (this->textures[textureIdx]->LockRect(0, &lockedRectDst, NULL, 0) ==
-                  0)) &&
-                (textureSrc->LockRect(0, &lockedRectSrc, NULL, 0x8000) == 0))
+            dstData0 =
+                ((u8 *)lockedRectDst.pBits + y0 * lockedRectDst.Pitch);
+            srcData0 =
+                ((u8 *)lockedRectSrc.pBits + y0 * lockedRectSrc.Pitch);
+            for (x0 = 0; x0 < surfaceDesc.Width; x0++, srcData0 += 4, dstData0 += 4)
             {
-                if (surfaceDesc.Format == D3DFMT_A8R8G8B8)
-                {
-                    for (y0 = 0; y0 < surfaceDesc.Height; y0 = y0 + 1)
-                    {
-                        a8r8g8b8_dst_data =
-                            (u8 *)((u8 *)lockedRectDst.pBits + y0 * lockedRectDst.Pitch);
-                        a8r8g8b8_src_data =
-                            (u8 *)((u8 *)lockedRectSrc.pBits + y0 * lockedRectSrc.Pitch);
-                        for (x0 = 0; x0 < surfaceDesc.Width; x0 = x0 + 1)
-                        {
-                            a8r8g8b8_dst_data[3] = *a8r8g8b8_src_data;
-                            a8r8g8b8_src_data = a8r8g8b8_src_data + 4;
-                            a8r8g8b8_dst_data = a8r8g8b8_dst_data + 4;
-                        }
-                    }
-                }
-                else if (surfaceDesc.Format == D3DFMT_A1R5G5B5)
-                {
-                    for (y1 = 0; y1 < surfaceDesc.Height; y1 = y1 + 1)
-                    {
-                        a1r5g5b5_dst_data =
-                            (u16 *)((u8 *)lockedRectDst.pBits + y1 * lockedRectDst.Pitch);
-                        a1r5g5b5_src_data =
-                            (u16 *)((u8 *)lockedRectSrc.pBits + y1 * lockedRectSrc.Pitch);
-                        for (x1 = 0; x1 < surfaceDesc.Width; x1 = x1 + 1)
-                        {
-                            *a1r5g5b5_dst_data =
-                                (*a1r5g5b5_dst_data & 0x7fff) |
-                                (i16)((i32)(u32)(*a1r5g5b5_src_data & 0x1f) >> 4) << 0xf;
-                            a1r5g5b5_src_data = a1r5g5b5_src_data + 1;
-                            a1r5g5b5_dst_data = a1r5g5b5_dst_data + 1;
-                        }
-                    }
-                }
-                else if (surfaceDesc.Format == D3DFMT_A4R4G4B4)
-                {
-                    for (y2 = 0; y2 < surfaceDesc.Height; y2 = y2 + 1)
-                    {
-                        a4r4g4b4_dst_data =
-                            (u16 *)((i32)lockedRectDst.pBits + y2 * lockedRectDst.Pitch);
-                        a4r4g4b4_src_data =
-                            (i16 *)((i32)lockedRectSrc.pBits + y2 * lockedRectSrc.Pitch);
-                        for (x2 = 0; x2 < surfaceDesc.Width; x2 = x2 + 1)
-                        {
-                            *a4r4g4b4_dst_data =
-                                (*a4r4g4b4_dst_data & 0xfff) | *a4r4g4b4_src_data << 0xc;
-                            a4r4g4b4_src_data = a4r4g4b4_src_data + 1;
-                            a4r4g4b4_dst_data = a4r4g4b4_dst_data + 1;
-                        }
-                    }
-                }
-                textureSrc->UnlockRect(0);
-                this->textures[textureIdx]->UnlockRect(0);
-                SAFE_RELEASE(textureSrc);
-                free(data);
-                return ZUN_SUCCESS;
+                dstData0[3] = srcData0[0];
             }
         }
-        else
+        break;
+    case D3DFMT_A1R5G5B5:
+        for (y1 = 0; y1 < surfaceDesc.Height; y1 = y1 + 1)
         {
-            // STRING: TH07 0x00495cb8
-            g_GameErrorContext.Fatal("error : イメージがαを持っていません\r\n");
+            dstData1 =
+                (Argb1555Pixel *)((u8 *)lockedRectDst.pBits + y1 * lockedRectDst.Pitch);
+            srcData1 =
+                (Argb1555Pixel *)((u8 *)lockedRectSrc.pBits + y1 * lockedRectSrc.Pitch);
+            for (x1 = 0; x1 < surfaceDesc.Width; x1++, srcData1++, dstData1++)
+            {
+                dstData1->a = srcData1->b >> 4;
+            }
         }
-        SAFE_RELEASE(textureSrc);
-        free(data);
+        break;
+    case D3DFMT_A4R4G4B4:
+        for (y2 = 0; y2 < surfaceDesc.Height; y2 = y2 + 1)
+        {
+            dstData2 =
+                (Argb4444Pixel *)((u8 *)lockedRectDst.pBits + y2 * lockedRectDst.Pitch);
+            srcData2 =
+                (Argb4444Pixel *)((u8 *)lockedRectSrc.pBits + y2 * lockedRectSrc.Pitch);
+            for (x2 = 0; x2 < surfaceDesc.Width; x2++, srcData2++, dstData2++)
+            {
+                dstData2->a = srcData2->b;
+            }
+        }
+        break;
     }
+    textureSrc->UnlockRect(0);
+    this->textures[textureIdx]->UnlockRect(0);
+    SAFE_RELEASE(textureSrc);
+    free(data);
+    return ZUN_SUCCESS;
+err:
+    SAFE_RELEASE(textureSrc);
+    free(data);
     return ZUN_ERROR;
 }
 
@@ -532,7 +537,7 @@ i32 AnmManager::LoadAnm(i32 textureIdx, AnmRawEntry *rawEntry,
     return local_8 + 1;
 }
 
-#pragma var_order(spriteIdx, spriteIdxOffset, i, local_14, after_hdr, rawEntry)
+#pragma var_order(spriteIdx, spriteIdxOffset, i, local_14, afterHdr, rawEntry)
 // FUNCTION: TH07 0x0044e4e0
 void AnmManager::ReleaseAnm(i32 anmIdx)
 {
@@ -551,9 +556,8 @@ void AnmManager::ReleaseAnm(i32 anmIdx)
         afterHdr = (this->anmFiles[anmIdx].raw)->spriteOffsets;
         spriteIdxOffset = this->anmFiles[anmIdx].spriteIndexOffset;
         rawEntry = this->anmFiles[anmIdx].raw;
-        local_14 = anmIdx;
-        for (i = 1; local_14 = local_14 + 1, i < this->anmFiles[anmIdx].childCount;
-             i++)
+        local_14 = anmIdx + 1;
+        for (i = 1; i < this->anmFiles[anmIdx].childCount; i++, local_14++)
         {
             ReleaseAnm(local_14);
         }
@@ -664,7 +668,7 @@ void AnmManager::SetAndExecuteScript(AnmVm *vm, AnmRawInstr *beginningOfScript)
         vm->Initialize();
         vm->beginningOfScript = beginningOfScript;
         vm->currentInstruction = vm->beginningOfScript;
-        vm->currentTimeInScript.Initialize2(0);
+        vm->currentTimeInScript = 0;
         vm->visible = 0;
         ExecuteScript(vm);
         this->scriptsExecutedThisFrame++;
@@ -854,9 +858,14 @@ void AnmManager::SyncRenderState(AnmVm *vm)
 
 static f32 g_ZeroPointFive = 0.5;
 
+#pragma var_order(triangleY1, triangleY2, triangleX2, triangleX1, color, r, g, b, a)
 // FUNCTION: TH07 0x0044efb0
 ZunResult AnmManager::DrawInner(AnmVm *vm, u32 param2)
 {
+    ZunColor color;
+    f32 triangleX1, triangleX2, triangleY1, triangleY2;
+    u32 r, g, b, a;
+
     g_PrimitivesToDrawNoVertexBuf[0].pos.x += this->offset.x;
     g_PrimitivesToDrawNoVertexBuf[0].pos.y += this->offset.y;
     g_PrimitivesToDrawNoVertexBuf[1].pos.x += this->offset.x;
@@ -908,127 +917,86 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, u32 param2)
         }
     }
 
-    g_PrimitivesToDrawNoVertexBuf[0].textureUV.x =
+    g_PrimitivesToDrawNoVertexBuf[0].textureUV.x = g_PrimitivesToDrawNoVertexBuf[2].textureUV.x =
         vm->sprite->uvStart.x + vm->uvScrollPos.x;
-    g_PrimitivesToDrawNoVertexBuf[1].textureUV.x =
+    g_PrimitivesToDrawNoVertexBuf[1].textureUV.x = g_PrimitivesToDrawNoVertexBuf[3].textureUV.x =
         vm->sprite->uvEnd.x + vm->uvScrollPos.x;
-    g_PrimitivesToDrawNoVertexBuf[0].textureUV.y =
+    g_PrimitivesToDrawNoVertexBuf[0].textureUV.y = g_PrimitivesToDrawNoVertexBuf[1].textureUV.y =
         vm->sprite->uvStart.y + vm->uvScrollPos.y;
-    g_PrimitivesToDrawNoVertexBuf[2].textureUV.y =
+    g_PrimitivesToDrawNoVertexBuf[2].textureUV.y = g_PrimitivesToDrawNoVertexBuf[3].textureUV.y =
         vm->sprite->uvEnd.y + vm->uvScrollPos.y;
 
-    f32 local_30 = g_PrimitivesToDrawNoVertexBuf[0].pos.x <=
-                           g_PrimitivesToDrawNoVertexBuf[1].pos.x
-                       ? g_PrimitivesToDrawNoVertexBuf[1].pos.x
-                       : g_PrimitivesToDrawNoVertexBuf[0].pos.x;
-    f32 local_34 = g_PrimitivesToDrawNoVertexBuf[2].pos.x <= local_30
-                       ? local_30
-                       : g_PrimitivesToDrawNoVertexBuf[2].pos.x;
-    f32 maxX = g_PrimitivesToDrawNoVertexBuf[3].pos.x <= local_34
-                   ? local_34
-                   : g_PrimitivesToDrawNoVertexBuf[3].pos.x;
+    triangleX1 = max(g_PrimitivesToDrawNoVertexBuf[0].pos.x,
+                     g_PrimitivesToDrawNoVertexBuf[1].pos.x);
+    triangleX1 = max(g_PrimitivesToDrawNoVertexBuf[2].pos.x, triangleX1);
+    triangleX1 = max(g_PrimitivesToDrawNoVertexBuf[3].pos.x, triangleX1);
 
-    f32 local_3c = g_PrimitivesToDrawNoVertexBuf[0].pos.y <=
-                           g_PrimitivesToDrawNoVertexBuf[1].pos.y
-                       ? g_PrimitivesToDrawNoVertexBuf[1].pos.y
-                       : g_PrimitivesToDrawNoVertexBuf[0].pos.y;
-    f32 local_40 = g_PrimitivesToDrawNoVertexBuf[2].pos.y <= local_3c
-                       ? local_3c
-                       : g_PrimitivesToDrawNoVertexBuf[2].pos.y;
-    f32 maxY = g_PrimitivesToDrawNoVertexBuf[3].pos.y <= local_40
-                   ? local_40
-                   : g_PrimitivesToDrawNoVertexBuf[3].pos.y;
+    triangleY1 = max(g_PrimitivesToDrawNoVertexBuf[0].pos.y,
+                     g_PrimitivesToDrawNoVertexBuf[1].pos.y);
+    triangleY1 = max(g_PrimitivesToDrawNoVertexBuf[2].pos.y, triangleY1);
+    triangleY1 = max(g_PrimitivesToDrawNoVertexBuf[3].pos.y, triangleY1);
 
-    f32 local_48 = g_PrimitivesToDrawNoVertexBuf[1].pos.x <=
-                           g_PrimitivesToDrawNoVertexBuf[0].pos.x
-                       ? g_PrimitivesToDrawNoVertexBuf[1].pos.x
-                       : g_PrimitivesToDrawNoVertexBuf[0].pos.x;
-    f32 local_4c = local_48 <= g_PrimitivesToDrawNoVertexBuf[2].pos.x
-                       ? local_48
-                       : g_PrimitivesToDrawNoVertexBuf[2].pos.x;
-    f32 minX = local_4c <= g_PrimitivesToDrawNoVertexBuf[3].pos.x
-                   ? local_4c
-                   : g_PrimitivesToDrawNoVertexBuf[3].pos.x;
+    triangleX2 = min(g_PrimitivesToDrawNoVertexBuf[0].pos.x,
+                     g_PrimitivesToDrawNoVertexBuf[1].pos.x);
+    triangleX2 = min(g_PrimitivesToDrawNoVertexBuf[2].pos.x, triangleX2);
+    triangleX2 = min(g_PrimitivesToDrawNoVertexBuf[3].pos.x, triangleX2);
 
-    f32 local_54 = g_PrimitivesToDrawNoVertexBuf[1].pos.y <=
-                           g_PrimitivesToDrawNoVertexBuf[0].pos.y
-                       ? g_PrimitivesToDrawNoVertexBuf[1].pos.y
-                       : g_PrimitivesToDrawNoVertexBuf[0].pos.y;
-    f32 local_58 = local_54 <= g_PrimitivesToDrawNoVertexBuf[2].pos.y
-                       ? local_54
-                       : g_PrimitivesToDrawNoVertexBuf[2].pos.y;
-    f32 minY = local_58 <= g_PrimitivesToDrawNoVertexBuf[3].pos.y
-                   ? local_58
-                   : g_PrimitivesToDrawNoVertexBuf[3].pos.y;
+    triangleY2 = min(g_PrimitivesToDrawNoVertexBuf[0].pos.y,
+                     g_PrimitivesToDrawNoVertexBuf[1].pos.y);
+    triangleY2 = min(g_PrimitivesToDrawNoVertexBuf[2].pos.y, triangleY2);
+    triangleY2 = min(g_PrimitivesToDrawNoVertexBuf[3].pos.y, triangleY2);
 
-    g_PrimitivesToDrawNoVertexBuf[1].textureUV.y =
-        g_PrimitivesToDrawNoVertexBuf[0].textureUV.y;
-    g_PrimitivesToDrawNoVertexBuf[2].textureUV.x =
-        g_PrimitivesToDrawNoVertexBuf[0].textureUV.x;
-    g_PrimitivesToDrawNoVertexBuf[3].textureUV.x =
-        g_PrimitivesToDrawNoVertexBuf[1].textureUV.x;
-    g_PrimitivesToDrawNoVertexBuf[3].textureUV.y =
-        g_PrimitivesToDrawNoVertexBuf[2].textureUV.y;
+    if (triangleX1 < g_Supervisor.viewport.X ||
+        triangleY1 < g_Supervisor.viewport.Y ||
+        triangleX2 > (g_Supervisor.viewport.X + g_Supervisor.viewport.Width) ||
+        triangleY2 > (g_Supervisor.viewport.Y + g_Supervisor.viewport.Height))
+        return ZUN_SUCCESS;
 
-    if ((f32)g_Supervisor.viewport.X <= maxX &&
-        (f32)g_Supervisor.viewport.Y <= maxY &&
-        minX <= (f32)(g_Supervisor.viewport.X + g_Supervisor.viewport.Width) &&
-        minY <= (f32)(g_Supervisor.viewport.Y + g_Supervisor.viewport.Height))
+    if (this->currentTexture != this->textures[vm->sprite->sourceFileIndex])
     {
-        if (this->currentTexture != this->textures[vm->sprite->sourceFileIndex])
-        {
-            this->currentTexture = this->textures[vm->sprite->sourceFileIndex];
-            this->Flush();
-            g_Supervisor.d3dDevice->SetTexture(
-                0, (IDirect3DBaseTexture8 *)this->currentTexture);
-        }
-        if (this->currentVertexShader != 1)
-        {
-            this->Flush();
-            this->currentVertexShader = 1;
-        }
-        if ((param2 & 2) == 0)
-        {
-            ZunColor baseColor =
-                vm->useColor2 == 0 ? vm->color : vm->color2;
-            ZunColor finalColor = baseColor;
-            if (this->colorMulEnabled != 0)
-            {
-                u32 r = baseColor.bytes.r * (u32)(this->color).bytes.r >> 7;
-                if (0xff < r)
-                {
-                    r = 0xff;
-                }
-                finalColor.bytes.a = baseColor.bytes.a;
-                finalColor.bytes.r = (u8)r;
-                u32 g = baseColor.bytes.g * (u32)(this->color).bytes.g >> 7;
-                if (0xff < g)
-                {
-                    g = 0xff;
-                }
-                finalColor.bytes.b = baseColor.bytes.b;
-                finalColor.bytes.g = (u8)g;
-                u32 b = baseColor.bytes.b * (u32)(this->color).bytes.b >> 7;
-                if (0xff < b)
-                {
-                    b = 0xff;
-                }
-                finalColor.bytes.b = (u8)b;
-                u32 a = finalColor.bytes.a * (u32)(this->color).bytes.a >> 7;
-                if (0xff < a)
-                {
-                    a = 0xff;
-                }
-                finalColor.bytes.a = (u8)a;
-            }
-            g_PrimitivesToDrawNoVertexBuf[0].color = finalColor;
-            g_PrimitivesToDrawNoVertexBuf[1].color = finalColor;
-            g_PrimitivesToDrawNoVertexBuf[2].color = finalColor;
-            g_PrimitivesToDrawNoVertexBuf[3].color = finalColor;
-        }
-        SyncRenderState(vm);
-        PushSprite(g_PrimitivesToDrawNoVertexBuf);
+        this->currentTexture = this->textures[vm->sprite->sourceFileIndex];
+        this->Flush();
+        g_Supervisor.d3dDevice->SetTexture(
+            0, (IDirect3DBaseTexture8 *)this->currentTexture);
     }
+    if (this->currentVertexShader != 1)
+    {
+        this->Flush();
+        this->currentVertexShader = 1;
+    }
+    if ((param2 & 2) == 0)
+    {
+        color.color =
+            vm->useColor2 != 0 ? vm->color2.color : vm->color.color;
+        if (this->colorMulEnabled != 0)
+        {
+            r = (u32)color.bytes.r * this->color.bytes.r >> 7;
+            if (r >= 256)
+                r = 255;
+            color.bytes.r = (u8)r;
+
+            g = (u32)color.bytes.g * this->color.bytes.g >> 7;
+            if (g >= 256)
+                g = 255;
+            color.bytes.g = (u8)g;
+
+            b = (u32)color.bytes.b * this->color.bytes.b >> 7;
+            if (b >= 256)
+                b = 255;
+            color.bytes.b = (u8)b;
+
+            a = (u32)color.bytes.a * this->color.bytes.a >> 7;
+            if (a >= 256)
+                a = 255;
+            color.bytes.a = (u8)a;
+        }
+        g_PrimitivesToDrawNoVertexBuf[0].color = color;
+        g_PrimitivesToDrawNoVertexBuf[1].color = color;
+        g_PrimitivesToDrawNoVertexBuf[2].color = color;
+        g_PrimitivesToDrawNoVertexBuf[3].color = color;
+    }
+    SyncRenderState(vm);
+    PushSprite(g_PrimitivesToDrawNoVertexBuf);
     return ZUN_SUCCESS;
 }
 
@@ -1317,28 +1285,18 @@ ZunResult AnmManager::CalcBillboardTransform(AnmVm *vm)
 ZunResult AnmManager::DrawBillboard(AnmVm *vm)
 {
     if (vm->visible == 0)
-    {
         return ZUN_ERROR;
-    }
-    else if (vm->active == 0)
-    {
+
+    if (vm->active == 0)
         return ZUN_ERROR;
-    }
-    else if (vm->color.bytes.a == 0)
-    {
+
+    if (vm->color.bytes.a == 0)
         return ZUN_ERROR;
-    }
-    else
-    {
-        if (CalcBillboardTransform(vm) == ZUN_SUCCESS)
-        {
-            return DrawInner(vm, 0);
-        }
-        else
-        {
-            return ZUN_ERROR;
-        }
-    }
+
+    if (CalcBillboardTransform(vm) != ZUN_SUCCESS)
+        return ZUN_ERROR;
+
+    return DrawInner(vm, 0);
 }
 
 // FUNCTION: TH07 0x004501a0
@@ -1663,183 +1621,138 @@ i32 *AnmVm::GetVar(i32 *paramId, u16 mask, u8 idx)
     return paramId;
 }
 
+#pragma var_order(instr, nextInstr, i, t)
 // FUNCTION: TH07 0x00450d60
 i32 AnmManager::ExecuteScript(AnmVm *vm)
 {
+    AnmRawInstr *instr;
+    AnmRawInstr *nextInstr;
+    i32 i;
+    f32 t;
+
+#define GET_INT_VALUE(argIdx) \
+    (((instr->flags & (1 << argIdx)) != 0) ? vm->GetVarValue(instr->args[argIdx].i) : instr->args[argIdx].i)
+
+#define GET_FLOAT_VALUE(argIdx) \
+    (((instr->flags & (1 << argIdx)) != 0) ? vm->GetFloatVarValue(instr->args[argIdx].f) : instr->args[argIdx].f)
+
     if (vm->currentInstruction == NULL)
         return 1;
 
-    while (true)
+    if (vm->pendingInterrupt != 0)
     {
-        if (vm->pendingInterrupt != 0)
-        {
-        handle_interrupt:
-            AnmRawInstr *nextInstr = NULL;
-            AnmRawInstr *beginInstr = vm->beginningOfScript;
-            while ((beginInstr->opcode != ANM_INTERRUPT_LABEL ||
-                    (i32)vm->pendingInterrupt != beginInstr->args[0].i) &&
-                   (beginInstr->opcode != ANM_EXIT_HIDE))
-            {
-                if (beginInstr->opcode == ANM_INTERRUPT_LABEL &&
-                    beginInstr->args[0].i == 0xffffffff)
-                {
-                    nextInstr = beginInstr;
-                }
-                beginInstr = (AnmRawInstr *)((u8 *)beginInstr + beginInstr->size);
-            }
-            vm->pendingInterrupt = 0;
-            vm->isStopped = 0;
-            if (beginInstr->opcode != ANM_INTERRUPT_LABEL)
-            {
-                if (nextInstr == NULL)
-                {
-                    vm->currentTimeInScript.Decrement(1);
-                    goto execute_timers;
-                }
-                beginInstr = nextInstr;
-            }
-
-            vm->currentInstruction =
-                (AnmRawInstr *)((u8 *)beginInstr + beginInstr->size);
-            vm->currentTimeInScript.Initialize((i32)vm->currentInstruction->time);
-            vm->visible = 1;
-        }
-
-        AnmRawInstr *instr = vm->currentInstruction;
-        if (vm->currentTimeInScript.current < (i32)instr->time)
-        {
-            goto execute_timers;
-        }
-
+        goto handle_interrupt;
+    }
+    while (instr = vm->currentInstruction,
+           instr->time <= vm->currentTimeInScript.GetCurrent())
+    {
         switch (instr->opcode)
         {
-        case ANM_SET_ACTIVE_SPRITE: {
+        case ANM_EXIT_HIDE:
+        case ANM_EXIT_HIDE2:
+            vm->visible = 0;
+        case ANM_EXIT:
+            vm->currentInstruction = NULL;
+            return 1;
+        case ANM_SET_ACTIVE_SPRITE:
             vm->visible = 1;
-            i32 spriteIdx = (instr->flags & 1) == 0
-                                ? instr->args[0].i
-                                : vm->GetVarValue(instr->args[0].i);
-            SetActiveSprite(vm, spriteIdx + this->spriteIndices[vm->anmFileIdx]);
-            vm->timeOfLastSpriteSet = vm->currentTimeInScript.current;
+            SetActiveSprite(vm, GET_INT_VALUE(0) + this->spriteIndices[vm->anmFileIdx]);
+            vm->timeOfLastSpriteSet = vm->currentTimeInScript.GetCurrent();
             break;
-        }
-        case ANM_JUMP:
-            vm->currentTimeInScript.Initialize(instr->args[1].i);
-            vm->currentInstruction =
-                (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[0].i);
-            continue;
-        case ANM_DEC_JUMP: {
-            i32 *reg = vm->GetVar(&instr->args[0].i, instr->flags, 0);
-            (*reg)--;
-            i32 val = (instr->flags & 1) == 0 ? instr->args[0].i
-                                              : vm->GetVarValue(instr->args[0].i);
-            if (val > 0)
-            {
-                vm->currentTimeInScript.Initialize(instr->args[2].i);
-                vm->currentInstruction =
-                    (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[1].i);
-                continue;
-            }
-            break;
-        }
-        case ANM_SET_TRANSLATION: {
-            f32 z = (instr->flags & 4) == 0 ? instr->args[2].f
-                                            : vm->GetFloatVarValue(instr->args[2].f);
-            f32 y = (instr->flags & 2) == 0 ? instr->args[1].f
-                                            : vm->GetFloatVarValue(instr->args[1].f);
-            f32 x = (instr->flags & 1) == 0 ? instr->args[0].f
-                                            : vm->GetFloatVarValue(instr->args[0].f);
-            if (vm->useOffset == 0)
-            {
-                vm->pos.x = x;
-                vm->pos.y = y;
-                vm->pos.z = z;
-            }
-            else
-            {
-                vm->offset.x = x;
-                vm->offset.y = y;
-                vm->offset.z = z;
-            }
-            break;
-        }
         case ANM_SET_SCALE:
-            vm->scale.x = (instr->flags & 1) == 0
-                              ? instr->args[0].f
-                              : vm->GetFloatVarValue(instr->args[0].f);
-            vm->scale.y = (instr->flags & 2) == 0
-                              ? instr->args[1].f
-                              : vm->GetFloatVarValue(instr->args[1].f);
+            vm->scale.x = GET_FLOAT_VALUE(0);
+            vm->scale.y = GET_FLOAT_VALUE(1);
             vm->updateScale = 1;
             break;
         case ANM_SET_ALPHA:
-            vm->color.bytes.a = instr->args[0].b[0];
+            vm->color.bytes.a = instr->args[0].i & 0xff;
             break;
         case ANM_SET_COLOR:
             vm->color.color =
                 (vm->color.color & 0xff000000) | (instr->args[0].i & 0xffffff);
             break;
+        case ANM_JUMP:
+            vm->currentTimeInScript = instr->args[1].i;
+            vm->currentInstruction =
+                (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[0].i);
+            continue;
+        case ANM_DEC_JUMP:
+            (*vm->GetVar(&instr->args[0].i, instr->flags, 0))--;
+            if (GET_INT_VALUE(0) > 0)
+            {
+                vm->currentTimeInScript = instr->args[2].i;
+                vm->currentInstruction =
+                    (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[1].i);
+                continue;
+            }
+            break;
         case ANM_FLIP_X:
             vm->flip ^= 1;
-            vm->scale.x = -vm->scale.x;
+            vm->scale.x *= -1.0f;
             vm->updateScale = 1;
+            break;
+        case ANM_SET_USE_OFFSET:
+            vm->useOffset = instr->args[0].i;
             break;
         case ANM_FLIP_Y:
             vm->flip ^= 2;
-            vm->scale.y = -vm->scale.y;
+            vm->scale.y *= -1.0f;
             vm->updateScale = 1;
             break;
         case ANM_SET_ROTATION:
-            vm->rotation.x = (instr->flags & 1) == 0
-                                 ? instr->args[0].f
-                                 : vm->GetFloatVarValue(instr->args[0].f);
-            vm->rotation.y = (instr->flags & 2) == 0
-                                 ? instr->args[1].f
-                                 : vm->GetFloatVarValue(instr->args[1].f);
-            vm->rotation.z = (instr->flags & 4) == 0
-                                 ? instr->args[2].f
-                                 : vm->GetFloatVarValue(instr->args[2].f);
+            vm->rotation.x = GET_FLOAT_VALUE(0);
+            vm->rotation.y = GET_FLOAT_VALUE(1);
+            vm->rotation.z = GET_FLOAT_VALUE(2);
             vm->updateRotation = 1;
             break;
         case ANM_SET_ANGLE_VEL:
-            vm->angleVel.x = (instr->flags & 1) == 0
-                                 ? instr->args[0].f
-                                 : vm->GetFloatVarValue(instr->args[0].f);
-            vm->angleVel.y = (instr->flags & 2) == 0
-                                 ? instr->args[1].f
-                                 : vm->GetFloatVarValue(instr->args[1].f);
-            vm->angleVel.z = (instr->flags & 4) == 0
-                                 ? instr->args[2].f
-                                 : vm->GetFloatVarValue(instr->args[2].f);
+            vm->angleVel.x = GET_FLOAT_VALUE(0);
+            vm->angleVel.y = GET_FLOAT_VALUE(1);
+            vm->angleVel.z = GET_FLOAT_VALUE(2);
             vm->updateRotation = 1;
             break;
         case ANM_SET_SCALE_SPEED:
-            vm->scaleGrowth.x = (instr->flags & 1) == 0
-                                    ? instr->args[0].f
-                                    : vm->GetFloatVarValue(instr->args[0].f);
-            vm->scaleGrowth.y = (instr->flags & 2) == 0
-                                    ? instr->args[1].f
-                                    : vm->GetFloatVarValue(instr->args[1].f);
+            vm->scaleGrowth.x = GET_FLOAT_VALUE(0);
+            vm->scaleGrowth.y = GET_FLOAT_VALUE(1);
+            break;
+        case ANM_INTERP_SCALE:
+            vm->interpStartTimes[4] = 0;
+            vm->interpEndTimes[4] = GET_INT_VALUE(2);
+            vm->interpModes[4] = 0;
+            vm->scaleInterpInitial = vm->scale;
+            vm->scaleInterpFinal.x = GET_FLOAT_VALUE(0);
+            vm->scaleInterpFinal.y = GET_FLOAT_VALUE(1);
             break;
         case ANM_FADE:
             vm->colorInterpInitialColor.bytes.a = vm->color.bytes.a;
             vm->colorInterpFinalColor.bytes.a = instr->args[0].b[0];
-            vm->interpStartTimes[2].Initialize(0);
-            vm->interpEndTimes[2].Initialize((instr->flags & 2) == 0
-                                                 ? instr->args[1].i
-                                                 : vm->GetVarValue(instr->args[1].i));
+            vm->interpStartTimes[2] = 0;
+            vm->interpEndTimes[2] = GET_INT_VALUE(1);
             vm->interpModes[2] = 0;
             break;
         case ANM_SET_BLEND:
-            vm->blendMode = instr->args[0].i & 1;
+            vm->blendMode = instr->args[0].i;
             break;
-        case ANM_POS_TIME_LINEAR:
-            vm->interpModes[0] = 0;
+        case ANM_SET_TRANSLATION:
+            if (vm->useOffset == 0)
+            {
+                vm->pos =
+                    D3DXVECTOR3(GET_FLOAT_VALUE(0), GET_FLOAT_VALUE(1), GET_FLOAT_VALUE(2));
+            }
+            else
+            {
+                vm->offset =
+                    D3DXVECTOR3(GET_FLOAT_VALUE(0), GET_FLOAT_VALUE(1), GET_FLOAT_VALUE(2));
+            }
+            break;
+        case ANM_POS_TIME_ACCEL:
+            vm->interpModes[0] = 6;
             goto interp_pos;
         case ANM_POS_TIME_DECEL:
             vm->interpModes[0] = 4;
             goto interp_pos;
-        case ANM_POS_TIME_ACCEL:
-            vm->interpModes[0] = 6;
+        case ANM_POS_TIME_LINEAR:
+            vm->interpModes[0] = 0;
         interp_pos:
             if (vm->useOffset == 0)
             {
@@ -1849,23 +1762,27 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             {
                 vm->posInterpInitial = vm->offset;
             }
-            vm->posInterpFinal.x = (instr->flags & 1) == 0
-                                       ? instr->args[0].f
-                                       : vm->GetFloatVarValue(instr->args[0].f);
-            vm->posInterpFinal.y = (instr->flags & 2) == 0
-                                       ? instr->args[1].f
-                                       : vm->GetFloatVarValue(instr->args[1].f);
-            vm->posInterpFinal.z = (instr->flags & 4) == 0
-                                       ? instr->args[2].f
-                                       : vm->GetFloatVarValue(instr->args[2].f);
-            vm->interpEndTimes[0].Initialize((instr->flags & 8) == 0
-                                                 ? instr->args[3].i
-                                                 : vm->GetVarValue(instr->args[3].i));
-            vm->interpStartTimes[0].Initialize(0);
+            vm->posInterpFinal =
+                D3DXVECTOR3(GET_FLOAT_VALUE(0), GET_FLOAT_VALUE(1), GET_FLOAT_VALUE(2));
+            vm->interpEndTimes[0] = GET_INT_VALUE(3);
+            vm->interpStartTimes[0] = 0;
             break;
-        case ANM_22:
-            vm->anchor = 3;
-            break;
+        case ANM_WAIT:
+            if ((i32)(vm->waitTimer.current == 0))
+            {
+                vm->waitTimer = GET_INT_VALUE(0);
+            }
+            else
+            {
+                vm->waitTimer.Decrement(1);
+            }
+            if ((i32)(vm->waitTimer.current <= 0))
+            {
+                vm->waitTimer = 0;
+                break;
+            }
+            vm->currentTimeInScript.Decrement(1);
+            goto stop;
         case ANM_STOP_HIDE:
             vm->visible = 0;
         case ANM_STOP:
@@ -1873,91 +1790,98 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             {
                 vm->isStopped = 1;
                 vm->currentTimeInScript.Decrement(1);
-                goto execute_timers;
+                goto stop;
             }
-            else
+        handle_interrupt:
+            nextInstr = NULL;
+            instr = vm->beginningOfScript;
+            while ((instr->opcode != ANM_INTERRUPT_LABEL ||
+                    (i32)vm->pendingInterrupt != instr->args[0].i) &&
+                   (instr->opcode != ANM_EXIT_HIDE))
             {
-                goto handle_interrupt;
+                if (instr->opcode == ANM_INTERRUPT_LABEL &&
+                    instr->args[0].i == 0xffffffff)
+                {
+                    nextInstr = instr;
+                }
+                instr = (AnmRawInstr *)((u8 *)instr + instr->size);
             }
+            vm->pendingInterrupt = 0;
+            vm->isStopped = 0;
+            if (instr->opcode != ANM_INTERRUPT_LABEL)
+            {
+                if (nextInstr == NULL)
+                {
+                    vm->currentTimeInScript.Decrement(1);
+                    goto stop;
+                }
+                instr = nextInstr;
+            }
+
+            vm->currentInstruction =
+                (AnmRawInstr *)((u8 *)instr + instr->size);
+            vm->currentTimeInScript = (i32)vm->currentInstruction->time;
+            vm->visible = 1;
+            continue;
+        case ANM_SET_VISIBILITY:
+            vm->visible = instr->args[0].i;
             break;
-        case ANM_SET_USE_OFFSET:
-            vm->useOffset = instr->args[0].i & 1;
+        case ANM_22:
+            vm->anchor = 3;
             break;
         case ANM_SET_AUTO_ROTATE:
             vm->autoRotate = instr->args[0].us[0];
             break;
         case ANM_SET_SCROLL_POS_X:
-            vm->uvScrollPos.x += (instr->flags & 1) == 0
-                                     ? instr->args[0].f
-                                     : vm->GetFloatVarValue(instr->args[0].f);
-            if (vm->uvScrollPos.x < 1.0f)
+            vm->uvScrollPos.x += GET_FLOAT_VALUE(0);
+            if (vm->uvScrollPos.x >= 1.0f)
+            {
+                vm->uvScrollPos.x -= 1.0f;
+            }
+            else
             {
                 if (vm->uvScrollPos.x < 0.0f)
                     vm->uvScrollPos.x += 1.0f;
             }
-            else
-                vm->uvScrollPos.x -= 1.0f;
             break;
         case ANM_SET_SCROLL_POS_Y:
-            vm->uvScrollPos.y += (instr->flags & 1) == 0
-                                     ? instr->args[0].f
-                                     : vm->GetFloatVarValue(instr->args[0].f);
-            if (vm->uvScrollPos.y < 1.0f)
+            vm->uvScrollPos.y += GET_FLOAT_VALUE(0);
+            if (vm->uvScrollPos.y >= 1.0f)
+            {
+                vm->uvScrollPos.y -= 1.0f;
+            }
+            else
             {
                 if (vm->uvScrollPos.y < 0.0f)
                     vm->uvScrollPos.y += 1.0f;
             }
-            else
-                vm->uvScrollPos.y -= 1.0f;
             break;
-        case ANM_SET_VISIBILITY:
-            vm->visible = (instr->args[0].i & 1);
+        case ANM_SET_SCROLLVEL_X:
+            vm->uvScrollVel.x = GET_FLOAT_VALUE(0);
             break;
-        case ANM_INTERP_SCALE:
-            vm->interpStartTimes[4].Initialize(0);
-            vm->interpEndTimes[4].Initialize((instr->flags & 4) == 0
-                                                 ? instr->args[2].i
-                                                 : vm->GetVarValue(instr->args[2].i));
-            vm->interpModes[4] = 0;
-            vm->scaleInterpInitial = vm->scale;
-            vm->scaleInterpFinal.x = (instr->flags & 1) == 0
-                                         ? instr->args[0].f
-                                         : vm->GetFloatVarValue(instr->args[0].f);
-            vm->scaleInterpFinal.y = (instr->flags & 2) == 0
-                                         ? instr->args[1].f
-                                         : vm->GetFloatVarValue(instr->args[1].f);
+        case ANM_SET_SCROLLVEL_Y:
+            vm->uvScrollVel.y = GET_FLOAT_VALUE(0);
             break;
         case ANM_SET_ZWRITE_DISABLE:
-            vm->zWriteDisable = instr->args[0].i & 1;
+            vm->zWriteDisable = instr->args[0].i;
             break;
         case ANM_SET_CAMERA_MODE:
-            vm->cameraMode = instr->args[0].i & 1;
+            vm->cameraMode = instr->args[0].i;
             break;
         case ANM_INTERP_POS:
-            vm->interpStartTimes[0].Initialize(0);
-            vm->interpEndTimes[0].Initialize((instr->flags & 1) == 0
-                                                 ? instr->args[0].i
-                                                 : vm->GetVarValue(instr->args[0].i));
+            vm->interpStartTimes[0] = 0;
+            vm->interpEndTimes[0] = GET_INT_VALUE(0);
             vm->interpModes[0] = instr->args[1].b[0];
             if (vm->useOffset == 0)
                 vm->posInterpInitial = vm->pos;
             else
                 vm->posInterpInitial = vm->offset;
-            vm->posInterpFinal.x = (instr->flags & 4) == 0
-                                       ? instr->args[2].f
-                                       : vm->GetFloatVarValue(instr->args[2].f);
-            vm->posInterpFinal.y = (instr->flags & 8) == 0
-                                       ? instr->args[3].f
-                                       : vm->GetFloatVarValue(instr->args[3].f);
-            vm->posInterpFinal.z = (instr->flags & 16) == 0
-                                       ? instr->args[4].f
-                                       : vm->GetFloatVarValue(instr->args[4].f);
+            vm->posInterpFinal =
+                D3DXVECTOR3(GET_FLOAT_VALUE(2), GET_FLOAT_VALUE(3), GET_FLOAT_VALUE(4));
             break;
         case ANM_INTERP_COLOR:
-            vm->interpStartTimes[1].Initialize(0);
-            vm->interpEndTimes[1].Initialize((instr->flags & 1) == 0
-                                                 ? instr->args[0].i
-                                                 : vm->GetVarValue(instr->args[0].i));
+            vm->interpStartTimes[1] = 0;
+            vm->interpEndTimes[1] = GET_INT_VALUE(0);
             vm->interpModes[1] = instr->args[1].b[0];
             vm->colorInterpInitialColor.bytes.r = vm->color.bytes.r;
             vm->colorInterpInitialColor.bytes.g = vm->color.bytes.g;
@@ -1967,447 +1891,235 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             vm->colorInterpFinalColor.bytes.b = instr->args[2].b[2];
             break;
         case ANM_INTERP_ALPHA:
-            vm->interpStartTimes[2].Initialize(0);
-            vm->interpEndTimes[2].Initialize((instr->flags & 1) == 0
-                                                 ? instr->args[0].i
-                                                 : vm->GetVarValue(instr->args[0].i));
+            vm->interpStartTimes[2] = 0;
+            vm->interpEndTimes[2] = GET_INT_VALUE(0);
             vm->interpModes[2] = instr->args[1].b[0];
             vm->colorInterpInitialColor.bytes.a = vm->color.bytes.a;
             vm->colorInterpFinalColor.bytes.a = instr->args[2].b[0];
             break;
         case ANM_INTERP_ROTATE:
-            vm->interpStartTimes[3].Initialize(0);
-            vm->interpEndTimes[3].Initialize((instr->flags & 1) == 0
-                                                 ? instr->args[0].i
-                                                 : vm->GetVarValue(instr->args[0].i));
+            vm->interpStartTimes[3] = 0;
+            vm->interpEndTimes[3] = GET_INT_VALUE(0);
             vm->interpModes[3] = instr->args[1].b[0];
             vm->rotateInterpInitial = vm->rotation;
-            vm->rotateInterpFinal.x = (instr->flags & 4) == 0
-                                          ? instr->args[2].f
-                                          : vm->GetFloatVarValue(instr->args[2].f);
-            vm->rotateInterpFinal.y = (instr->flags & 8) == 0
-                                          ? instr->args[3].f
-                                          : vm->GetFloatVarValue(instr->args[3].f);
-            vm->rotateInterpFinal.z = (instr->flags & 16) == 0
-                                          ? instr->args[4].f
-                                          : vm->GetFloatVarValue(instr->args[4].f);
+            vm->rotateInterpFinal.x = GET_FLOAT_VALUE(2);
+            vm->rotateInterpFinal.y = GET_FLOAT_VALUE(3);
+            vm->rotateInterpFinal.z = GET_FLOAT_VALUE(4);
             vm->updateRotation = 1;
             break;
         case ANM_INTERP_SCALE_2:
-            vm->interpStartTimes[4].Initialize(0);
-            vm->interpEndTimes[4].Initialize((instr->flags & 1) == 0
-                                                 ? instr->args[0].i
-                                                 : vm->GetVarValue(instr->args[0].i));
+            vm->interpStartTimes[4] = 0;
+            vm->interpEndTimes[4] = GET_INT_VALUE(0);
             vm->interpModes[4] = instr->args[1].b[0];
             vm->scaleInterpInitial = vm->scale;
-            vm->scaleInterpFinal.x = (instr->flags & 4) == 0
-                                         ? instr->args[2].f
-                                         : vm->GetFloatVarValue(instr->args[2].f);
-            vm->scaleInterpFinal.y = (instr->flags & 8) == 0
-                                         ? instr->args[3].f
-                                         : vm->GetFloatVarValue(instr->args[3].f);
+            vm->scaleInterpFinal.x = GET_FLOAT_VALUE(2);
+            vm->scaleInterpFinal.y = GET_FLOAT_VALUE(3);
             vm->updateScale = 1;
             break;
         case ANM_MOV:
             *vm->GetVar(&instr->args[0].i, instr->flags, 0) =
-                (instr->flags & 2) == 0 ? instr->args[1].i
-                                        : vm->GetVarValue(instr->args[1].i);
+                GET_INT_VALUE(1);
             break;
         case ANM_MOV_FLOAT:
             *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
-                (instr->flags & 2) == 0 ? instr->args[1].f
-                                        : vm->GetFloatVarValue(instr->args[1].f);
+                GET_FLOAT_VALUE(1);
             break;
-        case ANM_ADD:
-            *vm->GetVar(&instr->args[0].i, instr->flags, 0) +=
-                (instr->flags & 2) == 0 ? instr->args[1].i
-                                        : vm->GetVarValue(instr->args[1].i);
-            break;
-        case ANM_ADD_FLOAT:
-            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) +=
-                (instr->flags & 2) == 0 ? instr->args[1].f
-                                        : vm->GetFloatVarValue(instr->args[1].f);
-            break;
-        case ANM_SUB:
-            *vm->GetVar(&instr->args[0].i, instr->flags, 0) -=
-                (instr->flags & 2) == 0 ? instr->args[1].i
-                                        : vm->GetVarValue(instr->args[1].i);
-            break;
-        case ANM_SUB_FLOAT:
-            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) -=
-                (instr->flags & 2) == 0 ? instr->args[1].f
-                                        : vm->GetFloatVarValue(instr->args[1].f);
-            break;
-        case ANM_MUL:
-            *vm->GetVar(&instr->args[0].i, instr->flags, 0) *=
-                (instr->flags & 2) == 0 ? instr->args[1].i
-                                        : vm->GetVarValue(instr->args[1].i);
-            break;
-        case ANM_MUL_FLOAT:
-            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) *=
-                (instr->flags & 2) == 0 ? instr->args[1].f
-                                        : vm->GetFloatVarValue(instr->args[1].f);
-            break;
-        case ANM_DIV:
-            *vm->GetVar(&instr->args[0].i, instr->flags, 0) /=
-                (instr->flags & 2) == 0 ? instr->args[1].i
-                                        : vm->GetVarValue(instr->args[1].i);
-            break;
-        case ANM_DIV_FLOAT:
-            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) /=
-                (instr->flags & 2) == 0 ? instr->args[1].f
-                                        : vm->GetFloatVarValue(instr->args[1].f);
-            break;
-        case ANM_MOD:
-            *vm->GetVar(&instr->args[0].i, instr->flags, 0) %=
-                (instr->flags & 2) == 0 ? instr->args[1].i
-                                        : vm->GetVarValue(instr->args[1].i);
-            break;
-        case ANM_MOD_FLOAT: {
-            f32 a = (instr->flags & 1) == 0 ? instr->args[0].f
-                                            : vm->GetFloatVarValue(instr->args[0].f);
-            f32 b = (instr->flags & 2) == 0 ? instr->args[1].f
-                                            : vm->GetFloatVarValue(instr->args[1].f);
-            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) = fmodf(a, b);
-            break;
-        }
         case ANM_ADD_2:
             *vm->GetVar(&instr->args[0].i, instr->flags, 0) =
-                ((instr->flags & 2) == 0 ? instr->args[1].i
-                                         : vm->GetVarValue(instr->args[1].i)) +
-                ((instr->flags & 4) == 0 ? instr->args[2].i
-                                         : vm->GetVarValue(instr->args[2].i));
+                GET_INT_VALUE(1) + GET_INT_VALUE(2);
             break;
         case ANM_ADD_FLOAT_2:
             *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
-                ((instr->flags & 2) == 0 ? instr->args[1].f
-                                         : vm->GetFloatVarValue(instr->args[1].f)) +
-                ((instr->flags & 4) == 0 ? instr->args[2].f
-                                         : vm->GetFloatVarValue(instr->args[2].f));
+                GET_FLOAT_VALUE(1) + GET_FLOAT_VALUE(2);
             break;
         case ANM_SUB_2:
             *vm->GetVar(&instr->args[0].i, instr->flags, 0) =
-                ((instr->flags & 2) == 0 ? instr->args[1].i
-                                         : vm->GetVarValue(instr->args[1].i)) -
-                ((instr->flags & 4) == 0 ? instr->args[2].i
-                                         : vm->GetVarValue(instr->args[2].i));
+                GET_INT_VALUE(1) - GET_INT_VALUE(2);
             break;
         case ANM_SUB_FLOAT_2:
             *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
-                ((instr->flags & 2) == 0 ? instr->args[1].f
-                                         : vm->GetFloatVarValue(instr->args[1].f)) -
-                ((instr->flags & 4) == 0 ? instr->args[2].f
-                                         : vm->GetFloatVarValue(instr->args[2].f));
+                GET_FLOAT_VALUE(1) - GET_FLOAT_VALUE(2);
             break;
         case ANM_MUL_2:
             *vm->GetVar(&instr->args[0].i, instr->flags, 0) =
-                ((instr->flags & 2) == 0 ? instr->args[1].i
-                                         : vm->GetVarValue(instr->args[1].i)) *
-                ((instr->flags & 4) == 0 ? instr->args[2].i
-                                         : vm->GetVarValue(instr->args[2].i));
+                GET_INT_VALUE(1) * GET_INT_VALUE(2);
             break;
         case ANM_MUL_FLOAT_2:
             *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
-                ((instr->flags & 2) == 0 ? instr->args[1].f
-                                         : vm->GetFloatVarValue(instr->args[1].f)) *
-                ((instr->flags & 4) == 0 ? instr->args[2].f
-                                         : vm->GetFloatVarValue(instr->args[2].f));
+                GET_FLOAT_VALUE(1) * GET_FLOAT_VALUE(2);
             break;
         case ANM_DIV_2:
             *vm->GetVar(&instr->args[0].i, instr->flags, 0) =
-                ((instr->flags & 2) == 0 ? instr->args[1].i
-                                         : vm->GetVarValue(instr->args[1].i)) /
-                ((instr->flags & 4) == 0 ? instr->args[2].i
-                                         : vm->GetVarValue(instr->args[2].i));
+                GET_INT_VALUE(1) / GET_INT_VALUE(2);
             break;
         case ANM_DIV_FLOAT_2:
             *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
-                ((instr->flags & 2) == 0 ? instr->args[1].f
-                                         : vm->GetFloatVarValue(instr->args[1].f)) /
-                ((instr->flags & 4) == 0 ? instr->args[2].f
-                                         : vm->GetFloatVarValue(instr->args[2].f));
+                GET_FLOAT_VALUE(1) / GET_FLOAT_VALUE(2);
             break;
         case ANM_MOD_2:
             *vm->GetVar(&instr->args[0].i, instr->flags, 0) =
-                ((instr->flags & 2) == 0 ? instr->args[1].i
-                                         : vm->GetVarValue(instr->args[1].i)) %
-                ((instr->flags & 4) == 0 ? instr->args[2].i
-                                         : vm->GetVarValue(instr->args[2].i));
+                GET_INT_VALUE(1) % GET_INT_VALUE(2);
             break;
-        case ANM_MOD_FLOAT_2: {
-            f32 a = (instr->flags & 2) == 0 ? instr->args[1].f
-                                            : vm->GetFloatVarValue(instr->args[1].f);
-            f32 b = (instr->flags & 4) == 0 ? instr->args[2].f
-                                            : vm->GetFloatVarValue(instr->args[2].f);
-            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) = fmodf(a, b);
-            break;
-        }
-        case ANM_RAND: {
-            u32 maxv = (instr->flags & 2) == 0 ? instr->args[1].i
-                                               : vm->GetVarValue(instr->args[1].i);
-            *vm->GetVar(&instr->args[0].i, instr->flags, 0) = g_Rng.GetRandomU32InRange(maxv);
-            break;
-        }
-        case ANM_RAND_FLOAT: {
-            f32 maxv = (instr->flags & 2) == 0
-                           ? instr->args[1].f
-                           : vm->GetFloatVarValue(instr->args[1].f);
+        case ANM_MOD_FLOAT_2:
             *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
-                g_Rng.GetRandomFloatInRange(maxv);
+                fmodf(GET_FLOAT_VALUE(1), GET_FLOAT_VALUE(2));
             break;
-        }
-        case ANM_SIN: {
-            f32 val = (instr->flags & 2) == 0
-                          ? instr->args[1].f
-                          : vm->GetFloatVarValue(instr->args[1].f);
-            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) = sinf(val);
+        case ANM_ADD:
+            *vm->GetVar(&instr->args[0].i, instr->flags, 0) +=
+                GET_INT_VALUE(1);
             break;
-        }
-        case ANM_COS: {
-            f32 val = (instr->flags & 2) == 0
-                          ? instr->args[1].f
-                          : vm->GetFloatVarValue(instr->args[1].f);
-            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) = cosf(val);
+        case ANM_ADD_FLOAT:
+            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) +=
+                GET_FLOAT_VALUE(1);
             break;
-        }
-        case ANM_TAN: {
-            f32 val = (instr->flags & 2) == 0
-                          ? instr->args[1].f
-                          : vm->GetFloatVarValue(instr->args[1].f);
-            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) = tanf(val);
+        case ANM_SUB:
+            *vm->GetVar(&instr->args[0].i, instr->flags, 0) -=
+                GET_INT_VALUE(1);
             break;
-        }
-        case ANM_ACOS: {
-            f32 val = (instr->flags & 2) == 0
-                          ? instr->args[1].f
-                          : vm->GetFloatVarValue(instr->args[1].f);
-            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) = acosf(val);
+        case ANM_SUB_FLOAT:
+            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) -=
+                GET_FLOAT_VALUE(1);
             break;
-        }
-        case ANM_ATAN: {
-            f32 val = (instr->flags & 2) == 0
-                          ? instr->args[1].f
-                          : vm->GetFloatVarValue(instr->args[1].f);
-            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) = atanf(val);
+        case ANM_MUL:
+            *vm->GetVar(&instr->args[0].i, instr->flags, 0) *=
+                GET_INT_VALUE(1);
             break;
-        }
-        case ANM_ADD_NORMALIZE_ANGLE: {
-            f32 val = (instr->flags & 1) == 0
-                          ? instr->args[0].f
-                          : vm->GetFloatVarValue(instr->args[0].f);
+        case ANM_MUL_FLOAT:
+            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) *=
+                GET_FLOAT_VALUE(1);
+            break;
+        case ANM_DIV:
+            *vm->GetVar(&instr->args[0].i, instr->flags, 0) /=
+                GET_INT_VALUE(1);
+            break;
+        case ANM_DIV_FLOAT:
+            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) /=
+                GET_FLOAT_VALUE(1);
+            break;
+        case ANM_MOD:
+            *vm->GetVar(&instr->args[0].i, instr->flags, 0) %=
+                GET_INT_VALUE(1);
+            break;
+        case ANM_MOD_FLOAT:
             *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
-                utils::AddNormalizeAngle(val, 0.0f);
+                fmodf(GET_FLOAT_VALUE(0), GET_FLOAT_VALUE(1));
             break;
-        }
-        case ANM_JUMP_IF_EQ: {
-            i32 a = (instr->flags & 1) == 0 ? instr->args[0].i
-                                            : vm->GetVarValue(instr->args[0].i);
-            i32 b = (instr->flags & 2) == 0 ? instr->args[1].i
-                                            : vm->GetVarValue(instr->args[1].i);
-            if (a == b)
+        case ANM_RAND:
+            *vm->GetVar(&instr->args[0].i, instr->flags, 0) =
+                g_Rng.GetRandomU32InRange(GET_INT_VALUE(1));
+            break;
+        case ANM_RAND_FLOAT:
+            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
+                g_Rng.GetRandomFloatInRange(GET_FLOAT_VALUE(1));
+            break;
+        case ANM_SIN:
+            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
+                sinf(GET_FLOAT_VALUE(1));
+            break;
+        case ANM_COS:
+            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
+                cosf(GET_FLOAT_VALUE(1));
+            break;
+        case ANM_TAN:
+            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
+                tanf(GET_FLOAT_VALUE(1));
+            break;
+        case ANM_ACOS:
+            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
+                acosf(GET_FLOAT_VALUE(1));
+            break;
+        case ANM_ATAN:
+            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
+                atanf(GET_FLOAT_VALUE(1));
+            break;
+        case ANM_ADD_NORMALIZE_ANGLE:
+            *vm->GetFloatVar(&instr->args[0].f, instr->flags, 0) =
+                utils::AddNormalizeAngle(GET_FLOAT_VALUE(0), 0.0f);
+            break;
+        case ANM_JUMP_IF_EQ:
+            if (GET_INT_VALUE(0) == GET_INT_VALUE(1))
             {
-                vm->currentTimeInScript.Initialize(instr->args[3].i);
-                vm->currentInstruction =
-                    (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[2].i);
-                continue;
+                goto jump;
             }
             break;
-        }
-        case ANM_JUMP_IF_EQ_FLOAT: {
-            f32 a = (instr->flags & 1) == 0 ? instr->args[0].f
-                                            : vm->GetFloatVarValue(instr->args[0].f);
-            f32 b = (instr->flags & 2) == 0 ? instr->args[1].f
-                                            : vm->GetFloatVarValue(instr->args[1].f);
-            if (a == b)
+        case ANM_JUMP_IF_EQ_FLOAT:
+            if (GET_FLOAT_VALUE(0) == GET_FLOAT_VALUE(1))
             {
-                vm->currentTimeInScript.Initialize(instr->args[3].i);
-                vm->currentInstruction =
-                    (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[2].i);
-                continue;
+                goto jump;
             }
             break;
-        }
-        case ANM_JUMP_IF_NEQ: {
-            i32 a = (instr->flags & 1) == 0 ? instr->args[0].i
-                                            : vm->GetVarValue(instr->args[0].i);
-            i32 b = (instr->flags & 2) == 0 ? instr->args[1].i
-                                            : vm->GetVarValue(instr->args[1].i);
-            if (a != b)
+        case ANM_JUMP_IF_NEQ:
+            if (GET_INT_VALUE(0) != GET_INT_VALUE(1))
             {
-                vm->currentTimeInScript.Initialize(instr->args[3].i);
-                vm->currentInstruction =
-                    (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[2].i);
-                continue;
+                goto jump;
             }
             break;
-        }
-        case ANM_JUMP_IF_NEQ_FLOAT: {
-            f32 a = (instr->flags & 1) == 0 ? instr->args[0].f
-                                            : vm->GetFloatVarValue(instr->args[0].f);
-            f32 b = (instr->flags & 2) == 0 ? instr->args[1].f
-                                            : vm->GetFloatVarValue(instr->args[1].f);
-            if (a != b)
+        case ANM_JUMP_IF_NEQ_FLOAT:
+            if (GET_FLOAT_VALUE(0) != GET_FLOAT_VALUE(1))
             {
-                vm->currentTimeInScript.Initialize(instr->args[3].i);
-                vm->currentInstruction =
-                    (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[2].i);
-                continue;
+                goto jump;
             }
             break;
-        }
-        case ANM_JUMP_IF_LT: {
-            i32 a = (instr->flags & 1) == 0 ? instr->args[0].i
-                                            : vm->GetVarValue(instr->args[0].i);
-            i32 b = (instr->flags & 2) == 0 ? instr->args[1].i
-                                            : vm->GetVarValue(instr->args[1].i);
-            if (a < b)
+        case ANM_JUMP_IF_LT:
+            if (GET_INT_VALUE(0) < GET_INT_VALUE(1))
             {
-                vm->currentTimeInScript.Initialize(instr->args[3].i);
-                vm->currentInstruction =
-                    (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[2].i);
-                continue;
+                goto jump;
             }
             break;
-        }
-        case ANM_JUMP_IF_LT_FLOAT: {
-            f32 a = (instr->flags & 1) == 0 ? instr->args[0].f
-                                            : vm->GetFloatVarValue(instr->args[0].f);
-            f32 b = (instr->flags & 2) == 0 ? instr->args[1].f
-                                            : vm->GetFloatVarValue(instr->args[1].f);
-            if (a < b)
+        case ANM_JUMP_IF_LT_FLOAT:
+            if (GET_FLOAT_VALUE(0) < GET_FLOAT_VALUE(1))
             {
-                vm->currentTimeInScript.Initialize(instr->args[3].i);
-                vm->currentInstruction =
-                    (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[2].i);
-                continue;
+                goto jump;
             }
             break;
-        }
-        case ANM_JUMP_IF_LEQ: {
-            i32 a = (instr->flags & 1) == 0 ? instr->args[0].i
-                                            : vm->GetVarValue(instr->args[0].i);
-            i32 b = (instr->flags & 2) == 0 ? instr->args[1].i
-                                            : vm->GetVarValue(instr->args[1].i);
-            if (a <= b)
+        case ANM_JUMP_IF_LEQ:
+            if (GET_INT_VALUE(0) <= GET_INT_VALUE(1))
             {
-                vm->currentTimeInScript.Initialize(instr->args[3].i);
-                vm->currentInstruction =
-                    (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[2].i);
-                continue;
+                goto jump;
             }
             break;
-        }
-        case ANM_JUMP_IF_LEQ_FLOAT: {
-            f32 a = (instr->flags & 1) == 0 ? instr->args[0].f
-                                            : vm->GetFloatVarValue(instr->args[0].f);
-            f32 b = (instr->flags & 2) == 0 ? instr->args[1].f
-                                            : vm->GetFloatVarValue(instr->args[1].f);
-            if (a <= b)
+        case ANM_JUMP_IF_LEQ_FLOAT:
+            if (GET_FLOAT_VALUE(0) <= GET_FLOAT_VALUE(1))
             {
-                vm->currentTimeInScript.Initialize(instr->args[3].i);
-                vm->currentInstruction =
-                    (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[2].i);
-                continue;
+                goto jump;
             }
             break;
-        }
-        case ANM_JUMP_IF_LT_2: {
-            i32 a = (instr->flags & 1) == 0 ? instr->args[0].i
-                                            : vm->GetVarValue(instr->args[0].i);
-            i32 b = (instr->flags & 2) == 0 ? instr->args[1].i
-                                            : vm->GetVarValue(instr->args[1].i);
-            if (b < a)
+        case ANM_JUMP_IF_GT:
+            if (GET_INT_VALUE(0) > GET_INT_VALUE(1))
             {
-                vm->currentTimeInScript.Initialize(instr->args[3].i);
-                vm->currentInstruction =
-                    (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[2].i);
-                continue;
+                goto jump;
             }
             break;
-        }
-        case ANM_JUMP_IF_FLOAT_2: {
-            f32 a = (instr->flags & 1) == 0 ? instr->args[0].f
-                                            : vm->GetFloatVarValue(instr->args[0].f);
-            f32 b = (instr->flags & 2) == 0 ? instr->args[1].f
-                                            : vm->GetFloatVarValue(instr->args[1].f);
-            if (b < a)
+        case ANM_JUMP_IF_GT_FLOAT:
+            if (GET_FLOAT_VALUE(0) > GET_FLOAT_VALUE(1))
             {
-                vm->currentTimeInScript.Initialize(instr->args[3].i);
-                vm->currentInstruction =
-                    (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[2].i);
-                continue;
+                goto jump;
             }
             break;
-        }
-        case ANM_JUMP_IF_LEQ_2: {
-            i32 a = (instr->flags & 1) == 0 ? instr->args[0].i
-                                            : vm->GetVarValue(instr->args[0].i);
-            i32 b = (instr->flags & 2) == 0 ? instr->args[1].i
-                                            : vm->GetVarValue(instr->args[1].i);
-            if (b <= a)
+        case ANM_JUMP_IF_GEQ:
+            if (GET_INT_VALUE(0) >= GET_INT_VALUE(1))
             {
-                vm->currentTimeInScript.Initialize(instr->args[3].i);
-                vm->currentInstruction =
-                    (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[2].i);
-                continue;
+                goto jump;
             }
             break;
-        }
-        case ANM_JUMP_IF_LEQ_FLOAT_2: {
-            f32 a = (instr->flags & 1) == 0 ? instr->args[0].f
-                                            : vm->GetFloatVarValue(instr->args[0].f);
-            f32 b = (instr->flags & 2) == 0 ? instr->args[1].f
-                                            : vm->GetFloatVarValue(instr->args[1].f);
-            if (b <= a)
+        case ANM_JUMP_IF_GEQ_FLOAT:
+            if (GET_FLOAT_VALUE(0) >= GET_FLOAT_VALUE(1))
             {
-                vm->currentTimeInScript.Initialize(instr->args[3].i);
-                vm->currentInstruction =
-                    (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[2].i);
-                continue;
+                goto jump;
             }
             break;
-        }
-        case ANM_WAIT: {
-            if (vm->waitTimer.current == 0)
-            {
-                u32 maxWait = (instr->flags & 1) == 0
-                                  ? instr->args[0].i
-                                  : vm->GetVarValue(instr->args[0].i);
-                vm->waitTimer.Initialize(maxWait);
-            }
-            else
-            {
-                vm->waitTimer.Decrement(1);
-            }
-            if (vm->waitTimer.current > 0)
-            {
-                vm->currentTimeInScript.Decrement(1);
-                goto execute_timers;
-            }
-            vm->waitTimer.Initialize(0);
+        jump:
+            vm->currentTimeInScript = instr->args[3].i;
+            vm->currentInstruction = (AnmRawInstr *)((u8 *)vm->beginningOfScript + instr->args[2].i);
+            continue;
+        default:
             break;
-        }
-        case ANM_47:
-            vm->uvScrollVel.x = (instr->flags & 1) == 0
-                                    ? instr->args[0].f
-                                    : vm->GetFloatVarValue(instr->args[0].f);
-            break;
-        case ANM_48:
-            vm->uvScrollVel.y = (instr->flags & 1) == 0
-                                    ? instr->args[0].f
-                                    : vm->GetFloatVarValue(instr->args[0].f);
-            break;
-        case ANM_EXIT_HIDE:
-        case ANM_EXIT_HIDE2:
-            vm->visible = 0;
-        case ANM_EXIT:
-            vm->currentInstruction = NULL;
-            return 1;
         }
         vm->currentInstruction = (AnmRawInstr *)((u8 *)instr + instr->size);
+        continue;
     }
 
-execute_timers:
+stop:
     if (vm->angleVel.x != 0.0f)
     {
         vm->rotation.x = utils::AddNormalizeAngle(
@@ -2429,23 +2141,22 @@ execute_timers:
             g_Supervisor.effectiveFramerateMultiplier * vm->angleVel.z);
         vm->updateRotation = 1;
     }
-    for (i32 i = 0; i < 5; i++)
+    for (i = 0; i < 5; i++)
     {
-        if (vm->interpEndTimes[i].current > 0)
+        if ((i32)(vm->interpEndTimes[i].current > 0))
         {
             vm->interpStartTimes[i].Tick();
-            f32 t;
-            if (vm->interpStartTimes[i].current < vm->interpEndTimes[i].current)
+            if ((i32)(vm->interpStartTimes[i].current >= vm->interpEndTimes[i].current))
+            {
+                t = 1.0f;
+                vm->interpEndTimes[i] = 0;
+            }
+            else
             {
                 t = ((f32)vm->interpStartTimes[i].current +
                      vm->interpStartTimes[i].subFrame) /
                     ((f32)vm->interpEndTimes[i].current +
                      vm->interpEndTimes[i].subFrame);
-            }
-            else
-            {
-                t = 1.0f;
-                vm->interpEndTimes[i].Initialize(0);
             }
             switch (vm->interpModes[i])
             {
@@ -2456,33 +2167,40 @@ execute_timers:
                 t = t * t * t;
                 break;
             case 3:
-                t = t * t * t * t;
+                t = t * t;
+                t = t * t;
                 break;
             case 4:
-                t = 1.0f - (1.0f - t) * (1.0f - t);
+                t = 1.0f - t;
+                t = t * t;
+                t = 1.0f - t;
                 break;
             case 5:
                 t = 1.0f - t;
-                t = 1.0f - t * t * t;
+                t = t * t * t;
+                t = 1.0f - t;
                 break;
-            case 6: {
-                f32 fVar9 = (1.0f - t) * (1.0f - t);
-                t = 1.0f - fVar9 * fVar9;
+            case 6:
+                t = 1.0f - t;
+                t = t * t;
+                t = t * t;
+                t = 1.0f - t;
                 break;
-            }
             }
             switch (i)
             {
             case 0:
                 if (vm->useOffset == 0)
                 {
-                    vm->pos = (vm->posInterpFinal - vm->posInterpInitial) * t +
-                              vm->posInterpInitial;
+                    vm->pos.x = (vm->posInterpFinal.x - vm->posInterpInitial.x) * t + vm->posInterpInitial.x;
+                    vm->pos.y = (vm->posInterpFinal.y - vm->posInterpInitial.y) * t + vm->posInterpInitial.y;
+                    vm->pos.z = (vm->posInterpFinal.z - vm->posInterpInitial.z) * t + vm->posInterpInitial.z;
                 }
                 else
                 {
-                    vm->offset = (vm->posInterpFinal - vm->posInterpInitial) * t +
-                                 vm->posInterpInitial;
+                    vm->offset.x = (vm->posInterpFinal.x - vm->posInterpInitial.x) * t + vm->posInterpInitial.x;
+                    vm->offset.y = (vm->posInterpFinal.y - vm->posInterpInitial.y) * t + vm->posInterpInitial.y;
+                    vm->offset.z = (vm->posInterpFinal.z - vm->posInterpInitial.z) * t + vm->posInterpInitial.z;
                 }
                 break;
             case 1:
@@ -2522,8 +2240,10 @@ execute_timers:
                 vm->updateRotation = 1;
                 break;
             case 4:
-                vm->scale = (vm->scaleInterpFinal - vm->scaleInterpInitial) * t +
-                            vm->scaleInterpInitial;
+                vm->scale.x = (vm->scaleInterpFinal.x - vm->scaleInterpInitial.x) * t +
+                              vm->scaleInterpInitial.x;
+                vm->scale.y = (vm->scaleInterpFinal.y - vm->scaleInterpInitial.y) * t +
+                              vm->scaleInterpInitial.y;
                 vm->updateScale = 1;
                 break;
             }
@@ -2543,21 +2263,25 @@ execute_timers:
         vm->updateRotation = 1;
     }
     vm->uvScrollPos.x += vm->uvScrollVel.x;
-    if (vm->uvScrollPos.x < 1.0f)
+    if (vm->uvScrollPos.x >= 1.0f)
+    {
+        vm->uvScrollPos.x -= 1.0f;
+    }
+    else
     {
         if (vm->uvScrollPos.x < 0.0f)
             vm->uvScrollPos.x += 1.0f;
     }
-    else
-        vm->uvScrollPos.x -= 1.0f;
     vm->uvScrollPos.y += vm->uvScrollVel.y;
-    if (vm->uvScrollPos.y < 1.0f)
+    if (vm->uvScrollPos.y >= 1.0f)
+    {
+        vm->uvScrollPos.y -= 1.0f;
+    }
+    else
     {
         if (vm->uvScrollPos.y < 0.0f)
             vm->uvScrollPos.y += 1.0f;
     }
-    else
-        vm->uvScrollPos.y -= 1.0f;
     vm->currentTimeInScript.Tick();
     this->scriptTicksThisFrame += 1;
     return 0;
@@ -2929,7 +2653,7 @@ void AnmManager::ExecuteScripts(AnmVm *startVm, i32 count)
 {
     while (count != 0)
     {
-        if (-1 < startVm->anmFileIdx)
+        if (startVm->anmFileIdx >= 0)
         {
             g_AnmManager->ExecuteScript(startVm);
         }
@@ -2945,9 +2669,9 @@ void AnmManager::ExecuteVmsAnms(AnmVm *vm, i32 idx, i32 vmCount)
     {
         g_AnmManager->ExecuteAnmIdx(vm, idx);
         vm->baseSpriteIdx = vm->activeSpriteIdx;
-        --vmCount;
         ++idx;
         ++vm;
+        --vmCount;
     }
 }
 

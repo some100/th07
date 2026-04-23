@@ -92,7 +92,7 @@ void Gui::ShowBonusScore(i32 score)
     this->impl->bonusScore.pos.y = 48.0f;
     this->impl->bonusScore.pos.z = 0.0f;
     this->impl->bonusScore.isShown = 1;
-    this->impl->bonusScore.timer.Initialize(0);
+    this->impl->bonusScore.timer = 0;
     this->impl->bonusScore.fmtArg = score;
     g_Supervisor.renderSkipFrames = 2;
 }
@@ -104,7 +104,7 @@ void Gui::ShowFullPowerMode(i32 fmtArg, i32 isShown)
     this->impl->fullPowerMode.pos.y = 168.0f;
     this->impl->fullPowerMode.pos.z = 0.0f;
     this->impl->fullPowerMode.isShown = isShown;
-    this->impl->fullPowerMode.timer.Initialize(0);
+    this->impl->fullPowerMode.timer = 0;
     this->impl->fullPowerMode.fmtArg = fmtArg;
     g_Supervisor.renderSkipFrames = 2;
 }
@@ -116,7 +116,7 @@ void Gui::ShowSpellcardBonus(i32 fmtArg)
     this->impl->spellCardBonus.pos.y = 16.0f;
     this->impl->spellCardBonus.pos.z = 0.0f;
     this->impl->spellCardBonus.isShown = 1;
-    this->impl->spellCardBonus.timer.Initialize(0);
+    this->impl->spellCardBonus.timer = 0;
     this->impl->spellCardBonus.fmtArg = fmtArg;
     g_Supervisor.renderSkipFrames = 2;
 }
@@ -871,7 +871,7 @@ ZunResult GuiImpl::RunMsg()
     }
     if (this->msg.dialogueSkippable != 0 && IS_PRESSED_GAME(TH_BUTTON_SKIP))
     {
-        this->msg.timer.Initialize2((u32)this->msg.curInstr->time);
+        this->msg.timer = (u32)this->msg.curInstr->time;
     }
     if (g_Player.hasBorder != BORDER_NONE)
     {
@@ -1149,7 +1149,7 @@ SKIP_TIME_INCREMENT:
          (this->msg.dialogueSkippable != 0)) &&
         IS_PRESSED_GAME(TH_BUTTON_SKIP))
     {
-        this->msg.timer.Initialize2(60);
+        this->msg.timer = 60;
     }
     return ZUN_SUCCESS;
 }
@@ -2099,24 +2099,15 @@ ZunResult Gui::AddedCallback(Gui *arg)
 // FUNCTION: TH07 0x0042d04b
 ZunResult Gui::DeletedCallback(Gui *arg)
 {
-    bool bVar1;
-
     g_AnmManager->ReleaseAnm(0x18);
     g_AnmManager->ReleaseAnm(0x1c);
     g_AnmManager->ReleaseAnm(0x1d);
     g_AnmManager->ReleaseAnm(0x1e);
     g_AnmManager->ReleaseAnm(0x1f);
     arg->FreeMsgFile();
-    if (((g_Supervisor.curState == 3) || (g_Supervisor.curState == 0xb)) ||
-        (g_Supervisor.curState == 0xc))
-    {
-        bVar1 = false;
-    }
-    else
-    {
-        bVar1 = true;
-    }
-    if (bVar1)
+    if ((u32)(g_Supervisor.curState != 3 &&
+              g_Supervisor.curState != 0xb &&
+              g_Supervisor.curState != 0xc))
     {
         g_AnmManager->ReleaseAnm(0x15);
         g_AnmManager->ReleaseAnm(0x17);
@@ -2124,7 +2115,7 @@ ZunResult Gui::DeletedCallback(Gui *arg)
         g_AnmManager->ReleaseAnm(0x1a);
         g_AnmManager->ReleaseAnm(0x1b);
         g_AnmManager->ReleaseAnm(0x16);
-        free(arg->impl);
+        delete arg->impl;
         arg->impl = NULL;
     }
     return ZUN_SUCCESS;

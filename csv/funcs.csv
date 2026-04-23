@@ -1159,7 +1159,7 @@ address|name|type
 0047ea7d|entry|library
 0047ec4f|FUN_0047ec4f|library
 0047ec87|FUN_0047ec87|library
-0047eca0|acos|library
+0047eca0|CIacos|library
 0047ecbd|FUN_0047ecbd|library
 0047ed6b|FUN_0047ed6b|library
 0047ee10|FUN_0047ee10|library

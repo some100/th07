@@ -675,7 +675,7 @@ i32 RetryMenu::OnUpdate()
         }
         break;
     case 4:
-        if (this->numFrames >= 0x14)
+        if (this->numFrames >= 20)
         {
             this->curState = 0;
             g_GameManager.isInRetryMenu = 0;
@@ -774,7 +774,7 @@ i32 RetryMenu::OnUpdate()
         }
         break;
     case 9:
-        if (this->numFrames >= 0x14)
+        if (this->numFrames >= 20)
         {
             this->curState = 0;
             g_GameManager.isInRetryMenu = 0;
@@ -787,7 +787,7 @@ i32 RetryMenu::OnUpdate()
         }
         break;
     case 10:
-        if (this->numFrames >= 0x14)
+        if (this->numFrames >= 20)
         {
             this->curState = 0;
             g_GameManager.isInRetryMenu = 0;
@@ -953,7 +953,7 @@ i32 PauseMenu::OnUpdate()
         }
         break;
     case 4:
-        if (this->numFrames >= 0x14)
+        if (this->numFrames >= 20)
         {
             this->curState = 0;
             this->numFrames = 0;
@@ -1133,7 +1133,7 @@ void AsciiManager::DrawPopups()
                 }
                 else
                 {
-                    this->vm1.sprite = g_AnmManager->sprites + (u8)*local_20 + 0x15;
+                    this->vm1.sprite = g_AnmManager->sprites + (u8)*local_20 + 21;
                     this->vm1.color.bytes.a = local_c;
                 }
                 g_AnmManager->DrawNoRotation(&this->vm1);

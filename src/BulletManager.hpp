@@ -174,8 +174,8 @@ struct Bullet
 
     {
         this->state = BULLET_INACTIVE;
-        this->timer1.Initialize2(0);
-        this->timer2.Initialize2(0);
+        this->timer1 = 0;
+        this->timer2 = 0;
     }
 
     BulletTypeSprites sprites;

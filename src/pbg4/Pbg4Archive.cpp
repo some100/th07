@@ -8,7 +8,7 @@
 // GLOBAL: TH07 0x00626258
 Pbg4Archive g_Pbg4Archive;
 
-Pbg4Archive g_UnusedPbg4ArchiveArray[0x14];
+Pbg4Archive g_UnusedPbg4ArchiveArray[20];
 
 // FUNCTION: TH07 0x0045f6b0
 Pbg4Archive::Pbg4Archive()

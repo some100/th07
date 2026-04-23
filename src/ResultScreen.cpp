@@ -12,6 +12,7 @@
 #include "GameManager.hpp"
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
+#include "ZunMemory.hpp"
 #include "ZunResult.hpp"
 #include "pbg4/Lzss.hpp"
 
@@ -391,7 +392,7 @@ ZunResult ResultScreen::ParseClrd(ScoreDat *scoreDat, Clrd *clrd)
             clrd[i].th7kLen = sizeof(Clrd);
             clrd[i].version = 1;
             clrd[i].characterShotType = (u8)i;
-            for (j = 0; j < 5; j = j + 1)
+            for (j = 0; j < 5; j++)
             {
                 clrd[i].difficultyClearedWithRetries[j] = 1;
                 clrd[i].difficultyClearedWithoutRetries[j] = 1;
@@ -851,7 +852,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
             g_SoundPlayer.PlaySoundByIdx(SOUND_EXTEND, 0);
         }
     switchD_00445ddb_caseD_3:
-        if ((arg->charUsed != arg->cursor) && (arg->frameTimer == 0x14))
+        if ((arg->charUsed != arg->cursor) && (arg->frameTimer == 20))
         {
             arg->charUsed = arg->cursor;
             g_AnmManager->DrawStringFormat2(arg->spellcardListVms, 0xffffff, 0,
@@ -887,7 +888,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
     case 9:
         if (((arg->lastSpellcardSelected != arg->cursor) ||
              (arg->prevSpellcardListPage != arg->spellcardListPage)) &&
-            (arg->frameTimer == 0x14))
+            (arg->frameTimer == 20))
         {
             arg->lastSpellcardSelected = arg->cursor;
             arg->prevSpellcardListPage = arg->spellcardListPage;
@@ -1019,7 +1020,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
                 arg->vms[5].active = 1;
             }
         }
-        if (arg->frameTimer < 0x14)
+        if (arg->frameTimer < 20)
             break;
         arg->resultScreenState = arg->resultScreenState + 1;
         arg->frameTimer = 0;
@@ -1104,7 +1105,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
                     vm = vm + 1;
                 }
                 arg->diffPlayed = arg->cursor;
-                arg->resultScreenState = 0x14;
+                arg->resultScreenState = 20;
                 arg->stateStep = arg->resultScreenState;
                 arg->frameTimer = 0;
                 arg->charUsed = -1;
@@ -1436,7 +1437,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
     {
         if (this->resultScreenState == 0xc)
         {
-            if (this->frameTimer < 0x14)
+            if (this->frameTimer < 20)
             {
                 return ZUN_SUCCESS;
             }
@@ -1599,7 +1600,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                     this->vms[0x14].color.color =
                         (this->vms[0x14].color.color & 0xff000000) | 0xff6060;
                 }
-                if (this->frameTimer < 0x14)
+                if (this->frameTimer < 20)
                 {
                     return ZUN_SUCCESS;
                 }
@@ -1760,7 +1761,7 @@ i32 ResultScreen::DrawStats()
     f32 local_10;
     AnmVm *local_8;
 
-    if (this->resultScreenState == 0x14)
+    if (this->resultScreenState == 20)
     {
         if (this->frameTimer == 1)
         {
@@ -2023,10 +2024,10 @@ i32 ResultScreen::DrawStats()
         }
         else
         {
-            this->resultScreenState = 0x15;
+            this->resultScreenState = 21;
         }
     }
-    else if (this->resultScreenState == 0x15)
+    else if (this->resultScreenState == 21)
     {
         if ((this->frameTimer % 60 == 0) &&
             (g_Supervisor.UpdateStartupTime(),
@@ -2056,7 +2057,7 @@ i32 ResultScreen::DrawStats()
         local_8 = this->spellcardListVms;
         for (local_20 = 0; local_20 < 0xe; local_20 += 1)
         {
-            (local_8->color).bytes.a = -(char)((this->frameTimer * 0xff) / 0x14) - 1;
+            (local_8->color).bytes.a = -(char)((this->frameTimer * 0xff) / 20) - 1;
             local_8 = local_8 + 1;
         }
     }
@@ -2274,15 +2275,15 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
                 {
                     local_38.y = local_38.y + 33.0f;
                 }
-                else if (arg->frameTimer < 0x14)
+                else if (arg->frameTimer < 20)
                 {
                     local_38.y =
-                        (f32)(((0x14 - arg->frameTimer) * 0x21) / 0x14) + local_38.y;
+                        (f32)(((20 - arg->frameTimer) * 0x21) / 20) + local_38.y;
                 }
                 else
                 {
                     local_38.y =
-                        (f32)(((arg->frameTimer - 0x14) * 0x21) / 0x14) + local_38.y;
+                        (f32)(((arg->frameTimer - 20) * 0x21) / 20) + local_38.y;
                 }
             }
             if (0x27 < arg->frameTimer)
@@ -2422,7 +2423,7 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
                 g_AsciiManager.AddString(&local_10, local_58);
                 local_38.x += 20.0f;
             }
-            local_38.x -= (f32)(local_2c * 0x14);
+            local_38.x -= (f32)(local_2c * 20);
             local_38.y += 18.0f;
         }
     }
@@ -2498,7 +2499,7 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
     }
     g_AsciiManager.color = 0xffffffff;
     arg->DrawFinalStats();
-    if (((arg->resultScreenState == 0x14) || (arg->resultScreenState == 0x15)) ||
+    if (((arg->resultScreenState == 20) || (arg->resultScreenState == 21)) ||
         (arg->resultScreenState == 0x16))
     {
         local_24 = arg->spellcardListVms;
@@ -2522,7 +2523,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
     g_GameManager.HasUnlockedPhantomAndMaxClears();
     for (i32 i = 0; i < 6; i++)
     {
-        for (i32 j = 0; j < 6; j = j + 1)
+        for (i32 j = 0; j < 6; j++)
         {
             for (i32 k = 0; k < 10; k = k + 1)
             {
@@ -2593,7 +2594,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
     arg->scoreDat = OpenScore("score.dat");
     for (i32 i = 0; i < 6; i++)
     {
-        for (i32 j = 0; j < 6; j = j + 1)
+        for (i32 j = 0; j < 6; j++)
         {
             GetHighScore(arg->scoreDat, arg->scoreLists[i] + j, j, i, NULL);
         }
@@ -2660,15 +2661,18 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
 // FUNCTION: TH07 0x0044a1f9
 ZunResult ResultScreen::DeletedCallback(ResultScreen *arg)
 {
+    i32 i;
+    i32 j;
+
     if (arg->scoreDat != NULL)
     {
         arg->WriteScore();
         ReleaseScoreDat(arg->scoreDat);
     }
     arg->scoreDat = NULL;
-    for (i32 i = 0; i < 6; i++)
+    for (i = 0; i < 6; i++)
     {
-        for (i32 j = 0; j < 6; j = j + 1)
+        for (j = 0; j < 6; j++)
         {
             arg->FreeScore(i, j);
         }
@@ -2680,11 +2684,12 @@ ZunResult ResultScreen::DeletedCallback(ResultScreen *arg)
     g_AnmManager->ReleaseSurface(0);
     g_Chain.Cut(arg->drawChain);
     arg->drawChain = NULL;
+
     if (arg != NULL)
     {
-        free(arg->scoreDat);
-        free(arg);
+        delete arg;
     }
+
     return ZUN_SUCCESS;
 }
 

@@ -2132,10 +2132,10 @@ u32 MainMenu::OnUpdateSelectReplay()
             this->vmHead[this->chosenReplay % 0xf + 0x87].pendingInterrupt = 0x11;
             this->menuSubState = 3;
             this->cursor = 0;
-            this->vmHead[0x9e].pendingInterrupt = 0x15;
-            this->vmHead[0x9f].pendingInterrupt = 0x15;
-            this->vmHead[0xa0].pendingInterrupt = 0x15;
-            this->vmHead[this->cursor + 0x9e].pendingInterrupt = 0x14;
+            this->vmHead[0x9e].pendingInterrupt = 21;
+            this->vmHead[0x9f].pendingInterrupt = 21;
+            this->vmHead[0xa0].pendingInterrupt = 21;
+            this->vmHead[this->cursor + 0x9e].pendingInterrupt = 20;
         }
     }
     else if (this->menuSubState == 3)
@@ -2143,10 +2143,10 @@ u32 MainMenu::OnUpdateSelectReplay()
         i = MoveCursorVertical(3);
         if (i != 0)
         {
-            this->vmHead[0x9e].pendingInterrupt = 0x15;
-            this->vmHead[0x9f].pendingInterrupt = 0x15;
-            this->vmHead[0xa0].pendingInterrupt = 0x15;
-            this->vmHead[this->cursor + 0x9e].pendingInterrupt = 0x14;
+            this->vmHead[0x9e].pendingInterrupt = 21;
+            this->vmHead[0x9f].pendingInterrupt = 21;
+            this->vmHead[0xa0].pendingInterrupt = 21;
+            this->vmHead[this->cursor + 0x9e].pendingInterrupt = 20;
         }
         if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
         {
@@ -2677,13 +2677,14 @@ ZunResult MainMenu::Release()
 ZunResult MainMenu::DeletedCallback(MainMenu *arg)
 {
     g_Supervisor.d3dDevice->ResourceManagerDiscardBytes(0);
-    for (i32 i = 0x20; i < 0x2a; ++i)
+    for (i32 i = 0x20; i <= 0x29; ++i)
         g_AnmManager->ReleaseAnm(i);
     g_AnmManager->ReleaseSurface(0);
     g_Chain.Cut(arg->drawChain);
     arg->drawChain = NULL;
     arg->Release();
-    free(arg);
+    delete arg;
+    arg = NULL;
 
     return ZUN_SUCCESS;
 }
@@ -2709,6 +2710,7 @@ ZunResult MainMenu::RegisterChain(u32 param_1)
     mainMenu->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     mainMenu->drawChain->arg = mainMenu;
     g_Chain.AddToDrawChain(mainMenu->drawChain, 0);
+    AnInlineFunctionThatAllocates20BytesAndNothingElse();
     return ZUN_SUCCESS;
 }
 

@@ -34,16 +34,16 @@ struct ZunTimer
         g_Supervisor.TickTimer(&this->current, &this->subFrame);
     }
 
-    void Initialize2(i32 current)
+    i32 GetCurrent()
+    {
+        return this->current;
+    }
+
+    void operator=(i32 current)
     {
         this->current = current;
         this->subFrame = 0.0f;
         this->previous = -999;
-    }
-
-    i32 GetCurrent()
-    {
-        return this->current;
     }
 
     void Decrement(i32 value);

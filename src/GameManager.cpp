@@ -193,8 +193,8 @@ u32 GameManager::OnUpdate(GameManager *arg)
           (g_GameManager.replayStage == 1)) &&
          (g_Gui.HasCurrentMsgIdx() == 0)) &&
         (((((arg->bulletLagTime = arg->bulletLagTime + 1,
-             g_Supervisor.curFps < 0x14 && (arg->bulletLagTime % 3 != 0)) ||
-            ((g_Supervisor.curFps > 0x14 &&
+             g_Supervisor.curFps < 20 && (arg->bulletLagTime % 3 != 0)) ||
+            ((g_Supervisor.curFps > 20 &&
               ((g_Supervisor.curFps < 0x1e &&
                 (arg->bulletLagTime % 2 != 0)))))) ||
            ((g_Supervisor.curFps > 0x1e &&
@@ -877,9 +877,7 @@ ZunResult GameManager::DeletedCallback(GameManager *arg)
     if ((g_Supervisor.cfg.musicMode == MUSIC_MIDI) &&
         (g_Supervisor.midiOutput != NULL))
     {
-        g_Supervisor.midiOutput->StopPlayback();
-        g_Supervisor.midiOutput->ParseFile(0x1e);
-        g_Supervisor.midiOutput->Play();
+        g_Supervisor.midiOutput->Stop();
     }
     while (g_SoundPlayer.ProcessQueues() != 0)
         ;

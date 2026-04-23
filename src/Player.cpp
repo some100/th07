@@ -129,7 +129,7 @@ void DefaultFireBulletCallback(Player *player, PlayerBullet *bullet,
     bullet->speed = shtEntry->speed;
     bullet->velocity.x = cosf(shtEntry->angle) * shtEntry->speed;
     bullet->velocity.y = sinf(shtEntry->angle) * shtEntry->speed;
-    bullet->timer.Initialize(0);
+    bullet->timer = 0;
     bullet->bulletState2 = shtEntry->bulletState2;
     bullet->damage = shtEntry->damage;
     if (-1 < shtEntry->soundIdx)
@@ -164,7 +164,7 @@ i32 ShtData::FireOrbBulletUnfocused(Player *player, PlayerBullet *bullet,
     {
         if (player->orbState == ORB_UNFOCUSED)
         {
-            player->timers[sVar2].Initialize(shtEntry->fireInterval);
+            player->timers[sVar2].timer = shtEntry->fireInterval;
             player->timers[sVar2].bullet = bullet;
             bullet->timerIdx = sVar2;
             bullet->optionId = (i16)shtEntry->option;
@@ -198,7 +198,7 @@ i32 ShtData::FireOrbBulletFocused(Player *player, PlayerBullet *bullet,
     {
         if (player->orbState == ORB_FOCUSED)
         {
-            player->timers[sVar2].Initialize(999);
+            player->timers[sVar2].timer = 999;
             player->timers[sVar2].bullet = bullet;
             bullet->timerIdx = sVar2;
             bullet->optionId = (i16)shtEntry->option;
@@ -406,20 +406,20 @@ i32 ShtData::UpdateOrbLaser(Player *player, PlayerBullet *bullet)
         bullet->vm.pendingInterrupt = 1;
     }
     if (((g_Gui.HasCurrentMsgIdx() != 0) || ((player->bombInfo).isInUse != 0)) &&
-        (0x14 < player->timers[bullet->timerIdx].current))
+        (20 < player->timers[bullet->timerIdx].timer.current))
     {
-        player->timers[bullet->timerIdx].Initialize(0x14);
+        player->timers[bullet->timerIdx].timer = 20;
     }
-    if (player->timers[bullet->timerIdx].current < 1)
+    if (player->timers[bullet->timerIdx].timer.current < 1)
     {
-        player->timers[bullet->timerIdx].Initialize(0);
+        player->timers[bullet->timerIdx].timer = 0;
         player->timers[bullet->timerIdx].bullet = NULL;
         bullet->bulletState = 0;
         return 1;
     }
     else
     {
-        if ((player->timers[bullet->timerIdx].current < 0x47) &&
+        if ((player->timers[bullet->timerIdx].timer.current < 0x47) &&
             (bullet->vm.isStopped != 0))
         {
             bullet->vm.pendingInterrupt = 1;
@@ -450,20 +450,20 @@ i32 ShtData::UpdatePlayerLaser(Player *player, PlayerBullet *bullet)
         bullet->vm.pendingInterrupt = 1;
     }
     if (((g_Gui.HasCurrentMsgIdx() != 0) || ((player->bombInfo).isInUse != 0)) &&
-        (0x14 < player->timers[bullet->timerIdx].current))
+        (20 < player->timers[bullet->timerIdx].timer.current))
     {
-        player->timers[bullet->timerIdx].Initialize(0x14);
+        player->timers[bullet->timerIdx].timer = 20;
     }
-    if (player->timers[bullet->timerIdx].current < 1)
+    if (player->timers[bullet->timerIdx].timer.current < 1)
     {
-        player->timers[bullet->timerIdx].Initialize(0);
+        player->timers[bullet->timerIdx].timer = 0;
         bullet->bulletState = 0;
         player->timers[bullet->timerIdx].bullet = NULL;
         return 1;
     }
     else
     {
-        if ((player->timers[bullet->timerIdx].current < 0x47) &&
+        if ((player->timers[bullet->timerIdx].timer.current < 0x47) &&
             (bullet->vm.isStopped != 0))
         {
             bullet->vm.pendingInterrupt = 1;
@@ -713,16 +713,16 @@ void Player::UpdateShots()
     {
         if (this->timers[i].bullet != NULL)
         {
-            if ((0 < this->timers[i].current) && (this->timers[i].current < 999))
+            if ((0 < this->timers[i].timer.current) && (this->timers[i].timer.current < 999))
             {
-                this->timers[i].Decrement(1);
+                this->timers[i].timer.Decrement(1);
             }
             if ((this->fireBulletTimer.current < 0) &&
-                (0x32 < this->timers[i].current))
+                (0x32 < this->timers[i].timer.current))
             {
-                this->timers[i].Initialize(0x32);
+                this->timers[i].timer = 0x32;
             }
-            if (this->timers[i].current == 0)
+            if (this->timers[i].timer.current == 0)
             {
                 this->timers[i].bullet = NULL;
             }
@@ -830,7 +830,7 @@ void Player::UpdateFireBulletTimer()
             (this->playerState == PLAYER_STATE_SPAWNING))
         {
 
-            this->fireBulletTimer.Initialize(-1);
+            this->fireBulletTimer = -1;
         }
     }
 }
@@ -840,7 +840,7 @@ void Player::StartFireBulletTimer()
 {
     if (this->fireBulletTimer.current < 0)
     {
-        this->fireBulletTimer.Initialize(0);
+        this->fireBulletTimer = 0;
     }
 }
 
@@ -1238,7 +1238,7 @@ void Player::Die()
     g_EffectManager.SpawnEffect(0xc, &this->positionCenter, 3, 1, 0xff4040ff);
     g_EffectManager.SpawnParticles(6, &this->positionCenter, 0x10, 0xffffffff);
     this->playerState = PLAYER_STATE_DEAD;
-    this->invulnerabilityTimer.Initialize2(0);
+    this->invulnerabilityTimer = 0;
     g_SoundPlayer.PlaySoundByIdx(SOUND_PICHUN, 0);
 }
 
@@ -1450,8 +1450,7 @@ void Player::HandlePlayerInputs()
             if (this->isFocus != 0)
                 break;
             this->orbState = ORB_UNFOCUSING;
-            this->focusMovementTimer.Initialize2(8 -
-                                                 this->focusMovementTimer.current);
+            this->focusMovementTimer = 8 - this->focusMovementTimer.current;
             if (this->focusEffect != NULL)
             {
                 this->focusEffect->vm.pendingInterrupt = 1;
@@ -1470,8 +1469,7 @@ void Player::HandlePlayerInputs()
             if (this->isFocus == 0)
                 break;
             this->orbState = ORB_FOCUSING;
-            this->focusMovementTimer.Initialize2(8 -
-                                                 this->focusMovementTimer.current);
+            this->focusMovementTimer = 8 - this->focusMovementTimer.current;
             this->focusEffect = g_EffectManager.SpawnEffect(
                 0x18, &this->positionCenter, 2, 1, 0xffffffff);
             break;
@@ -1524,8 +1522,7 @@ void Player::HandlePlayerInputs()
             if (this->isFocus == 0)
             {
                 this->orbState = ORB_UNFOCUSING;
-                this->focusMovementTimer.Initialize2(8 -
-                                                     this->focusMovementTimer.current);
+                this->focusMovementTimer = 8 - this->focusMovementTimer.current;
                 if (this->focusEffect != NULL)
                 {
                     this->focusEffect->vm.pendingInterrupt = 1;
@@ -1595,8 +1592,7 @@ void Player::HandlePlayerInputs()
                 goto switchD_0043fe16_default;
             }
             this->orbState = ORB_FOCUSING;
-            this->focusMovementTimer.Initialize(8 -
-                                                this->focusMovementTimer.current);
+            this->focusMovementTimer = 8 - this->focusMovementTimer.current;
             this->focusEffect = g_EffectManager.SpawnEffect(
                 0x18, &this->positionCenter, 2, 1, 0xffffffff);
             break;
@@ -1702,7 +1698,7 @@ void Player::UpdateBorderAndBombState()
                 this->bombInfo.isFocus = (i32)this->isFocus;
                 this->bombInfo.isInUse = 1;
                 this->isBombing = 1;
-                this->bombInfo.bombTimer.Initialize(0);
+                this->bombInfo.bombTimer = 0;
                 this->bombInfo.bombDuration = 999;
                 if (this->bombInfo.isFocus == 0)
                 {
@@ -1791,7 +1787,7 @@ i32 Player::UpdateDeath()
             this->positionCenter.x = g_GameManager.arcadeRegionSize.x / 2.0f;
             this->positionCenter.y = g_GameManager.arcadeRegionSize.y - 64.0f;
             this->positionCenter.z = 0.2f;
-            this->invulnerabilityTimer.Initialize(0);
+            this->invulnerabilityTimer = 0;
             this->playerSprite.scale.x = 3.0f;
             this->playerSprite.scale.y = 3.0f;
             this->playerSprite.anmFileIdx = 0x400;
@@ -1899,7 +1895,7 @@ void Player::Respawn()
         this->playerSprite.scale.y = 1.0f;
         this->playerSprite.color.color = 0xffffffff;
         this->playerSprite.blendMode = 0;
-        this->invulnerabilityTimer.Initialize(0xf0);
+        this->invulnerabilityTimer = 240;
         this->respawnTimer = g_Player.shooterData->initialRespawnTimer;
     }
 }
@@ -1929,7 +1925,7 @@ void Player::UpdateState()
                 this->effect = NULL;
             }
             this->playerState = PLAYER_STATE_ALIVE;
-            this->invulnerabilityTimer.Initialize(0);
+            this->invulnerabilityTimer = 0;
             this->playerSprite.color.color = 0xffffffff;
         }
         else
@@ -2026,11 +2022,11 @@ void Player::BreakBorderNaturally()
         this->playerSprite.scale.y = 1.0f;
         this->playerSprite.color.color = 0xffffffff;
         this->playerSprite.blendMode = 0;
-        this->invulnerabilityTimer.Initialize(0xf0);
+        this->invulnerabilityTimer = 240;
         this->respawnTimer = g_Player.shooterData->initialRespawnTimer;
     }
     this->playerState = PLAYER_STATE_INVULNERABLE;
-    this->invulnerabilityTimer.Initialize(0x28);
+    this->invulnerabilityTimer = 40;
     this->borderInvulnerabilityTime = 0x28;
     this->hasBorder = BORDER_NONE;
     if (this->borderEffect != NULL)
@@ -2112,7 +2108,7 @@ void Player::ActivateBorder()
         }
         if (this->playerState != PLAYER_STATE_INVULNERABLE)
         {
-            this->invulnerabilityTimer.Initialize(0x21c);
+            this->invulnerabilityTimer = 540;
             this->borderTimer = this->invulnerabilityTimer;
             this->hasBorder = BORDER_ACTIVE;
             this->playerState = PLAYER_STATE_BORDER;
@@ -2127,9 +2123,8 @@ void Player::ActivateBorder()
             }
             pEVar3 = g_EffectManager.SpawnEffect(0x1c, &this->positionCenter, 4, 1,
                                                  0xffffffff);
-            pEVar3->vm.interpStartTimes[4].Initialize(0);
-            pEVar3->vm.interpEndTimes[4].Initialize(
-                this->invulnerabilityTimer.current);
+            pEVar3->vm.interpStartTimes[4] = 0;
+            pEVar3->vm.interpEndTimes[4] = this->invulnerabilityTimer.current;
             pEVar3->vm.interpModes[4] = 0;
             pEVar3->vm.scaleInterpInitial.y = 1.0f;
             pEVar3->vm.scaleInterpInitial.x = 1.0f;
@@ -2163,15 +2158,15 @@ void Player::BreakBorder(u32 unused)
     }
     effect = g_EffectManager.SpawnEffect(0x1c, &this->positionCenter, 4, 1,
                                          0xffffffff);
-    effect->vm.interpStartTimes[4].Initialize2(0);
-    effect->vm.interpEndTimes[4].Initialize2(0x1e);
+    effect->vm.interpStartTimes[4] = 0;
+    effect->vm.interpEndTimes[4] = 0x1e;
     effect->vm.interpModes[4] = 0;
     effect->vm.scaleInterpInitial.x = 0.0625f;
     effect->vm.scaleInterpInitial.y = 0.0625f;
     effect->vm.scaleInterpFinal.x = 1.3f;
     effect->vm.scaleInterpFinal.y = 1.3f;
-    effect->vm.interpStartTimes[2].Initialize2(0);
-    effect->vm.interpEndTimes[2].Initialize2(0x1e);
+    effect->vm.interpStartTimes[2] = 0;
+    effect->vm.interpEndTimes[2] = 0x1e;
     effect->vm.interpModes[2] = 1;
     effect->vm.colorInterpInitialColor.bytes.a = effect->vm.color.bytes.a;
     effect->vm.colorInterpFinalColor.bytes.a = 0;
@@ -2181,7 +2176,7 @@ void Player::BreakBorder(u32 unused)
     g_EnemyManager.spellcardInfo.isCapturing = 0;
     this->hasBorder = BORDER_NONE;
     this->playerState = PLAYER_STATE_INVULNERABLE;
-    this->invulnerabilityTimer.Initialize2(0x28);
+    this->invulnerabilityTimer = 0x28;
     this->borderInvulnerabilityTime = 0x28;
     g_GameManager.cherryPlus = g_GameManager.globals->cherryStart;
     SpawnBombEffect(&this->positionCenter, 32.0f, 16.0f, 0x32, 8);
@@ -2244,13 +2239,19 @@ u32 Player::OnUpdate(Player *arg)
     arg->UpdateBorderAndBombState();
     if (arg->playerState == PLAYER_STATE_DEAD)
     {
-        if (arg->UpdateDeath() == 0)
-            goto LAB_00442012;
+        if (arg->UpdateDeath() != 0)
+            goto WHAT;
+        else
+        {
+            goto WHY;
+        }
     }
-    else if (arg->playerState != PLAYER_STATE_SPAWNING)
-        goto LAB_00442012;
-    arg->Respawn();
-LAB_00442012:
+    if (arg->playerState == PLAYER_STATE_SPAWNING)
+    {
+    WHAT:
+        arg->Respawn();
+    }
+WHY:
     arg->UpdateState();
     if ((arg->playerState != PLAYER_STATE_DEAD) &&
         (arg->playerState != PLAYER_STATE_SPAWNING))
@@ -2457,7 +2458,7 @@ ZunResult Player::AddedCallback(Player *arg)
             arg->grabItemSize.z = 5.0f;
             arg->playerDirection = MOVEMENT_NONE;
             arg->playerState = PLAYER_STATE_SPAWNING;
-            arg->invulnerabilityTimer.Initialize(0x78);
+            arg->invulnerabilityTimer = 120;
             arg->orbState = ORB_UNFOCUSED;
             arg->orbsSprite[0].anmFileIdx = 0x480;
             g_AnmManager->SetAndExecuteScript(arg->orbsSprite,
@@ -2471,7 +2472,7 @@ ZunResult Player::AddedCallback(Player *arg)
                 bullet->bulletState = 0;
                 bullet = bullet + 1;
             }
-            arg->fireBulletTimer.Initialize(-1);
+            arg->fireBulletTimer = -1;
             arg->bombInfo.bombCalc =
                 g_BombData[g_GameManager.shotTypeAndCharacter].calc;
             arg->bombInfo.draw = g_BombData[g_GameManager.shotTypeAndCharacter].draw;
@@ -2553,7 +2554,7 @@ ZunResult Player::RegisterChain(u32 param_1)
 {
     Player *mgr = &g_Player;
     memset(mgr, 0, sizeof(Player));
-    mgr->invulnerabilityTimer.Initialize2(0);
+    mgr->invulnerabilityTimer = 0;
     mgr->initParam = param_1;
     mgr->calcChain = g_Chain.CreateElem((ChainCallback)OnUpdate);
     mgr->drawChain1 = g_Chain.CreateElem((ChainCallback)OnDrawHighPrio);

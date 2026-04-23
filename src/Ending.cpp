@@ -192,7 +192,7 @@ ZunResult Ending::ParseEndFile()
                 ((this->hasSeenEnding != 0 &&
                   IS_PRESSED_RAW(TH_BUTTON_SKIP))))
             {
-                this->timer3.Initialize(0);
+                this->timer3 = 0;
             }
         }
         else
@@ -324,7 +324,7 @@ ZunResult Ending::ParseEndFile()
                 case 'r':
                     this->endFileDataPtr = this->endFileDataPtr + 1;
                     tmp = ReadEndFileParameter();
-                    this->timer3.Initialize(tmp);
+                    this->timer3 = tmp;
                     tmp = ReadEndFileParameter();
                     this->minWaitResetFrames = tmp;
                     while ((*this->endFileDataPtr != '\n' &&
@@ -353,7 +353,7 @@ ZunResult Ending::ParseEndFile()
                 case 'w':
                     this->endFileDataPtr = this->endFileDataPtr + 1;
                     tmp = ReadEndFileParameter();
-                    this->timer2.Initialize(tmp);
+                    this->timer2 = tmp;
                     tmp = ReadEndFileParameter();
                     this->minWaitFrames = tmp;
                     while ((*this->endFileDataPtr != '\n' &&
@@ -390,7 +390,7 @@ ZunResult Ending::ParseEndFile()
             ((this->hasSeenEnding != 0 &&
               IS_PRESSED_RAW(TH_BUTTON_SKIP))))
         {
-            this->timer2.Initialize(0);
+            this->timer2 = 0;
         }
     }
     else
@@ -413,12 +413,12 @@ switchD_0041d980_caseD_0:
     }
     if (IS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
     {
-        this->timer2.Initialize(this->topLineDelay);
+        this->timer2 = this->topLineDelay;
         this->minWaitFrames = this->topLineDelay;
     }
     else
     {
-        this->timer2.Initialize(this->line2Delay);
+        this->timer2 = this->line2Delay;
         this->minWaitFrames = this->line2Delay;
     }
     this->possiblyTimesFileParsed = this->possiblyTimesFileParsed + 1;
@@ -450,8 +450,8 @@ ZunResult Ending::LoadEnding(const char *endFilePath)
     {
         this->endFileDataPtr = this->endFileData;
         this->line2Delay = 8;
-        this->timer2.Initialize(0);
-        this->timer1.Initialize(0);
+        this->timer2 = 0;
+        this->timer1 = 0;
         if (endFileDat != NULL)
         {
             free(endFileDat);
@@ -527,11 +527,11 @@ ZunResult Ending::DeletedCallback(Ending *arg)
     g_AnmManager->ReleaseAnm(0x31);
     g_Supervisor.curState = 6;
     g_AnmManager->ReleaseSurface(0);
-    free(arg->endFileData);
+    ZunMemory::Free(arg->endFileData);
     g_Chain.Cut(arg->drawChain);
     arg->drawChain = NULL;
-    free(arg);
-    g_Supervisor.isInEnding = 0;
+    delete arg;
+    arg = NULL;
     return ZUN_SUCCESS;
 }
 

@@ -83,7 +83,7 @@ void EnemyManager::Initialize()
         this->enemyTemplate.enemyHistory[i].position.x = -999.0f;
     }
     this->enemyTemplate.flags1 = this->enemyTemplate.flags1 | 0x80;
-    this->enemyTemplate.timer.Initialize(0);
+    this->enemyTemplate.timer = 0;
     this->enemyTemplate.flags3 = this->enemyTemplate.flags3 & 0xf7;
     this->enemyTemplate.hitboxSize.x = 12.0f;
     this->enemyTemplate.hitboxSize.y = 12.0f;
@@ -106,7 +106,7 @@ void EnemyManager::Initialize()
     this->enemyTemplate.deathAnm2 = 0;
     this->enemyTemplate.deathAnm3 = 0;
     this->enemyTemplate.shootInterval = 0;
-    this->enemyTemplate.shootIntervalTimer.Initialize(0);
+    this->enemyTemplate.shootIntervalTimer = 0;
     this->enemyTemplate.shootOffset.x = 0.0f;
     this->enemyTemplate.shootOffset.y = 0.0f;
     this->enemyTemplate.shootOffset.z = 0.0f;
@@ -940,7 +940,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                         }
                         if (g_GameManager.shotTypeAndCharacter == SHOT_REIMU_A)
                         {
-                            if (((local_44 == 0x14) || (local_44 == 0x1e)) &&
+                            if (((local_44 == 20) || (local_44 == 0x1e)) &&
                                 (((enemy->timer).current & 1U) != 0))
                             {
                                 local_44 += -10;
@@ -1534,18 +1534,18 @@ ZunResult EnemyManager::AddedCallback(EnemyManager *arg)
     arg->randomItemSpawnIdx = g_Rng.GetRandomU16InRange(3);
     arg->randomItemTableIdx = g_Rng.GetRandomU16InRange(8);
     arg->spellcardInfo.isActive = 0;
-    g_AsciiManager.otherVms[6].pos.z = -999.0f;
-    g_AsciiManager.otherVms[6].pos.y = -999.0f;
-    g_AsciiManager.otherVms[6].pos.x = -999.0f;
-    g_AsciiManager.otherVms[5].pos.z = -999.0f;
-    g_AsciiManager.otherVms[5].pos.y = -999.0f;
-    g_AsciiManager.otherVms[5].pos.x = -999.0f;
-    g_AsciiManager.otherVms[4].pos.z = -999.0f;
-    g_AsciiManager.otherVms[4].pos.y = -999.0f;
-    g_AsciiManager.otherVms[4].pos.x = -999.0f;
     g_AsciiManager.otherVms[3].pos.z = -999.0f;
     g_AsciiManager.otherVms[3].pos.y = -999.0f;
     g_AsciiManager.otherVms[3].pos.x = -999.0f;
+    g_AsciiManager.otherVms[2].pos.z = -999.0f;
+    g_AsciiManager.otherVms[2].pos.y = -999.0f;
+    g_AsciiManager.otherVms[2].pos.x = -999.0f;
+    g_AsciiManager.otherVms[1].pos.z = -999.0f;
+    g_AsciiManager.otherVms[1].pos.y = -999.0f;
+    g_AsciiManager.otherVms[1].pos.x = -999.0f;
+    g_AsciiManager.otherVms[0].pos.z = -999.0f;
+    g_AsciiManager.otherVms[0].pos.y = -999.0f;
+    g_AsciiManager.otherVms[0].pos.x = -999.0f;
     return ZUN_SUCCESS;
 }
 
