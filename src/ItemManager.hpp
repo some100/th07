@@ -29,9 +29,9 @@ struct Item
     D3DXVECTOR3 targetPosition;
     ZunTimer timer;
     i8 itemType;
-    u8 isInUse;
+    i8 isInUse;
     u8 isArrowSprite;
-    u8 state;
+    i8 state;
     u8 autoCollect;
     // pad 3
     struct Item *next;

@@ -32,15 +32,14 @@ void BombData::DarkenViewport(Player *player)
 {
     ZunColor local_8;
     local_8.bytes.a = 0x80;
-    if ((i32)(player->bombInfo.bombTimer.current < 60))
+    if (player->bombInfo.bombTimer < 60)
     {
         local_8.bytes.b =
             0x80 - (player->bombInfo.bombTimer.GetCurrent() * 80 / 60);
         local_8.bytes.g = local_8.bytes.b;
         local_8.bytes.r = local_8.bytes.g;
     }
-    else if ((i32)(player->bombInfo.bombTimer.current >=
-                   player->bombInfo.bombDuration - 60))
+    else if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration - 60)
     {
         local_8.bytes.b = 0x80 - ((player->bombInfo.bombDuration -
                                    player->bombInfo.bombTimer.GetCurrent()) *
@@ -123,11 +122,11 @@ void BombData::BombReimuACalc(Player *player)
     i32 local_10;
     f32 local_8;
 
-    if (player->bombInfo.bombTimer.current < player->bombInfo.bombDuration)
+    if (player->bombInfo.bombTimer < player->bombInfo.bombDuration)
     {
         if ((player->bombInfo.bombTimer.current !=
              player->bombInfo.bombTimer.previous) &&
-            (player->bombInfo.bombTimer.current == 0))
+            (player->bombInfo.bombTimer == 0))
         {
             g_Gui.ShowBombNamePortrait(0x4a1, "霊符「夢想封印　集」");
             player->bombInfo.bombDuration = 0x8c;
@@ -148,7 +147,7 @@ void BombData::BombReimuACalc(Player *player)
         if ((((player->bombInfo.bombTimer.current !=
                player->bombInfo.bombTimer.previous) &&
               (7 < player->bombInfo.bombTimer.current)) &&
-             (player->bombInfo.bombTimer.current < 0x50)) &&
+             (player->bombInfo.bombTimer < 0x50)) &&
             (player->bombInfo.bombTimer.current % 6 == 0))
         {
             iVar4 = (player->bombInfo.bombTimer.current - 8) / 6;
@@ -250,7 +249,7 @@ void BombData::BombReimuACalc(Player *player)
             }
             local_14 = local_14 + 1;
         }
-        player->bombInfo.bombTimer.Tick();
+        player->bombInfo.bombTimer++;
     }
     else
     {
@@ -318,11 +317,11 @@ void BombData::BombReimuACalcFocus(Player *player)
     PlayerBombSubInfo *local_18;
     i32 local_14;
 
-    if (player->bombInfo.bombTimer.current < player->bombInfo.bombDuration)
+    if (player->bombInfo.bombTimer < player->bombInfo.bombDuration)
     {
         if ((player->bombInfo.bombTimer.current !=
              player->bombInfo.bombTimer.previous) &&
-            (player->bombInfo.bombTimer.current == 0))
+            (player->bombInfo.bombTimer == 0))
         {
             g_Gui.ShowBombNamePortrait(0x4a1, "夢符「封魔陣」");
             player->bombInfo.bombDuration = 300;
@@ -341,8 +340,8 @@ void BombData::BombReimuACalcFocus(Player *player)
             player->verticalMovementSpeedMultiplierDuringBomb = 0.6f;
             player->horizontalMovementSpeedMultiplierDuringBomb = 0.6f;
         }
-        if ((player->bombInfo.bombTimer.current > 60) &&
-            (player->bombInfo.bombTimer.current < 180))
+        if ((player->bombInfo.bombTimer > 60) &&
+            (player->bombInfo.bombTimer < 180))
         {
             if (player->bombInfo.bombTimer.current % 16 == 0)
             {
@@ -466,7 +465,7 @@ void BombData::BombReimuACalcFocus(Player *player)
             }
             local_18 = local_18 + 1;
         }
-        player->bombInfo.bombTimer.Tick();
+        player->bombInfo.bombTimer++;
     }
     else
     {
@@ -523,13 +522,13 @@ void BombData::BombReimuBCalc(Player *player)
     AnmVm *local_c;
     i32 local_8;
 
-    if (player->bombInfo.bombTimer.current < player->bombInfo.bombDuration)
+    if (player->bombInfo.bombTimer < player->bombInfo.bombDuration)
     {
         if ((player->bombInfo.bombTimer.current ==
              player->bombInfo.bombTimer.previous) ||
             (player->bombInfo.bombTimer.current != 0))
         {
-            if (player->bombInfo.bombTimer.current == 60)
+            if (player->bombInfo.bombTimer == 60)
             {
                 BombEffects::RegisterChain(1, 0x50, 20, 0, 0);
             }
@@ -600,7 +599,7 @@ void BombData::BombReimuBCalc(Player *player)
             ComputeBombCherryDrain(player, 3000, 0.17f);
         }
         player->playerState = PLAYER_STATE_INVULNERABLE;
-        player->bombInfo.bombTimer.Tick();
+        player->bombInfo.bombTimer++;
     }
     else
     {
@@ -634,13 +633,13 @@ void BombData::BombReimuBCalcFocus(Player *player)
     AnmVm *local_c;
     i32 local_8;
 
-    if (player->bombInfo.bombTimer.current < player->bombInfo.bombDuration)
+    if (player->bombInfo.bombTimer < player->bombInfo.bombDuration)
     {
         if ((player->bombInfo.bombTimer.current ==
              player->bombInfo.bombTimer.previous) ||
-            (player->bombInfo.bombTimer.current != 0))
+            (player->bombInfo.bombTimer != 0))
         {
-            if (player->bombInfo.bombTimer.current == 60)
+            if (player->bombInfo.bombTimer == 60)
             {
                 BombEffects::RegisterChain(1, 0x50, 20, 0, 0);
             }
@@ -683,7 +682,7 @@ void BombData::BombReimuBCalcFocus(Player *player)
                                     ITEM_POINT_BULLET);
         }
         player->playerState = PLAYER_STATE_INVULNERABLE;
-        player->bombInfo.bombTimer.Tick();
+        player->bombInfo.bombTimer++;
     }
     else
     {
@@ -718,7 +717,7 @@ void BombData::BombMarisaACalc(Player *player)
 {
     i32 i;
 
-    if (player->bombInfo.bombTimer.current < player->bombInfo.bombDuration)
+    if (player->bombInfo.bombTimer < player->bombInfo.bombDuration)
     {
         if ((player->bombInfo.bombTimer.current ==
              player->bombInfo.bombTimer.previous) ||
@@ -767,7 +766,7 @@ void BombData::BombMarisaACalc(Player *player)
             ComputeBombCherryDrain(player, 8000, 0.3f);
         }
         player->playerState = PLAYER_STATE_INVULNERABLE;
-        player->bombInfo.bombTimer.Tick();
+        player->bombInfo.bombTimer++;
     }
     else
     {
@@ -824,11 +823,11 @@ void BombData::BombMarisaACalcFocus(Player *player)
     PlayerBombSubInfo *subInfo;
     i32 i;
 
-    if (player->bombInfo.bombTimer.current < player->bombInfo.bombDuration)
+    if (player->bombInfo.bombTimer < player->bombInfo.bombDuration)
     {
         if ((player->bombInfo.bombTimer.current !=
              player->bombInfo.bombTimer.previous) &&
-            (player->bombInfo.bombTimer.current == 0))
+            (player->bombInfo.bombTimer == 0))
         {
             g_ItemManager.RemoveAllItems();
             g_Gui.ShowBombNamePortrait(0x4a2, "魔符「ミルキーウェイ」");
@@ -908,7 +907,7 @@ void BombData::BombMarisaACalcFocus(Player *player)
             subInfo = subInfo + 1;
         }
         player->playerState = PLAYER_STATE_INVULNERABLE;
-        player->bombInfo.bombTimer.Tick();
+        player->bombInfo.bombTimer++;
     }
     else
     {
@@ -968,7 +967,7 @@ void BombData::BombMarisaBCalc(Player *player)
     PlayerBombSubInfo *local_c;
     i32 local_8;
 
-    if (player->bombInfo.bombTimer.current < player->bombInfo.bombDuration)
+    if (player->bombInfo.bombTimer < player->bombInfo.bombDuration)
     {
         if ((player->bombInfo.bombTimer.current ==
              player->bombInfo.bombTimer.previous) ||
@@ -1025,11 +1024,11 @@ void BombData::BombMarisaBCalc(Player *player)
                 g_AnmManager->ExecuteScript(local_c->vms);
                 local_c = local_c + 1;
             }
-            if (player->bombInfo.bombTimer.current == 20)
+            if (player->bombInfo.bombTimer == 20)
             {
                 BombEffects::RegisterChain(1, 60, 1, 7, 0);
             }
-            else if (player->bombInfo.bombTimer.current == 0x50)
+            else if (player->bombInfo.bombTimer == 0x50)
             {
                 BombEffects::RegisterChain(1, 100, 0x18, 0, 0);
             }
@@ -1056,7 +1055,7 @@ void BombData::BombMarisaBCalc(Player *player)
             ComputeBombCherryDrain(player, 8000, 0.35f);
         }
         player->playerState = PLAYER_STATE_INVULNERABLE;
-        player->bombInfo.bombTimer.Tick();
+        player->bombInfo.bombTimer++;
     }
     else
     {
@@ -1100,17 +1099,17 @@ void BombData::BombMarisaBCalcFocus(Player *player)
     AnmVm *local_c;
     i32 local_8;
 
-    if (player->bombInfo.bombTimer.current < player->bombInfo.bombDuration)
+    if (player->bombInfo.bombTimer < player->bombInfo.bombDuration)
     {
         if ((player->bombInfo.bombTimer.current ==
              player->bombInfo.bombTimer.previous) ||
             (player->bombInfo.bombTimer.current != 0))
         {
-            if (player->bombInfo.bombTimer.current == 60)
+            if (player->bombInfo.bombTimer == 60)
             {
                 BombEffects::RegisterChain(1, 60, 1, 7, 0);
             }
-            else if (player->bombInfo.bombTimer.current == 0x78)
+            else if (player->bombInfo.bombTimer == 0x78)
             {
                 BombEffects::RegisterChain(1, 200, 0x18, 0, 0);
             }
@@ -1154,7 +1153,7 @@ void BombData::BombMarisaBCalcFocus(Player *player)
             ComputeBombCherryDrain(player, 10000, 0.41f);
         }
         player->playerState = PLAYER_STATE_INVULNERABLE;
-        player->bombInfo.bombTimer.Tick();
+        player->bombInfo.bombTimer++;
     }
     else
     {
@@ -1200,7 +1199,7 @@ void BombData::BombSakuyaACalc(Player *player)
     PlayerBombSubInfo *local_c;
     u32 local_8;
 
-    if (player->bombInfo.bombTimer.current < player->bombInfo.bombDuration)
+    if (player->bombInfo.bombTimer < player->bombInfo.bombDuration)
     {
         if ((player->bombInfo.bombTimer.current ==
              player->bombInfo.bombTimer.previous) ||
@@ -1231,7 +1230,7 @@ void BombData::BombSakuyaACalc(Player *player)
                 21, &player->positionCenter, 1, 0xffffffff);
             g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_SAKUYA_A, 0);
         }
-        if (player->bombInfo.bombTimer.current > 60)
+        if (player->bombInfo.bombTimer > 60)
         {
             local_24 = 5;
             local_c = player->bombInfo.subInfo;
@@ -1239,7 +1238,7 @@ void BombData::BombSakuyaACalc(Player *player)
             {
                 if (local_c->state == 0)
                 {
-                    if ((player->bombInfo.bombTimer.current < 0x79) && (local_24 != 0))
+                    if ((player->bombInfo.bombTimer < 0x79) && (local_24 != 0))
                     {
                         local_c->state = 1;
                         g_AnmManager->ExecuteAnmIdx(local_c->vms, (local_8 & 1) + 0x405);
@@ -1295,7 +1294,7 @@ void BombData::BombSakuyaACalc(Player *player)
             }
         }
         player->playerState = PLAYER_STATE_INVULNERABLE;
-        player->bombInfo.bombTimer.Tick();
+        player->bombInfo.bombTimer++;
     }
     else
     {
@@ -1335,7 +1334,7 @@ void BombData::BombSakuyaACalcFocus(Player *player)
     PlayerBombSubInfo *local_c;
     i32 local_8;
 
-    if (player->bombInfo.bombTimer.current < player->bombInfo.bombDuration)
+    if (player->bombInfo.bombTimer < player->bombInfo.bombDuration)
     {
         if ((player->bombInfo.bombTimer.current ==
              player->bombInfo.bombTimer.previous) ||
@@ -1368,12 +1367,12 @@ void BombData::BombSakuyaACalcFocus(Player *player)
             g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_SAKUYA_A, 0);
         }
         if ((-1 < player->bombInfo.bombTimer.current) &&
-            (player->bombInfo.bombTimer.current < 0x3d))
+            (player->bombInfo.bombTimer < 0x3d))
         {
             player->bombInfo.subInfo[0].effect->pos1 = player->positionCenter;
         }
         if ((0x13 < player->bombInfo.bombTimer.current) &&
-            (player->bombInfo.bombTimer.current < 0x74))
+            (player->bombInfo.bombTimer < 0x74))
         {
             local_c = player->bombInfo.subInfo;
             for (local_8 = 0; local_8 < 0x60; local_8 += 1)
@@ -1416,10 +1415,10 @@ void BombData::BombSakuyaACalcFocus(Player *player)
         {
             if (local_c->state != 0)
             {
-                if (((local_c->timer).current < 0x1e) ||
+                if (((local_c->timer) < 0x1e) ||
                     (0x45 < (local_c->timer).current))
                 {
-                    if (((local_c->timer).current == (local_c->timer).previous) ||
+                    if (((local_c->timer) == (local_c->timer).previous) ||
                         ((local_c->timer).current != 0x46))
                     {
                         bVar4 = false;
@@ -1477,12 +1476,12 @@ void BombData::BombSakuyaACalcFocus(Player *player)
                         0xffff80ff);
                 }
                 g_AnmManager->ExecuteScript(local_c->vms);
-                local_c->timer.Tick();
+                local_c->timer++;
             }
             local_c = local_c + 1;
         }
         player->playerState = PLAYER_STATE_INVULNERABLE;
-        player->bombInfo.bombTimer.Tick();
+        player->bombInfo.bombTimer++;
     }
     else
     {
@@ -1527,7 +1526,7 @@ void BombData::BombSakuyaBCalc(Player *player)
     PlayerBombSubInfo *local_c;
     u32 local_8;
 
-    if (player->bombInfo.bombTimer.current < player->bombInfo.bombDuration)
+    if (player->bombInfo.bombTimer < player->bombInfo.bombDuration)
     {
         if ((player->bombInfo.bombTimer.current ==
              player->bombInfo.bombTimer.previous) ||
@@ -1677,7 +1676,7 @@ void BombData::BombSakuyaBCalc(Player *player)
             local_c = local_c + 1;
         }
         player->playerState = PLAYER_STATE_INVULNERABLE;
-        player->bombInfo.bombTimer.Tick();
+        player->bombInfo.bombTimer++;
     }
     else
     {
@@ -1721,7 +1720,7 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
     PlayerBombSubInfo *local_c;
     i32 i;
 
-    if (player->bombInfo.bombTimer.current < player->bombInfo.bombDuration)
+    if (player->bombInfo.bombTimer < player->bombInfo.bombDuration)
     {
         if ((player->bombInfo.bombTimer.current ==
              player->bombInfo.bombTimer.previous) ||
@@ -1829,7 +1828,7 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
             local_c = local_c + 1;
         }
         player->playerState = PLAYER_STATE_INVULNERABLE;
-        player->bombInfo.bombTimer.Tick();
+        player->bombInfo.bombTimer++;
     }
     else
     {

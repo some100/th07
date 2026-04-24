@@ -715,7 +715,7 @@ u32 EffectManager::OnUpdate(EffectManager *arg)
             {
                 if (g_AnmManager->ExecuteScript(&effect->vm) == 0)
                 {
-                    effect->timer.Tick();
+                    effect->timer++;
                     effect->head = NULL;
                     if ((effect->is2D == 1) || (effect->is2D == 3))
                     {

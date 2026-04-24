@@ -51,10 +51,10 @@ u32 BombEffects::OnUpdateFadeOut(BombEffects *arg)
             arg->alpha = 0.0f;
         }
     }
-    bool bVar1 = arg->timer.current < arg->duration;
+    bool bVar1 = arg->timer < arg->duration;
     if (bVar1)
     {
-        arg->timer.Tick();
+        arg->timer++;
     }
     return bVar1;
 }
@@ -62,30 +62,19 @@ u32 BombEffects::OnUpdateFadeOut(BombEffects *arg)
 // FUNCTION: TH07 0x0044a650
 void ScreenEffect::DrawSquare(ZunRect *rect, D3DCOLOR color)
 {
-    VertexDiffuseXyzrhw vertices[4];
-
     g_AnmManager->Flush();
 
-    vertices[0].pos.y = rect->top;
-    vertices[0].pos.x = rect->left;
-    vertices[0].pos.z = 0.0f;
-    vertices[1].pos.y = rect->top;
-    vertices[1].pos.x = rect->right;
-    vertices[1].pos.z = 0.0f;
-    vertices[2].pos.y = rect->bottom;
-    vertices[2].pos.x = rect->left;
-    vertices[2].pos.z = 0.0f;
-    vertices[3].pos.y = rect->bottom;
-    vertices[3].pos.x = rect->right;
-    vertices[3].pos.z = 0.0f;
-    vertices[3].w = 1.0f;
-    vertices[2].w = 1.0f;
-    vertices[1].w = 1.0f;
-    vertices[0].w = 1.0f;
-    vertices[0].diffuse.color = color;
-    vertices[1].diffuse.color = color;
-    vertices[2].diffuse.color = color;
-    vertices[3].diffuse.color = color;
+    VertexDiffuseXyzrhw vertices[4];
+
+    vertices[0].pos = D3DXVECTOR3(rect->left, rect->top, 0.0f);
+    vertices[1].pos = D3DXVECTOR3(rect->right, rect->top, 0.0f);
+    vertices[2].pos = D3DXVECTOR3(rect->left, rect->bottom, 0.0f);
+    vertices[3].pos = D3DXVECTOR3(rect->right, rect->bottom, 0.0f);
+    vertices[0].w = vertices[1].w = vertices[2].w = vertices[3].w = 1.0f;
+    vertices[0].diffuse.color =
+        vertices[1].diffuse.color =
+            vertices[2].diffuse.color =
+                vertices[3].diffuse.color = color;
     if ((g_Supervisor.cfg.opts >> 8 & 1) == 0)
     {
         g_Supervisor.d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2);
@@ -101,12 +90,12 @@ void ScreenEffect::DrawSquare(ZunRect *rect, D3DCOLOR color)
     g_Supervisor.d3dDevice->SetVertexShader(0x44);
     g_Supervisor.d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertices,
                                             sizeof(VertexDiffuseXyzrhw));
-    g_AnmManager->currentVertexShader = 0xff;
-    g_AnmManager->currentSprite = NULL;
-    g_AnmManager->currentTexture = NULL;
-    g_AnmManager->currentColorOp = 0xff;
-    g_AnmManager->currentBlendMode = 0xff;
-    g_AnmManager->currentZWriteDisable = 0xff;
+    g_AnmManager->SetVertexShader(0xff);
+    g_AnmManager->SetSprite(NULL);
+    g_AnmManager->SetTexture(NULL);
+    g_AnmManager->SetColorOp(0xff);
+    g_AnmManager->SetBlendMode(0xff);
+    g_AnmManager->SetZWriteDisable(0xff);
     if ((g_Supervisor.cfg.opts >> 8 & 1) == 0)
     {
         g_Supervisor.d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 4);
@@ -121,29 +110,19 @@ void ScreenEffect::DrawColoredQuad(ZunRect *rect, D3DCOLOR param_2,
                                    D3DCOLOR param_3, D3DCOLOR param_4,
                                    D3DCOLOR param_5)
 {
-    VertexDiffuseXyzrhw local_54[4];
-
     g_AnmManager->Flush();
-    local_54[0].pos.y = rect->top;
-    local_54[0].pos.x = rect->left;
-    local_54[0].pos.z = 0.0f;
-    local_54[1].pos.y = rect->top;
-    local_54[1].pos.x = rect->right;
-    local_54[1].pos.z = 0.0f;
-    local_54[2].pos.y = rect->bottom;
-    local_54[2].pos.x = rect->left;
-    local_54[2].pos.z = 0.0f;
-    local_54[3].pos.y = rect->bottom;
-    local_54[3].pos.x = rect->right;
-    local_54[3].pos.z = 0.0f;
-    local_54[3].w = 1.0f;
-    local_54[2].w = 1.0f;
-    local_54[1].w = 1.0f;
-    local_54[0].w = 1.0f;
-    local_54[1].diffuse.color = param_3;
-    local_54[2].diffuse.color = param_4;
-    local_54[3].diffuse.color = param_5;
-    local_54[0].diffuse.color = param_2;
+
+    VertexDiffuseXyzrhw vertices[4];
+
+    vertices[0].pos = D3DXVECTOR3(rect->left, rect->top, 0.0f);
+    vertices[1].pos = D3DXVECTOR3(rect->right, rect->top, 0.0f);
+    vertices[2].pos = D3DXVECTOR3(rect->left, rect->bottom, 0.0f);
+    vertices[3].pos = D3DXVECTOR3(rect->right, rect->bottom, 0.0f);
+    vertices[0].w = vertices[1].w = vertices[2].w = vertices[3].w = 1.0f;
+    vertices[0].diffuse.color = param_2;
+    vertices[1].diffuse.color = param_3;
+    vertices[2].diffuse.color = param_4;
+    vertices[3].diffuse.color = param_5;
     if ((g_Supervisor.cfg.opts >> 8 & 1) == 0)
     {
         g_Supervisor.d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2);
@@ -157,14 +136,14 @@ void ScreenEffect::DrawColoredQuad(ZunRect *rect, D3DCOLOR param_2,
     }
     g_Supervisor.d3dDevice->SetRenderState(D3DRS_DESTBLEND, 6);
     g_Supervisor.d3dDevice->SetVertexShader(0x44);
-    g_Supervisor.d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, local_54,
+    g_Supervisor.d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertices,
                                             sizeof(VertexDiffuseXyzrhw));
-    g_AnmManager->currentVertexShader = 0xff;
-    g_AnmManager->currentSprite = NULL;
-    g_AnmManager->currentTexture = NULL;
-    g_AnmManager->currentColorOp = 0xff;
-    g_AnmManager->currentBlendMode = 0xff;
-    g_AnmManager->currentZWriteDisable = 0xff;
+    g_AnmManager->SetVertexShader(0xff);
+    g_AnmManager->SetSprite(NULL);
+    g_AnmManager->SetTexture(NULL);
+    g_AnmManager->SetColorOp(0xff);
+    g_AnmManager->SetBlendMode(0xff);
+    g_AnmManager->SetZWriteDisable(0xff);
     if ((g_Supervisor.cfg.opts >> 8 & 1) == 0)
     {
         g_Supervisor.d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 4);
@@ -206,10 +185,10 @@ u32 BombEffects::OnUpdateFadeIn(BombEffects *arg)
             arg->alpha = 0.0f;
         }
     }
-    bool bVar1 = arg->timer.current < arg->duration;
+    bool bVar1 = arg->timer < arg->duration;
     if (bVar1)
     {
-        arg->timer.Tick();
+        arg->timer++;
     }
     return bVar1;
 }
@@ -230,7 +209,7 @@ u32 BombEffects::OnDrawPlayAreaColor(BombEffects *arg)
 // FUNCTION: TH07 0x0044af80
 u32 BombEffects::OnUpdatePulse(BombEffects *arg)
 {
-    if (arg->timer.current < arg->duration)
+    if (arg->timer < arg->duration)
     {
         arg->alpha =
             (f32)((u32)((arg->args[1] >> 0x18) -
@@ -252,7 +231,7 @@ u32 BombEffects::OnUpdatePulse(BombEffects *arg)
         }
         arg->timer = 0;
     }
-    arg->timer.Tick();
+    arg->timer++;
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
@@ -281,7 +260,7 @@ u32 BombEffects::OnUpdateScreenShake(BombEffects *arg)
         return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
     }
 
-    arg->timer.Tick();
+    arg->timer++;
     if (arg->duration >= arg->timer.current)
         return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
 

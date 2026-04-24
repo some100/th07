@@ -46,6 +46,56 @@ struct ZunTimer
         this->previous = -999;
     }
 
+    void operator+=(i32 value)
+    {
+        this->Increment(value);
+    }
+
+    void operator-=(i32 value)
+    {
+        this->Decrement(value);
+    }
+
+    i32 operator==(i32 value)
+    {
+        return this->current == value;
+    }
+
+    i32 operator!=(i32 value)
+    {
+        return this->current != value;
+    }
+
+    i32 operator<(i32 value)
+    {
+        return this->current < value;
+    }
+
+    i32 operator<=(i32 value)
+    {
+        return this->current <= value;
+    }
+
+    i32 operator>(i32 value)
+    {
+        return this->current > value;
+    }
+
+    i32 operator>=(i32 value)
+    {
+        return this->current >= value;
+    }
+
+    void operator++(int)
+    {
+        this->Tick();
+    }
+
+    void operator--(int)
+    {
+        this->Decrement(1);
+    }
+
     void Decrement(i32 value);
     void Increment(i32 value);
     i32 NextTick();

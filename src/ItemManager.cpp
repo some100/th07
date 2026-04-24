@@ -10,6 +10,7 @@
 #include "Player.hpp"
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
+#include "d3dx8.h"
 
 // GLOBAL: TH07 0x00575c70
 ItemManager g_ItemManager;
@@ -206,9 +207,9 @@ void ItemManager::OnUpdate()
             this->activeItemCount = this->activeItemCount + 1;
             if (item->state == 2)
             {
-                if (item->timer.current > 60)
+                if (item->timer > 60)
                 {
-                    if (item->timer.current == 60)
+                    if (item->timer == 60)
                     {
                         item->startPosition.x = 0.0f;
                         item->startPosition.y = 0.0f;
@@ -280,7 +281,7 @@ void ItemManager::OnUpdate()
             if (g_Player.CalcItemBoxCollision(&item->currentPosition, &local_20) ==
                 0)
             {
-                item->timer.Tick();
+                item->timer++;
                 if (item->sprite.currentInstruction != NULL)
                 {
                     g_AnmManager->ExecuteScript(&item->sprite);
@@ -643,33 +644,40 @@ void ItemManager::OnUpdate()
     }
 }
 
+#pragma var_order(i, item)
 // FUNCTION: TH07 0x00433a90
 void ItemManager::RemoveAllItems()
 {
-    Item *item = this->items;
-    for (i32 i = 0; i < 0x44c; i++)
+    Item *item;
+    i32 i;
+
+    item = this->items;
+    for (i = 0; i < 0x44c; i++, item++)
     {
-        if (item->isInUse != 0)
-        {
-            item->state = 1;
-            item->startPosition.x = 0.0f;
-            item->startPosition.y = -0.5f;
-            item->startPosition.z = 0.0f;
-        }
-        item = item + 1;
+        if (item->isInUse == 0)
+            continue;
+
+        item->state = 1;
+        item->startPosition = D3DXVECTOR3(0.0f, -0.5f, 0.0f);
     }
 }
 
+#pragma var_order(i, item)
 // FUNCTION: TH07 0x00433b20
 void ItemManager::DespawnAllItems(i32 param_1)
 {
-    Item *item = this->items;
-    for (i32 i = 0; i < 0x44c; i++)
+    Item *item;
+    i32 i;
+
+    item = this->items;
+    for (i = 0; i < 0x44c; i++, item++)
     {
-        if (((item->isInUse != 0) && (i != param_1)) &&
-            ((item->itemType == 0 || (item->itemType == 2))))
+        if (item->isInUse == 0 || i == param_1)
+            continue;
+
+        if (item->itemType == 0 || item->itemType == 2)
         {
-            if (-0.5f < item->startPosition.y)
+            if (item->startPosition.y > -0.5f)
             {
                 item->startPosition.x = 0.0f;
                 item->startPosition.y = -0.5f;
@@ -677,28 +685,31 @@ void ItemManager::DespawnAllItems(i32 param_1)
             }
             g_EffectManager.SpawnParticles(0, &item->currentPosition, 1, 0xffffffff);
             item->itemType = 7;
-            item->sprite.anmFileIdx = 0x2cb;
-            g_AnmManager->SetAndExecuteScript(&item->sprite,
-                                              g_AnmManager->scripts[0x2cb]);
+            g_AnmManager->SetAnmIdxAndExecuteScript(&item->sprite, 0x2cb);
         }
-        item = item + 1;
     }
 }
 
+#pragma var_order(i, item)
 // FUNCTION: TH07 0x00433c40
 void ItemManager::ActivateAllItems()
 {
-    Item *item = this->items;
-    for (i32 i = 0; i < 0x44c; i++)
+    Item *item;
+    i32 i;
+
+    item = this->items;
+    for (i = 0; i < 0x44c; i++, item++)
     {
-        if ((item->isInUse == 1) && (item->state == 1))
+        if (item->isInUse != 1)
+            continue;
+
+        if (item->state == 1)
         {
             item->state = 0;
             item->startPosition.x = 0.0f;
             item->startPosition.y = -0.9f;
             item->startPosition.z = 0.0f;
         }
-        item = item + 1;
     }
 }
 

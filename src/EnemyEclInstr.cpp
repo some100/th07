@@ -211,9 +211,10 @@ void EnemyEclInstr::ExInsDespawnLargeBulletAndSavePos(Enemy *enemy,
 // FUNCTION: TH07 0x00418260
 void EnemyEclInstr::ExInsCopyMainBossMovement(Enemy *enemy, EclRawInstr *instr)
 {
-    enemy->moveInterpStartPos = g_EnemyManager.bosses[0]->position;
-    enemy->moveRadius = g_EnemyManager.bosses[0]->moveRadius;
-    enemy->moveAngularVelocity = g_EnemyManager.bosses[0]->moveAngularVelocity;
+    Enemy *boss = g_EnemyManager.bosses[0];
+    enemy->moveInterpStartPos = boss->position;
+    enemy->moveRadius = boss->moveRadius;
+    enemy->moveAngularVelocity = boss->moveAngularVelocity;
 }
 
 // FUNCTION: TH07 0x004182d0

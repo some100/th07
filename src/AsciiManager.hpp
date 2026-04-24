@@ -86,6 +86,11 @@ struct AsciiManager
         this->uiFadeState = fadeState;
     }
 
+    i32 GetFadeState()
+    {
+        return this->uiFadeState;
+    }
+
     AnmVm vm0;
     AnmVm vm1;
     AnmVm otherVms[3];

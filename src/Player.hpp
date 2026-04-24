@@ -88,15 +88,6 @@ struct PlayerBombInfo
     PlayerBombSubInfo subInfo[128];
 };
 
-struct PlayerLaser
-{
-    D3DXVECTOR3 pos;
-    D3DXVECTOR3 size;
-    i32 active;
-    i32 unused_1c;
-};
-C_ASSERT(sizeof(PlayerLaser) == 0x20);
-
 struct PlayerBullet
 {
     PlayerBullet();
@@ -195,8 +186,7 @@ struct Player
     D3DXVECTOR2 velocity;
     i32 unused_9d4;
     Effect *focusEffect;
-    BombProjectile bombProjectiles[8];
-    PlayerLaser playerLasers[104];
+    BombProjectile bombProjectiles[112];
     BombProjectile bombHitboxes[96];
     i32 isBombing;
     ShtEntry *shtEntries[4];

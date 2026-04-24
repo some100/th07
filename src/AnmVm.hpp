@@ -194,7 +194,7 @@ struct AnmVm : AnmVmBase
             u32 useColor2 : 1;
         };
     };
-    u16 autoRotate;
+    i16 autoRotate;
     i16 pendingInterrupt;
     D3DXVECTOR3 pos;
     i16 activeSpriteIdx;

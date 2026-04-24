@@ -64,7 +64,7 @@ typedef enum EclVarId
     VAR_MOVE_INTERP_ORIGIN_Z = 10052,
     VAR_MOVE_ANGLE = 10053,
     VAR_MOVE_ANGULAR_VELOCITY = 10054,
-    VAR_RNG_0_TO_1 = 10055,
+    VAR_RNG = 10055,
     VAR_RNG_CUSTOM_BOUND = 10056,
     VAR_MOVE_INTERP_TARGET_X = 10057,
     VAR_MOVE_INTERP_TARGET_Y = 10058,
@@ -161,7 +161,7 @@ struct EclManager
     static void MathLerp(Enemy *enemy, EclInterp *interp, f32 t);
     static void MathCubicInterp(Enemy *enemy, EclInterp *interp, f32 t);
     static void BeginSpellcard(Enemy *enemy, EclRawInstr *instr);
-    static void EndSpellcard();
+    static void EndSpellcard(Enemy *enemy, EclRawInstr *instr);
     ZunResult RunEcl(Enemy *enemy);
 
     EclRawHeader *eclFile;

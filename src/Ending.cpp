@@ -185,7 +185,7 @@ ZunResult Ending::ParseEndFile()
     memset(local_54, 0, sizeof(local_54));
     if (0 < this->timer3.current)
     {
-        this->timer3.Decrement(1);
+        this->timer3--;
         if (this->minWaitResetFrames == 0)
         {
             if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU) ||
@@ -207,7 +207,7 @@ ZunResult Ending::ParseEndFile()
         }
         this->possiblyTimesFileParsed = 0;
     }
-    if (this->timer2.current < 1)
+    if (this->timer2 < 1)
     {
         while (true)
         {
@@ -383,7 +383,7 @@ ZunResult Ending::ParseEndFile()
             }
         }
     }
-    this->timer2.Decrement(1);
+    this->timer2--;
     if (this->minWaitFrames == 0)
     {
         if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU) ||
@@ -423,7 +423,7 @@ switchD_0041d980_caseD_0:
     }
     this->possiblyTimesFileParsed = this->possiblyTimesFileParsed + 1;
 LAB_0041e331:
-    this->timer1.Tick();
+    this->timer1++;
     this->backgroundPos.y -= this->backgroundScrollSpeed;
     if (this->backgroundPos.y <= 0.0f)
     {

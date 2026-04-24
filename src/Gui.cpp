@@ -881,7 +881,7 @@ ZunResult GuiImpl::RunMsg()
     {
         g_ItemManager.RemoveAllItems();
     }
-    while ((i32)(this->msg.timer.current >= this->msg.curInstr->time))
+    while (this->msg.timer >= this->msg.curInstr->time)
     {
         switch (this->msg.curInstr->opcode)
         {
@@ -1145,7 +1145,7 @@ SKIP_TIME_INCREMENT:
     g_AnmManager->ExecuteScript(this->msg.dialogueLines + 1);
     g_AnmManager->ExecuteScript(this->msg.introLines);
     g_AnmManager->ExecuteScript(this->msg.introLines + 1);
-    if (((i32)(this->msg.timer.current < 60) &&
+    if (((i32)(this->msg.timer < 60) &&
          (this->msg.dialogueSkippable != 0)) &&
         IS_PRESSED_GAME(TH_BUTTON_SKIP))
     {
@@ -1175,7 +1175,7 @@ ZunResult GuiImpl::DrawDialogue()
     }
     else
     {
-        if (this->msg.timer.current < 60)
+        if (this->msg.timer < 60)
         {
             local_8 =
                 (((f32)this->msg.timer.current + this->msg.timer.subFrame) * 48.0f) /
@@ -1403,7 +1403,7 @@ void Gui::UpdateGui()
     }
     if (this->impl->bonusScore.isShown != 0)
     {
-        if (this->impl->bonusScore.timer.current < 0x1e)
+        if (this->impl->bonusScore.timer < 0x1e)
         {
             this->impl->bonusScore.pos.x =
                 (((f32)this->impl->bonusScore.timer.current +
@@ -1424,7 +1424,7 @@ void Gui::UpdateGui()
     }
     if (this->impl->fullPowerMode.isShown != 0)
     {
-        if (this->impl->fullPowerMode.timer.current < 0x1e)
+        if (this->impl->fullPowerMode.timer < 0x1e)
         {
             this->impl->fullPowerMode.pos.x =
                 (((f32)this->impl->fullPowerMode.timer.current +
@@ -2106,8 +2106,8 @@ ZunResult Gui::DeletedCallback(Gui *arg)
     g_AnmManager->ReleaseAnm(0x1f);
     arg->FreeMsgFile();
     if ((u32)(g_Supervisor.curState != 3 &&
-              g_Supervisor.curState != 0xb &&
-              g_Supervisor.curState != 0xc))
+              g_Supervisor.curState != 11 &&
+              g_Supervisor.curState != 12))
     {
         g_AnmManager->ReleaseAnm(0x15);
         g_AnmManager->ReleaseAnm(0x17);
@@ -2126,8 +2126,8 @@ ZunResult Gui::RegisterChain()
 {
     Gui *mgr = &g_Gui;
 
-    if ((u32)(g_Supervisor.curState != 3 && g_Supervisor.curState != 0xb &&
-              g_Supervisor.curState != 0xc) != 0)
+    if ((u32)(g_Supervisor.curState != 3 && g_Supervisor.curState != 11 &&
+              g_Supervisor.curState != 12) != 0)
     {
         memset(mgr, 0, sizeof(Gui));
         mgr->impl = new GuiImpl;

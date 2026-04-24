@@ -69,74 +69,74 @@ void Enemy::Move()
         g_Supervisor.effectiveFramerateMultiplier * this->axisSpeed.z;
 }
 
+#pragma var_order(i, enemy)
 // FUNCTION: TH07 0x0041ea60
 void EnemyManager::Initialize()
 {
+    i32 i;
+    Enemy *enemy;
+
+    enemy = &this->enemies[0];
     memset(this, 0, sizeof(EnemyManager));
-    memset(&this->enemyTemplate, 0, sizeof(Enemy));
-    for (i32 i = 0; i < 2; i++)
+    enemy = &this->enemyTemplate;
+    memset(enemy, 0, sizeof(Enemy));
+    for (i = 0; i < 2; i++)
     {
-        this->enemyTemplate.vms[i].anmFileIdx = -1;
+        enemy->vms[i].anmFileIdx = -1;
     }
-    for (i32 i = 0; i < 0x60; i++)
+    for (i = 0; i < 0x60; i++)
     {
-        this->enemyTemplate.enemyHistory[i].position.x = -999.0f;
+        enemy->enemyHistory[i].position.x = -999.0f;
     }
-    this->enemyTemplate.flags1 = this->enemyTemplate.flags1 | 0x80;
-    this->enemyTemplate.timer = 0;
-    this->enemyTemplate.flags3 = this->enemyTemplate.flags3 & 0xf7;
-    this->enemyTemplate.hitboxSize.x = 12.0f;
-    this->enemyTemplate.hitboxSize.y = 12.0f;
-    this->enemyTemplate.hitboxSize.z = 12.0f;
-    this->enemyTemplate.axisSpeed.x = 0.0f;
-    this->enemyTemplate.axisSpeed.y = 0.0f;
-    this->enemyTemplate.axisSpeed.z = 0.0f;
-    this->enemyTemplate.angularVelocity = 0.0f;
-    this->enemyTemplate.angle = 0.0f;
-    this->enemyTemplate.moveAcceleration = 0.0f;
-    this->enemyTemplate.moveSpeed = 0.0f;
-    this->enemyTemplate.flags1 = this->enemyTemplate.flags1 & 0xfc;
-    this->enemyTemplate.flags1 = this->enemyTemplate.flags1 & 0xdf;
-    this->enemyTemplate.flags1 = this->enemyTemplate.flags1 & 0xbf;
-    this->enemyTemplate.flags2 = this->enemyTemplate.flags2 & 0xbf;
-    this->enemyTemplate.stackDepth = 0;
-    this->enemyTemplate.life = 1;
-    this->enemyTemplate.score = 100;
-    this->enemyTemplate.deathAnm1 = 0;
-    this->enemyTemplate.deathAnm2 = 0;
-    this->enemyTemplate.deathAnm3 = 0;
-    this->enemyTemplate.shootInterval = 0;
-    this->enemyTemplate.shootIntervalTimer = 0;
-    this->enemyTemplate.shootOffset.x = 0.0f;
-    this->enemyTemplate.shootOffset.y = 0.0f;
-    this->enemyTemplate.shootOffset.z = 0.0f;
-    this->enemyTemplate.anmExLeft = -1;
-    this->enemyTemplate.anmExRight = -1;
-    this->enemyTemplate.anmExDefaults = -1;
-    this->enemyTemplate.flags2 = this->enemyTemplate.flags2 | 1;
-    this->enemyTemplate.flags2 = this->enemyTemplate.flags2 | 2;
-    this->enemyTemplate.flags2 = this->enemyTemplate.flags2 | 4;
-    this->enemyTemplate.flags2 = this->enemyTemplate.flags2 & 0xf7;
-    this->enemyTemplate.flags2 = this->enemyTemplate.flags2 | 0x10;
-    this->enemyTemplate.flags2 = this->enemyTemplate.flags2 & 0xdf;
-    this->enemyTemplate.flags3 = this->enemyTemplate.flags3 & 0xf8;
-    this->enemyTemplate.deathCallbackSub = -1;
-    this->enemyTemplate.flags2 = this->enemyTemplate.flags2 & 0x7f;
-    this->enemyTemplate.effectsNum = 0;
-    this->enemyTemplate.runInterrupt = -1;
-    for (i32 i = 0; i < 4; i++)
+    enemy->flags1 = enemy->flags1 | 0x80;
+    enemy->timer = 0;
+    enemy->flags3 = enemy->flags3 & 0xf7;
+    enemy->hitboxSize = D3DXVECTOR3(12.0f, 12.0f, 12.0f);
+    enemy->axisSpeed = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+    enemy->angularVelocity = 0.0f;
+    enemy->angle = 0.0f;
+    enemy->moveAcceleration = 0.0f;
+    enemy->moveSpeed = 0.0f;
+    enemy->flags1 = enemy->flags1 & 0xfc;
+    enemy->flags1 = enemy->flags1 & 0xdf;
+    enemy->flags1 = enemy->flags1 & 0xbf;
+    enemy->flags2 = enemy->flags2 & 0xbf;
+    enemy->stackDepth = 0;
+    enemy->life = 1;
+    enemy->score = 100;
+    enemy->deathAnm1 = 0;
+    enemy->deathAnm2 = 0;
+    enemy->deathAnm3 = 0;
+    enemy->shootInterval = 0;
+    enemy->shootIntervalTimer = 0;
+    enemy->shootOffset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+    enemy->anmExLeft = -1;
+    enemy->anmExRight = -1;
+    enemy->anmExDefaults = -1;
+    enemy->flags2 = enemy->flags2 | 1;
+    enemy->flags2 = enemy->flags2 | 2;
+    enemy->flags2 = enemy->flags2 | 4;
+    enemy->flags2 = enemy->flags2 & 0xf7;
+    enemy->flags2 = enemy->flags2 | 0x10;
+    enemy->flags2 = enemy->flags2 & 0xdf;
+    enemy->flags3 = enemy->flags3 & 0xf8;
+    enemy->deathCallbackSub = -1;
+    enemy->flags2 = enemy->flags2 & 0x7f;
+    enemy->effectsNum = 0;
+    enemy->runInterrupt = -1;
+    for (i = 0; i < 4; i++)
     {
-        this->enemyTemplate.lifeCallbackThreshold[i] = -1;
+        enemy->lifeCallbackThreshold[i] = -1;
     }
-    this->enemyTemplate.timerCallbackThreshold = -1;
-    this->enemyTemplate.periodicCallbackSub = -1;
-    this->enemyTemplate.laserIdx = 0;
-    this->enemyTemplate.damageTintTimer = 0;
-    this->enemyTemplate.flags3 = this->enemyTemplate.flags3 & 0xef;
-    this->enemyTemplate.bulletRankSpeedLow = -0.15f;
-    this->enemyTemplate.bulletRankSpeedHigh = 0.15f;
-    this->enemyTemplate.bulletProps.soundIdx = SOUND_BOMB_MARISA_A_FOCUS;
-    this->enemyTemplate.bulletProps.soundOverride = SOUND_25;
+    enemy->timerCallbackThreshold = -1;
+    enemy->periodicCallbackSub = -1;
+    enemy->laserIdx = 0;
+    enemy->damageTintTimer = 0;
+    enemy->flags3 = enemy->flags3 & 0xef;
+    enemy->bulletRankSpeedLow = -0.15f;
+    enemy->bulletRankSpeedHigh = 0.15f;
+    enemy->bulletProps.soundIdx = SOUND_BOMB_MARISA_A_FOCUS;
+    enemy->bulletProps.soundOverride = SOUND_25;
 }
 
 // FUNCTION: TH07 0x0041ee70
@@ -302,7 +302,7 @@ void EnemyManager::RunEclTimeline(EclTimeline *timeline)
         if (timeline->timelineInstr->time < 0)
         {
         LAB_0041fd08:
-            timeline->timelineTime.Tick();
+            timeline->timelineTime++;
             return;
         }
         if ((timeline->timelineTime).current ==
@@ -459,7 +459,7 @@ void EnemyManager::RunEclTimeline(EclTimeline *timeline)
             case 9:
                 if (g_Gui.MsgWait() != 0)
                 {
-                    timeline->timelineTime.Decrement(1);
+                    timeline->timelineTime--;
                     goto LAB_0041fd08;
                 }
                 break;
@@ -477,13 +477,12 @@ void EnemyManager::RunEclTimeline(EclTimeline *timeline)
                     (g_EnemyManager.bosses[timeline->timelineInstr->arg0]->flags1 <
                      0))
                 {
-                    timeline->timelineTime.Decrement(1);
+                    timeline->timelineTime--;
                     goto LAB_0041fd08;
                 }
             }
         }
-        else if ((timeline->timelineTime).current <
-                 (i32)timeline->timelineInstr->time)
+        else if ((timeline->timelineTime) < timeline->timelineInstr->time)
             goto LAB_0041fd08;
         timeline->timelineInstr =
             (EclTimelineInstr *)((u8 *)timeline->timelineInstr +
@@ -556,7 +555,7 @@ i32 Enemy::HandleTimerCallback()
         g_Gui.spellcardSecondsRemaining =
             (this->timerCallbackThreshold - (this->timer).current) / 60;
     }
-    if ((this->timer).current < this->timerCallbackThreshold)
+    if ((this->timer) < this->timerCallbackThreshold)
     {
         return 0;
     }
@@ -776,7 +775,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
             }
             else
             {
-                arg->timelineTime.Tick();
+                arg->timelineTime++;
                 return CHAIN_CALLBACK_RESULT_CONTINUE;
             }
         }
@@ -787,7 +786,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
             ((g_Player.bombInfo.isInUse != 0 ||
               (g_Player.playerState != PLAYER_STATE_ALIVE))))
         {
-            enemy->timer.Decrement(1);
+            enemy->timer--;
             goto LAB_00421da7;
         }
         do
@@ -1235,11 +1234,11 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
         enemy->UpdateEffects();
         if (g_GameManager.isTimeStopped == 0)
         {
-            enemy->timer.Tick();
+            enemy->timer++;
         }
         if (0 < enemy->invincibilityTimer.current)
         {
-            enemy->invincibilityTimer.Decrement(1);
+            enemy->invincibilityTimer--;
         }
         if (((enemy->flags2 >> 3 & 1) == 0) && (enemy->flags1 < 0))
         {

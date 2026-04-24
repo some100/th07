@@ -194,9 +194,9 @@ struct Bullet
     i32 spawnDelay;
     u16 exFlags;
     u16 moreFlags;
-    u16 spriteOffset;
+    i16 spriteOffset;
     i16 unused_bfa;
-    i16 state;
+    u16 state;
     u16 outOfBoundsTime;
     u8 spawned;
     u8 grazed;

@@ -58,15 +58,9 @@ const char *g_StageFiles[9] = {
 Stage::Stage()
 {
     memset(this, NULL, sizeof(Stage));
-    this->camPos.x = 0.0;
-    this->camPos.y = 0.0;
-    this->camPos.z = 1000.0;
-    this->camLookAt.x = 0.0;
-    this->camLookAt.y = 0.0;
-    this->camLookAt.z = 0.0;
-    this->camUp.x = 0.0;
-    this->camUp.y = 1.0;
-    this->camUp.z = 0.0;
+    this->camPos = D3DXVECTOR3(0.0f, 0.0f, 1000.0f);
+    this->camLookAt = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+    this->camUp = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
     this->fov = ZUN_PI / 6.0f;
     this->camPosEnd = this->camPos;
     this->camPosStart = this->camPos;
@@ -88,9 +82,9 @@ void Stage::UpdateScriptAndCamera(Stage *stage, i32 param_2,
 {
     f32 local_8;
 
-    if (stage->timers[param_2].current < stage->timersMax[param_2])
+    if (stage->timers[param_2] < stage->timersMax[param_2])
     {
-        stage->timers[param_2].Tick();
+        stage->timers[param_2]++;
         local_8 = ((f32)stage->timers[param_2].current +
                    stage->timers[param_2].subFrame) /
                   (f32)stage->timersMax[param_2];
@@ -185,7 +179,7 @@ LAB_0040578a:
     while (true)
     {
         local_8 = arg->beginningOfScript + arg->instructionIndex;
-        if ((arg->scriptTime.current < local_8->frame) || (local_8->frame == -1))
+        if ((arg->scriptTime < local_8->frame) || (local_8->frame == -1))
             goto LAB_004061aa;
         switch (local_8->opcode)
         {
@@ -257,9 +251,9 @@ LAB_0040578a:
                 }
                 if (arg->timersMax[3] != 0)
                 {
-                    if (arg->timers[3].current < arg->timersMax[3])
+                    if (arg->timers[3] < arg->timersMax[3])
                     {
-                        arg->timers[3].Tick();
+                        arg->timers[3]++;
                         local_30 = ((f32)arg->timers[3].current + arg->timers[3].subFrame) /
                                    (f32)arg->timersMax[3];
                     }
@@ -296,7 +290,7 @@ LAB_0040578a:
                 D3DXVec3Normalize(&arg->camLookAtDir, &arg->camLookAt);
                 if (arg->skyFogInterpDuration != 0)
                 {
-                    arg->skyFogInterpTimer.Tick();
+                    arg->skyFogInterpTimer++;
                     local_34 = ((f32)arg->skyFogInterpTimer.current +
                                 arg->skyFogInterpTimer.subFrame) /
                                (f32)arg->skyFogInterpDuration;
@@ -325,7 +319,7 @@ LAB_0040578a:
                 }
                 if (local_8->opcode != 3)
                 {
-                    arg->scriptTime.Tick();
+                    arg->scriptTime++;
                 }
                 arg->UpdateObjects();
                 if (0 < arg->spellCardState)

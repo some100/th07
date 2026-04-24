@@ -248,6 +248,36 @@ struct AnmManager
         }
     }
 
+    void SetVertexShader(u8 value)
+    {
+        this->currentVertexShader = value;
+    }
+
+    void SetSprite(AnmLoadedSprite *value)
+    {
+        this->currentSprite = value;
+    }
+
+    void SetTexture(IDirect3DTexture8 *value)
+    {
+        this->currentTexture = value;
+    }
+
+    void SetColorOp(u8 value)
+    {
+        this->currentColorOp = value;
+    }
+
+    void SetBlendMode(u8 value)
+    {
+        this->currentBlendMode = value;
+    }
+    
+    void SetZWriteDisable(u8 value)
+    {
+        this->currentZWriteDisable = value;
+    }
+
     ZunColor color;
     i32 colorMulEnabled;
     i32 scriptsExecutedThisFrame;

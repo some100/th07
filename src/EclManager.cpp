@@ -89,8 +89,6 @@ ZunResult EclManager::CallEclSub(EnemyEclContext *param_1, i16 subId)
 // FUNCTION: TH07 0x0040e5b0
 i32 EclManager::GetVarValue(Enemy *enemy, i32 eclVar)
 {
-    D3DXVECTOR3 local_10;
-
     switch (eclVar)
     {
     case VAR_LOCAL_INT1_1:
@@ -217,10 +215,12 @@ i32 EclManager::GetVarValue(Enemy *enemy, i32 eclVar)
         return enemy->moveAngle;
     case VAR_MOVE_ANGULAR_VELOCITY:
         return enemy->moveAngularVelocity;
-    case VAR_RNG_0_TO_1:
+    case VAR_RNG:
         return g_Rng.GetRandomU32();
     case VAR_RNG_CUSTOM_BOUND:
-        return g_Rng.GetRandomU32InRange(enemy->currentContext.eclContextArgs.globalVars.intVars[0]) + enemy->currentContext.eclContextArgs.globalVars.intVars[1];
+        return g_Rng.GetRandomU32InRange(
+                   enemy->currentContext.eclContextArgs.globalVars.intVars[0]) +
+               enemy->currentContext.eclContextArgs.globalVars.intVars[1];
     case VAR_LAST_DAMAGE:
         return enemy->lastDamage;
     case VAR_BOSS_ID:
@@ -232,10 +232,7 @@ i32 EclManager::GetVarValue(Enemy *enemy, i32 eclVar)
     case VAR_ANGLE_TO_PLAYER:
         return g_Player.AngleToPlayer(&enemy->position);
     case VAR_DISTANCE_FROM_PLAYER:
-        local_10.z = g_Player.positionCenter.z - enemy->position.z;
-        local_10.y = g_Player.positionCenter.y - enemy->position.y;
-        local_10.x = g_Player.positionCenter.x - enemy->position.x;
-        return D3DXVec3Length(&local_10);
+        return D3DXVec3Length(&(g_Player.positionCenter - enemy->position));
     default:
         return eclVar;
     }
@@ -303,8 +300,6 @@ i32 *EclManager::GetVar(Enemy *enemy, i32 *eclVar, u16 paramMask, i32 param_4)
 // FUNCTION: TH07 0x0040edf0
 f32 EclManager::GetFloatVarValue(Enemy *enemy, f32 eclVar)
 {
-    D3DXVECTOR3 local_10;
-
     switch ((i32)eclVar)
     {
     case VAR_LOCAL_INT1_1:
@@ -315,22 +310,14 @@ f32 EclManager::GetFloatVarValue(Enemy *enemy, f32 eclVar)
         return (f32)enemy->currentContext.eclContextArgs.intVars1[2];
     case VAR_LOCAL_INT1_4:
         return (f32)enemy->currentContext.eclContextArgs.intVars1[3];
-    case VAR_LOCAL_FLOAT1_1:
-        return enemy->currentContext.eclContextArgs.floatVars1[0];
-    case VAR_LOCAL_FLOAT1_2:
-        return enemy->currentContext.eclContextArgs.floatVars1[1];
-    case VAR_LOCAL_FLOAT1_3:
-        return enemy->currentContext.eclContextArgs.floatVars1[2];
-    case VAR_LOCAL_FLOAT1_4:
-        return enemy->currentContext.eclContextArgs.floatVars1[3];
-    case VAR_LOCAL_FLOAT1_5:
-        return enemy->currentContext.eclContextArgs.floatVars1[4];
-    case VAR_LOCAL_FLOAT1_6:
-        return enemy->currentContext.eclContextArgs.floatVars1[5];
-    case VAR_LOCAL_FLOAT1_7:
-        return enemy->currentContext.eclContextArgs.floatVars1[6];
-    case VAR_LOCAL_FLOAT1_8:
-        return enemy->currentContext.eclContextArgs.floatVars1[7];
+    case VAR_LOCAL_INT3_1:
+        return (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[0];
+    case VAR_LOCAL_INT3_2:
+        return (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[1];
+    case VAR_LOCAL_INT3_3:
+        return (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[2];
+    case VAR_LOCAL_INT3_4:
+        return (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[3];
     case VAR_LOCAL_INT2_1:
         return (f32)enemy->currentContext.eclContextArgs.intVars2[0];
     case VAR_LOCAL_INT2_2:
@@ -343,47 +330,16 @@ f32 EclManager::GetFloatVarValue(Enemy *enemy, f32 eclVar)
         return (f32)g_GameManager.difficulty;
     case VAR_RANK:
         return (f32)g_GameManager.rank.rank;
-    case VAR_POS_X:
-        return enemy->position.x;
-    case VAR_POS_Y:
-        return enemy->position.y;
-    case VAR_POS_Z:
-        return enemy->position.z;
-    case VAR_PLAYER_POS_X:
-        return g_Player.positionCenter.x;
-    case VAR_PLAYER_POS_Y:
-        return g_Player.positionCenter.y;
-    case VAR_PLAYER_POS_Z:
-        return g_Player.positionCenter.z;
-    case VAR_ANGLE_TO_PLAYER:
-        return g_Player.AngleToPlayer(&enemy->position);
     case VAR_CUR_TIME:
         return (f32)enemy->timer.current;
-    case VAR_DISTANCE_FROM_PLAYER:
-        local_10.z = g_Player.positionCenter.z - enemy->position.z;
-        local_10.y = g_Player.positionCenter.y - enemy->position.y;
-        local_10.x = g_Player.positionCenter.x - enemy->position.x;
-        return D3DXVec3Length(&local_10);
     case VAR_LIFE:
         return (f32)enemy->life;
     case VAR_PLAYER_SHOTTYPE:
         return (f32)g_GameManager.shotTypeAndCharacter;
-    case VAR_LOCAL_INT3_1:
-        return (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[0];
-    case VAR_LOCAL_INT3_2:
-        return (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[1];
-    case VAR_LOCAL_INT3_3:
-        return (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[2];
-    case VAR_LOCAL_INT3_4:
-        return (f32)enemy->currentContext.eclContextArgs.globalVars.intVars[3];
-    case VAR_LOCAL_FLOAT3_1:
-        return enemy->currentContext.eclContextArgs.globalVars.floatVars[0];
-    case VAR_LOCAL_FLOAT3_2:
-        return enemy->currentContext.eclContextArgs.globalVars.floatVars[1];
-    case VAR_LOCAL_FLOAT3_3:
-        return enemy->currentContext.eclContextArgs.globalVars.floatVars[2];
-    case VAR_LOCAL_FLOAT3_4:
-        return enemy->currentContext.eclContextArgs.globalVars.floatVars[3];
+    case VAR_ITEMDROP:
+        return (f32)enemy->itemDrop;
+    case VAR_SCORE:
+        return (f32)enemy->score;
     case VAR_GLOBAL_INT_1:
         return (f32)g_GlobalEclVars.intVars[0];
     case VAR_GLOBAL_INT_2:
@@ -400,43 +356,58 @@ f32 EclManager::GetFloatVarValue(Enemy *enemy, f32 eclVar)
         return g_GlobalEclVars.floatVars[2];
     case VAR_GLOBAL_FLOAT_4:
         return g_GlobalEclVars.floatVars[3];
-    case VAR_ANGLE:
-        return enemy->angle;
-    case VAR_ANGULAR_VELOCITY:
-        return enemy->angularVelocity;
-    case VAR_MOVE_SPEED:
-        return enemy->moveSpeed;
-    case VAR_MOVE_ACCELERATION:
-        return enemy->moveAcceleration;
-    case VAR_MOVE_RADIUS:
-        return enemy->moveRadius;
+    case VAR_LOCAL_FLOAT1_1:
+        return enemy->currentContext.eclContextArgs.floatVars1[0];
+    case VAR_LOCAL_FLOAT1_2:
+        return enemy->currentContext.eclContextArgs.floatVars1[1];
+    case VAR_LOCAL_FLOAT1_3:
+        return enemy->currentContext.eclContextArgs.floatVars1[2];
+    case VAR_LOCAL_FLOAT1_4:
+        return enemy->currentContext.eclContextArgs.floatVars1[3];
+    case VAR_LOCAL_FLOAT1_5:
+        return enemy->currentContext.eclContextArgs.floatVars1[4];
+    case VAR_LOCAL_FLOAT1_6:
+        return enemy->currentContext.eclContextArgs.floatVars1[5];
+    case VAR_LOCAL_FLOAT1_7:
+        return enemy->currentContext.eclContextArgs.floatVars1[6];
+    case VAR_LOCAL_FLOAT1_8:
+        return enemy->currentContext.eclContextArgs.floatVars1[7];
+    case VAR_LOCAL_FLOAT3_1:
+        return enemy->currentContext.eclContextArgs.globalVars.floatVars[0];
+    case VAR_LOCAL_FLOAT3_2:
+        return enemy->currentContext.eclContextArgs.globalVars.floatVars[1];
+    case VAR_LOCAL_FLOAT3_3:
+        return enemy->currentContext.eclContextArgs.globalVars.floatVars[2];
+    case VAR_LOCAL_FLOAT3_4:
+        return enemy->currentContext.eclContextArgs.globalVars.floatVars[3];
+    case VAR_POS_X:
+        return enemy->position.x;
+    case VAR_POS_Y:
+        return enemy->position.y;
+    case VAR_POS_Z:
+        return enemy->position.z;
+    case VAR_PLAYER_POS_X:
+        return g_Player.positionCenter.x;
+    case VAR_PLAYER_POS_Y:
+        return g_Player.positionCenter.y;
+    case VAR_PLAYER_POS_Z:
+        return g_Player.positionCenter.z;
+    case VAR_LOCAL_FLOAT2_1:
+        return enemy->currentContext.eclContextArgs.floatVars2[0];
+    case VAR_LOCAL_FLOAT2_2:
+        return enemy->currentContext.eclContextArgs.floatVars2[1];
     case VAR_MOVE_INTERP_ORIGIN_X:
         return enemy->moveInterpStartPos.x;
     case VAR_MOVE_INTERP_ORIGIN_Y:
         return enemy->moveInterpStartPos.y;
     case VAR_MOVE_INTERP_ORIGIN_Z:
         return enemy->moveInterpStartPos.z;
-    case VAR_MOVE_ANGLE:
-        return enemy->moveAngle;
-    case VAR_MOVE_ANGULAR_VELOCITY:
-        return enemy->moveAngularVelocity;
-    case VAR_RNG_0_TO_1:
-        return g_Rng.GetRandomFloat();
-    case VAR_RNG_CUSTOM_BOUND:
-        return g_Rng.GetRandomFloatInRange(enemy->currentContext.eclContextArgs.globalVars.floatVars[0]) +
-               enemy->currentContext.eclContextArgs.globalVars.floatVars[1];
     case VAR_MOVE_INTERP_TARGET_X:
         return enemy->moveInterp.x;
     case VAR_MOVE_INTERP_TARGET_Y:
         return enemy->moveInterp.y;
     case VAR_MOVE_INTERP_TARGET_Z:
         return enemy->moveInterp.z;
-    case VAR_RNG_RADIAN:
-        return g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
-    case VAR_LAST_DAMAGE:
-        return (f32)enemy->lastDamage;
-    case VAR_BOSS_ID:
-        return (f32)enemy->bossId;
     case VAR_FINAL_POS_X:
         return enemy->finalPos.x;
     case VAR_FINAL_POS_Y:
@@ -451,14 +422,35 @@ f32 EclManager::GetFloatVarValue(Enemy *enemy, f32 eclVar)
         return (f32)enemy->lifeCallbackThreshold[2];
     case VAR_BOSS_LIFE_THRESHOLD4:
         return (f32)enemy->lifeCallbackThreshold[3];
-    case VAR_ITEMDROP:
-        return (f32)enemy->itemDrop;
-    case VAR_SCORE:
-        return (f32)enemy->score;
-    case VAR_LOCAL_FLOAT2_1:
-        return enemy->currentContext.eclContextArgs.floatVars2[0];
-    case VAR_LOCAL_FLOAT2_2:
-        return enemy->currentContext.eclContextArgs.floatVars2[1];
+    case VAR_ANGLE_TO_PLAYER:
+        return g_Player.AngleToPlayer(&enemy->position);
+    case VAR_ANGLE:
+        return enemy->angle;
+    case VAR_ANGULAR_VELOCITY:
+        return enemy->angularVelocity;
+    case VAR_MOVE_SPEED:
+        return enemy->moveSpeed;
+    case VAR_MOVE_ACCELERATION:
+        return enemy->moveAcceleration;
+    case VAR_MOVE_RADIUS:
+        return enemy->moveRadius;
+    case VAR_MOVE_ANGLE:
+        return enemy->moveAngle;
+    case VAR_MOVE_ANGULAR_VELOCITY:
+        return enemy->moveAngularVelocity;
+    case VAR_RNG:
+        return g_Rng.GetRandomFloat();
+    case VAR_RNG_CUSTOM_BOUND:
+        return g_Rng.GetRandomFloatInRange(enemy->currentContext.eclContextArgs.globalVars.floatVars[0]) +
+               enemy->currentContext.eclContextArgs.globalVars.floatVars[1];
+    case VAR_RNG_RADIAN:
+        return g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
+    case VAR_BOSS_ID:
+        return (f32)enemy->bossId;
+    case VAR_LAST_DAMAGE:
+        return (f32)enemy->lastDamage;
+    case VAR_DISTANCE_FROM_PLAYER:
+        return D3DXVec3Length(&(g_Player.positionCenter - enemy->position));
     default:
         return eclVar;
     }
@@ -724,42 +716,35 @@ void EclManager::MathCubicInterp(Enemy *enemy, EclInterp *interp, f32 t)
             GetFloatVarValue(enemy, interp->args[3].f);
 }
 
+#pragma var_order(i, spellcardName)
 // FUNCTION: TH07 0x0040fc90
 void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
 {
     u32 uVar3;
-    i32 iVar4;
-    i32 iVar6;
-    i16 local_4c;
     i32 local_48;
     i32 local_44;
-    i32 i;
+    i32 j;
     char spellcardName[48];
-    u32 local_8;
+    u32 i;
 
     memcpy(spellcardName, &instr->args[1], sizeof(spellcardName));
-    for (local_8 = 0; local_8 < 0x30; local_8 += 1)
+    for (i = 0; i < 0x30; i += 1)
     {
-        spellcardName[local_8] = spellcardName[local_8] ^ 0xaa;
+        spellcardName[i] = (u8)spellcardName[i] ^ 0xaa;
     }
     g_Gui.ShowSpellcard(instr->args[0].s[0], spellcardName);
     g_BulletManager.RemoveAllBullets(1);
     g_Stage.spellCardState = 1;
     g_Stage.ticksSinceSpellcardStarted = 0;
-    for (local_8 = 0;
-         iVar4 = g_Stage.spellcardVmsIdx, (i32)local_8 < g_Stage.numSpellcardVms;
-         local_8 += 1)
+    for (i = 0; (i32)i < g_Stage.numSpellcardVms; i += 1)
     {
-        local_4c = (i16)local_8 + 0x2dc + (i16)g_Stage.spellcardVmsIdx;
-        g_Stage.spellcardVms[local_8].anmFileIdx = local_4c;
-        g_AnmManager->SetAndExecuteScript(
-            g_Stage.spellcardVms + local_8,
-            g_AnmManager->scripts[iVar4 + local_8 + 0x2dc]);
+        g_AnmManager->SetAnmIdxAndExecuteScript(
+            &g_Stage.spellcardVms[i], g_Stage.spellcardVmsIdx + i + 0x2dc);
     }
     g_EnemyManager.spellcardInfo.isActive = 1;
     g_EnemyManager.spellcardInfo.isCapturing = 1;
     g_EnemyManager.spellcardInfo.spellcardIdx =
-        (u32) * (u16 *)((i32)&instr->args[0] + 2);
+        instr->args[0].us[1];
     g_EnemyManager.spellcardInfo.captureScore =
         g_SpellcardScore[g_EnemyManager.spellcardInfo.spellcardIdx];
     g_EnemyManager.spellcardInfo.grazeBonusScore = 0;
@@ -786,37 +771,36 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
     uVar3 = g_EnemyManager.spellcardInfo.spellcardIdx;
     if (g_GameManager.replay == 0)
     {
-        iVar6 = g_EnemyManager.spellcardInfo.spellcardIdx * 0x78;
         local_44 = 0;
         strcpy(g_GameManager.catk[g_EnemyManager.spellcardInfo.spellcardIdx].name,
                spellcardName);
-        i = (i32)strlen(g_GameManager.catk[uVar3].name);
-        while (0 < i)
+        j = (i32)strlen(g_GameManager.catk[uVar3].name);
+        while (0 < j)
         {
-            i += -1;
+            j--;
             local_44 += g_GameManager.catk[uVar3].name[i];
         }
         local_48 = local_44;
-        for (i = 0; i < 7; i++)
+        for (j = 0; j < 7; j++)
         {
             local_44 = local_44 +
-                       (u32)g_GameManager.catk[iVar6].numSuccessesPerShot[i] +
-                       (u32)g_GameManager.catk[iVar6].numAttemptsPerShot[i] +
-                       g_GameManager.catk[iVar6].highScorePerShot[i];
+                       (u32)g_GameManager.catk[g_EnemyManager.spellcardInfo.spellcardIdx].numSuccessesPerShot[i] +
+                       (u32)g_GameManager.catk[g_EnemyManager.spellcardInfo.spellcardIdx].numAttemptsPerShot[i] +
+                       g_GameManager.catk[g_EnemyManager.spellcardInfo.spellcardIdx].highScorePerShot[i];
         }
         if (g_GameManager.catk[uVar3].nameCsum != (char)local_44)
         {
-            for (i = 0; i < 7; i++)
+            for (j = 0; j < 7; j++)
             {
-                g_GameManager.catk[iVar6].numSuccessesPerShot[i] = 0;
-                g_GameManager.catk[iVar6].numAttemptsPerShot[i] = 0;
-                g_GameManager.catk[iVar6].highScorePerShot[i] = 0;
+                g_GameManager.catk[g_EnemyManager.spellcardInfo.spellcardIdx].numSuccessesPerShot[i] = 0;
+                g_GameManager.catk[g_EnemyManager.spellcardInfo.spellcardIdx].numAttemptsPerShot[i] = 0;
+                g_GameManager.catk[g_EnemyManager.spellcardInfo.spellcardIdx].highScorePerShot[i] = 0;
             }
         }
-        if (g_GameManager.catk[iVar6]
+        if (g_GameManager.catk[g_EnemyManager.spellcardInfo.spellcardIdx]
                 .numAttemptsPerShot[g_GameManager.shotTypeAndCharacter] < 9999)
         {
-            g_GameManager.catk[iVar6]
+            g_GameManager.catk[g_EnemyManager.spellcardInfo.spellcardIdx]
                 .numAttemptsPerShot[g_GameManager.shotTypeAndCharacter] += 1;
         }
         if (g_GameManager.catk[uVar3].numAttemptsPerShot[6] < 9999)
@@ -824,19 +808,19 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
             g_GameManager.catk[uVar3].numAttemptsPerShot[6] =
                 g_GameManager.catk[uVar3].numAttemptsPerShot[6] + 1;
         }
-        for (i = 0; i < 7; i++)
+        for (j = 0; j < 7; j++)
         {
             local_48 = local_48 +
-                       (u32)g_GameManager.catk[iVar6].numSuccessesPerShot[i] +
-                       (u32)g_GameManager.catk[iVar6].numAttemptsPerShot[i] +
-                       g_GameManager.catk[iVar6].highScorePerShot[i];
+                       (u32)g_GameManager.catk[g_EnemyManager.spellcardInfo.spellcardIdx].numSuccessesPerShot[i] +
+                       (u32)g_GameManager.catk[g_EnemyManager.spellcardInfo.spellcardIdx].numAttemptsPerShot[i] +
+                       g_GameManager.catk[g_EnemyManager.spellcardInfo.spellcardIdx].highScorePerShot[i];
         }
         g_GameManager.catk[uVar3].nameCsum = (char)local_48;
     }
 }
 
 // FUNCTION: TH07 0x004101a0
-void EclManager::EndSpellcard()
+void EclManager::EndSpellcard(Enemy *enemy, EclRawInstr *instr)
 {
     i32 iVar3;
     u32 fmtArg;
@@ -1026,7 +1010,7 @@ restart:
     }
     if (enemy->periodicCallbackSub >= 0)
     {
-        enemy->periodicCounter.Tick();
+        enemy->periodicCounter++;
         if (enemy->periodicTimer.current <= enemy->periodicCounter.current)
         {
             enemy->periodicCounter = 0;
@@ -1046,8 +1030,8 @@ restart:
     {
         if (0 < enemy->currentContext.timer2.current)
         {
-            enemy->currentContext.timer2.Decrement(1);
-            enemy->currentContext.time.Decrement(1);
+            enemy->currentContext.timer2--;
+            enemy->currentContext.time--;
         LAB_0041678f:
             if ((enemy->flags1 & 3) == 1)
             {
@@ -1060,15 +1044,15 @@ restart:
                 AngleToVector(&enemy->axisSpeed, enemy->angle, enemy->moveSpeed);
                 enemy->axisSpeed.z = 0.0f;
                 if ((0 < enemy->moveInterpStartTime) &&
-                    (enemy->moveInterpTimer.Decrement(1),
-                     enemy->moveInterpTimer.current < 1))
+                    (enemy->moveInterpTimer--,
+                     enemy->moveInterpTimer < 1))
                 {
                     enemy->flags1 = enemy->flags1 & 0xfc;
                 }
             }
             else if ((enemy->flags1 & 3) == 2)
             {
-                enemy->moveInterpTimer.Decrement(1);
+                enemy->moveInterpTimer--;
                 local_e8 = 1.0f - ((f32)enemy->moveInterpTimer.current +
                                    enemy->moveInterpTimer.subFrame) /
                                       (f32)enemy->moveInterpStartTime;
@@ -1112,7 +1096,7 @@ restart:
                     enemy->axisSpeed.x = -enemy->axisSpeed.x;
                 }
                 enemy->angle = atan2f(enemy->axisSpeed.y, enemy->axisSpeed.x);
-                if (enemy->moveInterpTimer.current < 1)
+                if (enemy->moveInterpTimer < 1)
                 {
                     enemy->flags1 = enemy->flags1 & 0xfc;
                     enemy->position = enemy->moveInterpStartPos + enemy->moveInterp;
@@ -1134,8 +1118,8 @@ restart:
                     (local_d8.y + enemy->moveInterpStartPos.y) - enemy->position.y;
                 enemy->angle = atan2f(enemy->axisSpeed.y, enemy->axisSpeed.x);
                 if ((0 < enemy->moveInterpStartTime) &&
-                    (enemy->moveInterpTimer.Decrement(1),
-                     enemy->moveInterpTimer.current < 1))
+                    (enemy->moveInterpTimer--,
+                     enemy->moveInterpTimer < 1))
                 {
                     enemy->flags1 &= 0xfc;
                 }
@@ -1144,7 +1128,7 @@ restart:
             {
                 if (0 < enemy->shootInterval)
                 {
-                    enemy->shootIntervalTimer.Tick();
+                    enemy->shootIntervalTimer++;
                     if (enemy->shootInterval <= enemy->shootIntervalTimer.current)
                     {
                         enemy->bulletProps.position = enemy->position + enemy->shootOffset;
@@ -1241,7 +1225,7 @@ restart:
                 {
                     if (local_fc->fn != NULL)
                     {
-                        local_fc->timer.Tick();
+                        local_fc->timer++;
                         if (local_fc->args[0].i <= local_fc->timer.current)
                         {
                             local_fc->timer = local_fc->args[0].i;
@@ -1302,7 +1286,7 @@ restart:
                 }
             }
             enemy->currentContext.curInstr = instr;
-            enemy->currentContext.time.Tick();
+            enemy->currentContext.time++;
             if ((((enemy->flags2 >> 6 & 1) != 0) && (enemy->bossId == 0)) &&
                 ((g_EnemyManager.spellcardInfo.isActive != 0 &&
                   (g_EnemyManager.spellcardInfo.isCapturing != 0))))
@@ -1318,7 +1302,7 @@ restart:
                             60.0;
                     g_EnemyManager.spellcardInfo.captureScore = uVar17 - (i32)uVar17 % 10;
                 }
-                g_EnemyManager.timer.Tick();
+                g_EnemyManager.timer++;
             }
             if (((enemy->flags2 >> 6 & 1) != 0) && (6 < g_GameManager.currentStage))
             {
@@ -2471,7 +2455,7 @@ restart:
                 break;
             }
             case 0x5b: {
-                EndSpellcard();
+                EndSpellcard(enemy, instr);
                 break;
             }
             case 0x5c: {
@@ -2846,7 +2830,7 @@ restart:
                 i32 local_290 = (instr->paramMask & 1) == 0
                                     ? instr->args[0].i
                                     : GetVarValue(enemy, instr->args[0].i);
-                enemy->currentContext.time.Increment(local_290);
+                enemy->currentContext.time += local_290;
                 break;
             }
             case 0x7c: {

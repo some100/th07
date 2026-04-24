@@ -76,8 +76,8 @@ u32 AsciiManager::OnUpdate(AsciiManager *arg)
                 continue;
 
             curPopup->position.y -= 0.5f * g_Supervisor.effectiveFramerateMultiplier;
-            curPopup->timer.Tick();
-            if ((curPopup->timer.current > 60) != 0)
+            curPopup->timer++;
+            if ((curPopup->timer > 60) != 0)
             {
                 curPopup->inUse = 0;
             }
@@ -1121,12 +1121,12 @@ void AsciiManager::DrawPopups()
             for (local_18 = (u32)local_8->characterCount; 0 < (i32)local_18;
                  local_18 -= 1)
             {
-                if ((local_8->timer.current < 0x34) || (*local_20 == 10))
+                if ((local_8->timer < 0x34) || (*local_20 == 10))
                 {
                     this->vm1.sprite = g_AnmManager->sprites + (u8)*local_20;
                     this->vm1.color.bytes.a = local_c;
                 }
-                else if (local_8->timer.current < 0x38)
+                else if (local_8->timer < 0x38)
                 {
                     this->vm1.sprite = g_AnmManager->sprites + (u8)*local_20 + 0xb;
                     this->vm1.color.bytes.a = local_c;

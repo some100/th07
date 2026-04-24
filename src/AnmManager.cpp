@@ -1768,20 +1768,20 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             vm->interpStartTimes[0] = 0;
             break;
         case ANM_WAIT:
-            if ((i32)(vm->waitTimer.current == 0))
+            if (vm->waitTimer == 0)
             {
                 vm->waitTimer = GET_INT_VALUE(0);
             }
             else
             {
-                vm->waitTimer.Decrement(1);
+                vm->waitTimer--;
             }
-            if ((i32)(vm->waitTimer.current <= 0))
+            if (vm->waitTimer <= 0)
             {
                 vm->waitTimer = 0;
                 break;
             }
-            vm->currentTimeInScript.Decrement(1);
+            vm->currentTimeInScript--;
             goto stop;
         case ANM_STOP_HIDE:
             vm->visible = 0;
@@ -1789,7 +1789,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             if (vm->pendingInterrupt == 0)
             {
                 vm->isStopped = 1;
-                vm->currentTimeInScript.Decrement(1);
+                vm->currentTimeInScript--;
                 goto stop;
             }
         handle_interrupt:
@@ -1812,7 +1812,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             {
                 if (nextInstr == NULL)
                 {
-                    vm->currentTimeInScript.Decrement(1);
+                    vm->currentTimeInScript--;
                     goto stop;
                 }
                 instr = nextInstr;
@@ -2143,10 +2143,10 @@ stop:
     }
     for (i = 0; i < 5; i++)
     {
-        if ((i32)(vm->interpEndTimes[i].current > 0))
+        if (vm->interpEndTimes[i] > 0)
         {
-            vm->interpStartTimes[i].Tick();
-            if ((i32)(vm->interpStartTimes[i].current >= vm->interpEndTimes[i].current))
+            vm->interpStartTimes[i]++;
+            if (vm->interpStartTimes[i] >= vm->interpEndTimes[i].current)
             {
                 t = 1.0f;
                 vm->interpEndTimes[i] = 0;
@@ -2282,7 +2282,7 @@ stop:
         if (vm->uvScrollPos.y < 0.0f)
             vm->uvScrollPos.y += 1.0f;
     }
-    vm->currentTimeInScript.Tick();
+    vm->currentTimeInScript++;
     this->scriptTicksThisFrame += 1;
     return 0;
 }
