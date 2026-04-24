@@ -191,8 +191,8 @@ ZunResult Ending::ParseEndFile()
         if (this->minWaitResetFrames == 0)
         {
             if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU) ||
-                ((this->hasSeenEnding != 0 &&
-                  IS_PRESSED_RAW(TH_BUTTON_SKIP))))
+                (this->hasSeenEnding != 0 &&
+                 IS_PRESSED_RAW(TH_BUTTON_SKIP)))
             {
                 this->timer3 = 0;
             }
@@ -331,13 +331,13 @@ ZunResult Ending::ParseEndFile()
                     this->timer3 = tmp;
                     tmp = ReadEndFileParameter();
                     this->minWaitResetFrames = tmp;
-                    while ((*this->endFileDataPtr != '\n' &&
-                            (*this->endFileDataPtr != '\r')))
+                    while (*this->endFileDataPtr != '\n' &&
+                           (*this->endFileDataPtr != '\r'))
                     {
                         this->endFileDataPtr = this->endFileDataPtr + 1;
                     }
-                    while ((*this->endFileDataPtr == '\n' ||
-                            (*this->endFileDataPtr == '\r')))
+                    while (*this->endFileDataPtr == '\n' ||
+                           (*this->endFileDataPtr == '\r'))
                     {
                         this->endFileDataPtr = this->endFileDataPtr + 1;
                     }
@@ -360,13 +360,13 @@ ZunResult Ending::ParseEndFile()
                     this->timer2 = tmp;
                     tmp = ReadEndFileParameter();
                     this->minWaitFrames = tmp;
-                    while ((*this->endFileDataPtr != '\n' &&
-                            (*this->endFileDataPtr != '\r')))
+                    while (*this->endFileDataPtr != '\n' &&
+                           (*this->endFileDataPtr != '\r'))
                     {
                         this->endFileDataPtr = this->endFileDataPtr + 1;
                     }
-                    while ((*this->endFileDataPtr == '\n' ||
-                            (*this->endFileDataPtr == '\r')))
+                    while (*this->endFileDataPtr == '\n' ||
+                           (*this->endFileDataPtr == '\r'))
                     {
                         this->endFileDataPtr = this->endFileDataPtr + 1;
                     }
@@ -374,13 +374,13 @@ ZunResult Ending::ParseEndFile()
                 case 'z':
                     return ZUN_ERROR;
                 }
-                while ((*this->endFileDataPtr != '\n' &&
-                        (*this->endFileDataPtr != '\r')))
+                while (*this->endFileDataPtr != '\n' &&
+                       (*this->endFileDataPtr != '\r'))
                 {
                     this->endFileDataPtr = this->endFileDataPtr + 1;
                 }
-                while ((*this->endFileDataPtr == '\n' ||
-                        (*this->endFileDataPtr == '\r')))
+                while (*this->endFileDataPtr == '\n' ||
+                       (*this->endFileDataPtr == '\r'))
                 {
                     this->endFileDataPtr = this->endFileDataPtr + 1;
                 }
@@ -391,8 +391,8 @@ ZunResult Ending::ParseEndFile()
     if (this->minWaitFrames == 0)
     {
         if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU) ||
-            ((this->hasSeenEnding != 0 &&
-              IS_PRESSED_RAW(TH_BUTTON_SKIP))))
+            (this->hasSeenEnding != 0 &&
+             IS_PRESSED_RAW(TH_BUTTON_SKIP)))
         {
             this->timer2 = 0;
         }
@@ -410,8 +410,8 @@ switchD_0041d980_caseD_0:
                                   (this->textColor).color, 0xffffffff, local_54);
         this->sprites[this->possiblyTimesFileParsed].pendingInterrupt = 1;
     }
-    while (((*this->endFileDataPtr == '\n' || (*this->endFileDataPtr == '\0')) ||
-            (*this->endFileDataPtr == '\r')))
+    while ((*this->endFileDataPtr == '\n' || (*this->endFileDataPtr == '\0')) ||
+           (*this->endFileDataPtr == '\r'))
     {
         this->endFileDataPtr = this->endFileDataPtr + 1;
     }

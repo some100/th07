@@ -615,7 +615,7 @@ i32 Supervisor::CheckVSync()
     timeBeginPeriod(1);
     local_10 = timeGetTime();
     timeEndPeriod(1);
-    while ((local_8 < 0x708 && (local_90 < 8)))
+    while (local_8 < 0x708 && (local_90 < 8))
     {
         g_Supervisor.d3dDevice->BeginScene();
         g_AnmManager->CopySurfaceToBackBuffer(0, 0, 0, 0, 0);
@@ -834,7 +834,7 @@ ZunResult Supervisor::DeletedCallback(Supervisor *arg)
     if (arg->midiOutput != NULL)
     {
         arg->midiOutput->StopPlayback();
-        if ((arg->midiOutput != NULL))
+        if (arg->midiOutput != NULL)
         {
             arg->midiOutput->MidiOutput::~MidiOutput();
             free(arg->midiOutput);
@@ -1253,18 +1253,18 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
         }
         if (!((((g_Supervisor.cfg.lifeCount < 5) &&
                 (g_Supervisor.cfg.bombCount < 4)) &&
-               ((g_Supervisor.cfg.colorMode16bit < 2 &&
-                 ((g_Supervisor.cfg.musicMode < (MUSIC_MIDI | MUSIC_WAV) &&
-                   (g_Supervisor.cfg.defaultDifficulty < 6)))))) &&
-              ((g_Supervisor.cfg.playSounds < 2 &&
-                (((((g_Supervisor.cfg.windowed < 2 &&
-                     (g_Supervisor.cfg.frameskipConfig < 3)) &&
-                    (g_Supervisor.cfg.effectQuality <
-                     (QUALITY_BEAUTIFUL | QUALITY_MEDIUM))) &&
-                   ((g_Supervisor.cfg.slowMode < 2 &&
-                     (g_Supervisor.cfg.shotSlow < 2)))) &&
-                  ((g_Supervisor.cfg.version == 0x70002 &&
-                    (g_LastFileSize == sizeof(GameConfiguration))))))))))
+               (g_Supervisor.cfg.colorMode16bit < 2 &&
+                (g_Supervisor.cfg.musicMode < (MUSIC_MIDI | MUSIC_WAV) &&
+                 (g_Supervisor.cfg.defaultDifficulty < 6)))) &&
+              (g_Supervisor.cfg.playSounds < 2 &&
+               ((((g_Supervisor.cfg.windowed < 2 &&
+                   (g_Supervisor.cfg.frameskipConfig < 3)) &&
+                  (g_Supervisor.cfg.effectQuality <
+                   (QUALITY_BEAUTIFUL | QUALITY_MEDIUM))) &&
+                 (g_Supervisor.cfg.slowMode < 2 &&
+                  (g_Supervisor.cfg.shotSlow < 2))) &&
+                (g_Supervisor.cfg.version == 0x70002 &&
+                 (g_LastFileSize == sizeof(GameConfiguration)))))))
         {
             // STRING: TH07 0x00496e88
             g_GameErrorContext.Log("コンフィグデータが異常でしたので再初期化しました\r\n");

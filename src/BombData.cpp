@@ -1433,10 +1433,10 @@ void BombData::BombSakuyaACalcFocus(Player *player)
                         {
                             fVar8 = 0.0f;
                             local_c->angle = utils::AddNormalizeAngle(
-                                atan2f(((player->positionOfLastEnemyHit).y -
-                                        (local_c->bombRegionPositions).y),
-                                       ((player->positionOfLastEnemyHit).x -
-                                        (local_c->bombRegionPositions).x)),
+                                atan2f((player->positionOfLastEnemyHit).y -
+                                           (local_c->bombRegionPositions).y,
+                                       (player->positionOfLastEnemyHit).x -
+                                           (local_c->bombRegionPositions).x),
                                 fVar8);
                         }
                         local_c->speed = 14.0f;

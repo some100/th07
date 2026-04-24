@@ -241,8 +241,8 @@ i32 ShtData::FireHomingBullet(Player *player, PlayerBullet *bullet,
         if (-100.0f < (player->sakuyaTargetPosition).x)
         {
             fVar2 = utils::AddNormalizeAngle(
-                atan2f(((player->sakuyaTargetPosition).y - bullet->pos.y),
-                       ((player->sakuyaTargetPosition).x - bullet->pos.x)),
+                atan2f((player->sakuyaTargetPosition).y - bullet->pos.y,
+                       (player->sakuyaTargetPosition).x - bullet->pos.x),
                 shtEntry->angle + 1.5707964f);
             AngleToVector((D3DXVECTOR3 *)&bullet->velocity, fVar2,
                           shtEntry->speed * 1.5f);
@@ -825,9 +825,9 @@ void Player::UpdateFireBulletTimer()
     if (-1 < this->fireBulletTimer.current)
     {
         if ((this->fireBulletTimer.current != this->fireBulletTimer.previous) &&
-            (((g_Player.bombInfo.isInUse == 0 ||
-               (g_GameManager.character != CHAR_MARISA)) ||
-              (g_GameManager.shotType != 1))))
+            ((g_Player.bombInfo.isInUse == 0 ||
+              (g_GameManager.character != CHAR_MARISA)) ||
+             (g_GameManager.shotType != 1)))
         {
             SpawnBullets(this, this->fireBulletTimer.current);
         }
@@ -889,12 +889,12 @@ i32 Player::CheckCollisionWithEnemy(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
         for (i = 0; i < 0x60; i++)
         {
             if ((bullet->bulletState != 0) &&
-                ((bullet->bulletState == 1 || (bullet->bulletState2 == 3))))
+                (bullet->bulletState == 1 || (bullet->bulletState2 == 3)))
             {
                 if ((bullet->pos.y - bullet->hitboxSize.y * 0.5f <= fVar8) &&
-                    (((bullet->pos.x - bullet->hitboxSize.x * 0.5f <= fVar7 &&
-                       (fVar6 <= bullet->hitboxSize.y * 0.5f + bullet->pos.y)) &&
-                      (fVar5 <= bullet->hitboxSize.x * 0.5f + bullet->pos.x))))
+                    ((bullet->pos.x - bullet->hitboxSize.x * 0.5f <= fVar7 &&
+                      (fVar6 <= bullet->hitboxSize.y * 0.5f + bullet->pos.y)) &&
+                     (fVar5 <= bullet->hitboxSize.x * 0.5f + bullet->pos.x)))
                 {
                     if ((bullet->bulletState2 == 4) || (bullet->bulletState2 == 5))
                     {
@@ -1729,9 +1729,9 @@ void Player::UpdateBorderAndBombState()
         {
             if ((((g_GameManager.CheckGameIntegrity() == 0) &&
                   (g_Gui.HasCurrentMsgIdx() == 0)) &&
-                 ((this->respawnTimer != 0 &&
-                   ((0 < (i32)g_GameManager.globals->bombsRemaining &&
-                     (this->borderInvulnerabilityTime == 0)))))) &&
+                 (this->respawnTimer != 0 &&
+                  (0 < (i32)g_GameManager.globals->bombsRemaining &&
+                   (this->borderInvulnerabilityTime == 0)))) &&
                 IS_PRESSED_GAME(TH_BUTTON_BOMB))
             {
                 g_ReplayManager->replayEventFlags |= 1;
@@ -2089,7 +2089,7 @@ BombProjectile *Player::SpawnBombProjectile(D3DXVECTOR3 *centerPosition,
     local_8 = 0;
     for (local_c = this->bombHitboxes;
          (local_8 < 0x5f &&
-          ((local_c->pos.z != 0.0f || (local_c->size.y != 0.0f))));
+          (local_c->pos.z != 0.0f || (local_c->size.y != 0.0f)));
          local_c = local_c + 1)
     {
         local_8 += 1;
@@ -2336,9 +2336,9 @@ u32 Player::OnDrawHighPrio(Player *arg)
         arg->playerSprite.pos.z = 0.0f;
         g_AnmManager->DrawNoRotation(&arg->playerSprite);
         if ((arg->orbState != ORB_HIDDEN) &&
-            (((arg->playerState == PLAYER_STATE_ALIVE ||
-               (arg->playerState == PLAYER_STATE_BORDER)) ||
-              (arg->playerState == PLAYER_STATE_INVULNERABLE))))
+            ((arg->playerState == PLAYER_STATE_ALIVE ||
+              (arg->playerState == PLAYER_STATE_BORDER)) ||
+             (arg->playerState == PLAYER_STATE_INVULNERABLE)))
         {
             arg->orbsSprite[0].pos.x =
                 g_GameManager.arcadeRegionTopLeftPos.x + arg->orbsPosition[0].x;

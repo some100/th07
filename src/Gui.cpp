@@ -202,10 +202,10 @@ u32 Gui::OnDraw(Gui *arg)
         AsciiManager::AddFormatText(&g_AsciiManager, &stringPos, "Cherry = %8d",
                                     arg->impl->clearCherryMax * 10);
         if ((6 < g_GameManager.currentStage) ||
-            (((g_GameManager.currentStage == 6 &&
-               (g_GameManager.practice == 0)) &&
-              ((g_GameManager.replay == 0 ||
-                (g_ReplayManager->data->head.stageReplayData[4].data != NULL))))))
+            ((g_GameManager.currentStage == 6 &&
+              (g_GameManager.practice == 0)) &&
+             (g_GameManager.replay == 0 ||
+              (g_ReplayManager->data->head.stageReplayData[4].data != NULL))))
         {
             stringPos.y = stringPos.y + 16.0f;
             g_AsciiManager.color = 0xffffff80;
@@ -1172,8 +1172,8 @@ ZunResult GuiImpl::DrawDialogue()
         return ZUN_ERROR;
     }
     else if ((g_GameManager.currentStage == 6) &&
-             ((this->msg.currentMsgIdx == 1 ||
-               (this->msg.currentMsgIdx == 0xb))))
+             (this->msg.currentMsgIdx == 1 ||
+              (this->msg.currentMsgIdx == 0xb)))
     {
         return ZUN_SUCCESS;
     }
@@ -1461,10 +1461,10 @@ void Gui::UpdateGui()
                    this->impl->clearGraze * 0x32 +
                    this->impl->clearPointItems * 5000 + this->impl->clearCherryMax;
         if ((6 < g_GameManager.currentStage) ||
-            (((g_GameManager.currentStage == 6 &&
-               (g_GameManager.practice == 0)) &&
-              ((g_GameManager.replay == 0 ||
-                (g_ReplayManager->data->head.stageReplayData[4].data != NULL))))))
+            ((g_GameManager.currentStage == 6 &&
+              (g_GameManager.practice == 0)) &&
+             (g_GameManager.replay == 0 ||
+              (g_ReplayManager->data->head.stageReplayData[4].data != NULL))))
         {
             local_10 = local_10 + g_GameManager.globals->livesRemaining * 2000000 +
                        g_GameManager.globals->bombsRemaining * 400000;

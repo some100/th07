@@ -2361,8 +2361,8 @@ void AnmManager::DrawTextToSprite(u32 spriteDstIdx, i32 x, i32 y, i32 width,
     }
     IDirect3DTexture8 *outTexture = this->textures[spriteDstIdx];
     TextHelper::RenderTextToTextureBold(x, y, width, height,
-                                        ((f32)fontWidth * scaleY),
-                                        ((f32)fontHeight * scaleX), textColor,
+                                        (f32)fontWidth * scaleY,
+                                        (f32)fontHeight * scaleX, textColor,
                                         outlineType, strToPrint, outTexture);
 }
 
@@ -2509,8 +2509,8 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path)
     {
         goto err;
     }
-    if ((D3DXLoadSurfaceFromSurface(this->surfacesBis[surfaceIdx], 0, NULL,
-                                    surface, 0, NULL, 1, 0) != 0))
+    if (D3DXLoadSurfaceFromSurface(this->surfacesBis[surfaceIdx], 0, NULL,
+                                   surface, 0, NULL, 1, 0) != 0)
     {
         goto err;
     }

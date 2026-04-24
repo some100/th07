@@ -74,9 +74,9 @@ void EnemyEclInstr::ExInsAliceCurveBullets(Enemy *enemy, EclRawInstr *instr)
         if (((((bullet->state != BULLET_INACTIVE) &&
                (bullet->state != BULLET_DESPAWN)) &&
               (bullet->sprites.spriteBullet.sprite != NULL)) &&
-             ((bullet->state2 == 0 &&
-               ((instr->args[1].i != 1 || (bullet->spriteOffset == 8)))))) &&
-            ((instr->args[1].i != 2 || (bullet->spriteOffset == 4))))
+             (bullet->state2 == 0 &&
+              (instr->args[1].i != 1 || (bullet->spriteOffset == 8)))) &&
+            (instr->args[1].i != 2 || (bullet->spriteOffset == 4)))
         {
             if (bullet->spriteOffset == 2)
             {
@@ -144,11 +144,11 @@ void EnemyEclInstr::ExInsTurnBulletsIntoOtherBullets(Enemy *enemy,
         if ((((bullet->state != BULLET_INACTIVE) &&
               (bullet->state != BULLET_DESPAWN)) &&
              (bullet->sprites.spriteBullet.sprite != NULL)) &&
-            ((bullet->spriteOffset == 2 &&
-              (sqrtf((enemy->position.x - bullet->pos.x) *
-                         (enemy->position.x - bullet->pos.x) +
-                     (enemy->position.y - bullet->pos.y) *
-                         (enemy->position.y - bullet->pos.y)) < local_e4))))
+            (bullet->spriteOffset == 2 &&
+             (sqrtf((enemy->position.x - bullet->pos.x) *
+                        (enemy->position.x - bullet->pos.x) +
+                    (enemy->position.y - bullet->pos.y) *
+                        (enemy->position.y - bullet->pos.y)) < local_e4)))
         {
             local_dc.position = bullet->pos;
             local_dc.sprite = 0;
@@ -235,9 +235,9 @@ void EnemyEclInstr::ExInsSplitBulletsOrShootBackwards(Enemy *enemy,
         if ((((bullet->state != BULLET_INACTIVE) &&
               (bullet->state != BULLET_DESPAWN)) &&
              (bullet->sprites.spriteBullet.sprite != NULL)) &&
-            ((((instr->args[1].i == 0 && (bullet->spriteOffset == 6)) ||
-               ((instr->args[1].i == 1 && (bullet->spriteOffset == 0xf)))) ||
-              ((instr->args[1].i == 2 && (bullet->spriteOffset == 2))))))
+            (((instr->args[1].i == 0 && (bullet->spriteOffset == 6)) ||
+              (instr->args[1].i == 1 && (bullet->spriteOffset == 0xf))) ||
+             (instr->args[1].i == 2 && (bullet->spriteOffset == 2))))
         {
             local_dc.position = bullet->pos;
             local_dc.sprite = 6;
@@ -451,8 +451,8 @@ void EnemyEclInstr::ExInsShootBulletsAlongLaser(Enemy *enemy,
             {
                 if ((((bullet->state != BULLET_INACTIVE) &&
                       (bullet->state != BULLET_DESPAWN)) &&
-                     ((bullet->sprites.spriteBullet.sprite != NULL &&
-                       ((bullet->state2 != local_30 + 1 && (-1 < bullet->state2)))))) &&
+                     (bullet->sprites.spriteBullet.sprite != NULL &&
+                      (bullet->state2 != local_30 + 1 && (-1 < bullet->state2)))) &&
                     (iVar1 = IsPointInRotatedRect(&bullet->pos, &local_40, &local_20,
                                                   &laser->pos, local_10, local_34),
                      iVar1 != 0))
@@ -602,14 +602,14 @@ void EnemyEclInstr::ExInsBurstLargeBullets(Enemy *enemy, EclRawInstr *instr)
     for (i = 0; i < 0x400; i++)
     {
         if ((bullet->state != BULLET_INACTIVE) &&
-            (((((g_GameManager.difficulty < 2 &&
-                 (48.0f < (bullet->sprites.spriteBullet.sprite)->heightPx)) &&
-                (enemy->position.y - 64.0f < bullet->pos.y)) &&
-               (bullet->pos.y < enemy->position.y + 64.0f)) ||
-              (((1 < g_GameManager.difficulty &&
-                 (48.0f < (bullet->sprites.spriteBullet.sprite)->heightPx)) &&
-                ((enemy->position.y - 48.0f < bullet->pos.y &&
-                  (bullet->pos.y < enemy->position.y + 48.0f))))))))
+            ((((g_GameManager.difficulty < 2 &&
+                (48.0f < (bullet->sprites.spriteBullet.sprite)->heightPx)) &&
+               (enemy->position.y - 64.0f < bullet->pos.y)) &&
+              (bullet->pos.y < enemy->position.y + 64.0f)) ||
+             ((1 < g_GameManager.difficulty &&
+               (48.0f < (bullet->sprites.spriteBullet.sprite)->heightPx)) &&
+              (enemy->position.y - 48.0f < bullet->pos.y &&
+               (bullet->pos.y < enemy->position.y + 48.0f)))))
         {
             for (j = 0; (i32)j < local_100; j += 1)
             {
@@ -669,9 +669,9 @@ void EnemyEclInstr::ExInsYoumuCurveBulletsBelow(Enemy *enemy,
     {
         if ((((bullet->state != BULLET_INACTIVE) && (bullet->state2 == 0)) &&
              (enemy->position.y < bullet->pos.y)) &&
-            (((bullet->pos.y < 352.0f &&
-               (enemy->position.x - 16.0f < bullet->pos.x)) &&
-              (bullet->pos.x < enemy->position.x + 16.0f))))
+            ((bullet->pos.y < 352.0f &&
+              (enemy->position.x - 16.0f < bullet->pos.x)) &&
+             (bullet->pos.x < enemy->position.x + 16.0f)))
         {
             if ((i & 1) == 0)
             {

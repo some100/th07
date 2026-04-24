@@ -84,9 +84,9 @@ i32 ResultScreen::LinkScore(ScoreListNode *prevNode, Hscr *hscr)
 
     local_8 = 0;
     local_14 = prevNode;
-    while ((local_14->next != NULL &&
-            ((local_14->next->data == NULL ||
-              (hscr->score < local_14->next->data->score)))))
+    while (local_14->next != NULL &&
+           (local_14->next->data == NULL ||
+            (hscr->score < local_14->next->data->score)))
     {
         local_14 = local_14->next;
         local_8 = local_8 + 1;
@@ -467,7 +467,7 @@ ZunResult ResultScreen::ParsePscr(ScoreDat *scoreDat, Pscr *pscr)
             if ((local_c->magic == 'PSCR') && (local_c->version == 1))
             {
                 if ((5 < local_c->character) ||
-                    ((4 < local_c->difficulty || (6 < local_c->stage))))
+                    (4 < local_c->difficulty || (6 < local_c->stage)))
                 {
                     break;
                 }

@@ -172,9 +172,9 @@ u32 GameManager::OnUpdate(GameManager *arg)
     u32 scoreIncrement;
     u32 i;
 
-    if ((((arg->isInPauseMenu == 0 && arg->isInRetryMenu == 0) &&
-          arg->demo == 0) &&
-         ((arg->slowModeSlowActive == 0 && WAS_PRESSED_RAW(TH_BUTTON_MENU)))))
+    if (((arg->isInPauseMenu == 0 && arg->isInRetryMenu == 0) &&
+         arg->demo == 0) &&
+        (arg->slowModeSlowActive == 0 && WAS_PRESSED_RAW(TH_BUTTON_MENU)))
     {
         arg->isInRetryMenu = 1;
         g_GameManager.arcadeRegionTopLeftPos.x = 32.0f;
@@ -200,15 +200,15 @@ u32 GameManager::OnUpdate(GameManager *arg)
     if ((((g_GameManager.replay != 0) &&
           (g_GameManager.replayStage == 1)) &&
          (g_Gui.HasCurrentMsgIdx() == 0)) &&
-        (((((arg->bulletLagTime = arg->bulletLagTime + 1,
-             g_Supervisor.curFps < 20 && (arg->bulletLagTime % 3 != 0)) ||
-            ((g_Supervisor.curFps > 20 &&
-              ((g_Supervisor.curFps < 0x1e &&
-                (arg->bulletLagTime % 2 != 0)))))) ||
-           ((g_Supervisor.curFps > 0x1e &&
-             ((g_Supervisor.curFps < 0x28 && (arg->bulletLagTime % 3 == 0)))))) ||
-          ((g_Supervisor.curFps > 0x28 &&
-            ((g_Supervisor.curFps < 0x32 && (arg->bulletLagTime % 6 == 0))))))))
+        ((((arg->bulletLagTime = arg->bulletLagTime + 1,
+            g_Supervisor.curFps < 20 && (arg->bulletLagTime % 3 != 0)) ||
+           (g_Supervisor.curFps > 20 &&
+            (g_Supervisor.curFps < 0x1e &&
+             (arg->bulletLagTime % 2 != 0)))) ||
+          (g_Supervisor.curFps > 0x1e &&
+           (g_Supervisor.curFps < 0x28 && (arg->bulletLagTime % 3 == 0)))) ||
+         (g_Supervisor.curFps > 0x28 &&
+          (g_Supervisor.curFps < 0x32 && (arg->bulletLagTime % 6 == 0)))))
     {
         return CHAIN_CALLBACK_RESULT_BREAK;
     }
@@ -220,15 +220,15 @@ u32 GameManager::OnUpdate(GameManager *arg)
         }
         arg->demoFrames = arg->demoFrames + 1;
         if ((((arg->demoIdx == 0) && (arg->demoFrames == 0x1fa4)) ||
-             ((arg->demoIdx == 1 && (arg->demoFrames == 0x1b6c)))) ||
-            ((arg->demoIdx == 2 && (arg->demoFrames == 0x120c))))
+             (arg->demoIdx == 1 && (arg->demoFrames == 0x1b6c))) ||
+            (arg->demoIdx == 2 && (arg->demoFrames == 0x120c)))
         {
             BombEffects::RegisterChain(2, 0x78, 0, 0, 0);
             g_Supervisor.FadeOutMusic(3.0f);
         }
         if ((((arg->demoIdx == 0) && (arg->demoFrames > 0x201b)) ||
-             ((arg->demoIdx == 1 && (arg->demoFrames > 0x1be4)))) ||
-            ((arg->demoIdx == 2 && (arg->demoFrames > 0x1283))))
+             (arg->demoIdx == 1 && (arg->demoFrames > 0x1be4))) ||
+            (arg->demoIdx == 2 && (arg->demoFrames > 0x1283)))
         {
             g_Supervisor.curState = 1;
             return CHAIN_CALLBACK_RESULT_BREAK;
@@ -358,12 +358,12 @@ u32 GameManager::OnUpdate(GameManager *arg)
         arg->bulletLagTime = arg->bulletLagTime + 1;
         if ((((g_BulletManager.bulletCount > 0x140) &&
               (arg->bulletLagTime % 3 == 0)) ||
-             ((g_BulletManager.bulletCount < 0x140 &&
-               ((g_BulletManager.bulletCount > 0xe0 &&
-                 (arg->bulletLagTime % 4 == 0)))))) ||
-            ((g_BulletManager.bulletCount < 0xe0 &&
-              ((g_BulletManager.bulletCount > 0x80 &&
-                (arg->bulletLagTime % 5 == 0))))))
+             (g_BulletManager.bulletCount < 0x140 &&
+              (g_BulletManager.bulletCount > 0xe0 &&
+               (arg->bulletLagTime % 4 == 0)))) ||
+            (g_BulletManager.bulletCount < 0xe0 &&
+             (g_BulletManager.bulletCount > 0x80 &&
+              (arg->bulletLagTime % 5 == 0))))
         {
             g_GameManager.slowModeSlowActive = 1;
             return CHAIN_CALLBACK_RESULT_BREAK;
@@ -1079,8 +1079,8 @@ i32 GameManager::HasReachedMaxClearsAllShotTypes()
 {
     if ((((HasReachedMaxClears(0) == 0) && (HasReachedMaxClears(1) == 0)) &&
          (HasReachedMaxClears(2) == 0)) &&
-        (((HasReachedMaxClears(3) == 0 && (HasReachedMaxClears(4) == 0)) &&
-          (HasReachedMaxClears(5) == 0))))
+        ((HasReachedMaxClears(3) == 0 && (HasReachedMaxClears(4) == 0)) &&
+         (HasReachedMaxClears(5) == 0)))
     {
         return 0;
     }
@@ -1114,9 +1114,9 @@ i32 GameManager::HasUnlockedPhantomAndMaxClears()
     if ((((this->clrd[0].difficultyClearedWithRetries[5] == 99) ||
           (this->clrd[1].difficultyClearedWithRetries[5] == 99)) ||
          (this->clrd[2].difficultyClearedWithRetries[5] == 99)) ||
-        (((this->clrd[3].difficultyClearedWithRetries[5] == 99 ||
-           (this->clrd[4].difficultyClearedWithRetries[5] == 99)) ||
-          (this->clrd[5].difficultyClearedWithRetries[5] == 99))))
+        ((this->clrd[3].difficultyClearedWithRetries[5] == 99 ||
+          (this->clrd[4].difficultyClearedWithRetries[5] == 99)) ||
+         (this->clrd[5].difficultyClearedWithRetries[5] == 99)))
     {
         return 1;
     }

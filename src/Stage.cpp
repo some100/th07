@@ -1161,7 +1161,7 @@ void Stage::SetupCameraStageBackground()
     D3DXMatrixLookAtLH(&g_Supervisor.viewMatrix, &eyeVec, &atVec, &upVec);
     D3DXMatrixPerspectiveFovLH(
         &g_Supervisor.projectionMatrix, ZUN_PI / 10.0f,
-        ((f32)g_Supervisor.viewport.Width / (f32)g_Supervisor.viewport.Height),
+        (f32)g_Supervisor.viewport.Width / (f32)g_Supervisor.viewport.Height,
         1.0f, 10000.0f);
     g_Supervisor.d3dDevice->SetTransform(D3DTS_VIEW, &g_Supervisor.viewMatrix);
     g_Supervisor.d3dDevice->SetTransform(D3DTS_PROJECTION,

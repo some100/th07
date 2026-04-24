@@ -106,7 +106,7 @@ void ItemManager::SpawnItem(D3DXVECTOR3 *heading, i32 itemType, i32 state)
 
     item = this->items + this->nextIndex;
     if ((127 < (i32)g_GameManager.globals->currentPower) &&
-        ((itemType == ITEM_POWER_SMALL || (itemType == ITEM_POWER_BIG))))
+        (itemType == ITEM_POWER_SMALL || (itemType == ITEM_POWER_BIG)))
     {
         itemType = ITEM_CHERRY;
     }
@@ -228,10 +228,10 @@ void ItemManager::OnUpdate()
             {
                 if ((item->state == 1) ||
                     // double intentionally used here
-                    ((((128.0 <= (f64)(i32)g_GameManager.globals->currentPower ||
-                        (3 < g_GameManager.difficulty)) &&
-                       (g_Player.positionCenter.y < g_Player.shooterData->pocY)) ||
-                      (g_Player.hasBorder == BORDER_ACTIVE))))
+                    (((128.0 <= (f64)(i32)g_GameManager.globals->currentPower ||
+                       (3 < g_GameManager.difficulty)) &&
+                      (g_Player.positionCenter.y < g_Player.shooterData->pocY)) ||
+                     (g_Player.hasBorder == BORDER_ACTIVE)))
                 {
                     if (g_Player.playerState == PLAYER_STATE_SPAWNING)
                     {

@@ -1288,8 +1288,8 @@ restart:
             enemy->currentContext.curInstr = instr;
             enemy->currentContext.time++;
             if ((((enemy->flags2 >> 6 & 1) != 0) && (enemy->bossId == 0)) &&
-                ((g_EnemyManager.spellcardInfo.isActive != 0 &&
-                  (g_EnemyManager.spellcardInfo.isCapturing != 0))))
+                (g_EnemyManager.spellcardInfo.isActive != 0 &&
+                 (g_EnemyManager.spellcardInfo.isCapturing != 0)))
             {
                 if ((enemy->flags3 >> 6 & 1) == 0)
                 {
@@ -1307,8 +1307,8 @@ restart:
             if (((enemy->flags2 >> 6 & 1) != 0) && (6 < g_GameManager.currentStage))
             {
                 if ((g_Player.bombInfo.isInUse == 0) ||
-                    ((g_EnemyManager.spellcardInfo.isActive == 0 ||
-                      ((i32)g_EnemyManager.spellcardInfo.spellcardIdx < 0x76))))
+                    (g_EnemyManager.spellcardInfo.isActive == 0 ||
+                     ((i32)g_EnemyManager.spellcardInfo.spellcardIdx < 0x76)))
                 {
                     if (enemy->spellcardDelayTimer == 0)
                     {

@@ -286,8 +286,8 @@ u32 MainMenu::OnUpdatePreInput()
     if (((((this->prevGameState == STATE_PRE_INPUT) ||
            (this->prevGameState == 4)) ||
           (this->prevGameState == STATE_SELECT_REPLAY)) ||
-         ((this->prevGameState == 8 ||
-           (this->prevGameState == STATE_EXTRA_SELECT_DIFFICULTY)))) &&
+         (this->prevGameState == 8 ||
+          (this->prevGameState == STATE_EXTRA_SELECT_DIFFICULTY))) &&
         // STRING: TH07 0x004959c4
         (g_AnmManager->LoadSurface(0, "data/title/title00.jpg") != ZUN_SUCCESS))
     {
@@ -346,8 +346,8 @@ u32 MainMenu::OnUpdatePreInput()
 LAB_0045599d:
     if (iVar7 = MoveCursorVertical(8), iVar7 != 0)
     {
-        while ((g_GameManager.HasReachedMaxClearsAllShotTypes() == 0 &&
-                (this->cursor == 1)))
+        while (g_GameManager.HasReachedMaxClearsAllShotTypes() == 0 &&
+               (this->cursor == 1))
         {
             this->cursor += iVar7;
         }
@@ -973,8 +973,8 @@ u32 MainMenu::OnUpdateKeyConfig()
         this->vmHead + g_Supervisor.cfg.shotSlow + 0x41,
         (i32)this->vmHead[g_Supervisor.cfg.shotSlow + 0x41].baseSpriteIdx);
     btnPressed = 0;
-    while ((btnPressed < 0x20 &&
-            ((Controller::GetControllerState()[btnPressed] & 0x80) == 0)))
+    while (btnPressed < 0x20 &&
+           ((Controller::GetControllerState()[btnPressed] & 0x80) == 0))
     {
         btnPressed += 1;
     }
@@ -1325,8 +1325,8 @@ u32 MainMenu::OnUpdateSelectCharacter()
             if (g_Supervisor.cfg.defaultDifficulty == 4)
             {
                 while (
-                    (g_GameManager.HasReachedMaxClears(this->cursor << 1) == 0 &&
-                     (g_GameManager.HasReachedMaxClears(this->cursor * 2 + 1) == 0)))
+                    g_GameManager.HasReachedMaxClears(this->cursor << 1) == 0 &&
+                    (g_GameManager.HasReachedMaxClears(this->cursor * 2 + 1) == 0))
                 {
                     this->cursor = this->cursor + 1;
                     if (2 < this->cursor)
@@ -1338,8 +1338,8 @@ u32 MainMenu::OnUpdateSelectCharacter()
             else if (g_Supervisor.cfg.defaultDifficulty == 5)
             {
                 while (
-                    (g_GameManager.HasUnlockedPhantom(this->cursor << 1) == 0 &&
-                     (g_GameManager.HasUnlockedPhantom(this->cursor * 2 + 1) == 0)))
+                    g_GameManager.HasUnlockedPhantom(this->cursor << 1) == 0 &&
+                    (g_GameManager.HasUnlockedPhantom(this->cursor * 2 + 1) == 0))
                 {
                     this->cursor = this->cursor + 1;
                     if (2 < this->cursor)
@@ -1462,8 +1462,8 @@ u32 MainMenu::OnUpdateSelectCharacter()
             if (g_Supervisor.cfg.defaultDifficulty == 4)
             {
                 while (
-                    (g_GameManager.HasReachedMaxClears(this->cursor << 1) == 0 &&
-                     (g_GameManager.HasReachedMaxClears(this->cursor * 2 + 1) == 0)))
+                    g_GameManager.HasReachedMaxClears(this->cursor << 1) == 0 &&
+                    (g_GameManager.HasReachedMaxClears(this->cursor * 2 + 1) == 0))
                 {
                     this->cursor = this->cursor + 1;
                     if (2 < this->cursor)
@@ -1475,8 +1475,8 @@ u32 MainMenu::OnUpdateSelectCharacter()
             else if (g_Supervisor.cfg.defaultDifficulty == 5)
             {
                 while (
-                    (g_GameManager.HasUnlockedPhantom(this->cursor << 1) == 0 &&
-                     (g_GameManager.HasUnlockedPhantom(this->cursor * 2 + 1) == 0)))
+                    g_GameManager.HasUnlockedPhantom(this->cursor << 1) == 0 &&
+                    (g_GameManager.HasUnlockedPhantom(this->cursor * 2 + 1) == 0))
                 {
                     this->cursor = this->cursor + 1;
                     if (2 < this->cursor)

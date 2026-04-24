@@ -138,7 +138,7 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, f32 x,
 
     bullet = this->bulletsStart;
     i = 0;
-    while ((i < 0x400 && (bullet->state != BULLET_INACTIVE)))
+    while (i < 0x400 && (bullet->state != BULLET_INACTIVE))
     {
         bullet = bullet + 1;
         if (bullet->state == BULLET_END_ARRAY)
@@ -548,7 +548,7 @@ void BulletManager::RemoveAllBullets(i32 param_1)
     laser = this->lasers;
     for (i = 0; i < 0x40; i++)
     {
-        if ((laser->inUse != 0) && (((laser->flags & 4) == 0 || (param_1 == 10))))
+        if ((laser->inUse != 0) && ((laser->flags & 4) == 0 || (param_1 == 10)))
         {
             if (laser->state < 2)
             {
@@ -960,7 +960,7 @@ void Bullet::UpdateBulletBounce()
             this->angle = utils::AddNormalizeAngle(this->angle, 0.0f);
         }
         if (((this->pos).y < 0.0f) ||
-            ((448.0f <= (this->pos).y && ((this->exFlags & 0x400U) != 0))))
+            (448.0f <= (this->pos).y && ((this->exFlags & 0x400U) != 0)))
         {
             this->angle = -this->angle;
         }
@@ -1117,8 +1117,8 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
                         iVar3 = g_Player.CalcKillboxCollision(
                             &bullets->pos, &(bullets->sprites).grazeSize);
                         if ((iVar3 != 0) &&
-                            (((iVar3 != 2 || ((bullets->moreFlags & 0x1000) == 0)) &&
-                              (bullets->state = BULLET_DESPAWN, iVar3 == 2))))
+                            ((iVar3 != 2 || ((bullets->moreFlags & 0x1000) == 0)) &&
+                             (bullets->state = BULLET_DESPAWN, iVar3 == 2)))
                         {
                             g_ItemManager.SpawnItem(&bullets->pos, g_Player.itemType, 1);
                         }
@@ -1233,7 +1233,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
                     {
                         g_Player.CalcLaserHitbox(&local_38, &local_20, &laser->pos,
                                                  laser->angle,
-                                                 (laser->timer.current % 0xc == 0));
+                                                 laser->timer.current % 0xc == 0);
                     }
                     if (laser->startTime <= laser->timer.current)
                     {
@@ -1250,7 +1250,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
                     LAB_004267a8:
                         g_Player.CalcLaserHitbox(&local_38, &local_20, &laser->pos,
                                                  laser->angle,
-                                                 (laser->timer.current % 0xc == 0));
+                                                 laser->timer.current % 0xc == 0);
                         if (laser->timer < laser->duration)
                         {
                             goto LAB_004269d9;
@@ -1294,7 +1294,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
                     {
                         g_Player.CalcLaserHitbox(&local_38, &local_20, &laser->pos,
                                                  laser->angle,
-                                                 (laser->timer.current % 0xc == 0));
+                                                 laser->timer.current % 0xc == 0);
                     }
                     if (laser->endTime <= laser->timer.current)
                     {
@@ -1377,7 +1377,7 @@ u32 BulletManager::OnDraw(BulletManager *arg)
             laser->vm0.pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
             g_AnmManager->Draw(&laser->vm0);
             if (((laser->startOffset < 16.0f) || (laser->speed == 0.0f)) &&
-                ((laser->hideWarning == 0 || (laser->state != 0))))
+                (laser->hideWarning == 0 || (laser->state != 0)))
             {
                 laser->vm1.pos.x = local_18 * laser->startOffset + (laser->pos).x;
                 laser->vm1.pos.y = local_c * laser->startOffset + (laser->pos).y;

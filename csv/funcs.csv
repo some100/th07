@@ -1109,7 +1109,7 @@ address|name|type
 0047bd10|FUN_0047bd10|library
 0047c0b9|FUN_0047c0b9|library
 0047ce8c|FUN_0047ce8c|library
-0047d136|WINNLSEnableIME|library
+0047d136|_WINNLSEnableIME@8|library
 0047d13c|vsprintf|library
 0047d193|_onexit_lk|library
 0047d213|__onexitinit|library

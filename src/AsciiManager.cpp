@@ -1062,7 +1062,7 @@ void PauseMenu::OnDraw()
         g_Supervisor.viewport.Height = g_GameManager.arcadeRegionSize.y;
         g_Supervisor.d3dDevice->SetViewport(&g_Supervisor.viewport);
         if (((g_Supervisor.flags >> 1 & 1) != 0) &&
-            ((this->curState != 0 || (2 < this->numFrames))))
+            (this->curState != 0 || (2 < this->numFrames)))
         {
             g_AnmManager->DrawNoRotation(&this->menuBackground);
         }

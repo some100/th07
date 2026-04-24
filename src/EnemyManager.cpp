@@ -709,7 +709,7 @@ void Enemy::CheckBulletPlayerCollision(D3DXVECTOR3 *bulletCenter,
     local_10.x = bulletSize->x * 0.6666667f;
     if (((g_Player.CalcKillboxCollision(bulletCenter, &local_10) == 1) &&
          ((this->flags2 & 1) != 0)) &&
-        (((this->flags2 >> 6 & 1) == 0 && ((this->flags2 >> 5 & 1) == 0))))
+        ((this->flags2 >> 6 & 1) == 0 && ((this->flags2 >> 5 & 1) == 0)))
     {
         this->life = this->life - 10;
     }
@@ -797,8 +797,8 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
         }
         arg->enemyCountReal = arg->enemyCountReal + 1;
         if (((enemy->flags4 >> 3 & 1) != 0) &&
-            ((g_Player.bombInfo.isInUse != 0 ||
-              (g_Player.playerState != PLAYER_STATE_ALIVE))))
+            (g_Player.bombInfo.isInUse != 0 ||
+             (g_Player.playerState != PLAYER_STATE_ALIVE)))
         {
             enemy->timer--;
             goto LAB_00421da7;
@@ -853,30 +853,30 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                 enemy->flags3 = enemy->flags3 | 8;
             }
             if (((enemy->flags3 >> 3 & 1) == 1) &&
-                ((((enemy->trailFlags == 0 &&
-                    (g_GameManager.IsInBounds(enemy->position.x, enemy->position.y,
-                                              (enemy->primaryVm.sprite)->widthPx,
-                                              (enemy->primaryVm.sprite)->heightPx) ==
-                     0)) ||
-                   ((enemy->trailFlags != 0 &&
-                     ((g_GameManager.IsInBounds(
-                           enemy->position.x, enemy->position.y,
-                           (enemy->primaryVm.sprite)->widthPx,
-                           (enemy->primaryVm.sprite)->heightPx) == 0 &&
-                       (g_GameManager.IsInBounds(
-                            enemy->enemyHistory[enemy->trailCount - 1].position.x,
-                            enemy->enemyHistory[enemy->trailCount - 1].position.y,
-                            (enemy->primaryVm.sprite)->widthPx,
-                            (enemy->primaryVm.sprite)->heightPx) == 0)))))) &&
-                  (-1 < enemy->flags3))))
+                (((enemy->trailFlags == 0 &&
+                   (g_GameManager.IsInBounds(enemy->position.x, enemy->position.y,
+                                             (enemy->primaryVm.sprite)->widthPx,
+                                             (enemy->primaryVm.sprite)->heightPx) ==
+                    0)) ||
+                  (enemy->trailFlags != 0 &&
+                   (g_GameManager.IsInBounds(
+                        enemy->position.x, enemy->position.y,
+                        (enemy->primaryVm.sprite)->widthPx,
+                        (enemy->primaryVm.sprite)->heightPx) == 0 &&
+                    (g_GameManager.IsInBounds(
+                         enemy->enemyHistory[enemy->trailCount - 1].position.x,
+                         enemy->enemyHistory[enemy->trailCount - 1].position.y,
+                         (enemy->primaryVm.sprite)->widthPx,
+                         (enemy->primaryVm.sprite)->heightPx) == 0)))) &&
+                 (-1 < enemy->flags3)))
             {
                 enemy->flags1 &= 0x7f;
                 enemy->Despawn();
                 goto LAB_004207d0;
             }
         } while ((enemy->HandleLifeCallback() != 0) ||
-                 ((-1 < enemy->timerCallbackThreshold &&
-                   (enemy->HandleTimerCallback() != 0))));
+                 (-1 < enemy->timerCallbackThreshold &&
+                  (enemy->HandleTimerCallback() != 0)));
         enemy->primaryVm.color = enemy->color;
         g_AnmManager->ExecuteScript(&enemy->primaryVm);
         enemy->color = enemy->primaryVm.color;
@@ -893,10 +893,10 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
         if (((enemy->flags2 >> 3 & 1) == 0) && ((enemy->flags4 >> 2 & 1) == 0))
         {
             if (((enemy->flags2 & 1) != 0) &&
-                (((enemy->flags2 >> 1 & 1) != 0 &&
-                  (enemy->CheckBulletPlayerCollision(&enemy->position,
-                                                     &enemy->hitboxSize),
-                   enemy->trailFlags != 0))))
+                ((enemy->flags2 >> 1 & 1) != 0 &&
+                 (enemy->CheckBulletPlayerCollision(&enemy->position,
+                                                    &enemy->hitboxSize),
+                  enemy->trailFlags != 0)))
             {
                 local_30 = (enemy->hitboxSize);
                 for (local_38 = 1; local_38 < enemy->trailInterval; local_38 += 6)
@@ -946,8 +946,8 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                         {
                             local_44 = 0x46;
                         }
-                        if ((local_44 == 0) && ((g_Player.isFocus == 0 ||
-                                                 (((enemy->timer).current & 1U) != 0))))
+                        if ((local_44 == 0) && (g_Player.isFocus == 0 ||
+                                                (((enemy->timer).current & 1U) != 0)))
                         {
                             local_44 = 10;
                         }
@@ -1047,12 +1047,12 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                     if (g_GameManager.character == CHAR_SAKUYA)
                     {
                         fVar1 = g_Player.sakuyaTargetPosition.x - g_Player.positionCenter.x;
-                        local_24 = atan2f((enemy->position.y - g_Player.positionCenter.y),
-                                          (enemy->position.x - g_Player.positionCenter.x));
+                        local_24 = atan2f(enemy->position.y - g_Player.positionCenter.y,
+                                          enemy->position.x - g_Player.positionCenter.x);
                         if (((-2.0943952f <= local_24) &&
                              (local_24 < -1.0471976f != (local_24 == -1.0471976f))) &&
-                            ((g_Player.targetingEnemy == 0 ||
-                              (fabsf(local_10) < fabsf(fVar1)))))
+                            (g_Player.targetingEnemy == 0 ||
+                             (fabsf(local_10) < fabsf(fVar1))))
                         {
                             g_Player.sakuyaTargetPosition = enemy->position;
                             g_Player.targetingEnemy = 1;
@@ -1072,8 +1072,8 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                     if ((((g_GameManager.character == CHAR_SAKUYA) &&
                           (g_Player.sakuyaTargetPosition.y < -900.0f)) &&
                          (local_24 =
-                              atan2f((enemy->position.y - g_Player.positionCenter.y),
-                                     (enemy->position.x - g_Player.positionCenter.x)),
+                              atan2f(enemy->position.y - g_Player.positionCenter.y,
+                                     enemy->position.x - g_Player.positionCenter.x),
                           -2.0943952f <= local_24)) &&
                         (local_24 < -1.0471976f != (local_24 == -1.0471976f)))
                     {
@@ -1411,8 +1411,8 @@ u32 EnemyManager::ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3)
                 {
                     local_2c = 0;
                     local_1c = 0;
-                    while ((local_1c < local_20->trailCount &&
-                            (-990.0f <= local_20->enemyHistory[local_1c].position.x)))
+                    while (local_1c < local_20->trailCount &&
+                           (-990.0f <= local_20->enemyHistory[local_1c].position.x))
                     {
                         local_2c += 2;
                         local_1c += local_20->trailNodeStep;
@@ -1426,8 +1426,8 @@ u32 EnemyManager::ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3)
                                    local_20->primaryVm.uvScrollPos.x;
                         local_3c = local_20->trailVertices;
                         local_1c = 0;
-                        while ((local_1c < local_20->trailCount &&
-                                (-990.0f <= local_20->enemyHistory[local_1c].position.x)))
+                        while (local_1c < local_20->trailCount &&
+                               (-990.0f <= local_20->enemyHistory[local_1c].position.x))
                         {
                             if (local_1c == 0)
                             {
