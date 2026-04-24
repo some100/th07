@@ -2,8 +2,8 @@
 
 #include <d3d8.h>
 
-#include "inttypes.hpp"
 #include "ZunResult.hpp"
+#include "inttypes.hpp"
 
 typedef enum RenderResult
 {

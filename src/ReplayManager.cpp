@@ -72,7 +72,9 @@ u32 ReplayManager::OnUpdate(ReplayManager *arg)
 u32 ReplayManager::OnUpdateDemoLowPrio(ReplayManager *arg)
 {
     if (g_GameManager.notInMenu == 0)
+    {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
+    }
 
     if (((g_Gui.HasCurrentMsgIdx() != 0) &&
          (g_Gui.IsDialogueSkippable() != 0)) &&
@@ -448,7 +450,9 @@ ZunResult ReplayManager::RegisterChain(i32 isDemo, const char *replayFilename)
                 (ChainCallback)EffectManager::UpdateNoOp); // idk either bro
             mgr->calcChain->arg = mgr;
             if (g_Chain.AddToCalcChain(mgr->calcChain, 0x10) != 0)
+            {
                 return ZUN_ERROR;
+            }
 
             mgr->demoCalcChain = NULL;
             mgr->rngCalcChain = g_Chain.CreateElem((ChainCallback)OnUpdateRng);
@@ -463,7 +467,9 @@ ZunResult ReplayManager::RegisterChain(i32 isDemo, const char *replayFilename)
                 g_Chain.CreateElem((ChainCallback)EffectManager::UpdateNoOp);
             mgr->calcChain->arg = mgr;
             if (g_Chain.AddToCalcChain(mgr->calcChain, 5) != 0)
+            {
                 return ZUN_ERROR;
+            }
 
             mgr->demoCalcChain =
                 g_Chain.CreateElem((ChainCallback)OnUpdateDemoLowPrio);
@@ -531,7 +537,9 @@ void ReplayManager::SaveReplay(const char *param_1, char *param_2)
     }
     local_c = g_ReplayManager;
     if (g_ReplayManager->isDemo != 0)
+    {
         goto LAB_004444a9;
+    }
     if ((g_GameManager.practice == 0) && ((i32)g_GameManager.difficulty < 4))
     {
         bool bVar9 = true;
@@ -547,7 +555,9 @@ void ReplayManager::SaveReplay(const char *param_1, char *param_2)
         }
 
         if (bVar9)
+        {
             goto LAB_00443e18;
+        }
     }
     else
     {
@@ -710,7 +720,9 @@ void ReplayManager::SaveReplay2(const char *param_1)
     {
         if (memcmp(&g_Supervisor.cfg, &g_ReplayManager->data->data.cfg,
                    sizeof(GameConfiguration)) != 0)
+        {
             goto LAB_00444a3e;
+        }
     }
     if ((g_ReplayManager->data->data.cfg.slowMode == 0) && (param_1 != NULL))
     {

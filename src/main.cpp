@@ -52,11 +52,15 @@ i32 WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     SystemParametersInfoA(SPI_SETLOWPOWERACTIVE, 0, NULL, 2);
     SystemParametersInfoA(SPI_SETPOWEROFFACTIVE, 0, NULL, 2);
     if (GameWindow::CheckForRunningGameInstance(hInstance) == ZUN_ERROR)
+    {
         goto stop;
+    }
 
     // STRING: TH07 0x00497c60
     if (g_Supervisor.LoadConfig("th07.cfg") != ZUN_SUCCESS)
+    {
         goto stop;
+    }
 
     GameWindow::ChecksumExecutable();
     QueryPerformanceFrequency(&g_GameWindow.lpFrequency);
@@ -112,7 +116,9 @@ start:
             {
                 res = g_GameWindow.Render();
                 if (res != RENDER_RESULT_KEEP_RUNNING)
+                {
                     break;
+                }
                 g_Supervisor.flags = g_Supervisor.flags & 0xffffffef;
             }
             else if (d3dDeviceStatus == D3DERR_DEVICENOTRESET)
@@ -120,7 +126,9 @@ start:
                 g_AnmManager->ReleaseSurfaces();
                 if (g_Supervisor.d3dDevice->Reset(&g_Supervisor.presentParameters) !=
                     0)
+                {
                     break;
+                }
                 GameWindow::ResetRenderState();
                 g_Supervisor.renderSkipFrames = 3;
                 g_Supervisor.flags = g_Supervisor.flags | 0x10;

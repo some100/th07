@@ -29,7 +29,9 @@ u8 *Lzss::Compress(u8 *src, i32 dstLen, i32 *outSize)
     local_8 = 0;
     local_10 = (u8 *)GlobalAlloc(0, dstLen << 1);
     if (local_10 == NULL)
+    {
         return NULL;
+    }
 
     *outSize = 0;
     local_c = local_10;
@@ -47,7 +49,9 @@ u8 *Lzss::Compress(u8 *src, i32 dstLen, i32 *outSize)
             local_34 = *local_24++;
         }
         if (local_34 == -1)
+        {
             break;
+        }
         g_LzssDictionary[local_18 + 1] = local_34;
     }
     local_30 = local_18;
@@ -196,7 +200,9 @@ u8 *Lzss::Decompress(u8 *src, i32 srcLen, u8 *dst, u32 dstLen)
     local_15 = 0x80;
     bVar1 = 0;
     if ((dst == NULL) && (dst = (u8 *)GlobalAlloc(0, dstLen), dst == NULL))
+    {
         return NULL;
+    }
 
     local_c = dst;
     local_38 = 1;
@@ -224,7 +230,9 @@ u8 *Lzss::Decompress(u8 *src, i32 srcLen, u8 *dst, u32 dstLen)
                 local_15 = 0x80;
             }
             if (bVar3 == 0)
+            {
                 break;
+            }
             local_34 = 0x80;
             local_20 = 0;
             while (local_34 != 0)
@@ -285,7 +293,9 @@ u8 *Lzss::Decompress(u8 *src, i32 srcLen, u8 *dst, u32 dstLen)
             }
         }
         if (local_20 == 0)
+        {
             break;
+        }
         local_34 = 8;
         local_20 = 0;
         while (local_34 != 0)
@@ -373,7 +383,9 @@ i32 Lzss::InsertNode(i32 node, i32 *matchPosition)
     i32 i;
 
     if (node == 0)
+    {
         return 0;
+    }
 
     i32 testNode = g_LzssTree[0x2000].rightChild;
     i32 matchLength = 0;
@@ -384,7 +396,9 @@ i32 Lzss::InsertNode(i32 node, i32 *matchPosition)
             delta = (u32)g_LzssDictionary[node + i & 0x1fff] -
                     (u32)g_LzssDictionary[testNode + i & 0x1fff];
             if (delta != 0)
+            {
                 break;
+            }
         }
         if (i >= matchLength)
         {
@@ -420,7 +434,9 @@ i32 Lzss::InsertNode(i32 node, i32 *matchPosition)
 void Lzss::DeleteNode(i32 node)
 {
     if (g_LzssTree[node].parent == 0)
+    {
         return;
+    }
 
     if (g_LzssTree[node].rightChild == 0)
     {
@@ -478,6 +494,8 @@ i32 Lzss::FindMinNode(i32 startNode)
 {
     i32 node = g_LzssTree[startNode].leftChild;
     while (g_LzssTree[node].rightChild != 0)
+    {
         node = g_LzssTree[node].rightChild;
+    }
     return node;
 }

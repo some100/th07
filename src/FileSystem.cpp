@@ -20,15 +20,23 @@ u8 *FileSystem::OpenFile(const char *filepath, i32 isExternalResource)
     {
         filename = strrchr(filepath, '\\');
         if (filename == NULL)
+        {
             filename = filepath;
+        }
         else
+        {
             filename = filename + 1;
+        }
 
         filename = strrchr(filename, '/');
         if (filename == NULL)
+        {
             filename = filepath;
+        }
         else
+        {
             filename = filename + 1;
+        }
         fsize = g_Pbg4Archive.GetEntrySize(filename);
         g_LastFileSize = fsize;
         if (fsize == 0)
@@ -44,7 +52,9 @@ u8 *FileSystem::OpenFile(const char *filepath, i32 isExternalResource)
             DebugPrint("%s Decode ... \r\n", filename);
             buf = (u8 *)malloc(fsize);
             if (buf == NULL)
+            {
                 return NULL;
+            }
 
             g_Pbg4Archive.ReadDecompressEntry(filename, buf);
             return buf;

@@ -29,9 +29,13 @@ u32 MidiDevice::OpenDevice(i32 deviceID)
     if (this->handle != NULL)
     {
         if (this->deviceID != deviceID)
+        {
             Close();
+        }
         else
+        {
             return false;
+        }
     }
     this->deviceID = deviceID;
     return midiOutOpen(&this->handle, deviceID,
@@ -43,7 +47,9 @@ u32 MidiDevice::OpenDevice(i32 deviceID)
 ZunResult MidiDevice::Close()
 {
     if (this->handle == NULL)
+    {
         return ZUN_ERROR;
+    }
 
     midiOutReset(this->handle);
     midiOutClose(this->handle);
@@ -55,11 +61,15 @@ ZunResult MidiDevice::Close()
 i32 MidiDevice::SendLongMsg(LPMIDIHDR pmh)
 {
     if (this->handle == NULL)
+    {
         return 0;
+    }
 
     if (midiOutPrepareHeader(this->handle, pmh, sizeof(MIDIHDR)) !=
         MMSYSERR_NOERROR)
+    {
         return 1;
+    }
 
     return midiOutLongMsg(this->handle, pmh, 0x40) != 0;
 }
@@ -81,7 +91,9 @@ i32 MidiDevice::SendShortMsg(u8 midiStatus, u8 firstByte, u8 secondByte)
     MidiShortMsg pkt;
 
     if (this->handle == NULL)
+    {
         return false;
+    }
 
     pkt.msg.midiStatus = midiStatus;
     pkt.msg.firstByte = firstByte;
@@ -304,12 +316,13 @@ ZunResult MidiOutput::ParseFile(i32 fileIdx)
 ZunResult MidiOutput::LoadFile(const char *path)
 {
     if (ReadFileData(0x1f, path) != ZUN_SUCCESS)
+    {
         return ZUN_ERROR;
+    }
 
     ParseFile(0x1f);
     ReleaseFileData(0x1f);
     return ZUN_SUCCESS;
-
 }
 
 // FUNCTION: TH07 0x00436a00
@@ -337,7 +350,9 @@ void MidiOutput::LoadTracks()
 ZunResult MidiOutput::Play()
 {
     if (this->tracks == NULL)
+    {
         return ZUN_ERROR;
+    }
 
     LoadTracks();
     this->midiOutDev.OpenDevice(-1);
@@ -351,7 +366,9 @@ ZunResult MidiOutput::Play()
 ZunResult MidiOutput::StopPlayback()
 {
     if (this->tracks == NULL)
+    {
         return ZUN_ERROR;
+    }
 
     for (i32 i = 0; i < 0x20; i++)
     {
@@ -375,7 +392,9 @@ ZunResult MidiOutput::UnprepareHeader(LPMIDIHDR pmh)
         DebugPrint("error :\r\n");
     }
     if (this->midiOutDev.handle == NULL)
+    {
         DebugPrint("error :\r\n");
+    }
 
     i32 i;
     for (i = 0; i < 0x20; i++)
@@ -391,7 +410,9 @@ ZunResult MidiOutput::UnprepareHeader(LPMIDIHDR pmh)
 success:
     MMRESULT res = midiOutUnprepareHeader(this->midiOutDev.handle, pmh, 0x40);
     if (res != 0)
+    {
         DebugPrint("error :\r\n");
+    }
 
     void *lpData = pmh->lpData;
     free(lpData);

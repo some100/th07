@@ -145,7 +145,7 @@ i32 EffectManager::UpdateOrbitEffect(Effect *effect)
     local_10.y = local_64.z * 0.0f - local_64.x * 1.0f;
     local_10.z = local_64.x * 0.0f - local_64.y * 0.0f;
     if (0.00001f <= local_10.x * local_10.x + local_10.y * local_10.y +
-                      local_10.z * local_10.z)
+                        local_10.z * local_10.z)
     {
         D3DXVec3Normalize(&local_10, &local_10);
     }
@@ -553,7 +553,9 @@ Effect *EffectManager::SpawnParticles(i32 effectId, D3DXVECTOR3 *pos,
             }
             numParticles += -1;
             if (numParticles == 0)
+            {
                 break;
+            }
             if (this->nextIndex == 0)
             {
                 effect = this->effects;
@@ -621,7 +623,9 @@ Effect *EffectManager::SpawnMovingParticles(i32 effectId, D3DXVECTOR3 *pos,
             }
             numParticles += -1;
             if (numParticles == 0)
+            {
                 break;
+            }
             if (this->nextIndex == 0)
             {
                 effect = this->effects;
@@ -977,7 +981,9 @@ ZunResult EffectManager::RegisterChain()
         (ChainLifecycleCallback)DeletedCallback;
     g_EffectManagerCalcChain.arg = mgr;
     if (g_Chain.AddToCalcChain(&g_EffectManagerCalcChain, 0xb) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     g_EffectManagerDrawChain.callback = (ChainCallback)OnDraw;
     g_EffectManagerDrawChain.addedCallback = NULL;

@@ -13,13 +13,17 @@ f32 utils::AddNormalizeAngle(f32 param_1, f32 param_2)
     {
         param_1 -= ZUN_2PI;
         if (local_8++ > 16)
+        {
             break;
+        }
     }
     while (param_1 < -ZUN_PI)
     {
         param_1 += ZUN_2PI;
         if (local_8++ > 16)
+        {
             break;
+        }
     }
     return param_1;
 }

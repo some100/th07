@@ -89,16 +89,24 @@ void GameManager::ResetRegionsPos()
 i32 GameManager::IsInBounds(f32 x, f32 y, f32 widthPx, f32 heightPx)
 {
     if (widthPx / 2.0f + x < 0.0f)
+    {
         return 0;
+    }
 
     if (x - widthPx / 2.0f > 384.0f)
+    {
         return 0;
+    }
 
     if (heightPx / 2.0f + y < 0.0f)
+    {
         return 0;
+    }
 
     if (y - heightPx / 2.0f > 448.0f)
+    {
         return 0;
+    }
 
     return 1;
 }
@@ -271,7 +279,9 @@ u32 GameManager::OnUpdate(GameManager *arg)
     g_Supervisor.d3dDevice->Clear(0, NULL, 2, g_Stage.fogColor.color, 1.0f, 0);
     if (((arg->isInRetryMenu == 1) || (arg->isInRetryMenu == 2)) ||
         (arg->isInPauseMenu != 0))
+    {
         return CHAIN_CALLBACK_RESULT_BREAK;
+    }
 
     if (arg->globals->score >= 999999999)
     {
@@ -915,7 +925,9 @@ ZunResult GameManager::RegisterChain()
     g_GameManagerCalcChain.arg = mgr;
     mgr->framesThisStage = 0;
     if (g_Chain.AddToCalcChain(&g_GameManagerCalcChain, 2) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     g_GameManagerDrawChain.callback = (ChainCallback)OnDraw;
     g_GameManagerDrawChain.addedCallback = NULL;

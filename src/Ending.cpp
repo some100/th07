@@ -57,7 +57,9 @@ u32 Ending::OnUpdate(Ending *arg)
         if (((arg->hasSeenEnding == 0) ||
              IS_PRESSED_RAW(TH_BUTTON_SKIP)) ||
             (3 < local_8))
+        {
             break;
+        }
         local_8 += 1;
     }
     return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -200,7 +202,9 @@ ZunResult Ending::ParseEndFile()
             this->minWaitResetFrames = this->minWaitResetFrames - 1;
         }
         if (0 < this->timer3.current)
+        {
             goto LAB_0041e331;
+        }
         for (i = 0; i < 0xf; i++)
         {
             this->sprites[i].pendingInterrupt = 2;
@@ -544,7 +548,9 @@ ZunResult Ending::RegisterChain()
     ending->calcChain->addedCallback = (ChainLifecycleCallback)AddedCallback;
     ending->calcChain->deletedCallback = (ChainLifecycleCallback)DeletedCallback;
     if (g_Chain.AddToCalcChain(ending->calcChain, 4) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     ending->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     ending->drawChain->arg = ending;

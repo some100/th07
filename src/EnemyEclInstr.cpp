@@ -198,7 +198,9 @@ void EnemyEclInstr::ExInsDespawnLargeBulletAndSavePos(Enemy *enemy,
         if (((bullet->state != BULLET_INACTIVE) &&
              (bullet->state != BULLET_DESPAWN)) &&
             (60.0f <= (bullet->sprites.spriteBullet.sprite)->heightPx))
+        {
             break;
+        }
         local_e0 += 1;
         bullet = bullet + 1;
     }

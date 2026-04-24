@@ -863,7 +863,9 @@ void GuiImpl::MsgRead(i32 msgIdx)
 ZunResult GuiImpl::RunMsg()
 {
     if (this->msg.currentMsgIdx < 0)
+    {
         return ZUN_ERROR;
+    }
 
     if (this->msg.ignoreWaitCounter != 0)
     {
@@ -977,7 +979,9 @@ ZunResult GuiImpl::RunMsg()
                     (this->msg.framesElapsedDuringPause < 0xc))
                 {
                     if (this->msg.framesElapsedDuringPause >= this->msg.curInstr->args.pause.duration)
+                    {
                         break;
+                    }
                     this->msg.framesElapsedDuringPause =
                         this->msg.framesElapsedDuringPause + 1;
                     goto SKIP_TIME_INCREMENT;
@@ -2140,7 +2144,9 @@ ZunResult Gui::RegisterChain()
     g_GuiCalcChain.deletedCallback = (ChainLifecycleCallback)DeletedCallback;
     g_GuiCalcChain.arg = mgr;
     if (g_Chain.AddToCalcChain(&g_GuiCalcChain, 0xd) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     g_GuiDrawChain.callback = (ChainCallback)OnDraw;
     g_GuiDrawChain.addedCallback = NULL;

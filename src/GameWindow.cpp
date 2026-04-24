@@ -118,7 +118,9 @@ void GameWindow::Present()
             // STRING: TH07 0x00497c08
             sprintf(local_10c, "snapshot/th%.3d.bmp", i);
             if (FileSystem::CheckFileExists(local_10c) == 0)
+            {
                 break;
+            }
         }
         if (i < 1000)
         {
@@ -144,7 +146,9 @@ RenderResult GameWindow::Render()
     if (this->lastActiveAppValue != 0)
     {
         if (this->curFrame != 0)
+        {
             goto LAB_00434820;
+        }
     LAB_00434708:
         do
         {
@@ -182,7 +186,9 @@ RenderResult GameWindow::Render()
                 if (((g_Supervisor.cfg.windowed != 0) ||
                      (g_Supervisor.vsyncEnabled != 0)) &&
                     (this->curFrame != 0))
+                {
                     break;
+                }
             LAB_004349e2:
                 if (g_Supervisor.cfg.windowed != 0)
                 {
@@ -193,7 +199,9 @@ RenderResult GameWindow::Render()
                     return RENDER_RESULT_KEEP_RUNNING;
                 }
                 if ((i32)g_Supervisor.cfg.frameskipConfig < (i32)this->curFrame)
+                {
                     goto LAB_00434a18;
+                }
                 Present();
             }
             if (g_GameWindow.lpFrequency.LowPart != 0)
@@ -207,14 +215,18 @@ RenderResult GameWindow::Render()
                     g_LastPerfCounter.HighPart = local_10.HighPart;
                 }
                 if ((local_1c < 1.0 / 60.0) && (g_GameWindow.usesRelativePath == false))
+                {
                     goto LAB_004349e2;
+                }
                 while (1.0 / 60.0 <= local_1c)
                 {
                     g_LastPerfCounter.LowPart += g_GameWindow.lpFrequency.LowPart / 60;
                     local_1c -= 1.0 / 60.0;
                 }
                 if ((i32)g_Supervisor.cfg.frameskipConfig < (i32)this->curFrame)
+                {
                     break;
+                }
                 goto LAB_00434708;
             }
             timeBeginPeriod(1);
@@ -227,7 +239,9 @@ RenderResult GameWindow::Render()
             local_2c = fabs(slowDown - g_LastFrameTime);
             timeEndPeriod(1);
             if ((local_2c < 50.0 / 3.0) && (g_GameWindow.usesRelativePath == false))
+            {
                 goto LAB_004349e2;
+            }
             while (50.0 / 3.0 <= local_2c)
             {
                 g_LastFrameTime += 50.0 / 3.0;
@@ -830,7 +844,9 @@ ZunResult GameWindow::CheckForRunningGameInstance(HINSTANCE hInstance)
         }
     }
     if (g_Mutex == NULL)
+    {
         return ZUN_ERROR;
+    }
 
     return ZUN_SUCCESS;
 }

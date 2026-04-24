@@ -114,7 +114,9 @@ void ItemManager::SpawnItem(D3DXVECTOR3 *heading, i32 itemType, i32 state)
     {
         this->nextIndex = this->nextIndex + 1;
         if (item->isInUse == 0)
+        {
             break;
+        }
         if (this->nextIndex < 0x44c)
         {
             item = item + 1;
@@ -454,7 +456,9 @@ void ItemManager::OnUpdate()
                             }
                             if (g_GameManager.globals->pointItemsCollectedForExtend <
                                 g_GameManager.globals->nextNeededPointItemsForExtend)
+                            {
                                 break;
+                            }
                             g_GameManager.ExtendFromPoints();
                             g_GameManager.globals->extendsFromPointItems =
                                 g_GameManager.globals->extendsFromPointItems + 1;
@@ -655,7 +659,9 @@ void ItemManager::RemoveAllItems()
     for (i = 0; i < 0x44c; i++, item++)
     {
         if (item->isInUse == 0)
+        {
             continue;
+        }
 
         item->state = 1;
         item->startPosition = D3DXVECTOR3(0.0f, -0.5f, 0.0f);
@@ -673,7 +679,9 @@ void ItemManager::DespawnAllItems(i32 param_1)
     for (i = 0; i < 0x44c; i++, item++)
     {
         if (item->isInUse == 0 || i == param_1)
+        {
             continue;
+        }
 
         if (item->itemType == 0 || item->itemType == 2)
         {
@@ -701,7 +709,9 @@ void ItemManager::ActivateAllItems()
     for (i = 0; i < 0x44c; i++, item++)
     {
         if (item->isInUse != 1)
+        {
             continue;
+        }
 
         if (item->state == 1)
         {

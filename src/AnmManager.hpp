@@ -177,11 +177,11 @@ struct AnmManager
                         i32 dstHeight);
     void TakeScreenshotIfRequested();
     void TranslateRotation(VertexTex1DiffuseXyzrwh *param_1, f32 width,
-                                  f32 height, f32 param_4, f32 param_5,
-                                  f32 xOffset, f32 yOffset);
+                           f32 height, f32 param_4, f32 param_5,
+                           f32 xOffset, f32 yOffset);
 
     void SetInterruptActiveVms(AnmVm *vm, i32 vmCount,
-                                                i16 interrupt);
+                               i16 interrupt);
     void ExecuteScripts(AnmVm *startVm, i32 count);
     void ExecuteVmsAnms(AnmVm *vm, i32 idx, i32 vmCount);
     ZunResult UpdateTrail(AnmVm *vm, VertexTex1DiffuseXyzrwh *vertices, i32 count);
@@ -272,7 +272,7 @@ struct AnmManager
     {
         this->currentBlendMode = value;
     }
-    
+
     void SetZWriteDisable(u8 value)
     {
         this->currentZWriteDisable = value;

@@ -35,7 +35,9 @@ bool Pbg4Archive::Load(const char *filename)
     this->fileAbstraction = new Pbg4File();
 
     if (this->fileAbstraction == NULL)
+    {
         return false;
+    }
 
     if (OpenArchive(filename))
     {
@@ -81,25 +83,37 @@ u8 *Pbg4Archive::ReadDecompressEntry(const char *filename, u8 *buf)
 
     srcBuf = NULL;
     if (this->fileAbstraction == NULL)
+    {
         return NULL;
+    }
 
     entry = FindEntry(filename);
     if (entry == NULL)
+    {
         goto err;
+    }
 
     if (this->fileAbstraction->Open(this->filename, g_AccessModes[0]) == 0)
+    {
         goto err;
+    }
 
     dwBytes = entry[1].dataOffset - entry->dataOffset;
     dstLen = entry->decompressedSize;
     srcBuf = (u8 *)GlobalAlloc(0, dwBytes);
     if (srcBuf == NULL)
+    {
         goto err;
+    }
 
     if (!this->fileAbstraction->Seek(entry->dataOffset, g_SeekModes[0]))
+    {
         goto err;
+    }
     if (this->fileAbstraction->Read(srcBuf, dwBytes) == 0)
+    {
         goto err;
+    }
 
     dstBuf = Lzss::Decompress(srcBuf, dwBytes, buf, dstLen);
     if (srcBuf != NULL)
@@ -125,7 +139,9 @@ u32 Pbg4Archive::GetEntrySize(const char *filename)
     Pbg4Entry *entry = FindEntry(filename);
 
     if (entry != NULL)
+    {
         return entry->decompressedSize;
+    }
     return 0;
 }
 
@@ -133,7 +149,9 @@ u32 Pbg4Archive::GetEntrySize(const char *filename)
 Pbg4Entry *Pbg4Archive::FindEntry(const char *filename)
 {
     if (this->entries == NULL)
+    {
         return NULL;
+    }
 
     Pbg4Entry *entry = this->entries;
     for (i32 i = this->numOfEntries; 0 < i; --i, ++entry)
@@ -161,53 +179,79 @@ bool Pbg4Archive::OpenArchive(const char *path)
     compressedData = NULL;
     decompressedData = NULL;
     if (this->fileAbstraction == NULL)
+    {
         return false;
+    }
     if (!this->fileAbstraction->Open(path, g_AccessModes[0]))
+    {
         goto err;
+    }
 
     Pbg4File *ab1 = this->fileAbstraction;
     if (ab1->Read(&magic, 4) == 0)
+    {
         goto err;
+    }
     if (magic != '4GBP')
+    {
         goto err;
+    }
 
     Pbg4File *ab2 = this->fileAbstraction;
     if (ab2->Read(&this->numOfEntries, 4) == 0)
+    {
         goto err;
+    }
     if (this->numOfEntries <= 0)
+    {
         goto err;
+    }
 
     fileSize = this->fileAbstraction->GetSize();
 
     Pbg4File *ab3 = this->fileAbstraction;
     if (ab3->Read(&headerSize, 4) == 0)
+    {
         goto err;
+    }
     if (headerSize >= fileSize)
+    {
         goto err;
+    }
 
     fileSize -= headerSize;
 
     Pbg4File *ab4 = this->fileAbstraction;
     if (ab4->Read(&decompressedSize, 4) == 0)
+    {
         goto err;
+    }
 
     this->fileAbstraction->Seek(headerSize, g_SeekModes[0]);
     compressedData = (u8 *)GlobalAlloc(0, fileSize);
     if (compressedData == NULL)
+    {
         goto err;
+    }
 
     if (this->fileAbstraction->Read(compressedData, fileSize) == 0)
+    {
         goto err;
+    }
 
     decompressedData =
         Lzss::Decompress(compressedData, fileSize, NULL, decompressedSize);
     if (decompressedData == NULL)
+    {
         goto err;
+    }
 
     this->entries =
         AllocEntries(decompressedData, this->numOfEntries, headerSize);
     if (this->entries == NULL)
+    {
         goto err;
+    }
 
     if (compressedData != NULL)
     {

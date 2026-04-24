@@ -1328,7 +1328,9 @@ restart:
             return ZUN_SUCCESS;
         }
         if (enemy->currentContext.time.current != instr->time)
+        {
             goto LAB_0041678f;
+        }
         if ((instr->skipInstrOnDifficulty & g_GameManager.difficultyMask) != 0)
         {
             switch (instr->id)
@@ -1341,7 +1343,9 @@ restart:
                                     ? instr->args[2].i
                                     : GetVarValue(enemy, instr->args[2].i);
                 if (local_374 < 1)
+                {
                     break;
+                }
             }
             case 2:
                 enemy->currentContext.time.current = instr->args[0].i;
@@ -1620,7 +1624,9 @@ restart:
                                     ? instr->args[1].i
                                     : GetVarValue(enemy, instr->args[1].i);
                 if (local_480 != local_484)
+                {
                     break;
+                }
             LAB_00411f00:
                 enemy->currentContext.time.current = instr->args[2].i;
                 instr = (EclRawInstr *)((u8 *)instr + instr->args[3].i);
@@ -1634,7 +1640,9 @@ restart:
                                     ? instr->args[1].f
                                     : GetFloatVarValue(enemy, instr->args[1].f);
                 if (local_488 == local_48c)
+                {
                     goto LAB_00411f00;
+                }
                 break;
             }
             case 0x1e: {
@@ -1645,7 +1653,9 @@ restart:
                                     ? instr->args[1].i
                                     : GetVarValue(enemy, instr->args[1].i);
                 if (local_490 != local_494)
+                {
                     goto LAB_00411f00;
+                }
                 break;
             }
             case 0x1f: {
@@ -1656,7 +1666,9 @@ restart:
                                     ? instr->args[1].f
                                     : GetFloatVarValue(enemy, instr->args[1].f);
                 if (local_498 != local_49c)
+                {
                     goto LAB_00411f00;
+                }
                 break;
             }
             case 0x20: {
@@ -1667,7 +1679,9 @@ restart:
                                     ? instr->args[1].i
                                     : GetVarValue(enemy, instr->args[1].i);
                 if (local_4a0 < local_4a4)
+                {
                     goto LAB_00411f00;
+                }
                 break;
             }
             case 0x21: {
@@ -1678,7 +1692,9 @@ restart:
                                     ? instr->args[1].f
                                     : GetFloatVarValue(enemy, instr->args[1].f);
                 if (local_4a8 < local_4ac)
+                {
                     goto LAB_00411f00;
+                }
                 break;
             }
             case 0x22: {
@@ -1689,7 +1705,9 @@ restart:
                                     ? instr->args[1].i
                                     : GetVarValue(enemy, instr->args[1].i);
                 if (local_4b0 <= local_4b4)
+                {
                     goto LAB_00411f00;
+                }
                 break;
             }
             case 0x23: {
@@ -1700,7 +1718,9 @@ restart:
                                     ? instr->args[1].f
                                     : GetFloatVarValue(enemy, instr->args[1].f);
                 if (local_4b8 <= local_4bc)
+                {
                     goto LAB_00411f00;
+                }
                 break;
             }
             case 0x24: {
@@ -1711,7 +1731,9 @@ restart:
                                     ? instr->args[1].i
                                     : GetVarValue(enemy, instr->args[1].i);
                 if (local_4c4 < local_4c0)
+                {
                     goto LAB_00411f00;
+                }
                 break;
             }
             case 0x25: {
@@ -1722,7 +1744,9 @@ restart:
                                     ? instr->args[1].f
                                     : GetFloatVarValue(enemy, instr->args[1].f);
                 if (local_4cc < local_4c8)
+                {
                     goto LAB_00411f00;
+                }
                 break;
             }
             case 0x26: {
@@ -1733,7 +1757,9 @@ restart:
                                     ? instr->args[1].i
                                     : GetVarValue(enemy, instr->args[1].i);
                 if (local_4d4 <= local_4d0)
+                {
                     goto LAB_00411f00;
+                }
                 break;
             }
             case 0x27: {
@@ -1744,7 +1770,9 @@ restart:
                                     ? instr->args[1].f
                                     : GetFloatVarValue(enemy, instr->args[1].f);
                 if (local_4dc <= local_4d8)
+                {
                     goto LAB_00411f00;
+                }
                 break;
             }
             case 0x28: {

@@ -53,7 +53,9 @@ ZunResult Chain::AddToCalcChain(ChainElem *elem, i32 priority)
     while (curElem->next != NULL)
     {
         if (curElem->priority > priority)
+        {
             break;
+        }
         curElem = curElem->next;
     }
     if (curElem->priority > priority)
@@ -94,7 +96,9 @@ ZunResult Chain::AddToDrawChain(ChainElem *elem, i32 priority)
     while (curElem->next != NULL)
     {
         if (curElem->priority > priority)
+        {
             break;
+        }
         curElem = curElem->next;
     }
     if (curElem->priority > priority)
@@ -268,13 +272,17 @@ void Chain::Cut(ChainElem *toRemove)
     isDrawChain = FALSE;
 
     if (toRemove == NULL)
+    {
         return;
+    }
 
     curElem = &this->calcChain;
     while (curElem != NULL)
     {
         if (curElem == toRemove)
+        {
             goto destroy_elem;
+        }
         curElem = curElem->next;
     }
     isDrawChain = TRUE;
@@ -282,7 +290,9 @@ void Chain::Cut(ChainElem *toRemove)
     while (curElem != NULL)
     {
         if (curElem == toRemove)
+        {
             goto destroy_elem;
+        }
         curElem = curElem->next;
     }
 

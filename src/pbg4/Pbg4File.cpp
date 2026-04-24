@@ -105,7 +105,9 @@ DWORD Pbg4File::Read(void *data, u32 len)
 
     local_8 = 0;
     if (this->access != GENERIC_READ)
+    {
         return 0;
+    }
 
     ReadFile(this->handle, data, len, &local_8, NULL);
     return local_8;
@@ -118,7 +120,9 @@ bool Pbg4File::Write(void *data, u32 len)
 
     local_8 = 0;
     if (this->access != GENERIC_WRITE)
+    {
         return false;
+    }
 
     WriteFile(this->handle, data, len, &local_8, NULL);
     return len == local_8 ? true : false;
@@ -154,7 +158,9 @@ DWORD Pbg4File::GetSize()
 bool Pbg4File::Seek(u32 offset, DWORD seekFrom)
 {
     if (this->handle == INVALID_HANDLE_VALUE)
+    {
         return false;
+    }
 
     SetFilePointer(this->handle, (LONG)offset, NULL, seekFrom);
     return true;
@@ -169,19 +175,27 @@ HGLOBAL Pbg4File::ReadRemaining(u32 max)
     DWORD DVar3;
 
     if (this->access != GENERIC_READ)
+    {
         return NULL;
+    }
 
     DVar2 = this->GetSize();
     if (DVar2 > max)
+    {
         return NULL;
+    }
 
     hMem = GlobalAlloc(0x40, DVar2);
     if (hMem == NULL)
+    {
         return NULL;
+    }
 
     DVar3 = this->Tell();
     if (!this->Seek(DVar3, g_SeekModes[0]))
+    {
         return NULL;
+    }
 
     if (this->Read(hMem, DVar2) == 0)
     {

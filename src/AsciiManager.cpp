@@ -73,7 +73,9 @@ u32 AsciiManager::OnUpdate(AsciiManager *arg)
         for (i = 0; i < 0x2d3; i++, curPopup++)
         {
             if (curPopup->inUse == 0)
+            {
                 continue;
+            }
 
             curPopup->position.y -= 0.5f * g_Supervisor.effectiveFramerateMultiplier;
             curPopup->timer++;
@@ -185,10 +187,14 @@ ZunResult AsciiManager::AddedCallback(AsciiManager *arg)
 {
     memset(arg, 0, sizeof(AsciiManager));
     if (g_AnmManager->LoadAnms(1, "data/ascii.anm", 0) != ZUN_SUCCESS)
+    {
         return ZUN_ERROR;
+    }
 
     if (g_AnmManager->LoadAnms(4, "data/capture.anm", 0x724) != ZUN_SUCCESS)
+    {
         return ZUN_ERROR;
+    }
 
     arg->InitializeVms();
     arg->InitializeOtherVms();
@@ -218,7 +224,9 @@ ZunResult AsciiManager::RegisterChain()
     g_AsciiManagerCalcChain.arg = mgr;
 
     if (g_Chain.AddToCalcChain(&g_AsciiManagerCalcChain, 1) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     g_AsciiManagerOnDrawMenusChain.callback = (ChainCallback)OnDrawMenus;
     g_AsciiManagerOnDrawMenusChain.addedCallback = NULL;
@@ -245,7 +253,9 @@ void AsciiManager::CutChain()
 void AsciiManager::AddString(D3DXVECTOR3 *param_1, const char *text)
 {
     if (this->numStrings >= 0x100)
+    {
         return;
+    }
 
     AsciiManagerString *curString = &this->strings[this->numStrings];
     this->numStrings++;
@@ -900,7 +910,9 @@ i32 PauseMenu::OnUpdate()
             g_Supervisor.UpdateTime();
         }
         if (8 < this->numFrames)
+        {
             break;
+        }
         this->curState = this->curState + 2;
         this->numFrames = 0;
     case 1:

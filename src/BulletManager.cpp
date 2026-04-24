@@ -398,19 +398,27 @@ void Bullet::RunCommands()
                 return;
             }
             if (((u32)this->moreFlags & pBVar1->type) != 0)
+            {
                 break;
+            }
             this->curCmdIdx = this->curCmdIdx + 1;
         }
         if (pBVar1->type < 0x81)
+        {
             break;
+        }
         if (pBVar1->type < 0x801)
         {
             if (pBVar1->type != 0x800)
             {
                 if (pBVar1->type == 0x100)
+                {
                     goto switchD_00424354_caseD_40;
+                }
                 if (pBVar1->type != 0x400)
+                {
                     goto switchD_00424354_caseD_2;
+                }
             }
             this->exFlags = this->exFlags | pBVar1->type;
             if (pBVar1->speed < 0.0f)
@@ -426,7 +434,9 @@ void Bullet::RunCommands()
             goto switchD_00424354_caseD_2;
         }
         if (pBVar1->type != 0x2000)
+        {
             goto switchD_00424354_caseD_2;
+        }
         this->spawnDelay = pBVar1->duration;
         this->curCmdIdx = this->curCmdIdx + 1;
     }
@@ -655,12 +665,16 @@ void BulletManager::RemoveBulletsInRadius(D3DXVECTOR3 *centerPos, f32 radius)
     for (i = 0; i < 0x400; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE || bullet->state == BULLET_DESPAWN)
+        {
             continue;
+        }
 
         diff = bullet->pos - *centerPos;
 
         if (D3DXVec3LengthSq(&diff) > radius)
+        {
             continue;
+        }
 
         g_ItemManager.SpawnItem(&bullet->pos, ITEM_POINT_BULLET, 1);
         memset(bullet, 0, sizeof(Bullet));
@@ -683,7 +697,9 @@ i32 BulletManager::SpawnBulletPattern(EnemyBulletShooter *bulletProps)
             for (local_8 = 0; local_8 < bulletProps->count1; local_8 += 1)
             {
                 if (SpawnSingleBullet(bulletProps, local_8, local_10, angle) != 0)
+                {
                     goto LAB_00424dce;
+                }
             }
         }
     LAB_00424dce:
@@ -704,12 +720,16 @@ Laser *BulletManager::SpawnLaserPattern(EnemyLaserShooter *laserShooter)
 
     laser = this->lasers;
     if (this->screenClearTime != 0 && (laserShooter->flags & 4) == 0)
+    {
         return laser;
+    }
 
     for (i = 0; i < 0x40; i++, laser++)
     {
         if (laser->inUse != 0)
+        {
             continue;
+        }
 
         g_AnmManager->SetAnmIdxAndExecuteScript(&laser->vm0, laserShooter->sprite + 0x20a);
         g_AnmManager->SetActiveSprite(&laser->vm0,
@@ -787,7 +807,9 @@ void Bullet::UpdateBulletTargetVelocity()
         if (fabsf((this->velocity).x) <= 0.0001f)
         {
             if (fabsf((this->velocity).y) <= 0.0001f)
+            {
                 goto LAB_004252d1;
+            }
         }
         this->angle = atan2f((this->velocity).y, (this->velocity).x);
     }
@@ -983,7 +1005,9 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
         for (i = 0; i < 0x400; i++)
         {
             if (bullets->state == BULLET_INACTIVE)
+            {
                 goto bulletLoopContinue;
+            }
             arg->bulletCount = arg->bulletCount + 1;
             switch (bullets->state)
             {
@@ -1126,7 +1150,9 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
                 {
                     bullets->outOfBoundsTime = bullets->outOfBoundsTime + 1;
                     if (bullets->outOfBoundsTime < 0x80)
+                    {
                         goto LAB_00425dd7;
+                    }
                     bullets->Initialize();
                 }
             }
@@ -1226,7 +1252,9 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
                                                  laser->angle,
                                                  (laser->timer.current % 0xc == 0));
                         if (laser->timer < laser->duration)
+                        {
                             goto LAB_004269d9;
+                        }
                         laser->timer = 0;
                         laser->state = laser->state + 1;
                         if (laser->endTime == 0)
@@ -1236,7 +1264,9 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
                         }
                     }
                     else if (laser->state != 2)
+                    {
                         goto LAB_004269d9;
+                    }
                     if ((laser->flags & 1) == 0)
                     {
                         if (0 < laser->endTime)
@@ -1392,7 +1422,9 @@ ZunResult BulletManager::AddedCallback(BulletManager *arg)
               g_Supervisor.curState != 12))
     {
         if (g_AnmManager->LoadAnms(0xb, "data/etama.anm", 0x200) != ZUN_SUCCESS)
+        {
             return ZUN_ERROR;
+        }
     }
 
     for (i = 0; i < 0xb; i++)
@@ -1531,7 +1563,9 @@ ZunResult BulletManager::RegisterChain(const char *etamaAnmPath)
         (ChainLifecycleCallback)DeletedCallback;
     g_BulletManagerCalcChain.arg = mgr;
     if (g_Chain.AddToCalcChain(&g_BulletManagerCalcChain, 0xc) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     g_BulletManagerDrawChain.callback = (ChainCallback)OnDraw;
     g_BulletManagerDrawChain.addedCallback = NULL;
@@ -1560,7 +1594,9 @@ void BulletManager::StopBulletMovement()
     for (i = 0; i < 0x400; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE)
+        {
             continue;
+        }
 
         bullet->velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
         bullet->unused_ba4 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);

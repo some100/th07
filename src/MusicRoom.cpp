@@ -276,13 +276,17 @@ ZunResult MusicRoom::AddedCallback(MusicRoom *arg)
                             currChar = currChar + 1;
                             charIdx += 1;
                             if (g_LastFileSize <= (u32)((i32)currChar - (i32)firstChar))
+                            {
                                 goto LAB_0043b195;
+                            }
                         }
                         while ((*currChar == '\n' || (*currChar == '\r')))
                         {
                             currChar = currChar + 1;
                             if (g_LastFileSize <= (u32)((i32)currChar - (i32)firstChar))
+                            {
                                 goto LAB_0043b195;
+                            }
                         }
                         charIdx = 0;
                         while ((*currChar != '\n' && (*currChar != '\r')))
@@ -291,13 +295,17 @@ ZunResult MusicRoom::AddedCallback(MusicRoom *arg)
                             currChar = currChar + 1;
                             charIdx += 1;
                             if (g_LastFileSize <= (u32)((i32)currChar - (i32)firstChar))
+                            {
                                 goto LAB_0043b195;
+                            }
                         }
                         while ((*currChar == '\n' && (*currChar == '\r')))
                         {
                             currChar = currChar + 1;
                             if (g_LastFileSize <= (u32)((i32)currChar - (i32)firstChar))
+                            {
                                 goto LAB_0043b195;
+                            }
                         }
                         lineIdx = 0;
                         while ((lineIdx < 8 && (*currChar != '@')))
@@ -312,13 +320,17 @@ ZunResult MusicRoom::AddedCallback(MusicRoom *arg)
                                 currChar = currChar + 1;
                                 charIdx += 1;
                                 if (g_LastFileSize <= (u32)((i32)currChar - (i32)firstChar))
+                                {
                                     goto LAB_0043b195;
+                                }
                             }
                             while ((*currChar == '\n' || (*currChar == '\r')))
                             {
                                 currChar = currChar + 1;
                                 if (g_LastFileSize <= (u32)((i32)currChar - (i32)firstChar))
+                                {
                                     goto LAB_0043b195;
+                                }
                             }
                             lineIdx += 1;
                         }
@@ -417,7 +429,9 @@ ZunResult MusicRoom::RegisterChain()
     musicRoom->calcChain->deletedCallback =
         (ChainLifecycleCallback)DeletedCallback;
     if (g_Chain.AddToCalcChain(musicRoom->calcChain, 3) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     musicRoom->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     musicRoom->drawChain->arg = musicRoom;

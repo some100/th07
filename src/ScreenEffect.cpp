@@ -253,7 +253,9 @@ u32 BombEffects::OnDrawPlayAreaPulseColor(BombEffects *arg)
 u32 BombEffects::OnUpdateScreenShake(BombEffects *arg)
 {
     if (g_GameManager.isTimeStopped != 0)
+    {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
+    }
 
     if (g_GameManager.framesThisStage <= 1)
     {
@@ -262,7 +264,9 @@ u32 BombEffects::OnUpdateScreenShake(BombEffects *arg)
 
     arg->timer++;
     if (arg->duration >= arg->timer.current)
+    {
         return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
+    }
 
     f32 fVar1 = (f32)(i32)arg->args[0] +
                 (((f32)arg->timer.current + arg->timer.subFrame) *
@@ -320,7 +324,9 @@ BombEffects *BombEffects::RegisterChain(i32 type, i32 duration, u32 arg1,
 
     BombEffects *bombEffects = new BombEffects;
     if (bombEffects == NULL)
+    {
         return NULL;
+    }
 
     memset(bombEffects, 0, sizeof(BombEffects));
     switch (type)
@@ -353,7 +359,9 @@ BombEffects *BombEffects::RegisterChain(i32 type, i32 duration, u32 arg1,
     bombEffects->args[1] = arg2;
     bombEffects->args[2] = arg3;
     if (g_Chain.AddToCalcChain(local_8, 0xf) != 0)
+    {
         return NULL;
+    }
 
     if (local_c != NULL)
     {

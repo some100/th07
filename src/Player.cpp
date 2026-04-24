@@ -771,7 +771,9 @@ void Player::DrawBullets()
     for (i = 0; i < 0x60; i++, bullet++)
     {
         if (bullet->bulletState != 1)
+        {
             continue;
+        }
 
         if (bullet->vm.autoRotate != 0)
         {
@@ -800,7 +802,9 @@ void Player::DrawBulletExplosions()
     for (i = 0; i < 0x60; i++, bullet++)
     {
         if (bullet->bulletState != 2)
+        {
             continue;
+        }
 
         if (bullet->vm.autoRotate != 0)
         {
@@ -895,7 +899,9 @@ i32 Player::CheckCollisionWithEnemy(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
                     if ((bullet->bulletState2 == 4) || (bullet->bulletState2 == 5))
                     {
                         if (bullet->timer.current % 2 != 0)
+                        {
                             goto LAB_0043da96;
+                        }
                     }
                     if ((bullet->hitCallback == NULL) ||
                         (bullet->hitCallback(this, bullet, param_1) == 0))
@@ -1036,7 +1042,9 @@ i32 Player::CalcKillboxCollision(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
 
     this->itemType = ITEM_POINT_BULLET;
     if (CheckBombGraze(center, size) != 0)
+    {
         return 2;
+    }
 
     killboxTopLeft.x = center->x - size->x / 2.0f;
     killboxTopLeft.y = center->y - size->y / 2.0f;
@@ -1046,7 +1054,9 @@ i32 Player::CalcKillboxCollision(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
         this->hitboxTopLeft.y > killboxBottomRight.y ||
         this->hitboxBottomRight.x < killboxTopLeft.x ||
         this->hitboxBottomRight.y < killboxTopLeft.y)
+    {
         return 0;
+    }
 
     g_ReplayManager->replayEventFlags = g_ReplayManager->replayEventFlags | 2;
     if (this->playerState == PLAYER_STATE_BORDER)
@@ -1055,7 +1065,9 @@ i32 Player::CalcKillboxCollision(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
         return 1;
     }
     if (this->playerState != PLAYER_STATE_ALIVE)
+    {
         return 1;
+    }
 
     g_GameManager.RerollRng();
     Die();
@@ -1072,7 +1084,9 @@ i32 Player::CheckGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
     this->itemType = ITEM_POINT_BULLET;
 
     if (CheckBombGraze(center, size) != 0)
+    {
         return 2;
+    }
 
     bulletTopLeft.x = center->x - size->x / 2.0f - 20.0f;
     bulletTopLeft.y = center->y - size->y / 2.0f - 20.0f;
@@ -1081,11 +1095,15 @@ i32 Player::CheckGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
 
     if (this->playerState == PLAYER_STATE_DEAD ||
         this->playerState == PLAYER_STATE_SPAWNING)
+    {
         return 0;
+    }
 
     if (this->grazeTopLeft.x > bulletBottomRight.x || this->grazeBottomRight.x < bulletTopLeft.x ||
         this->grazeTopLeft.y > bulletBottomRight.y || this->grazeBottomRight.y < bulletTopLeft.y)
+    {
         return 0;
+    }
 
     ScoreGraze(center);
     return 1;
@@ -1101,7 +1119,9 @@ i32 Player::CalcItemBoxCollision(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
     if (this->playerState != PLAYER_STATE_ALIVE &&
         this->playerState != PLAYER_STATE_INVULNERABLE &&
         this->playerState != PLAYER_STATE_BORDER)
+    {
         return 0;
+    }
 
     memcpy(&itemTopLeft, &(*center - *size / 2.0f), sizeof(D3DXVECTOR3));
     memcpy(&itemBottomRight, &(*center + *size / 2.0f), sizeof(D3DXVECTOR3));
@@ -1110,7 +1130,9 @@ i32 Player::CalcItemBoxCollision(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
         this->grabItemBottomRight.x < itemTopLeft.x ||
         this->grabItemTopLeft.y > itemBottomRight.y ||
         this->grabItemBottomRight.y < itemTopLeft.y)
+    {
         return 0;
+    }
 
     return 1;
 }
@@ -1138,10 +1160,14 @@ i32 Player::CalcLaserHitbox(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
           playerRelativeBottomRight.x < laserTopLeft.x ||
           playerRelativeTopLeft.y > laserBottomRight.y ||
           playerRelativeBottomRight.y < laserTopLeft.y))
+    {
         goto LASER_COLLISION;
+    }
 
     if (canGraze == 0)
+    {
         return 0;
+    }
 
     laserTopLeft.x -= 48.0f;
     laserTopLeft.y -= 48.0f;
@@ -1151,11 +1177,15 @@ i32 Player::CalcLaserHitbox(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
         playerRelativeBottomRight.x < laserTopLeft.x ||
         playerRelativeTopLeft.y > laserBottomRight.y ||
         playerRelativeBottomRight.y < laserTopLeft.y)
+    {
         return 0;
+    }
 
     if ((this->playerState == PLAYER_STATE_DEAD) ||
         (this->playerState == PLAYER_STATE_SPAWNING))
+    {
         return 0;
+    }
 
     ScoreGraze(&this->positionCenter);
     return 2;
@@ -1169,7 +1199,9 @@ LASER_COLLISION:
         return 1;
     }
     if (this->playerState != PLAYER_STATE_ALIVE)
+    {
         return 0;
+    }
 
     g_GameManager.RerollRng();
     Die();
@@ -1451,7 +1483,9 @@ void Player::HandlePlayerInputs()
                 this->orbState = ORB_FOCUSED;
             }
             if (this->isFocus != 0)
+            {
                 break;
+            }
             this->orbState = ORB_UNFOCUSING;
             this->focusMovementTimer = 8 - this->focusMovementTimer.current;
             if (this->focusEffect != NULL)
@@ -1470,7 +1504,9 @@ void Player::HandlePlayerInputs()
                 this->orbState = ORB_UNFOCUSED;
             }
             if (this->isFocus == 0)
+            {
                 break;
+            }
             this->orbState = ORB_FOCUSING;
             this->focusMovementTimer = 8 - this->focusMovementTimer.current;
             this->focusEffect = g_EffectManager.SpawnEffect(
@@ -1484,7 +1520,9 @@ void Player::HandlePlayerInputs()
             {
                 this->orbState = ORB_UNFOCUSING;
                 if (this->focusEffect == NULL)
+                {
                     goto switchD_0043f936_caseD_4;
+                }
                 this->focusEffect->vm.pendingInterrupt = 1;
                 goto switchD_0043f936_caseD_4;
             }
@@ -1557,7 +1595,9 @@ void Player::HandlePlayerInputs()
             {
                 this->orbState = ORB_UNFOCUSING;
                 if (this->focusEffect == NULL)
+                {
                     goto CASE_ORB_UNFOCUSING;
+                }
                 this->focusEffect->vm.pendingInterrupt = 1;
                 goto CASE_ORB_UNFOCUSING;
             }
@@ -2076,7 +2116,9 @@ BombProjectile *Player::SpawnBombEffect(D3DXVECTOR3 *pos, f32 sizeY, f32 sizeZ,
          local_8++, bomb++)
     {
         if (bomb->pos.z == 0.0f && bomb->size.y == 0.0f)
+        {
             break;
+        }
     }
     bomb->pos.x = pos->x;
     bomb->pos.y = pos->y;
@@ -2236,7 +2278,9 @@ u32 Player::OnUpdate(Player *arg)
     if (arg->playerState == PLAYER_STATE_DEAD)
     {
         if (arg->UpdateDeath() != 0)
+        {
             goto WHAT;
+        }
         else
         {
             goto WHY;
@@ -2387,13 +2431,17 @@ ZunResult Player::AddedCallback(Player *arg)
     if (ShtData::LoadShtData(
             &arg->shooterData,
             g_ShooterTable[g_GameManager.shotTypeAndCharacter]) != ZUN_SUCCESS)
+    {
         return ZUN_ERROR;
+    }
 
     if (ShtData::LoadShtData(
             &arg->shooterData2,
             g_ShooterTable2[g_GameManager.shotTypeAndCharacter]) !=
         ZUN_SUCCESS)
+    {
         return ZUN_ERROR;
+    }
 
     if ((u32)(g_Supervisor.curState != 3 && g_Supervisor.curState != 11 &&
               g_Supervisor.curState != 12))
@@ -2519,7 +2567,9 @@ ZunResult Player::RegisterChain(u32 param_1)
     mgr->calcChain->addedCallback = (ChainLifecycleCallback)AddedCallback;
     mgr->calcChain->deletedCallback = (ChainLifecycleCallback)DeletedCallback;
     if (g_Chain.AddToCalcChain(mgr->calcChain, 8) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     g_Chain.AddToDrawChain(mgr->drawChain1, 6);
     g_Chain.AddToDrawChain(mgr->drawChain2, 8);

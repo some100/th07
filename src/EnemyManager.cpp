@@ -171,7 +171,9 @@ Enemy *EnemyManager::SpawnEnemy(i16 eclSubId, D3DXVECTOR3 *pos, i32 life,
             return enemy;
         }
         if (-1 < enemy->flags1)
+        {
             break;
+        }
         local_8 += 1;
         enemy = enemy + 1;
     }
@@ -217,7 +219,9 @@ Enemy *EnemyManager::SpawnEnemyEx(i32 eclSubId, D3DXVECTOR3 *pos, i32 life,
             return enemy;
         }
         if (-1 < enemy->flags1)
+        {
             break;
+        }
         local_8 += 1;
         enemy = enemy + 1;
     }
@@ -259,7 +263,9 @@ void Enemy::UpdateEffects()
     {
         effect = this->effects[i];
         if (effect == NULL)
+        {
             continue;
+        }
 
         effect->vm.active = (this->flags2 >> 3 & 1) == 0;
         effect->emitterPosition = this->position;
@@ -278,7 +284,9 @@ void Enemy::ResetEffectArray()
     for (i32 i = 0; i < this->effectsNum; i++)
     {
         if (this->effects[i] == NULL)
+        {
             continue;
+        }
 
         this->effects[i]->isFadingOut = 1;
         this->effects[i] = NULL;
@@ -483,7 +491,9 @@ void EnemyManager::RunEclTimeline(EclTimeline *timeline)
             }
         }
         else if ((timeline->timelineTime) < timeline->timelineInstr->time)
+        {
             goto LAB_0041fd08;
+        }
         timeline->timelineInstr =
             (EclTimelineInstr *)((u8 *)timeline->timelineInstr +
                                  timeline->timelineInstr->size);
@@ -507,7 +517,9 @@ i32 Enemy::HandleLifeCallback()
         }
         if ((-1 < this->lifeCallbackThreshold[local_c]) &&
             (this->life < this->lifeCallbackThreshold[local_c]))
+        {
             break;
+        }
         local_c += 1;
     }
     this->life = this->lifeCallbackThreshold[local_c];
@@ -780,7 +792,9 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
             }
         }
         if (-1 < enemy->flags1)
+        {
             goto LAB_004207d0;
+        }
         arg->enemyCountReal = arg->enemyCountReal + 1;
         if (((enemy->flags4 >> 3 & 1) != 0) &&
             ((g_Player.bombInfo.isInUse != 0 ||
@@ -832,8 +846,8 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
             if ((((enemy->flags2 >> 3 & 1) == 0) &&
                  ((enemy->flags3 >> 3 & 1) == 0)) &&
                 (g_GameManager.IsInBounds(enemy->position.x, enemy->position.y,
-                                         (enemy->primaryVm.sprite)->widthPx,
-                                         (enemy->primaryVm.sprite)->heightPx) !=
+                                          (enemy->primaryVm.sprite)->widthPx,
+                                          (enemy->primaryVm.sprite)->heightPx) !=
                  0))
             {
                 enemy->flags3 = enemy->flags3 | 8;
@@ -841,8 +855,8 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
             if (((enemy->flags3 >> 3 & 1) == 1) &&
                 ((((enemy->trailFlags == 0 &&
                     (g_GameManager.IsInBounds(enemy->position.x, enemy->position.y,
-                                             (enemy->primaryVm.sprite)->widthPx,
-                                             (enemy->primaryVm.sprite)->heightPx) ==
+                                              (enemy->primaryVm.sprite)->widthPx,
+                                              (enemy->primaryVm.sprite)->heightPx) ==
                      0)) ||
                    ((enemy->trailFlags != 0 &&
                      ((g_GameManager.IsInBounds(
@@ -1069,7 +1083,9 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
             }
         }
         if ((0 < enemy->life) || ((enemy->flags2 & 1) == 0))
+        {
             goto LAB_00421da7;
+        }
         for (local_58 = 0; local_58 < 4; local_58 += 1)
         {
             enemy->lifeCallbackThreshold[local_58] = -1;
@@ -1576,21 +1592,27 @@ ZunResult EnemyManager::RegisterChain(const char *stgEnm1, const char *stgEnm2)
         (ChainLifecycleCallback)DeletedCallback;
     g_EnemyManagerCalcChain.arg = mgr;
     if (g_Chain.AddToCalcChain(&g_EnemyManagerCalcChain, 10) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     g_EnemyManagerDrawChain1.callback = (ChainCallback)OnDraw1;
     g_EnemyManagerDrawChain1.addedCallback = NULL;
     g_EnemyManagerDrawChain1.deletedCallback = NULL;
     g_EnemyManagerDrawChain1.arg = mgr;
     if (g_Chain.AddToDrawChain(&g_EnemyManagerDrawChain1, 5) != ZUN_SUCCESS)
+    {
         return ZUN_ERROR;
+    }
 
     g_EnemyManagerDrawChain2.callback = (ChainCallback)OnDraw2;
     g_EnemyManagerDrawChain2.addedCallback = NULL;
     g_EnemyManagerDrawChain2.deletedCallback = NULL;
     g_EnemyManagerDrawChain2.arg = mgr;
     if (g_Chain.AddToDrawChain(&g_EnemyManagerDrawChain2, 7) != ZUN_SUCCESS)
+    {
         return ZUN_ERROR;
+    }
 
     return ZUN_SUCCESS;
 }
@@ -1668,7 +1690,9 @@ i32 EnemyManager::HasActiveBoss()
     for (i32 i = 0; i < 8; ++i)
     {
         if (this->bosses[i] != NULL)
+        {
             return 1;
+        }
     }
     return 0;
 }

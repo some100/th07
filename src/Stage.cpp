@@ -180,7 +180,9 @@ LAB_0040578a:
     {
         local_8 = arg->beginningOfScript + arg->instructionIndex;
         if ((arg->scriptTime < local_8->frame) || (local_8->frame == -1))
+        {
             goto LAB_004061aa;
+        }
         switch (local_8->opcode)
         {
         case 0:
@@ -847,7 +849,9 @@ ZunResult Stage::RegisterChain(i32 stage)
     g_StageCalcChain.deletedCallback = (ChainLifecycleCallback)DeletedCallback;
     g_StageCalcChain.arg = mgr;
     if (g_Chain.AddToCalcChain(&g_StageCalcChain, 7) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     g_StageOnDrawHighPrioChain.callback = (ChainCallback)OnDrawHighPrio;
     g_StageOnDrawHighPrioChain.addedCallback = NULL;
@@ -1080,7 +1084,9 @@ i32 Stage::RenderObjects(i32 param_1)
                                     fVar4 = ((this->skyFog).nearPlane - fVar4) /
                                             ((this->skyFog).nearPlane - (this->skyFog).farPlane);
                                     if (1.0f <= fVar4)
+                                    {
                                         goto skip;
+                                    }
                                     vm->color.bytes.b -=
                                         (f32)(i32)((u32)vm->color.bytes.b -
                                                    (u32)(this->fogColor).bytes.b) *

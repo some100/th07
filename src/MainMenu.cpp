@@ -248,7 +248,9 @@ u32 MainMenu::OnUpdatePreInput()
     if (iVar7 != 0)
     {
         if (iVar7 == 1)
+        {
             goto LAB_0045599d;
+        }
         if (iVar7 == 2)
         {
             if (this->inputDelayTimer > 60)
@@ -382,7 +384,9 @@ LAB_0045599d:
             g_GameManager.shotTypeAndCharacter = this->currentReplay->data.shotType;
             i32 i = 0;
             while (!this->currentReplay->head.stageReplayData[i].data)
+            {
                 ++i;
+            }
 
             g_GameManager.currentStage = i;
             free(this->currentReplay);
@@ -402,9 +406,13 @@ LAB_0045599d:
     }
     this->selected = this->cursor;
     if (this->stateTimer < 10)
+    {
         goto LAB_004561e9;
+    }
     if (!WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
+    {
         goto switchD_00455cdd_default;
+    }
     g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
     g_SoundPlayer.ProcessQueues();
     switch (this->cursor)
@@ -551,7 +559,9 @@ u32 MainMenu::OnUpdateOptionsMenu()
         }
     }
     else if (this->menuSubState != 1)
+    {
         goto LAB_00456e08;
+    }
     if (MoveCursorVertical(9) != 0)
     {
         for (i32 i = 0; i < 9; i++)
@@ -618,7 +628,9 @@ u32 MainMenu::OnUpdateOptionsMenu()
         this->vmHead + g_Supervisor.cfg.slowMode + 0x20,
         (i32)this->vmHead[g_Supervisor.cfg.slowMode + 0x20].baseSpriteIdx);
     if (this->stateTimer < 4)
+    {
         goto LAB_00456e08;
+    }
     if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_LEFT))
     {
         if (this->cursor == 0)
@@ -694,7 +706,9 @@ u32 MainMenu::OnUpdateOptionsMenu()
         else
         {
             if (this->cursor != 5)
+            {
                 goto LAB_00456a2d;
+            }
             if (g_Supervisor.cfg.slowMode == 0)
             {
                 g_Supervisor.cfg.slowMode = 1;
@@ -750,7 +764,9 @@ LAB_00456a2d:
         else
         {
             if (this->cursor != 5)
+            {
                 goto LAB_00456bd3;
+            }
             g_Supervisor.cfg.slowMode = g_Supervisor.cfg.slowMode == 0;
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
@@ -786,13 +802,17 @@ LAB_00456bd3:
                     return CHAIN_CALLBACK_RESULT_CONTINUE;
                 }
                 if (this->cursor == 8)
+                {
                     goto LAB_00456cc0;
+                }
             }
         }
         if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
         {
             if (this->cursor == 8)
+            {
                 goto LAB_00456cc0;
+            }
             g_AnmManager->SetActiveSprite(
                 this->vmHead + this->cursor + 9,
                 this->vmHead[this->cursor + 9].baseSpriteIdx + 1);
@@ -914,7 +934,9 @@ u32 MainMenu::OnUpdateKeyConfig()
         }
     }
     else if (this->menuSubState != 1)
+    {
         goto LAB_0045786e;
+    }
     if (MoveCursorVertical(0xc) != 0)
     {
         for (i32 local_c = 0; local_c < 0xc; local_c += 1)
@@ -1038,7 +1060,9 @@ switchD_00457548_default:
                 g_Supervisor.cfg.shotSlow = 1;
             }
             else if (this->cursor == 0xb)
+            {
                 goto LAB_0045782a;
+            }
         }
     LAB_0045786e:
         this->idleFrames = this->idleFrames + 1;
@@ -1995,7 +2019,9 @@ u32 MainMenu::OnUpdateSelectReplay()
                             local_10 += 1;
                         }
                         if (FindNextFileA(local_c, &local_194) == 0)
+                        {
                             break;
+                        }
                     }
                 }
             }
@@ -2678,7 +2704,9 @@ ZunResult MainMenu::DeletedCallback(MainMenu *arg)
 {
     g_Supervisor.d3dDevice->ResourceManagerDiscardBytes(0);
     for (i32 i = 0x20; i <= 0x29; ++i)
+    {
         g_AnmManager->ReleaseAnm(i);
+    }
     g_AnmManager->ReleaseSurface(0);
     g_Chain.Cut(arg->drawChain);
     arg->drawChain = NULL;
@@ -2705,7 +2733,9 @@ ZunResult MainMenu::RegisterChain(u32 param_1)
     mainMenu->calcChain->deletedCallback =
         (ChainLifecycleCallback)DeletedCallback;
     if (g_Chain.AddToCalcChain(mainMenu->calcChain, 3) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     mainMenu->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     mainMenu->drawChain->arg = mainMenu;

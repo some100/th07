@@ -1,2 +1,3 @@
 BasedOnStyle: Microsoft
 ColumnLimit: 0
+InsertBraces: true

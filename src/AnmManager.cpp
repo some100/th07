@@ -166,7 +166,9 @@ ZunResult AnmManager::LoadTexture(i32 textureIdx, const char *texturePath,
     }
     srcData = FileSystem::OpenFile(texturePath, 1);
     if (srcData == NULL)
+    {
         return ZUN_ERROR;
+    }
 
     if (D3DXCreateTextureFromFileInMemoryEx(
             g_Supervisor.d3dDevice, srcData, g_LastFileSize, 0, 0, 0, 0,
@@ -223,12 +225,16 @@ ZunResult AnmManager::LoadTextureEmbedded(u32 textureIdx,
                           (i32)info->height, 1, 0,
                           g_TextureFormatD3D8Mapping[formatIdx], D3DPOOL_MANAGED,
                           this->textures + textureIdx) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     this->textures[textureIdx]->GetSurfaceLevel(0, &texSurf);
     if (D3DXLoadSurfaceFromSurface(texSurf, 0, NULL, surf, 0, NULL, 3, 0) !=
         0)
+    {
         return ZUN_ERROR;
+    }
 
     SAFE_RELEASE(surf);
     SAFE_RELEASE(texSurf);
@@ -280,7 +286,9 @@ ZunResult AnmManager::LoadTextureAlphaChannel(i32 textureIdx,
     textureSrc = NULL;
     data = FileSystem::OpenFile(texturePath, 0);
     if (data == NULL)
+    {
         return ZUN_ERROR;
+    }
 
     this->textures[textureIdx]->GetLevelDesc(0, &surfaceDesc);
     if (((surfaceDesc.Format != D3DFMT_A8R8G8B8) &&
@@ -296,13 +304,19 @@ ZunResult AnmManager::LoadTextureAlphaChannel(i32 textureIdx,
             g_Supervisor.d3dDevice, data, g_LastFileSize, 0, 0, 0, 0,
             surfaceDesc.Format, D3DPOOL_SYSTEMMEM, 3, 0xffffffff, colorKey,
             NULL, NULL, &textureSrc) != 0)
+    {
         goto err;
+    }
 
     if (this->textures[textureIdx]->LockRect(0, &lockedRectDst, NULL, 0) != 0)
+    {
         goto err;
+    }
 
     if (textureSrc->LockRect(0, &lockedRectSrc, NULL, 0x8000) != 0)
+    {
         goto err;
+    }
 
     switch (surfaceDesc.Format)
     {
@@ -549,7 +563,9 @@ void AnmManager::ReleaseAnm(i32 anmIdx)
     i32 *spriteIdx;
 
     if (anmIdx < 0 || (u32)anmIdx >= 0x32)
+    {
         return;
+    }
 
     if (this->anmFiles[anmIdx].raw != NULL)
     {
@@ -593,7 +609,9 @@ void AnmManager::ReleaseTexture(i32 textureIdx)
 {
     void *imageData;
     if (textureIdx < 0 || (u32)textureIdx >= 0x108)
+    {
         return;
+    }
 
     SAFE_RELEASE(this->textures[textureIdx]);
     imageData = this->imageDataArray[textureIdx];
@@ -950,7 +968,9 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, u32 param2)
         triangleY1 < g_Supervisor.viewport.Y ||
         triangleX2 > (g_Supervisor.viewport.X + g_Supervisor.viewport.Width) ||
         triangleY2 > (g_Supervisor.viewport.Y + g_Supervisor.viewport.Height))
+    {
         return ZUN_SUCCESS;
+    }
 
     if (this->currentTexture != this->textures[vm->sprite->sourceFileIndex])
     {
@@ -972,22 +992,30 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, u32 param2)
         {
             r = (u32)color.bytes.r * this->color.bytes.r >> 7;
             if (r >= 256)
+            {
                 r = 255;
+            }
             color.bytes.r = (u8)r;
 
             g = (u32)color.bytes.g * this->color.bytes.g >> 7;
             if (g >= 256)
+            {
                 g = 255;
+            }
             color.bytes.g = (u8)g;
 
             b = (u32)color.bytes.b * this->color.bytes.b >> 7;
             if (b >= 256)
+            {
                 b = 255;
+            }
             color.bytes.b = (u8)b;
 
             a = (u32)color.bytes.a * this->color.bytes.a >> 7;
             if (a >= 256)
+            {
                 a = 255;
+            }
             color.bytes.a = (u8)a;
         }
         g_PrimitivesToDrawNoVertexBuf[0].color = color;
@@ -1012,7 +1040,9 @@ void AnmManager::ResetVertexBuffer()
 void AnmManager::Flush()
 {
     if (this->spritesToDraw == 0)
+    {
         return;
+    }
 
     g_Supervisor.d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, 0);
     g_Supervisor.d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG2, 0);
@@ -1045,7 +1075,9 @@ ZunResult AnmManager::DrawNoRotation(AnmVm *vm)
 {
     if (vm->visible == 0 || vm->active == 0 ||
         vm->color.bytes.a == 0)
+    {
         return ZUN_ERROR;
+    }
 
     f32 centerX = (vm->sprite->widthPx * vm->scale.x) / 2.0f;
     f32 centerY = (vm->sprite->heightPx * vm->scale.y) / 2.0f;
@@ -1165,7 +1197,9 @@ ZunResult AnmManager::DrawFacingCamera(AnmVm *vm)
 {
     if (vm->visible == 0 || vm->active == 0 ||
         vm->color.bytes.a == 0)
+    {
         return ZUN_ERROR;
+    }
 
     f32 centerX = (vm->sprite->widthPx * vm->scale.x) / 2.0f;
     f32 centerY = (vm->sprite->heightPx * vm->scale.y) / 2.0f;
@@ -1285,16 +1319,24 @@ ZunResult AnmManager::CalcBillboardTransform(AnmVm *vm)
 ZunResult AnmManager::DrawBillboard(AnmVm *vm)
 {
     if (vm->visible == 0)
+    {
         return ZUN_ERROR;
+    }
 
     if (vm->active == 0)
+    {
         return ZUN_ERROR;
+    }
 
     if (vm->color.bytes.a == 0)
+    {
         return ZUN_ERROR;
+    }
 
     if (CalcBillboardTransform(vm) != ZUN_SUCCESS)
+    {
         return ZUN_ERROR;
+    }
 
     return DrawInner(vm, 0);
 }
@@ -1389,7 +1431,9 @@ ZunResult AnmManager::Draw3(AnmVm *vm)
 {
     if (vm->visible == 0 || vm->active == 0 ||
         vm->color.bytes.a == 0)
+    {
         return ZUN_ERROR;
+    }
 
     if (this->spritesToDraw != 0)
     {
@@ -1637,7 +1681,9 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
     (((instr->flags & (1 << argIdx)) != 0) ? vm->GetFloatVarValue(instr->args[argIdx].f) : instr->args[argIdx].f)
 
     if (vm->currentInstruction == NULL)
+    {
         return 1;
+    }
 
     if (vm->pendingInterrupt != 0)
     {
@@ -1841,7 +1887,9 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             else
             {
                 if (vm->uvScrollPos.x < 0.0f)
+                {
                     vm->uvScrollPos.x += 1.0f;
+                }
             }
             break;
         case ANM_SET_SCROLL_POS_Y:
@@ -1853,7 +1901,9 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             else
             {
                 if (vm->uvScrollPos.y < 0.0f)
+                {
                     vm->uvScrollPos.y += 1.0f;
+                }
             }
             break;
         case ANM_SET_SCROLLVEL_X:
@@ -1873,9 +1923,13 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             vm->interpEndTimes[0] = GET_INT_VALUE(0);
             vm->interpModes[0] = instr->args[1].b[0];
             if (vm->useOffset == 0)
+            {
                 vm->posInterpInitial = vm->pos;
+            }
             else
+            {
                 vm->posInterpInitial = vm->offset;
+            }
             vm->posInterpFinal =
                 D3DXVECTOR3(GET_FLOAT_VALUE(2), GET_FLOAT_VALUE(3), GET_FLOAT_VALUE(4));
             break;
@@ -2270,7 +2324,9 @@ stop:
     else
     {
         if (vm->uvScrollPos.x < 0.0f)
+        {
             vm->uvScrollPos.x += 1.0f;
+        }
     }
     vm->uvScrollPos.y += vm->uvScrollVel.y;
     if (vm->uvScrollPos.y >= 1.0f)
@@ -2280,7 +2336,9 @@ stop:
     else
     {
         if (vm->uvScrollPos.y < 0.0f)
+        {
             vm->uvScrollPos.y += 1.0f;
+        }
     }
     vm->currentTimeInScript++;
     this->scriptTicksThisFrame += 1;
@@ -2294,9 +2352,13 @@ void AnmManager::DrawTextToSprite(u32 spriteDstIdx, i32 x, i32 y, i32 width,
                                   char *strToPrint, f32 scaleY, f32 scaleX)
 {
     if (fontWidth < 1)
+    {
         fontWidth = 15;
+    }
     if (fontHeight < 1)
+    {
         fontHeight = 15;
+    }
     IDirect3DTexture8 *outTexture = this->textures[spriteDstIdx];
     TextHelper::RenderTextToTextureBold(x, y, width, height,
                                         ((f32)fontWidth * scaleY),
@@ -2406,38 +2468,52 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path)
     if (g_Supervisor.d3dDevice->CreateImageSurface(
             640, 1024, g_Supervisor.presentParameters.BackBufferFormat,
             &surface) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     if (D3DXLoadSurfaceFromFileInMemory(
             surface, NULL, NULL, data, g_LastFileSize, NULL, 1, 0,
             (D3DXIMAGE_INFO *)&this->surfaceSourceInfo[surfaceIdx]) != 0)
+    {
         goto err;
+    }
 
     if (g_Supervisor.d3dDevice->CreateRenderTarget(
             this->surfaceSourceInfo[surfaceIdx].width,
             this->surfaceSourceInfo[surfaceIdx].height,
             g_Supervisor.presentParameters.BackBufferFormat, D3DMULTISAMPLE_NONE,
             1, this->surfaces + surfaceIdx) != 0)
+    {
         if (g_Supervisor.d3dDevice->CreateImageSurface(
                 this->surfaceSourceInfo[surfaceIdx].width,
                 this->surfaceSourceInfo[surfaceIdx].height,
                 g_Supervisor.presentParameters.BackBufferFormat,
                 this->surfaces + surfaceIdx) != 0)
+        {
             goto err;
+        }
+    }
 
     if (g_Supervisor.d3dDevice->CreateImageSurface(
             this->surfaceSourceInfo[surfaceIdx].width,
             this->surfaceSourceInfo[surfaceIdx].height,
             g_Supervisor.presentParameters.BackBufferFormat,
             this->surfacesBis + surfaceIdx) != 0)
+    {
         goto err;
+    }
 
     if (D3DXLoadSurfaceFromSurface(this->surfaces[surfaceIdx], 0, NULL, surface,
                                    0, NULL, 1, 0) != 0)
+    {
         goto err;
+    }
     if ((D3DXLoadSurfaceFromSurface(this->surfacesBis[surfaceIdx], 0, NULL,
                                     surface, 0, NULL, 1, 0) != 0))
+    {
         goto err;
+    }
 
     SAFE_RELEASE(surface);
     free(data);
@@ -2461,11 +2537,15 @@ void AnmManager::CopySurfaceToBackBuffer(i32 surfaceIdx, i32 left, i32 top,
                                          i32 x, i32 y)
 {
     if (this->surfacesBis[surfaceIdx] == NULL)
+    {
         return;
+    }
     IDirect3DSurface8 *dstSurface;
     if (g_Supervisor.d3dDevice->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO,
                                               &dstSurface) != 0)
+    {
         return;
+    }
 
     if (this->surfaces[surfaceIdx] == NULL)
     {
@@ -2505,11 +2585,15 @@ void AnmManager::DrawEndingRect(i32 surfaceIdx, i32 rectX, i32 rectY,
                                 i32 height)
 {
     if (this->surfacesBis[surfaceIdx] == NULL)
+    {
         return;
+    }
     IDirect3DSurface8 *local_20;
     if (g_Supervisor.d3dDevice->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO,
                                               &local_20) != 0)
+    {
         return;
+    }
     if (this->surfaces[surfaceIdx] == NULL)
     {
         if (g_Supervisor.d3dDevice->CreateRenderTarget(
@@ -2592,14 +2676,20 @@ void AnmManager::TakeScreenshot(i32 textureId, i32 srcLeft, i32 srcTop,
 void AnmManager::CopyTexture(i32 param1, i32 param2, RECT *param3, RECT *param4)
 {
     if (this->textures[param1] == NULL)
+    {
         return;
+    }
     if (this->textures[param2] == NULL)
+    {
         return;
+    }
 
     this->Flush();
     IDirect3DSurface8 *local_8, *local_c;
     if (this->textures[param1]->GetSurfaceLevel(0, &local_8) != 0)
+    {
         return;
+    }
 
     if (this->textures[param2]->GetSurfaceLevel(0, &local_c) != 0)
     {
@@ -2724,7 +2814,9 @@ ZunResult AnmManager::DrawTriangleStrip(AnmVm *vm,
 {
     if (vm->visible == 0 || vm->active == 0 ||
         vm->color.bytes.a == 0)
+    {
         return ZUN_ERROR;
+    }
 
     if (this->spritesToDraw != 0)
     {

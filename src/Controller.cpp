@@ -63,7 +63,9 @@ u32 Controller::SetButtonFromControllerInputs(u16 *outButtons,
     u32 mask;
 
     if (controllerButtonToTest < 0)
+    {
         return 0;
+    }
 
     mask = 1 << (i32)controllerButtonToTest;
     *outButtons |= (inputButtons & mask) != 0 ? (u16)touhouButton : 0;
@@ -88,7 +90,9 @@ u16 Controller::GetControllerInput(u16 buttons)
         pji.dwSize = 0x34;
         pji.dwFlags = 0xff;
         if (joyGetPosEx(0, &pji) != 0)
+        {
             return buttons;
+        }
 
         DVar1 = SetButtonFromControllerInputs(
             &buttons, g_Supervisor.cfg.controllerMapping.shootButton,
@@ -182,7 +186,9 @@ u16 Controller::GetControllerInput(u16 buttons)
                 DebugPrint("error : DIERR_INPUTLOST %d\r\n", retryCount);
                 retryCount++;
                 if (retryCount >= 400)
+                {
                     return buttons;
+                }
             }
             return buttons;
         }
@@ -190,7 +196,9 @@ u16 Controller::GetControllerInput(u16 buttons)
         {
             memset(&js, 0, sizeof(DIJOYSTATE2));
             if (FAILED(hr = g_Supervisor.controller->GetDeviceState(0x110, &js)))
+            {
                 return buttons;
+            }
 
             DVar2 = SetButtonFromDirectInputJoystate(
                 &buttons, g_Supervisor.cfg.controllerMapping.shootButton, 1,
@@ -277,7 +285,9 @@ u8 *Controller::GetControllerState()
         joyinfoex.dwSize = 0x34;
         joyinfoex.dwFlags = 0xff;
         if (joyGetPosEx(0, &joyinfoex) != 0)
+        {
             return g_ControllerData;
+        }
 
         for (joyButtonBit = joyinfoex.dwButtons, joyButtonIndex = 0;
              joyButtonIndex < 32; joyButtonIndex += 1, joyButtonBit >>= 1)
@@ -314,7 +324,9 @@ u8 *Controller::GetControllerState()
                                                     &dijoystate2);
             // ZUN uses a stale hr here it seems
             if (FAILED(hr))
+            {
                 return g_ControllerData;
+            }
 
             memcpy(g_ControllerData, dijoystate2.rgbButtons,
                    sizeof(g_ControllerData));

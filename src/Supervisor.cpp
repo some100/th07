@@ -206,14 +206,18 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
         g_CurFrameRawInput |= Controller::GetInput();
     }
     if (arg->wantedState == arg->curState)
+    {
         goto LAB_004382b4;
+    }
     arg->wantedState2 = arg->wantedState;
     // STRING: TH07 0x00497230
     Supervisor::DebugPrint2("scene %d -> %d\r\n", arg->wantedState,
                             arg->curState);
     state = arg->wantedState;
     if (state == 0)
+    {
         goto LAB_00437eac;
+    }
     if (state == 1)
     {
         state = arg->curState;
@@ -456,7 +460,9 @@ i32 __stdcall Supervisor::EnumGameControllersCb(LPCDIDEVICEINSTANCEA param_1,
         hr = g_Supervisor.directInput->CreateDevice(param_1->guidInstance,
                                                     &g_Supervisor.controller, NULL);
         if (FAILED(hr))
+        {
             return 1;
+        }
     }
     return 0;
 }
@@ -491,7 +497,9 @@ ZunResult Supervisor::SetupDInput()
 {
     HINSTANCE hInstance = (HINSTANCE)GetWindowLongA(this->hwndGameWindow, -6);
     if ((this->cfg.opts >> 0xb & 1) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     if (FAILED(DirectInput8Create(hInstance, 0x800, IID_IDirectInput8A,
                                   (LPVOID *)&this->directInput, NULL)))
@@ -884,7 +892,9 @@ ZunResult Supervisor::RegisterChain()
     chain->deletedCallback = (ChainLifecycleCallback)DeletedCallback;
     res = g_Chain.AddToCalcChain(chain, 0);
     if (res != 0)
+    {
         return res;
+    }
 
     chain = g_Chain.CreateElem((ChainCallback)OnDraw);
     chain->arg = mgr;
@@ -918,7 +928,9 @@ void Supervisor::DrawFpsCounter(i32 param_1)
                 g_LastTime = curTime;
             }
             if (curTime - g_LastTime < 500)
+            {
                 goto LAB_00439350;
+            }
             elapsedTimeInSecs = (f32)(curTime - g_LastTime) / 1000.0f;
             g_LastTime = curTime;
         }
@@ -937,7 +949,9 @@ void Supervisor::DrawFpsCounter(i32 param_1)
             }
             if (local_1c.LowPart < g_PerformanceCounter.LowPart +
                                        (g_Supervisor.perfFrequency.LowPart >> 1))
+            {
                 goto LAB_00439350;
+            }
             elapsedTimeInSecs =
                 ((f32)(local_1c.LowPart - g_PerformanceCounter.LowPart) /
                  (f32)g_Supervisor.perfFrequency.LowPart);

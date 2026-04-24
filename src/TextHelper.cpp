@@ -109,7 +109,9 @@ bool TextHelper::ReleaseBuffer()
         return true;
     }
     else
+    {
         return false;
+    }
 }
 
 // FUNCTION: TH07 0x00431ace
@@ -159,7 +161,9 @@ bool TextHelper::TryAllocateBuffer(i32 width, i32 height, D3DFORMAT format)
     memset(&bitmapInfo, 0, sizeof(ThBitmapInfo));
     formatInfo = GetFormatInfo(format);
     if (formatInfo == NULL)
+    {
         return false;
+    }
     imageWidthInBytes = (((width * formatInfo->bitCount) / 8 + 3) / 4) * 4;
     bitmapInfo.bmiHeader.biSize = sizeof(ThBitmapInfo);
     bitmapInfo.bmiHeader.biWidth = width;
@@ -178,7 +182,9 @@ bool TextHelper::TryAllocateBuffer(i32 width, i32 height, D3DFORMAT format)
     bitmapObj = CreateDIBSection(NULL, (BITMAPINFO *)&bitmapInfo, 0,
                                  (void **)&bitmapData, NULL, 0);
     if (bitmapObj == NULL)
+    {
         return false;
+    }
     memset(bitmapData, 0, bitmapInfo.bmiHeader.biSizeImage);
     deviceContext = CreateCompatibleDC(NULL);
     originalBitmapObj = SelectObject(deviceContext, bitmapObj);
@@ -335,7 +341,9 @@ bool TextHelper::CopyTextToSurface(IDirect3DSurface8 *surface)
     u8 *dstBuf;
 
     if (this->gdiobj2 != NULL)
+    {
         return false;
+    }
 
     surface->GetDesc(&surfaceDesc);
     rectToLock.left = 0;
@@ -343,7 +351,9 @@ bool TextHelper::CopyTextToSurface(IDirect3DSurface8 *surface)
     rectToLock.right = this->width;
     rectToLock.bottom = this->height;
     if (surface->LockRect(&lockedRect, &rectToLock, 0) != 0)
+    {
         return false;
+    }
 
     dstWidthBytes = lockedRect.Pitch;
     srcWidthBytes = this->imageWidthInBytes;

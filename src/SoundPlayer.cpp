@@ -82,7 +82,9 @@ SoundPlayer::SoundPlayer()
 {
     memset(this, 0, sizeof(SoundPlayer));
     for (i32 i = 0; i < 0x80; ++i)
+    {
         this->unusedSoundVolRelated[i] = -1;
+    }
 }
 
 #pragma var_order(bufdesc, audioBuffer2Start, audioBuffer2Len, audioBuffer1Len, audioBuffer1Start, wavFormat)
@@ -127,12 +129,16 @@ ZunResult SoundPlayer::InitializeDSound(HWND gameWindow)
     bufdesc.lpwfxFormat = &wavFormat;
     if (FAILED(this->directSoundHdl->CreateSoundBuffer(
             &bufdesc, &this->initSoundBuffer, NULL)))
+    {
         return ZUN_ERROR;
+    }
 
     if (FAILED(this->initSoundBuffer->Lock(
             0, 0x8000, &audioBuffer1Start, &audioBuffer1Len,
             &audioBuffer2Start, &audioBuffer2Len, 0)))
+    {
         return ZUN_ERROR;
+    }
 
     memset(audioBuffer1Start, 0, 0x8000);
     this->initSoundBuffer->Unlock(audioBuffer1Start, audioBuffer1Len,
@@ -151,7 +157,9 @@ ZunResult SoundPlayer::Release()
     i32 i;
 
     if (this->manager == NULL)
+    {
         return ZUN_SUCCESS;
+    }
 
     for (i = 0; i < 0x80; i++)
     {
@@ -220,7 +228,9 @@ i32 SoundPlayer::GetFmtIndexByName(const char *param_1)
     while (this->bgmFmtData[local_c].name[0] != '\0')
     {
         if (strcmp(this->bgmFmtData[local_c].name, local_8c) == 0)
+        {
             break;
+        }
         local_c = local_c + 1;
     }
     if (this->bgmFmtData[local_c].name[0] == '\0')
@@ -246,13 +256,17 @@ ZunResult SoundPlayer::LoadSound(i32 idx, const char *path)
     DSBUFFERDESC dsBuffer;
 
     if (this->manager == NULL)
+    {
         return ZUN_SUCCESS;
+    }
 
     SAFE_RELEASE(this->soundBuffers[idx]);
     soundFileDat = FileSystem::OpenFile(path, 0);
     u8 *cursor = soundFileDat;
     if (cursor == NULL)
+    {
         return ZUN_ERROR;
+    }
 
     // STRING: TH07 0x0049601c
     if (strncmp((char *)cursor, "RIFF", 4) != 0)
@@ -348,10 +362,14 @@ ZunResult SoundPlayer::StartBGM(const char *path)
 
     strcpy(this->bgmArchivePath, path);
     if (this->manager == NULL)
+    {
         return ZUN_ERROR;
+    }
 
     if (this->directSoundHdl == NULL)
+    {
         return ZUN_ERROR;
+    }
 
     // STRING: TH07 0x00495fb4
     DebugPrint("Streming BGM Start\r\n");
@@ -381,7 +399,9 @@ ZunResult SoundPlayer::StartBGM(const char *path)
 ZunResult SoundPlayer::ReopenBGM(const char *name)
 {
     if (this->backgroundMusic == NULL)
+    {
         return ZUN_ERROR;
+    }
 
     i32 fmtIdx = GetFmtIndexByName(name);
 
@@ -409,10 +429,14 @@ ZunResult SoundPlayer::PreloadBGM(i32 idx, const char *path)
     }
     strcpy(g_SoundPlayer.bgmFileNames[idx], path);
     if ((g_Supervisor.cfg.opts >> 0xd & 1) == 0)
+    {
         return ZUN_SUCCESS;
+    }
 
     if (this->manager == NULL)
+    {
         return ZUN_SUCCESS;
+    }
 
     SAFE_FREE(this->bgmPreloadData[idx]);
     // STRING: TH07 0x00495f38
@@ -457,19 +481,29 @@ ZunResult SoundPlayer::LoadBGM(i32 idx)
     DWORD notifySize;
 
     if (this->manager == NULL)
+    {
         return ZUN_ERROR;
+    }
 
     if (g_Supervisor.cfg.musicMode == MUSIC_OFF)
+    {
         return ZUN_ERROR;
+    }
 
     if (this->directSoundHdl == NULL)
+    {
         return ZUN_ERROR;
+    }
 
     if ((g_Supervisor.cfg.opts >> 0xd & 1) == 0)
+    {
         return ReopenBGM(this->bgmFileNames[idx]);
+    }
 
     if (this->bgmPreloadData[idx] == NULL)
+    {
         return ZUN_ERROR;
+    }
 
     // STRING: TH07 0x00495ef8
     DebugPrint("Streming BGM Load no %d\r\n", idx);
@@ -577,13 +611,19 @@ void SoundPlayer::PlaySoundByIdx(i32 idx, u32 param_2)
     for (i = 0; i < 5; i++)
     {
         if (this->soundQueue[i] < 0)
+        {
             break;
+        }
 
         if (this->soundQueue[i] == idx)
+        {
             return;
+        }
     }
     if (i >= 5)
+    {
         return;
+    }
 
     this->soundQueue[i] = idx;
     this->unusedSoundVolRelated[idx] = iVar1;
@@ -603,7 +643,9 @@ i32 SoundPlayer::ProcessQueues()
     u32 loopAgain;
 
     if (this->manager == NULL)
+    {
         return 0;
+    }
 
     commandCursor = this->commandQueue;
 loop:
@@ -640,7 +682,9 @@ loop:
                 // STRING: TH07 0x00495e48
                 DebugPrint("Sound : Load Stage\r\n");
                 if (LoadBGM(commandCursor->arg1) != ZUN_SUCCESS)
+                {
                     break;
+                }
             }
             else if (commandCursor->arg2 == 2)
             {
@@ -649,7 +693,9 @@ loop:
                 if (this->backgroundMusic != NULL)
                 {
                     if (FAILED(this->backgroundMusic->Reset()))
+                    {
                         break;
+                    }
                 }
             }
             else if (commandCursor->arg2 == 5)
@@ -661,7 +707,9 @@ loop:
                                           ->totalLength != 0;
                 if (FAILED(this->backgroundMusic->FillBufferWithSound(
                         buffer, commandCursor->arg1)))
+                {
                     break;
+                }
             }
             else if (commandCursor->arg2 == 7)
             {
@@ -669,10 +717,14 @@ loop:
                 this->backgroundMusic->Play(0, 1);
             }
             else if (commandCursor->arg2 >= 20)
+            {
                 break;
+            }
         }
         else if (this->backgroundMusic == NULL)
+        {
             break;
+        }
         else if (commandCursor->arg2 == 0)
         {
             // STRING: TH07 0x00495de4
@@ -682,7 +734,9 @@ loop:
         else if (commandCursor->arg2 == 1)
         {
             if (this->backgroundMusic->m_bIsLocked != 0)
+            {
                 goto loop_breakout;
+            }
             // STRING: TH07 0x00495dc8
             DebugPrint("Sound : Recreate Stage\r\n");
             this->backgroundMusic->InitSoundBuffers();
@@ -708,7 +762,9 @@ loop:
                                       ->totalLength != 0;
             if (FAILED(this->backgroundMusic->FillBufferWithSound(
                     buffer2, commandCursor->arg1)))
+            {
                 break;
+            }
         }
         else if (commandCursor->arg2 == 4)
         {
@@ -717,12 +773,16 @@ loop:
             this->backgroundMusic->Play(0, 1);
         }
         else if (commandCursor->arg2 >= 7)
+        {
             break;
+        }
         commandCursor->arg2++;
         goto loop_breakout;
     case AUDIO_SHUTDOWN:
         if (this->backgroundMusic == NULL)
+        {
             break;
+        }
 
         if (commandCursor->arg2 == 0)
         {
@@ -734,7 +794,9 @@ loop:
             // STRING: TH07 0x00495d94
             DebugPrint("Sound : Thread Stop Stage\r\n");
             if (this->backgroundMusicThreadHandle == NULL)
+            {
                 break;
+            }
             PostThreadMessageA(this->backgroundMusicThreadId, 0x12, 0, 0);
         }
         else if (commandCursor->arg2 == 2)
@@ -761,12 +823,16 @@ loop:
             SAFE_DELETE(this->backgroundMusic);
         }
         else if (commandCursor->arg2 == 10)
+        {
             break;
+        }
         commandCursor->arg2++;
         goto loop_breakout;
     case AUDIO_STOP:
         if (this->backgroundMusic == NULL)
+        {
             break;
+        }
 
         if (commandCursor->arg2 == 0)
         {
@@ -774,7 +840,9 @@ loop:
             this->backgroundMusic->Stop();
         }
         else if (commandCursor->arg2 == 1)
+        {
             break;
+        }
         commandCursor->arg2++;
         goto loop_breakout;
     case AUDIO_FADEOUT: {
@@ -802,7 +870,9 @@ loop:
         if (g_Supervisor.cfg.musicMode == MUSIC_WAV)
         {
             if (this->backgroundMusic->m_bIsLocked != 0)
+            {
                 goto loop_breakout;
+            }
             if (this->backgroundMusic != NULL)
             {
                 this->backgroundMusic->Unpause();
@@ -815,12 +885,16 @@ loop:
     for (i = 0; i < 0x1f; i++, commandCursor++)
     {
         if (commandCursor->opcode == 0)
+        {
             break;
+        }
         commandCursor[0] = commandCursor[1];
     }
 
     if (loopAgain)
+    {
         goto loop;
+    }
 
 loop_breakout:
     if (g_Supervisor.cfg.playSounds == 0)
@@ -832,12 +906,16 @@ loop_breakout:
         for (i = 0; i < 5; i++)
         {
             if (this->soundQueue[i] < 0)
+            {
                 break;
+            }
 
             curSound = this->soundQueue[i];
             this->soundQueue[i] = -1;
             if (this->duplicateSoundBuffers[curSound] == NULL)
+            {
                 continue;
+            }
 
             this->duplicateSoundBuffers[curSound]->Stop();
             this->duplicateSoundBuffers[curSound]->SetCurrentPosition(0);
@@ -866,7 +944,9 @@ DWORD __stdcall SoundPlayer::BackgroundMusicPlayerThread(LPVOID lpThreadParamete
         waitObj = MsgWaitForMultipleObjects(
             1, &g_SoundPlayer.backgroundMusicUpdateEvent, 0, 0xffffffff, 0xbf);
         if (g_SoundPlayer.backgroundMusic == NULL)
+        {
             stopped = true;
+        }
 
         switch (waitObj)
         {
@@ -883,7 +963,9 @@ DWORD __stdcall SoundPlayer::BackgroundMusicPlayerThread(LPVOID lpThreadParamete
             while (PeekMessageA(&msg, NULL, 0, 0, 1) != 0)
             {
                 if (msg.message == 0x12)
+                {
                     stopped = true;
+                }
             }
             break;
         }
@@ -899,7 +981,9 @@ void SoundPlayer::PushCommand(AudioOpcode opcode, i32 arg1, const char *arg2)
     for (i32 i = 0; i < 0x1f; i++)
     {
         if (this->commandQueue[i].opcode != 0)
+        {
             continue;
+        }
 
         this->commandQueue[i].opcode = opcode;
         this->commandQueue[i].arg1 = arg1;

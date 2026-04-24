@@ -207,7 +207,9 @@ ScoreDat *ResultScreen::OpenScore(const char *path)
                             local_28 -= len;
                         }
                         if ((bVar2) && (local_2c->version == 1))
+                        {
                             goto LAB_00444ed5;
+                        }
                         // STRING: TH07 0x00496878
                         Supervisor::DebugPrint2("warning : score.dat version mismatch\r\n");
                     }
@@ -336,7 +338,9 @@ ZunResult ResultScreen::ParseCatk(ScoreDat *scoreDat, Catk *catk)
             if ((local_8->magic == 'CATK') && (local_8->version == 1))
             {
                 if (0x8c < (u16)local_8->idx)
+                {
                     break;
+                }
                 catk[local_8->idx] = *local_8;
             }
             pTVar1 = local_8;
@@ -361,7 +365,9 @@ ZunResult ResultScreen::ParseLsnm(ScoreDat *scoreDat, Lsnm *param_2)
             return ZUN_ERROR;
         }
         if ((local_8->magic == 'LSNM') && (local_8->version == 1))
+        {
             break;
+        }
         local_c = local_c - (u32)local_8->th7kLen;
         local_8 = (Lsnm *)((u8 *)local_8 + local_8->th7kLen);
     }
@@ -405,7 +411,9 @@ ZunResult ResultScreen::ParseClrd(ScoreDat *scoreDat, Clrd *clrd)
             if ((local_8->magic == 'CLRD') && (local_8->version == 1))
             {
                 if (5 < local_8->characterShotType)
+                {
                     break;
+                }
                 clrd[local_8->characterShotType] = *local_8;
             }
             puVar1 = &local_8->th7kLen;
@@ -460,7 +468,9 @@ ZunResult ResultScreen::ParsePscr(ScoreDat *scoreDat, Pscr *pscr)
             {
                 if ((5 < local_c->character) ||
                     ((4 < local_c->difficulty || (6 < local_c->stage))))
+                {
                     break;
+                }
                 pscr[(u32)local_c->stage * 4 + (u32)local_c->character * 0x18 +
                      (u32)local_c->difficulty] = *local_c;
             }
@@ -638,7 +648,9 @@ void ResultScreen::WriteScore()
             do
             {
                 if (local_18 == NULL)
+                {
                     break;
+                }
                 if (local_18->data->magic == 'HSCR')
                 {
                     local_18->data->character = local_1c;
@@ -860,7 +872,9 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
             arg->spellcardListVms[0].color.bytes.a = 0xff;
         }
         if (arg->frameTimer < 0x1e)
+        {
             break;
+        }
         if (MoveCursorHorizontally(arg, 6) != 0)
         {
             arg->frameTimer = 0;
@@ -872,7 +886,9 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
             }
         }
         if (!WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
+        {
             break;
+        }
         g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
         arg->resultScreenState = 0;
         arg->frameTimer = 0;
@@ -921,7 +937,9 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
             arg->spellcardListVms[10].color.bytes.a = 0xff;
         }
         if (arg->frameTimer < 0x1e)
+        {
             break;
+        }
         if (MoveCursorHorizontally(arg, 0xf) == 0)
         {
             if (MoveCursor2(arg, 7) != 0)
@@ -941,7 +959,9 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
             }
         }
         if (!WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
+        {
             break;
+        }
         g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
         arg->resultScreenState = 0;
         arg->frameTimer = 0;
@@ -977,7 +997,9 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
     case 0x15:
     case 0x16:
         if (arg->DrawStats() == ZUN_SUCCESS)
+        {
             break;
+        }
     switchD_00445ddb_caseD_0:
         if (arg->frameTimer == 0)
         {
@@ -1021,7 +1043,9 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
             }
         }
         if (arg->frameTimer < 20)
+        {
             break;
+        }
         arg->resultScreenState = arg->resultScreenState + 1;
         arg->frameTimer = 0;
     switchD_00445ddb_caseD_1:
@@ -1061,10 +1085,14 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         {
         LAB_00446123:
             if (!WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
+            {
                 break;
+            }
             vm = arg->vms;
             if (arg->cursor < 0)
+            {
                 break;
+            }
             if (arg->cursor < 6)
             {
                 for (curVmIdx = 0; curVmIdx < 0x29; curVmIdx += 1)
@@ -1112,7 +1140,9 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
                 break;
             }
             if (arg->cursor != 8)
+            {
                 break;
+            }
         }
         else if (arg->cursor != 8)
         {
@@ -1204,7 +1234,9 @@ ZunResult ResultScreen::HandleResultKeyboard()
         }
         this->curScore.slowRatePercent = (u32)((1.0f - local_10) * 100.0f);
         if (9 < LinkScoreEx(&this->curScore, this->diffPlayed, this->charUsed))
+        {
             goto LAB_004470e9;
+        }
         this->cursor = 0;
         if (this->isClearingReplayName != 0)
         {
@@ -1418,10 +1450,14 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
         if (!WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU) || !WAS_PRESSED_RAW(TH_BUTTON_MENU))
         {
             if (!WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
+            {
                 return ZUN_SUCCESS;
+            }
 
             if (this->cursor == 0)
+            {
                 goto LAB_004473e3;
+            }
         }
         this->frameTimer = 0;
         g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
@@ -1444,7 +1480,9 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
             if (!WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
             {
                 if (!WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
+                {
                     return ZUN_SUCCESS;
+                }
             }
             this->frameTimer = 0;
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
@@ -1577,7 +1615,9 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                     g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
                 }
                 if (!WAS_PRESSED_RAW(TH_BUTTON_MENU))
+                {
                     return ZUN_SUCCESS;
+                }
             }
             else
             {
@@ -1609,7 +1649,9 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                     !WAS_PRESSED_RAW(TH_BUTTON_MENU))
                 {
                     if (!WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
+                    {
                         return ZUN_SUCCESS;
+                    }
 
                     this->frameTimer = 0;
                     if (this->cursor == 0)
@@ -2726,7 +2768,9 @@ ZunResult ResultScreen::RegisterChain(u32 param_1)
         (ChainLifecycleCallback)DeletedCallback;
     resultScreen->calcChain->arg = resultScreen;
     if (g_Chain.AddToCalcChain(resultScreen->calcChain, 0xe) != 0)
+    {
         return ZUN_ERROR;
+    }
 
     resultScreen->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     resultScreen->drawChain->arg = resultScreen;
