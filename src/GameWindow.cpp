@@ -95,10 +95,11 @@ LRESULT __stdcall GameWindow::WindowProc(HWND hWnd, u32 uMsg, WPARAM wParam,
     return DefWindowProcA(hWnd, uMsg, wParam, lParam);
 }
 
+#pragma var_order(i, local_10c)
 // FUNCTION: TH07 0x004345c0
 void GameWindow::Present()
 {
-    char local_10c[260];
+    char local_10c[252];
     i32 i;
 
     if (FAILED(g_Supervisor.d3dDevice->Present(NULL, NULL, NULL, NULL)))
@@ -259,16 +260,15 @@ RenderResult GameWindow::Render()
 // FUNCTION: TH07 0x00434a40
 i32 GameWindow::InitD3dInterface()
 {
-    bool bVar1;
-
     g_Supervisor.d3dIface = Direct3DCreate8(0x78);
-    bVar1 = g_Supervisor.d3dIface == NULL;
-    if (bVar1)
+    if (g_Supervisor.d3dIface == NULL)
     {
         // STRING: TH07 0x00497bd8
         g_GameErrorContext.Fatal("Direct3D オブジェクトは何故か作成出来なかった\r\n");
+        return true;
     }
-    return bVar1;
+
+    return false;
 }
 
 // FUNCTION: TH07 0x00434a80
@@ -730,12 +730,16 @@ void GameWindow::ResetRenderState()
     {
         g_Supervisor.d3dDevice->SetRenderState(D3DRS_FOGENABLE, 0);
     }
-    g_Supervisor.d3dDevice->SetRenderState(D3DRS_FOGDENSITY, 1.0f);
+    f32 fogDensity = 1.0f;
+    g_Supervisor.d3dDevice->SetRenderState(D3DRS_FOGDENSITY, *(DWORD *)&fogDensity);
     g_Supervisor.d3dDevice->SetRenderState(D3DRS_FOGTABLEMODE, 0);
     g_Supervisor.d3dDevice->SetRenderState(D3DRS_FOGVERTEXMODE, 3);
     g_Supervisor.d3dDevice->SetRenderState(D3DRS_FOGCOLOR, 0xffa0a0a0);
-    g_Supervisor.d3dDevice->SetRenderState(D3DRS_FOGSTART, 1000.0f);
-    g_Supervisor.d3dDevice->SetRenderState(D3DRS_FOGEND, 5000.0f);
+
+    f32 fog = 1000.0f;
+    g_Supervisor.d3dDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD *)&fog);
+    fog = 5000.0f;
+    g_Supervisor.d3dDevice->SetRenderState(D3DRS_FOGEND, *(DWORD *)&fog);
     if ((g_Supervisor.d3dCaps.RasterCaps | 0x1000) != 0)
     {
         g_Supervisor.d3dDevice->SetRenderState(D3DRS_EDGEANTIALIAS, 0);
@@ -785,11 +789,11 @@ void GameWindow::ResetRenderState()
     g_Supervisor.d3dDevice->SetTextureStageState(0, D3DTSS_ADDRESSV, 1);
     if (g_AnmManager != NULL)
     {
-        g_AnmManager->currentBlendMode = 0xff;
-        g_AnmManager->currentColorOp = 0xff;
-        g_AnmManager->currentVertexShader = 0xff;
-        g_AnmManager->currentTexture = NULL;
-        g_AnmManager->currentCameraMode = 0xff;
+        g_AnmManager->SetBlendMode(0xff);
+        g_AnmManager->SetColorOp(0xff);
+        g_AnmManager->SetVertexShader(0xff);
+        g_AnmManager->SetTexture(NULL);
+        g_AnmManager->SetCameraMode(0xff);
     }
     g_Stage.renderStateWasReset = 1;
 }

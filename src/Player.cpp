@@ -256,23 +256,26 @@ i32 ShtData::FireHomingBullet(Player *player, PlayerBullet *bullet,
     }
 }
 
+#pragma var_order(speed, angle)
 // FUNCTION: TH07 0x0043c1c0
 i32 ShtData::FireRotatingOrbBullet(Player *player, PlayerBullet *bullet,
                                    i32 fireTime, ShtEntry *shtEntry)
 {
-    bool bVar1;
     f32 angle;
+    f32 speed;
 
-    bVar1 = fireTime % (i32)shtEntry->fireInterval == (i32)shtEntry->fireOffset;
-    if (bVar1)
+    if (fireTime % (i32)shtEntry->fireInterval == (i32)shtEntry->fireOffset)
     {
         DefaultFireBulletCallback(player, bullet, shtEntry);
         angle = utils::AddNormalizeAngle(player->orbAngle,
                                          shtEntry->angle + 1.5707964f);
-        AngleToVector((D3DXVECTOR3 *)&bullet->velocity, angle, shtEntry->speed);
+        speed = shtEntry->speed;
+        AngleToVector((D3DXVECTOR3 *)&bullet->velocity, angle, speed);
         bullet->angle = angle;
+
+        return true;
     }
-    return bVar1;
+    return false;
 }
 
 // FUNCTION: TH07 0x0043c250
@@ -528,7 +531,7 @@ i32 ShtData::OnMissileHit(Player *player, PlayerBullet *bullet,
 
     if (bullet->bulletState == 2)
     {
-        if (bullet->timer.current % 2 != 0)
+        if (bullet->timer.GetCurrent() % 2 != 0)
         {
             return 1;
         }
@@ -586,7 +589,7 @@ i32 ShtData::OnMissileHit(Player *player, PlayerBullet *bullet,
             AngleToVector((D3DXVECTOR3 *)&bullet->velocity, fVar2, 6.0f);
         }
     }
-    if (bullet->timer.current % 6 == 0)
+    if (bullet->timer.GetCurrent() % 6 == 0)
     {
         g_EffectManager.SpawnParticles(5, pos, 1, 0xffffffff);
     }
@@ -599,11 +602,10 @@ i32 ShtData::SpawnHitParticles(Player *player, PlayerBullet *bullet,
 {
     D3DXVECTOR3 local_10;
 
-    player->bombParticleTime = player->bombParticleTime + 1;
-    if ((player->bombParticleTime & 0x80000007) == 0)
+    player->bombParticleTime++;
+    if (player->bombParticleTime % 8 == 0)
     {
-        local_10.y = pos->y;
-        local_10.z = pos->z;
+        local_10 = *pos;
         local_10.x = bullet->pos.x;
         g_EffectManager.SpawnParticles(5, &local_10, 1, 0xffffffff);
     }
@@ -2132,60 +2134,61 @@ BombProjectile *Player::SpawnBombEffect(D3DXVECTOR3 *pos, f32 sizeY, f32 sizeZ,
 // FUNCTION: TH07 0x00441960
 void Player::ActivateBorder()
 {
-    Effect *pEVar3;
+    Effect *spawnedEffect;
 
     if ((this->bombInfo.isInUse != 0) || (g_Gui.HasCurrentMsgIdx() != 0))
     {
         this->hasBorder = BORDER_READY;
         return;
     }
-    if (this->playerState != PLAYER_STATE_SPAWNING)
+
+    switch (this->playerState)
     {
-        if (this->playerState == PLAYER_STATE_DEAD)
+    case PLAYER_STATE_SPAWNING:
+    case PLAYER_STATE_INVULNERABLE:
+        this->hasBorder = BORDER_READY;
+        break;
+    case PLAYER_STATE_DEAD:
+        if (this->respawnTimer != 0)
         {
-            if (this->respawnTimer != 0)
-            {
-                BreakBorder(0);
-                return;
-            }
-            this->hasBorder = BORDER_READY;
+            BreakBorder(0);
             return;
         }
-        if (this->playerState != PLAYER_STATE_INVULNERABLE)
+
+        this->hasBorder = BORDER_READY;
+        break;
+    default:
+        this->invulnerabilityTimer = 540;
+        this->borderTimer = this->invulnerabilityTimer;
+        this->hasBorder = BORDER_ACTIVE;
+        this->playerState = PLAYER_STATE_BORDER;
+        if (this->borderEffect != NULL)
         {
-            this->invulnerabilityTimer = 540;
-            this->borderTimer = this->invulnerabilityTimer;
-            this->hasBorder = BORDER_ACTIVE;
-            this->playerState = PLAYER_STATE_BORDER;
-            if (this->borderEffect != NULL)
-            {
-                this->borderEffect->inUseFlag = 0;
-            }
-            if (this->effect != NULL)
-            {
-                this->effect->inUseFlag = 0;
-                this->effect = NULL;
-            }
-            pEVar3 = g_EffectManager.SpawnEffect(0x1c, &this->positionCenter, 4, 1,
-                                                 0xffffffff);
-            pEVar3->vm.interpStartTimes[4] = 0;
-            pEVar3->vm.interpEndTimes[4] = this->invulnerabilityTimer.current;
-            pEVar3->vm.interpModes[4] = 0;
-            pEVar3->vm.scaleInterpInitial.y = 1.0f;
-            pEVar3->vm.scaleInterpInitial.x = 1.0f;
-            pEVar3->vm.scaleInterpFinal.x = 0.25f;
-            pEVar3->vm.scaleInterpFinal.y = 0.25f;
-            pEVar3->vm.intVars1[0] = this->invulnerabilityTimer.current;
-            pEVar3->vm.angleVel.z *= -1.0f;
-            this->borderEffect = pEVar3;
-            g_Gui.ShowFullPowerMode(0, 2);
-            g_SoundPlayer.PlaySoundByIdx(SOUND_BORDER_ACTIVATE, 0);
-            g_SoundPlayer.PlaySoundByIdx(SOUND_BORDER_ACTIVATE2, 0);
-            g_ReplayManager->replayEventFlags = g_ReplayManager->replayEventFlags | 8;
-            return;
+            this->borderEffect->inUseFlag = 0;
         }
+        if (this->effect != NULL)
+        {
+            this->effect->inUseFlag = 0;
+            this->effect = NULL;
+        }
+        spawnedEffect = g_EffectManager.SpawnEffect(0x1c, &this->positionCenter, 4, 1,
+                                                    0xffffffff);
+        spawnedEffect->vm.interpStartTimes[4] = 0;
+        spawnedEffect->vm.interpEndTimes[4] = this->invulnerabilityTimer.GetCurrent();
+        spawnedEffect->vm.interpModes[4] = 0;
+        spawnedEffect->vm.scaleInterpInitial.y = 1.0f;
+        spawnedEffect->vm.scaleInterpInitial.x = 1.0f;
+        spawnedEffect->vm.scaleInterpFinal.x = 0.25f;
+        spawnedEffect->vm.scaleInterpFinal.y = 0.25f;
+        spawnedEffect->vm.intVars1[0] = this->invulnerabilityTimer.GetCurrent();
+        spawnedEffect->vm.angleVel.z *= -1.0f;
+        this->borderEffect = spawnedEffect;
+        g_Gui.ShowFullPowerMode(0, 2);
+        g_SoundPlayer.PlaySoundByIdx(SOUND_BORDER_ACTIVATE, 0);
+        g_SoundPlayer.PlaySoundByIdx(SOUND_BORDER_ACTIVATE2, 0);
+        g_ReplayManager->replayEventFlags |= 8;
+        break;
     }
-    this->hasBorder = BORDER_READY;
 }
 
 #pragma var_order(effect, local_c, local_10)

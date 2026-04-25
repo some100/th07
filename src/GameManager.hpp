@@ -75,7 +75,6 @@ struct GameManager
 #pragma var_order(local_10, local_c)
     // FUNCTION: TH07 0x004012b0
     void RegenerateGameIntegrityCsum()
-
     {
         this->globals->rng1[2] = g_Rng.GetRandomU32InRange(100000) + 0x198f;
         this->globals->rng2[3] = g_Rng.GetRandomU32InRange(100000) + 0x198f;
@@ -87,7 +86,6 @@ struct GameManager
 
     // FUNCTION: TH07 0x00401390
     void SetBombsRemainingAndComputeCsum(i32 param_1)
-
     {
         this->globals->bombsRemaining = (f32)param_1;
         this->globals->curCsum = this->globals->rng1[2];
@@ -98,7 +96,6 @@ struct GameManager
 
     // FUNCTION: TH07 0x00404fe0
     i32 CheckGameIntegrity()
-
     {
         if (this->globals->curCsum ==
             this->globals->csumData[2] *
@@ -119,7 +116,6 @@ struct GameManager
 
     // FUNCTION: TH07 0x0043b5c0
     void RerollRng()
-
     {
         this->globals->rng1[0] = g_Rng.GetRandomU32InRange(100000) + 0x198f;
         this->globals->rng1[1] = g_Rng.GetRandomU32InRange(100000) + 0x198f;
@@ -133,7 +129,6 @@ struct GameManager
 
     // FUNCTION: TH07 0x0043b750
     void CheckGameIntegrityOnDeath(i32 amount)
-
     {
         if (CheckGameIntegrity() != 0)
         {
@@ -145,7 +140,6 @@ struct GameManager
 
     // FUNCTION: TH07 0x0043b7a0
     void AddBombsUsed(i32 amount)
-
     {
         if (CheckGameIntegrity() != 0)
         {

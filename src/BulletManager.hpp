@@ -171,7 +171,6 @@ struct Bullet
 
     // FUNCTION: TH07 0x00417b20
     void Initialize()
-
     {
         this->state = BULLET_INACTIVE;
         this->timer1 = 0;
@@ -235,6 +234,12 @@ struct BulletManager
     i32 SpawnSingleBullet(EnemyBulletShooter *bulletProps, f32 x, f32 y,
                           f32 angle);
     void StopBulletMovement();
+
+    // i have no idea why this exists either
+    static void AnInlineFunctionThatAllocates4BytesAndNothingElse()
+    {
+        i32 idk;
+    }
 
     BulletTypeSprites bulletTypeTemplates[16];
     Bullet bullets[1025];

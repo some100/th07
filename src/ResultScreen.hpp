@@ -162,6 +162,11 @@ struct ResultScreen
     static ZunResult ParseLsnm(ScoreDat *scoreDat, Lsnm *param_2);
     void WriteScore();
 
+    static void AnInlineFunctionThatAllocates24BytesAndNothingElse()
+    {
+        i32 idk[6];
+    }
+
     ScoreDat *scoreDat;
     i32 frameTimer;
     i32 resultScreenState;

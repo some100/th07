@@ -1828,8 +1828,9 @@ u32 MainMenu::OnUpdateSelectPracticeStage()
 {
     i32 local_8;
 
-    if (this->menuSubState == 0)
+    switch (this->menuSubState)
     {
+    case 0:
         if (this->stateTimer == 0)
         {
             g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 0x12);
@@ -1848,23 +1849,23 @@ u32 MainMenu::OnUpdateSelectPracticeStage()
             this->vmHead[0x4d].active = 0;
             this->vmHead[0x52].active = 0;
             this->vmHead[0x55].active = 0;
-            if (g_GameManager.character == CHAR_REIMU)
+            switch (g_GameManager.character)
             {
+            case CHAR_REIMU:
                 this->vmHead[0x48].active = 1;
                 this->vmHead[0x49].active = 1;
                 this->vmHead[0x47].active = 1;
-            }
-            else if (g_GameManager.character == CHAR_MARISA)
-            {
+                break;
+            case CHAR_MARISA:
                 this->vmHead[0x4b].active = 1;
                 this->vmHead[0x4c].active = 1;
                 this->vmHead[0x4a].active = 1;
-            }
-            else if (g_GameManager.character == CHAR_SAKUYA)
-            {
+                break;
+            case CHAR_SAKUYA:
                 this->vmHead[0x4e].active = 1;
                 this->vmHead[0x4f].active = 1;
                 this->vmHead[0x4d].active = 1;
+                break;
             }
             this->menuSubState = 0;
             this->inputDelayTimer = 0;
@@ -1874,21 +1875,20 @@ u32 MainMenu::OnUpdateSelectPracticeStage()
         {
             this->menuSubState = 1;
         }
-    }
-    else if (this->menuSubState == 1)
-    {
+        break;
+    case 1:
         local_8 =
-            g_GameManager.clrd[g_GameManager.shotType + g_GameManager.character * 2]
-                .difficultyClearedWithRetries[g_Supervisor.cfg.defaultDifficulty];
+            g_GameManager.clrd[g_GameManager.character * 2 + g_GameManager.shotType]
+                .difficultyClearedWithoutRetries[g_Supervisor.cfg.defaultDifficulty];
         if (local_8 < 0)
         {
             local_8 = 1;
         }
-        else if (0x62 < local_8)
+        else if (local_8 >= 99)
         {
             local_8 = 6;
         }
-        if ((i32)local_8 <= this->cursor)
+        if (this->cursor >= local_8)
         {
             this->cursor = 0;
         }
@@ -1899,7 +1899,9 @@ u32 MainMenu::OnUpdateSelectPracticeStage()
             g_GameManager.difficulty = g_Supervisor.cfg.defaultDifficulty;
             g_GameManager.currentStage = this->cursor;
             g_Supervisor.curState = 2;
-            g_GameManager.notInMenu = 0;
+
+            i32 idk = 0;
+            g_GameManager.replay = idk;
             g_Supervisor.StopAudio();
             while (g_SoundPlayer.ProcessQueues() != 0)
                 ;
@@ -1927,6 +1929,7 @@ u32 MainMenu::OnUpdateSelectPracticeStage()
             this->vmHead[0x55].active = 1;
             return CHAIN_CALLBACK_RESULT_EXECUTE_AGAIN;
         }
+        break;
     }
     this->idleFrames = this->idleFrames + 1;
     this->inputDelayTimer = this->inputDelayTimer + 1;
@@ -2526,7 +2529,7 @@ ZunResult MainMenu::ActualAddedCallback()
     if (g_GameManager.replay != 0)
     {
         g_GameManager.shotTypeAndCharacter = SHOT_REIMU_A;
-        g_GameManager.character = CHAR_REIMU;
+        g_GameManager.character = g_GameManager.shotTypeAndCharacter;
     }
     if (g_GameManager.demo != 0)
     {
@@ -2695,7 +2698,12 @@ ZunResult MainMenu::AddedCallback(MainMenu *arg)
 ZunResult MainMenu::Release()
 {
     SAFE_FREE(this->currentReplay);
-    SAFE_FREE(this->vmHead);
+    if (this->vmHead)
+    {
+        delete[] this->vmHead;
+        this->vmHead = NULL;
+        this->vmHead = NULL; // ?
+    }
     return ZUN_SUCCESS;
 }
 

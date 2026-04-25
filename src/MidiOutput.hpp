@@ -25,7 +25,7 @@ struct MidiTimer
     i32 StopTimer();
     void UpdatePerfCounter();
 
-    virtual void OnTimerElapsed();
+    virtual void OnTimerElapsed() {}
     static void CALLBACK DefaultTimerCallback(u32 delay, u32 wPeriodMin,
                                               DWORD_PTR dwUser, DWORD_PTR dw1,
                                               DWORD_PTR dw2);
@@ -151,10 +151,17 @@ struct MidiOutput : MidiTimer
         return *(const u32 *)tmp;
     }
 
-    __forceinline void Stop()
+    __forceinline void Play(const char *path)
     {
         this->StopPlayback();
-        this->ParseFile(0x1e);
+        this->LoadFile(path);
+        this->Play();
+    }
+
+    __forceinline void PlayLoaded(i32 idx)
+    {
+        this->StopPlayback();
+        this->ParseFile(idx);
         this->Play();
     }
 
@@ -187,5 +194,11 @@ struct MidiOutput : MidiTimer
     u64 savedfield_0x130;
 };
 C_ASSERT(sizeof(MidiOutput) == 0x300);
+
+// VTABLE: TH07 0x00496c0c
+struct DummyMidiTimer : MidiTimer
+{
+    virtual void OnTimerElapsed();
+};
 
 extern LARGE_INTEGER g_PerfCounter;

@@ -1369,6 +1369,7 @@ LAB_004470e9:
     return ZUN_SUCCESS;
 }
 
+#pragma var_order(timeinfo, local_c)
 // FUNCTION: TH07 0x00447161
 void ResultScreen::GetDate(char *out)
 {
@@ -2738,7 +2739,6 @@ ZunResult ResultScreen::DeletedCallback(ResultScreen *arg)
 // FUNCTION: TH07 0x0044a302
 ZunResult ResultScreen::RegisterChain(u32 param_1)
 {
-    i32 unused[6];
     ResultScreen *resultScreen = new ResultScreen;
 
     // STRING: TH07 0x0049635c
@@ -2775,6 +2775,8 @@ ZunResult ResultScreen::RegisterChain(u32 param_1)
     resultScreen->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     resultScreen->drawChain->arg = resultScreen;
     g_Chain.AddToDrawChain(resultScreen->drawChain, 0xd);
+
+    AnInlineFunctionThatAllocates24BytesAndNothingElse();
     return ZUN_SUCCESS;
 }
 

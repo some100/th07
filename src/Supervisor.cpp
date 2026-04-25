@@ -581,10 +581,6 @@ ZunResult Supervisor::LoadGameData()
             g_GameErrorContext.Fatal("error : データのバージョンが違います\r\n");
             return ZUN_ERROR;
         }
-        else
-        {
-            return ZUN_SUCCESS;
-        }
     }
     else
     {
@@ -592,6 +588,7 @@ ZunResult Supervisor::LoadGameData()
         g_GameErrorContext.Fatal("error : データファイルが存在しません\r\n");
         return ZUN_ERROR;
     }
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x004386f3
@@ -709,117 +706,109 @@ ZunResult Supervisor::AddedCallback(Supervisor *arg)
     {
         g_Supervisor.d3dDevice->Reset(&g_Supervisor.presentParameters);
     }
-    if (LoadGameData() == ZUN_SUCCESS)
+    if (LoadGameData() != ZUN_SUCCESS)
     {
-        // STRING: TH07 0x00497038
-        g_AnmManager->LoadSurface(0, "data/title/th07logo.jpg");
-        g_Supervisor.isInEnding = 1;
-        if (g_Supervisor.vsyncEnabled == 0)
+        return ZUN_ERROR;
+    }
+
+    // STRING: TH07 0x00497038
+    g_AnmManager->LoadSurface(0, "data/title/th07logo.jpg");
+    g_Supervisor.isInEnding = 1;
+    if (g_Supervisor.vsyncEnabled == 0)
+    {
+        if (CheckVSync() != 0)
         {
-            if (CheckVSync() != 0)
-            {
-                g_AnmManager->ReleaseSurface(0);
-                return (ZunResult)-2;
-            }
-        }
-        else
-        {
-            for (i = 0; i < 4; i++)
-            {
-                g_Supervisor.d3dDevice->BeginScene();
-                g_AnmManager->CopySurfaceToBackBuffer(0, 0, 0, 0, 0);
-                g_Supervisor.d3dDevice->EndScene();
-                if (FAILED(g_Supervisor.d3dDevice->Present(NULL, NULL, NULL, NULL)))
-                {
-                    g_Supervisor.d3dDevice->Reset(&g_Supervisor.presentParameters);
-                }
-            }
-        }
-        g_AnmManager->ReleaseSurface(0);
-        arg->isInEnding = 0;
-        arg->renderSkipFrames = 0;
-        arg->startupTimeForMenuMusic = timeGetTime();
-        g_Rng.seed = (u16)arg->startupTimeForMenuMusic;
-        arg->SetupDInput();
-        if (arg->midiOutput == NULL)
-        {
-            arg->midiOutput = new MidiOutput;
-        }
-        if (arg->midiOutput != NULL)
-        {
-            // STRING: TH07 0x00497028
-            arg->midiOutput->ReadFileData(0x1e, "bgm/init.mid");
-        }
-        g_SoundPlayer.InitSoundBuffers();
-        // STRING: TH07 0x00497018
-        if (g_AnmManager->LoadAnms(0, "data/text.anm", 0x700) == ZUN_SUCCESS)
-        {
-            if (AsciiManager::RegisterChain() == ZUN_SUCCESS)
-            {
-                g_AnmManager->SetupVertexBuffer();
-                TextHelper::CreateTextBuffer();
-                // STRING: TH07 0x00496fe0
-                if (g_SoundPlayer.LoadFmt("bgm/thbgm.fmt") == 0)
-                {
-                    if (g_SoundPlayer.bgmSeekOffset == 0)
-                    {
-                        if ((g_Supervisor.cfg.opts >> 0xd & 1) == 0)
-                        {
-                            // STRING: TH07 0x00496fac
-                            g_SoundPlayer.StartBGM("thbgm.dat");
-                        }
-                        else
-                        {
-                            strncpy(g_SoundPlayer.bgmArchivePath, "thbgm.dat", 10);
-                        }
-                    }
-                    else if ((g_Supervisor.cfg.opts >> 0xd & 1) == 0)
-                    {
-                        g_SoundPlayer.StartBGM("th07.dat");
-                    }
-                    else
-                    {
-                        strncpy(g_SoundPlayer.bgmArchivePath, "th07.dat", 8);
-                        g_SoundPlayer.bgmArchivePath[8] = '\0';
-                    }
-                    scoreDat = ResultScreen::OpenScore("score.dat");
-                    memset(&g_GameManager.plst, 0, sizeof(g_GameManager.plst));
-                    g_GameManager.plst.th7kLen = sizeof(Plst);
-                    g_GameManager.plst.th7kLen2 = sizeof(Plst);
-                    g_GameManager.plst.magic = 0x54534c50;
-                    g_GameManager.plst.version = 1;
-                    ResultScreen::ParsePlst(scoreDat, &g_GameManager.plst);
-                    ResultScreen::ReleaseScoreDat(scoreDat);
-                    g_Supervisor.midiTimer = new MidiTimer;
-                    if (g_Supervisor.midiTimer != NULL)
-                    {
-                        g_Supervisor.midiTimer->StartTimerDefault();
-                    }
-                    return ZUN_SUCCESS;
-                }
-                else
-                {
-                    // STRING: TH07 0x00496fb8
-                    g_GameErrorContext.Log("error : BGM の初期化に失敗しました\r\n");
-                    return ZUN_ERROR;
-                }
-            }
-            else
-            {
-                // STRING: TH07 0x00496ff0
-                g_GameErrorContext.Log("error : 文字の初期化に失敗しました\r\n");
-                return ZUN_ERROR;
-            }
-        }
-        else
-        {
-            return ZUN_ERROR;
+            g_AnmManager->ReleaseSurface(0);
+            return (ZunResult)-2;
         }
     }
     else
     {
+        i = 0;
+        while (i < 4)
+        {
+            g_Supervisor.d3dDevice->BeginScene();
+            g_AnmManager->CopySurfaceToBackBuffer(0, 0, 0, 0, 0);
+            g_Supervisor.d3dDevice->EndScene();
+            if (FAILED(g_Supervisor.d3dDevice->Present(NULL, NULL, NULL, NULL)))
+            {
+                g_Supervisor.d3dDevice->Reset(&g_Supervisor.presentParameters);
+            }
+            i++;
+        }
+    }
+    g_AnmManager->ReleaseSurface(0);
+    arg->isInEnding = 0;
+    arg->renderSkipFrames = 0;
+    arg->startupTimeForMenuMusic = timeGetTime();
+    g_Rng.SetSeed(arg->startupTimeForMenuMusic);
+    arg->SetupDInput();
+    if (arg->midiOutput == NULL)
+    {
+        arg->midiOutput = new MidiOutput;
+    }
+    if (arg->midiOutput != NULL)
+    {
+        // STRING: TH07 0x00497028
+        arg->midiOutput->ReadFileData(0x1e, "bgm/init.mid");
+    }
+    g_SoundPlayer.InitSoundBuffers();
+    // STRING: TH07 0x00497018
+    if (g_AnmManager->LoadAnms(0, "data/text.anm", 0x700) != ZUN_SUCCESS)
+    {
         return ZUN_ERROR;
     }
+
+    if (AsciiManager::RegisterChain() != ZUN_SUCCESS)
+    {
+        // STRING: TH07 0x00496ff0
+        g_GameErrorContext.Log("error : 文字の初期化に失敗しました\r\n");
+        return ZUN_ERROR;
+    }
+
+    g_AnmManager->SetupVertexBuffer();
+    TextHelper::CreateTextBuffer();
+    // STRING: TH07 0x00496fe0
+    if (g_SoundPlayer.LoadFmt("bgm/thbgm.fmt") != 0)
+    {
+        // STRING: TH07 0x00496fb8
+        g_GameErrorContext.Log("error : BGM の初期化に失敗しました\r\n");
+        return ZUN_ERROR;
+    }
+
+    if (g_SoundPlayer.bgmSeekOffset == 0)
+    {
+        if ((g_Supervisor.cfg.opts >> 0xd & 1) == 0)
+        {
+            // STRING: TH07 0x00496fac
+            g_SoundPlayer.StartBGM("thbgm.dat");
+        }
+        else
+        {
+            memcpy(g_SoundPlayer.bgmArchivePath, "thbgm.dat", 10);
+        }
+    }
+    else if ((g_Supervisor.cfg.opts >> 0xd & 1) == 0)
+    {
+        g_SoundPlayer.StartBGM("th07.dat");
+    }
+    else
+    {
+        memcpy(g_SoundPlayer.bgmArchivePath, "th07.dat", 9);
+    }
+    scoreDat = ResultScreen::OpenScore("score.dat");
+    memset(&g_GameManager.plst, 0, sizeof(g_GameManager.plst));
+    g_GameManager.plst.th7kLen2 = g_GameManager.plst.th7kLen = sizeof(Plst);
+    g_GameManager.plst.magic = 0x54534c50;
+    g_GameManager.plst.version = 1;
+    ResultScreen::ParsePlst(scoreDat, &g_GameManager.plst);
+    ResultScreen::ReleaseScoreDat(scoreDat);
+    g_Supervisor.midiTimer = new DummyMidiTimer;
+    if (g_Supervisor.midiTimer != NULL)
+    {
+        g_Supervisor.midiTimer->StartTimerDefault();
+    }
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x00438de2
@@ -1106,7 +1095,7 @@ void Supervisor::TickTimer(i32 *frames, f32 *subframes)
     if (this->effectiveFramerateMultiplier <= 0.99f)
     {
         *subframes = *subframes + this->effectiveFramerateMultiplier;
-        if (1.0f <= *subframes)
+        if (*subframes >= 1.0f)
         {
             *frames = *frames + 1;
             *subframes = *subframes - 1.0f;
@@ -1215,6 +1204,7 @@ i32 Supervisor::SnapshotScreen(const char *param_1)
     return 0;
 }
 
+#pragma var_order(configFile, bgm2, bytesRead2, bgm2Data, bgm, bytesRead, bgmData)
 // FUNCTION: TH07 0x004398b6
 ZunResult Supervisor::LoadConfig(const char *configFilename)
 {
@@ -1224,20 +1214,55 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
     i32 bgm2Data[4];
     DWORD bytesRead2;
     HANDLE bgm2;
-    u32 *_Memory;
+    u32 *configFile;
 
     memset(&g_Supervisor.cfg, 0, sizeof(GameConfiguration));
-    _Memory = (u32 *)FileSystem::OpenFile((char *)configFilename, 1);
-    if (_Memory == NULL)
+    configFile = (u32 *)FileSystem::OpenFile((char *)configFilename, 1);
+    if (configFile == NULL)
     {
         // STRING: TH07 0x00496f14
         g_GameErrorContext.Log("コンフィグデータが見つからないので初期化しました\r\n");
+    init:
+        g_Supervisor.cfg.lifeCount = 2;
+        g_Supervisor.cfg.bombCount = 3;
+        g_Supervisor.cfg.colorMode16bit = 0xff;
+        g_Supervisor.cfg.version = 0x70002;
+        g_Supervisor.cfg.padAxisX = 600;
+        g_Supervisor.cfg.padAxisY = 600;
+        bgm2 = CreateFileA("./thbgm.dat", GENERIC_READ, 1, NULL, 3, 0x8000080, NULL);
+        if (bgm2 != INVALID_HANDLE_VALUE)
+        {
+            ReadFile(bgm2, bgm2Data, 0x10, &bytesRead2, NULL);
+            CloseHandle(bgm2);
+            if (((bgm2Data[0] != 0x5641575a) || (bgm2Data[1] != 1)) ||
+                (bgm2Data[2] != 0x700))
+            {
+                // STRING: TH07 0x00496ee4
+                g_GameErrorContext.Fatal("BGM データのバージョンが違います\r\n");
+                return ZUN_ERROR;
+            }
+            g_Supervisor.cfg.musicMode = MUSIC_WAV;
+        }
+        else
+        {
+            g_Supervisor.cfg.musicMode = MUSIC_MIDI;
+            // STRING: TH07 0x00496ebc
+            Supervisor::DebugPrint2("wave データが無いので、midi にします\r\n");
+        }
+        g_Supervisor.cfg.playSounds = 1;
+        g_Supervisor.cfg.defaultDifficulty = (u8)DIFF_NORMAL;
+        g_Supervisor.cfg.windowed = 0;
+        g_Supervisor.cfg.frameskipConfig = 0;
+        g_Supervisor.cfg.controllerMapping = g_ControllerMapping;
+        g_Supervisor.cfg.effectQuality = QUALITY_BEAUTIFUL;
+        g_Supervisor.cfg.slowMode = 0;
+        g_Supervisor.cfg.shotSlow = 1;
     }
     else
     {
-        g_Supervisor.cfg = *(GameConfiguration *)_Memory;
-        free(_Memory);
-        // STRING: TH07 0x00496f08
+        g_Supervisor.cfg = *(GameConfiguration *)configFile;
+        free(configFile);
+
         bgm = CreateFileA("./thbgm.dat", GENERIC_READ, 1, NULL, 3, 0x8000080, NULL);
         if (bgm != INVALID_HANDLE_VALUE)
         {
@@ -1246,85 +1271,31 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
             if (((bgmData[0] != 0x5641575a) || (bgmData[1] != 1)) ||
                 (bgmData[2] != 0x700))
             {
-                // STRING: TH07 0x00496ee4
                 g_GameErrorContext.Fatal("BGM データのバージョンが違います\r\n");
                 return ZUN_ERROR;
             }
         }
-        if (!((((g_Supervisor.cfg.lifeCount < 5) &&
-                (g_Supervisor.cfg.bombCount < 4)) &&
-               (g_Supervisor.cfg.colorMode16bit < 2 &&
-                (g_Supervisor.cfg.musicMode < (MUSIC_MIDI | MUSIC_WAV) &&
-                 (g_Supervisor.cfg.defaultDifficulty < 6)))) &&
-              (g_Supervisor.cfg.playSounds < 2 &&
-               ((((g_Supervisor.cfg.windowed < 2 &&
-                   (g_Supervisor.cfg.frameskipConfig < 3)) &&
-                  (g_Supervisor.cfg.effectQuality <
-                   (QUALITY_BEAUTIFUL | QUALITY_MEDIUM))) &&
-                 (g_Supervisor.cfg.slowMode < 2 &&
-                  (g_Supervisor.cfg.shotSlow < 2))) &&
-                (g_Supervisor.cfg.version == 0x70002 &&
-                 (g_LastFileSize == sizeof(GameConfiguration)))))))
+        if (!(g_Supervisor.cfg.lifeCount < 5 &&
+              g_Supervisor.cfg.bombCount < 4 &&
+              g_Supervisor.cfg.colorMode16bit < 2 &&
+              g_Supervisor.cfg.musicMode < 3 &&
+              g_Supervisor.cfg.defaultDifficulty < 6 &&
+              g_Supervisor.cfg.playSounds < 2 &&
+              g_Supervisor.cfg.windowed < 2 &&
+              g_Supervisor.cfg.frameskipConfig < 3 &&
+              g_Supervisor.cfg.effectQuality < 3 &&
+              g_Supervisor.cfg.slowMode < 2 &&
+              g_Supervisor.cfg.shotSlow < 2 &&
+              g_Supervisor.cfg.version == 0x70002 &&
+              g_LastFileSize == sizeof(GameConfiguration)))
         {
             // STRING: TH07 0x00496e88
             g_GameErrorContext.Log("コンフィグデータが異常でしたので再初期化しました\r\n");
-            g_Supervisor.cfg.lifeCount = 2;
-            g_Supervisor.cfg.bombCount = 3;
-            g_Supervisor.cfg.colorMode16bit = 0xff;
-            g_Supervisor.cfg.version = 0x70002;
-            g_Supervisor.cfg.padAxisX = 600;
-            g_Supervisor.cfg.padAxisY = 600;
-            bgm2 =
-                CreateFileA("./thbgm.dat", GENERIC_READ, 1, NULL, 3, 0x8000080, NULL);
-            if (bgm2 == INVALID_HANDLE_VALUE)
-            {
-                g_Supervisor.cfg.musicMode = MUSIC_MIDI;
-                // STRING: TH07 0x00496ebc
-                Supervisor::DebugPrint2("wave データが無いので、midi にします\r\n");
-            }
-            else
-            {
-                ReadFile(bgm2, bgm2Data, 0x10, &bytesRead2, NULL);
-                CloseHandle(bgm2);
-                if (((bgm2Data[0] != 0x5641575a) || (bgm2Data[1] != 1)) ||
-                    (bgm2Data[2] != 0x700))
-                {
-                    g_GameErrorContext.Fatal("BGM データのバージョンが違います\r\n");
-                    return ZUN_ERROR;
-                }
-                g_Supervisor.cfg.musicMode = MUSIC_WAV;
-            }
-            g_Supervisor.cfg.playSounds = 1;
-            g_Supervisor.cfg.defaultDifficulty = (u8)DIFF_NORMAL;
-            g_Supervisor.cfg.windowed = 0;
-            g_Supervisor.cfg.frameskipConfig = 0;
-            g_Supervisor.cfg.controllerMapping.shootButton =
-                g_ControllerMapping.shootButton;
-            g_Supervisor.cfg.controllerMapping.bombButton =
-                g_ControllerMapping.bombButton;
-            g_Supervisor.cfg.controllerMapping.focusButton =
-                g_ControllerMapping.focusButton;
-            g_Supervisor.cfg.controllerMapping.menuButton =
-                g_ControllerMapping.menuButton;
-            g_Supervisor.cfg.controllerMapping.upButton =
-                g_ControllerMapping.upButton;
-            g_Supervisor.cfg.controllerMapping.downButton =
-                g_ControllerMapping.downButton;
-            g_Supervisor.cfg.controllerMapping.leftButton =
-                g_ControllerMapping.leftButton;
-            g_Supervisor.cfg.controllerMapping.rightButton =
-                g_ControllerMapping.rightButton;
-            g_Supervisor.cfg.controllerMapping.skipButton =
-                g_ControllerMapping.skipButton;
-            g_Supervisor.cfg.effectQuality = QUALITY_BEAUTIFUL;
-            g_Supervisor.cfg.slowMode = 0;
-            g_Supervisor.cfg.shotSlow = 1;
+            goto init;
         }
     }
-    g_Supervisor.cfg.opts = g_Supervisor.cfg.opts | 1;
     g_ControllerMapping = g_Supervisor.cfg.controllerMapping;
-    g_ControllerMapping.skipButton =
-        g_Supervisor.cfg.controllerMapping.skipButton;
+    g_Supervisor.cfg.opts = g_Supervisor.cfg.opts | 1;
     if ((this->cfg.opts >> 1 & 1) != 0)
     {
         // STRING: TH07 0x00496e64
@@ -1340,7 +1311,7 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
         // STRING: TH07 0x00496e20
         g_GameErrorContext.Log("16Bit のテクスチャの使用を強制します\r\n");
     }
-    if ((this->cfg.opts >> 3 & 1) != 0 || (this->cfg.opts >> 4 & 1) != 0)
+    if ((this->cfg.opts >> 4 & 1) | (this->cfg.opts >> 3 & 1))
     {
         // STRING: TH07 0x00496dfc
         g_GameErrorContext.Log("バックバッファの消去を強制します\r\n");
@@ -1399,11 +1370,7 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
         g_Supervisor.vsyncEnabled = 1;
     }
     if (FileSystem::WriteDataToFile(configFilename, &g_Supervisor.cfg,
-                                    sizeof(GameConfiguration)) == 0)
-    {
-        return ZUN_SUCCESS;
-    }
-    else
+                                    sizeof(GameConfiguration)) != 0)
     {
         // STRING: TH07 0x00496c78
         g_GameErrorContext.Fatal("ファイルが書き出せません %s\r\n", configFilename);
@@ -1411,12 +1378,15 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
         g_GameErrorContext.Fatal("フォルダが書込み禁止属性になっているか、ディスクがいっぱいいっぱいになってませんか？\r\n");
         return ZUN_ERROR;
     }
+
+    return ZUN_SUCCESS;
 }
 
+#pragma var_order(pathext, pathbuf)
 // FUNCTION: TH07 0x00439dd0
 i32 Supervisor::LoadAudio(i32 idx, const char *path)
 {
-    char pathbuf[260];
+    char pathbuf[256];
     char *pathext;
 
     if (g_Supervisor.cfg.musicMode == MUSIC_MIDI)
@@ -1449,12 +1419,11 @@ ZunResult Supervisor::PlayLoadedAudio(i32 idx)
     {
         if (g_Supervisor.midiOutput != NULL)
         {
-            g_Supervisor.midiOutput->StopPlayback();
-            g_Supervisor.midiOutput->ParseFile(idx);
-            g_Supervisor.midiOutput->Play();
+            g_Supervisor.midiOutput->PlayLoaded(idx);
         }
+        return ZUN_SUCCESS;
     }
-    else if (g_Supervisor.cfg.musicMode == MUSIC_WAV)
+    if (g_Supervisor.cfg.musicMode == MUSIC_WAV)
     {
         if ((g_Supervisor.cfg.opts >> 0xd & 1) != 0)
         {
@@ -1465,33 +1434,35 @@ ZunResult Supervisor::PlayLoadedAudio(i32 idx)
     return ZUN_SUCCESS;
 }
 
+#pragma var_order(local_8, local_10c)
 // FUNCTION: TH07 0x00439f4d
 ZunResult Supervisor::PlayAudio(const char *path)
 {
-    char local_10c[260];
+    char local_10c[256];
     char *local_8;
 
     if (g_Supervisor.cfg.musicMode == MUSIC_MIDI)
     {
         if (g_Supervisor.midiOutput != NULL)
         {
-            g_Supervisor.midiOutput->StopPlayback();
-            g_Supervisor.midiOutput->LoadFile(path);
-            g_Supervisor.midiOutput->Play();
+            g_Supervisor.midiOutput->Play(path);
         }
     }
     else
     {
-        if (g_Supervisor.cfg.musicMode != MUSIC_WAV)
+        if (g_Supervisor.cfg.musicMode == MUSIC_WAV)
+        {
+            strcpy(local_10c, path);
+            local_8 = strrchr(local_10c, 0x2e);
+            local_8[1] = 'w';
+            local_8[2] = 'a';
+            local_8[3] = 'v';
+            g_SoundPlayer.PushCommand(AUDIO_START, -1, local_10c);
+        }
+        else
         {
             return ZUN_ERROR;
         }
-        strcpy(local_10c, path);
-        local_8 = strrchr(local_10c, 0x2e);
-        local_8[1] = 'w';
-        local_8[2] = 'a';
-        local_8[3] = 'v';
-        g_SoundPlayer.PushCommand(AUDIO_START, -1, local_10c);
     }
     return ZUN_SUCCESS;
 }
@@ -1508,17 +1479,20 @@ ZunResult Supervisor::StopAudio()
     }
     else
     {
-        if (g_Supervisor.cfg.musicMode != MUSIC_WAV)
+        if (g_Supervisor.cfg.musicMode == MUSIC_WAV)
         {
-            return ZUN_ERROR;
-        }
-        if ((g_Supervisor.cfg.opts >> 0xd & 1) == 0)
-        {
-            g_SoundPlayer.PushCommand(AUDIO_STOP, 0, "dummy");
+            if ((g_Supervisor.cfg.opts >> 0xd & 1) != 0)
+            {
+                g_SoundPlayer.PushCommand(AUDIO_SHUTDOWN, 0, "dummy");
+            }
+            else
+            {
+                g_SoundPlayer.PushCommand(AUDIO_STOP, 0, "dummy");
+            }
         }
         else
         {
-            g_SoundPlayer.PushCommand(AUDIO_SHUTDOWN, 0, "dummy");
+            return ZUN_ERROR;
         }
     }
     return ZUN_SUCCESS;
@@ -1527,37 +1501,38 @@ ZunResult Supervisor::StopAudio()
 // FUNCTION: TH07 0x0043a0d6
 i32 Supervisor::FadeOutMusic(f32 musicFadeFrames)
 {
-    const char *arg2;
     f32 local_8;
 
     if (g_Supervisor.cfg.musicMode == MUSIC_MIDI)
     {
         if (g_Supervisor.midiOutput != NULL)
         {
-            g_Supervisor.midiOutput->SetFadeOut(musicFadeFrames * 1000.0f);
+            g_Supervisor.midiOutput->SetFadeOut(1000.0f * musicFadeFrames);
         }
     }
     else
     {
-        if (g_Supervisor.cfg.musicMode != MUSIC_WAV)
+        if (g_Supervisor.cfg.musicMode == MUSIC_WAV)
         {
-            return -1;
-        }
-        if (this->effectiveFramerateMultiplier == 0.0f)
-        {
-            local_8 = musicFadeFrames;
-        }
-        else if (this->effectiveFramerateMultiplier <= 1.0f)
-        {
-            local_8 = musicFadeFrames / this->effectiveFramerateMultiplier;
+            if (this->effectiveFramerateMultiplier == 0.0f)
+            {
+                local_8 = musicFadeFrames;
+            }
+            else if (this->effectiveFramerateMultiplier > 1.0f)
+            {
+                local_8 = musicFadeFrames;
+            }
+            else
+            {
+                local_8 = musicFadeFrames / this->effectiveFramerateMultiplier;
+            }
+            // STRING: TH07 0x00496c1e
+            g_SoundPlayer.PushCommand(AUDIO_FADEOUT, local_8, "");
         }
         else
         {
-            local_8 = musicFadeFrames;
+            return -1;
         }
-        // STRING: TH07 0x00496c1e
-        arg2 = "";
-        g_SoundPlayer.PushCommand(AUDIO_FADEOUT, local_8, arg2);
     }
     return 0;
 }
@@ -1580,30 +1555,26 @@ i32 Supervisor::CanSaveReplay()
 HRESULT Supervisor::EnableFog()
 {
     g_AnmManager->Flush();
-    if (this->fogEnabled == 1)
-    {
-        return 0;
-    }
-    else
+    if (this->fogEnabled != 1)
     {
         this->fogEnabled = 1;
         return this->d3dDevice->SetRenderState(D3DRS_FOGENABLE, 1);
     }
+
+    return 0;
 }
 
 // FUNCTION: TH07 0x0043a207
 HRESULT Supervisor::DisableFog()
 {
     g_AnmManager->Flush();
-    if (this->fogEnabled == 0)
-    {
-        return 0;
-    }
-    else
+    if (this->fogEnabled != 0)
     {
         this->fogEnabled = 0;
         return this->d3dDevice->SetRenderState(D3DRS_FOGENABLE, 0);
     }
+
+    return 0;
 }
 
 // FUNCTION: TH07 0x0043a24e
@@ -1613,33 +1584,38 @@ void Supervisor::SetRenderState(D3DRENDERSTATETYPE stateType, DWORD param_2)
     this->d3dDevice->SetRenderState(stateType, param_2);
 }
 
+#pragma var_order(time, timeSinceStartup)
 // FUNCTION: TH07 0x0043a27f
 void Supervisor::UpdateStartupTime()
 {
-    DWORD time = timeGetTime();
+    u32 timeSinceStartup;
+    DWORD time;
+
+    time = timeGetTime();
     if (time < this->startupTimeForMenuMusic)
     {
         this->startupTimeForMenuMusic = 0;
     }
-    u32 timeSinceStartup = time - this->startupTimeForMenuMusic;
+    timeSinceStartup = time - this->startupTimeForMenuMusic;
     g_GameManager.plst.totalHours += timeSinceStartup / 3600000;
     timeSinceStartup %= 3600000;
     g_GameManager.plst.totalMinutes += timeSinceStartup / 60000;
     timeSinceStartup %= 60000;
     g_GameManager.plst.totalSeconds += timeSinceStartup / 1000;
-    g_GameManager.plst.totalMilliseconds += timeSinceStartup % 1000;
-    if (999 < g_GameManager.plst.totalMilliseconds)
+    timeSinceStartup %= 1000;
+    g_GameManager.plst.totalMilliseconds += timeSinceStartup;
+    if (g_GameManager.plst.totalMilliseconds >= 1000)
     {
         g_GameManager.plst.totalSeconds +=
             g_GameManager.plst.totalMilliseconds / 1000;
         g_GameManager.plst.totalMilliseconds %= 1000;
     }
-    if (g_GameManager.plst.totalSeconds > 60)
+    if (g_GameManager.plst.totalSeconds >= 60)
     {
         g_GameManager.plst.totalMinutes += g_GameManager.plst.totalSeconds / 60;
         g_GameManager.plst.totalSeconds %= 60;
     }
-    if (g_GameManager.plst.totalMinutes > 60)
+    if (g_GameManager.plst.totalMinutes >= 60)
     {
         g_GameManager.plst.totalHours += g_GameManager.plst.totalMinutes / 60;
         g_GameManager.plst.totalMinutes %= 60;
@@ -1647,33 +1623,38 @@ void Supervisor::UpdateStartupTime()
     this->startupTimeForMenuMusic = time;
 }
 
+#pragma var_order(time, timeSinceLastTime)
 // FUNCTION: TH07 0x0043a3f4
 void Supervisor::UpdateTime()
 {
-    DWORD time = timeGetTime();
+    u32 timeSinceLastTime;
+    DWORD time;
+
+    time = timeGetTime();
     if (time < this->currentTime)
     {
         this->currentTime = 0;
     }
-    u32 timeSinceLastTime = time - this->currentTime;
+    timeSinceLastTime = time - this->currentTime;
     g_GameManager.plst.gameHours += timeSinceLastTime / 3600000;
     timeSinceLastTime %= 3600000;
     g_GameManager.plst.gameMinutes += timeSinceLastTime / 60000;
     timeSinceLastTime %= 60000;
     g_GameManager.plst.gameSeconds += timeSinceLastTime / 1000;
-    g_GameManager.plst.gameMilliseconds += timeSinceLastTime % 1000;
-    if (999 < g_GameManager.plst.gameMilliseconds)
+    timeSinceLastTime %= 1000;
+    g_GameManager.plst.gameMilliseconds += timeSinceLastTime;
+    if (g_GameManager.plst.gameMilliseconds >= 1000)
     {
         g_GameManager.plst.gameSeconds +=
             g_GameManager.plst.gameMilliseconds / 1000;
         g_GameManager.plst.gameMilliseconds %= 1000;
     }
-    if (g_GameManager.plst.gameSeconds > 60)
+    if (g_GameManager.plst.gameSeconds >= 60)
     {
         g_GameManager.plst.gameMinutes += g_GameManager.plst.gameSeconds / 60;
         g_GameManager.plst.gameSeconds %= 60;
     }
-    if (g_GameManager.plst.gameMinutes > 60)
+    if (g_GameManager.plst.gameMinutes >= 60)
     {
         g_GameManager.plst.gameHours += g_GameManager.plst.gameMinutes / 60;
         g_GameManager.plst.gameMinutes %= 60;

@@ -462,13 +462,13 @@ i32 EffectManager::InitRandomDirWithSpeed(Effect *effect)
     f32 local_8;
 
     // double intentionally used here, strangely
-    if (effect->custom.x <= -990.0)
+    if (effect->custom.x > -990.0)
     {
-        local_8 = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
+        local_8 = utils::AddNormalizeAngle(effect->custom.x, 0.0f);
     }
     else
     {
-        local_8 = utils::AddNormalizeAngle(effect->custom.x, 0.0f);
+        local_8 = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
     }
     effect->emitterPosition = effect->pos1;
     effect->emitterPosition.z = 0.0f;

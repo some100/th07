@@ -69,15 +69,25 @@ void EnemyEclInstr::ExInsAliceCurveBullets(Enemy *enemy, EclRawInstr *instr)
     bullet = g_BulletManager.bullets;
     BombEffects::RegisterChain(1, 0x1e, 0xc, 0, 0);
     BombEffects::RegisterChain(3, 4, 3, 0x80ffcfcf, 0);
-    for (i = 0; i < 0x400; i++)
+    for (i = 0; i < 0x400; i++, bullet++)
     {
-        if (((((bullet->state != BULLET_INACTIVE) &&
-               (bullet->state != BULLET_DESPAWN)) &&
-              (bullet->sprites.spriteBullet.sprite != NULL)) &&
-             (bullet->state2 == 0 &&
-              (instr->args[1].i != 1 || (bullet->spriteOffset == 8)))) &&
-            (instr->args[1].i != 2 || (bullet->spriteOffset == 4)))
+        if (bullet->state == BULLET_INACTIVE || bullet->state == BULLET_DESPAWN)
         {
+            continue;
+        }
+
+        if (bullet->sprites.spriteBullet.sprite != NULL && bullet->state2 == 0)
+        {
+            if (instr->args[1].i == 1 && (bullet->spriteOffset != 8))
+            {
+                continue;
+            }
+
+            if (instr->args[1].i == 2 && (bullet->spriteOffset != 4))
+            {
+                continue;
+            }
+
             if (bullet->spriteOffset == 2)
             {
                 local_10 = -ZUN_PI / (g_Rng.GetRandomFloatInRange(60.0f) + 180.0f);
@@ -106,7 +116,6 @@ void EnemyEclInstr::ExInsAliceCurveBullets(Enemy *enemy, EclRawInstr *instr)
             }
             bullet->state2 = 1;
         }
-        bullet = bullet + 1;
     }
 }
 

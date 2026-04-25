@@ -258,44 +258,52 @@ void BombData::BombReimuACalc(Player *player)
     }
 }
 
+#pragma var_order(vm, i, subInfo)
 // FUNCTION: TH07 0x00408e10
 void BombData::BombReimuADraw(Player *player)
 {
     PlayerBombSubInfo *subInfo;
     i32 i;
+    AnmVm *vm;
 
     DarkenViewport(player);
-    subInfo = player->bombInfo.subInfo;
-    for (i = 0; i < 8; i++)
+    for (i = 0, subInfo = player->bombInfo.subInfo; i < 8; i++, subInfo++)
     {
-        if (subInfo->state != 0)
+        if (subInfo->state == 0)
         {
-            subInfo->vms[0].pos =
-                subInfo->bombRegionPositions + subInfo->vms[0].offset;
-            subInfo->vms[0].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-            subInfo->vms[0].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
-            subInfo->vms[0].pos.z = 0.0f;
-            g_AnmManager->DrawNoRotation(&subInfo->vms[0]);
-            subInfo->vms[1].pos =
-                subInfo->bombRegionPositions + subInfo->vms[1].offset;
-            subInfo->vms[1].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-            subInfo->vms[1].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
-            subInfo->vms[1].pos.z = 0.0f;
-            g_AnmManager->DrawNoRotation(&subInfo->vms[1]);
-            subInfo->vms[2].pos =
-                subInfo->bombRegionPositions + subInfo->vms[2].offset;
-            subInfo->vms[2].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-            subInfo->vms[2].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
-            subInfo->vms[2].pos.z = 0.0f;
-            g_AnmManager->DrawNoRotation(&subInfo->vms[2]);
-            subInfo->vms[3].pos =
-                subInfo->bombRegionPositions + subInfo->vms[3].offset;
-            subInfo->vms[3].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-            subInfo->vms[3].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
-            subInfo->vms[3].pos.z = 0.0f;
-            g_AnmManager->DrawNoRotation(&subInfo->vms[3]);
+            continue;
         }
-        subInfo = subInfo + 1;
+
+        vm = subInfo->vms;
+
+        vm->pos =
+            subInfo->bombRegionPositions + vm->offset;
+        vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
+        vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
+        vm->pos.z = 0.0f;
+        g_AnmManager->DrawNoRotation(vm);
+        vm++;
+        vm->pos =
+            subInfo->bombRegionPositions + vm->offset;
+        vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
+        vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
+        vm->pos.z = 0.0f;
+        g_AnmManager->DrawNoRotation(vm);
+        vm++;
+        vm->pos =
+            subInfo->bombRegionPositions + vm->offset;
+        vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
+        vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
+        vm->pos.z = 0.0f;
+        g_AnmManager->DrawNoRotation(vm);
+        vm++;
+        vm->pos =
+            subInfo->bombRegionPositions + vm->offset;
+        vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
+        vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
+        vm->pos.z = 0.0f;
+        g_AnmManager->DrawNoRotation(vm);
+        vm++;
     }
 }
 
@@ -476,6 +484,7 @@ void BombData::BombReimuACalcFocus(Player *player)
     }
 }
 
+#pragma var_order(vm, i)
 // FUNCTION: TH07 0x00409990
 void BombData::BombReimuADrawFocus(Player *player)
 {
@@ -485,33 +494,31 @@ void BombData::BombReimuADrawFocus(Player *player)
     DarkenViewport(player);
     for (i = 0; i < 8; i++)
     {
-        if (player->bombInfo.subInfo[i].state != 0)
+        if (player->bombInfo.subInfo[i].state == 0)
         {
-            vm = player->bombInfo.subInfo[i].vms;
-            vm->pos = player->bombInfo.subInfo[i].bombRegionPositions + vm->offset;
-            vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-            vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
-            vm->pos.z = 0.0f;
-            g_AnmManager->DrawNoRotation(&vm[0]);
-            vm[1].pos =
-                player->bombInfo.subInfo[i].bombRegionPositions + vm[1].offset;
-            vm[1].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-            vm[1].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
-            vm[1].pos.z = 0.0f;
-            g_AnmManager->DrawNoRotation(&vm[1]);
-            vm[2].pos =
-                player->bombInfo.subInfo[i].bombRegionPositions + vm[2].offset;
-            vm[2].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-            vm[2].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
-            vm[2].pos.z = 0.0f;
-            g_AnmManager->DrawNoRotation(&vm[2]);
-            vm[3].pos =
-                player->bombInfo.subInfo[i].bombRegionPositions + vm[3].offset;
-            vm[3].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-            vm[3].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
-            vm[3].pos.z = 0.0f;
-            g_AnmManager->DrawNoRotation(&vm[3]);
+            continue;
         }
+
+        vm = player->bombInfo.subInfo[i].vms;
+        vm->pos = player->bombInfo.subInfo[i].bombRegionPositions + vm->offset;
+        player->SetToTopLeftPos(vm);
+        g_AnmManager->DrawNoRotation(vm);
+        vm++;
+        vm->pos =
+            player->bombInfo.subInfo[i].bombRegionPositions + vm->offset;
+        player->SetToTopLeftPos(vm);
+        g_AnmManager->DrawNoRotation(vm);
+        vm++;
+        vm->pos =
+            player->bombInfo.subInfo[i].bombRegionPositions + vm->offset;
+        player->SetToTopLeftPos(vm);
+        g_AnmManager->DrawNoRotation(vm);
+        vm++;
+        vm->pos =
+            player->bombInfo.subInfo[i].bombRegionPositions + vm->offset;
+        player->SetToTopLeftPos(vm);
+        g_AnmManager->DrawNoRotation(vm);
+        vm++;
     }
 }
 

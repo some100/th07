@@ -134,6 +134,7 @@ address|text|type
 00496e88|コンフィグデータが異常でしたので再初期化しました\r\n|string
 00496ebc|wave データが無いので、midi にします\r\n|string
 00496ee4|BGM データのバージョンが違います\r\n|string
+00496f08|./thbgm.dat|string
 00496f14|コンフィグデータが見つからないので初期化しました\r\n|string
 00496f48|error ? mother.cpp\r\n|string
 00496f60|snapShotScreen : 確保しくり\r\n|string

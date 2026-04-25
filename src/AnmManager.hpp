@@ -188,7 +188,6 @@ struct AnmManager
 
     // FUNCTION: TH07 0x00404f30
     void ExecuteAnmIdx(AnmVm *vm, i32 anmFileIdx)
-
     {
         vm->anmFileIdx = anmFileIdx;
         vm->pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -200,7 +199,6 @@ struct AnmManager
 
     // FUNCTION: TH07 0x00433f20
     void ReleaseSurfaces()
-
     {
         for (i32 i = 0; i < 0x20; i++)
         {
@@ -276,6 +274,31 @@ struct AnmManager
     void SetZWriteDisable(u8 value)
     {
         this->currentZWriteDisable = value;
+    }
+
+    void SetCameraMode(u8 value)
+    {
+        this->currentCameraMode = value;
+    }
+
+    void SetScriptTicks(i32 value)
+    {
+        this->scriptTicksThisFrame = value;
+    }
+
+    void SetRenderStateChanges(i32 value)
+    {
+        this->renderStateChangesThisFrame = value;
+    }
+
+    void SetScriptsExecuted(i32 value)
+    {
+        this->scriptsExecutedThisFrame = value;
+    }
+    
+    void SetFlushes(i32 value)
+    {
+        this->flushesThisFrame = value;
     }
 
     ZunColor color;

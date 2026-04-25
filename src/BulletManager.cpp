@@ -732,6 +732,7 @@ Laser *BulletManager::SpawnLaserPattern(EnemyLaserShooter *laserShooter)
         }
 
         g_AnmManager->SetAnmIdxAndExecuteScript(&laser->vm0, laserShooter->sprite + 0x20a);
+        AnInlineFunctionThatAllocates4BytesAndNothingElse();
         g_AnmManager->SetActiveSprite(&laser->vm0,
                                       (i32)laser->vm0.activeSpriteIdx +
                                           (i32)laserShooter->spriteOffset);
@@ -824,7 +825,11 @@ LAB_004252d1:
 // FUNCTION: TH07 0x00425310
 void Bullet::UpdateBulletTargetAngle()
 {
-    if (this->commandStates[2].timer < this->commandStates[2].duration)
+    if (this->commandStates[2].timer >= this->commandStates[2].duration)
+    {
+        this->exFlags = this->exFlags & 0xffffffdf;
+    }
+    else
     {
         this->angle = utils::AddNormalizeAngle(
             this->angle, g_Supervisor.effectiveFramerateMultiplier *
@@ -834,10 +839,6 @@ void Bullet::UpdateBulletTargetAngle()
                       this->speed;
         AngleToVector(&this->velocity, this->angle,
                       g_Supervisor.effectiveFramerateMultiplier * this->speed);
-    }
-    else
-    {
-        this->exFlags = this->exFlags & 0xffdf;
     }
     this->commandStates[2].timer++;
 }
@@ -1526,18 +1527,8 @@ ZunResult BulletManager::AddedCallback(BulletManager *arg)
 // FUNCTION: TH07 0x00427620
 ZunResult BulletManager::DeletedCallback(BulletManager *arg)
 {
-    bool bVar1;
-
-    if (((g_Supervisor.curState == 3) || (g_Supervisor.curState == 0xb)) ||
-        (g_Supervisor.curState == 0xc))
-    {
-        bVar1 = false;
-    }
-    else
-    {
-        bVar1 = true;
-    }
-    if (bVar1)
+    if ((u32)(g_Supervisor.curState != 3 && g_Supervisor.curState != 11 &&
+              g_Supervisor.curState != 12))
     {
         g_AnmManager->ReleaseAnm(0xb);
         g_AnmManager->ReleaseAnm(0xc);
@@ -1614,10 +1605,10 @@ void BulletManager::StopBulletMovement()
 // FUNCTION: TH07 0x004278b0
 BulletCommand *Bullet::AddCommand(i32 command, i32 flag, u32 type)
 {
-    BulletCommand *bulletCommand = this->commands + command;
+    BulletCommand *bulletCommand = &this->commands[command];
     bulletCommand->type = type;
     bulletCommand->flag = flag;
-    this->moreFlags = this->moreFlags | (u16)type;
+    this->moreFlags |= type;
     this->curCmdIdx = 0;
     return bulletCommand;
 }
@@ -1670,7 +1661,7 @@ void EnemyBulletShooter::AddAngleAccelCommand(i32 command, i32 flag,
 // FUNCTION: TH07 0x00427a20
 void EnemyBulletShooter::AddDirChangeCommand(i32 command, i32 flag,
                                              i32 duration, i32 loopCount,
-                                             f32 angle, f32 speed)
+                                             f32 speed, f32 angle)
 {
     BulletCommand *bulletCommand = AddCommand(command, flag, 0x80);
     bulletCommand->duration = duration;

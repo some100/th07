@@ -107,15 +107,15 @@ Firstly, PCB was compiled with debug settings, so you can see that the frame poi
 
 
 Ordered by original stack (left=orig, right=recomp):
-â‡„  ebp - 0x08: ebp - 0x04  this
-âœ“  ebp - 0x04: ebp - 0x04  this
+&#8644;  ebp - 0x08: ebp - 0x04  this
+&#10003;  ebp - 0x04: ebp - 0x04  this
 
 Ordered by recomp stack (left=orig, right=recomp):
-âœ—  ['ebp - 0x08', 'ebp - 0x04']: ebp - 0x04  this
+&#10007;  ['ebp - 0x08', 'ebp - 0x04']: ebp - 0x04  this
 
 Legend:
-â‡„ : This stack variable matches 1:1, but the order of variables is not correct.
-âœ— : This stack variable matches multiple variables in the other binary.
+&#8644; : This stack variable matches 1:1, but the order of variables is not correct.
+&#10007; : This stack variable matches multiple variables in the other binary.
 ? : This stack variable did not appear in the diff. It either matches or only appears in structural mismatches.
 ```
 
@@ -170,7 +170,7 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path) {
   u8 *data = FileSystem::OpenFile(path, 0);
   if (data == NULL) {
     // STRING: TH07 0x00495b30
-    g_GameErrorContext.Fatal("%sãŒèª­ã¿è¾¼ã‚ãªã„ã§ã™ã€‚\r\n", path);
+    g_GameErrorContext.Fatal("%s‚ª“Ç‚Ýž‚ß‚È‚¢‚Å‚·B\r\n", path);
     return ZUN_ERROR;
   } else {
     if (g_Supervisor.d3dDevice->CreateImageSurface(
@@ -503,7 +503,7 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path) {
   u8 *data = FileSystem::OpenFile(path, 0);
   if (data == NULL) {
     // STRING: TH07 0x00495b30
-    g_GameErrorContext.Fatal("%sãŒèª­ã¿è¾¼ã‚ãªã„ã§ã™ã€‚\r\n", path);
+    g_GameErrorContext.Fatal("%s‚ª“Ç‚Ýž‚ß‚È‚¢‚Å‚·B\r\n", path);
     return ZUN_ERROR;
   }
   if (g_Supervisor.d3dDevice->CreateImageSurface(

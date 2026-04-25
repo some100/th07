@@ -435,7 +435,7 @@ ZunResult ReplayManager::RegisterChain(i32 isDemo, const char *replayFilename)
     g_CurFrameGameInput = 0;
     if (g_ReplayManager == NULL)
     {
-        ReplayManager *mgr = new ReplayManager;
+        ReplayManager *mgr = new ReplayManager();
         g_ReplayManager = mgr;
         mgr->data = NULL;
         mgr->isDemo = isDemo;

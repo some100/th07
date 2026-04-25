@@ -16,6 +16,7 @@ address|name|type
 0049526c|IPbg4File|vtable
 0049528c|CStreamingSound|vtable
 00495290|CSound|vtable
+00496c0c|DummyMidiTimer|vtable
 00497260|MidiTimer|vtable
 00497264|MidiOutput|vtable
 0049d9c0|lpCriticalSection_0049d9c0|global

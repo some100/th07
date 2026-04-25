@@ -34,13 +34,11 @@ VertexTex1DiffuseXyz g_PrimitivesToDrawUnknown[4];
 // FUNCTION: TH07 0x0044d3e0
 AnmManager::AnmManager()
 {
-    i32 spriteIndex;
-
     memset(this, 0, sizeof(AnmManager));
 
-    for (spriteIndex = 0; spriteIndex < 0xa00; spriteIndex++)
+    for (i32 i = 0; i < 0xa00; i++)
     {
-        this->sprites[spriteIndex].sourceFileIndex = -1;
+        this->sprites[i].sourceFileIndex = -1;
     }
     g_PrimitivesToDrawVertexBuf[3].w = 1.0f;
     g_PrimitivesToDrawVertexBuf[2].w = g_PrimitivesToDrawVertexBuf[3].w;
@@ -66,6 +64,7 @@ AnmManager::AnmManager()
     g_PrimitivesToDrawNoVertexBuf[2].textureUV.y = 1.0f;
     g_PrimitivesToDrawNoVertexBuf[3].textureUV.x = 1.0f;
     g_PrimitivesToDrawNoVertexBuf[3].textureUV.y = 1.0f;
+
     this->vertexBuffer = NULL;
     this->currentTexture = NULL;
     this->currentBlendMode = 0;
@@ -1341,9 +1340,13 @@ ZunResult AnmManager::DrawBillboard(AnmVm *vm)
     return DrawInner(vm, 0);
 }
 
+#pragma var_order(rot, local_84)
 // FUNCTION: TH07 0x004501a0
 void AnmManager::CalcProjectedTransform(AnmVm *vm)
 {
+    D3DXMATRIX local_84;
+    D3DXMATRIX rot;
+
     if (vm->skipTransform == 0 &&
         (vm->updateScale != 0 || vm->updateRotation != 0))
     {
@@ -1351,7 +1354,6 @@ void AnmManager::CalcProjectedTransform(AnmVm *vm)
         vm->worldTransformMatrix.m[0][0] *= vm->scale.x;
         vm->worldTransformMatrix.m[1][1] *= vm->scale.y;
         vm->updateScale = 0;
-        D3DXMATRIX rot;
         if (vm->rotation.x != 0.0)
         {
             D3DXMatrixRotationX(&rot, vm->rotation.x);
@@ -1373,15 +1375,24 @@ void AnmManager::CalcProjectedTransform(AnmVm *vm)
         vm->updateRotation = 0;
     }
 
-    D3DXMATRIX local_84 = vm->worldTransformMatrix;
-    local_84.m[3][0] =
-        (vm->anchor & 1) == 0
-            ? vm->pos.x
-            : fabsf((vm->sprite->widthPx * vm->scale.x) / 2.0f) + vm->pos.x;
-    local_84.m[3][1] =
-        (vm->anchor & 2) == 0
-            ? vm->pos.y
-            : fabsf((vm->sprite->heightPx * vm->scale.y) / 2.0f) + vm->pos.y;
+    local_84 = vm->worldTransformMatrix;
+    if ((vm->anchor & 1) == 0)
+    {
+        local_84.m[3][0] = vm->pos.x;
+    }
+    else
+    {
+        local_84.m[3][0] = fabsf((vm->sprite->widthPx * vm->scale.x) / 2.0f) + vm->pos.x;
+    }
+
+    if ((vm->anchor & 2) == 0)
+    {
+        local_84.m[3][1] = vm->pos.y;
+    }
+    else
+    {
+        local_84.m[3][1] = fabsf((vm->sprite->heightPx * vm->scale.y) / 2.0f) + vm->pos.y;
+    }
     local_84.m[3][2] = vm->pos.z;
 
     D3DXVec3Project((D3DXVECTOR3 *)&g_PrimitivesToDrawNoVertexBuf[0].pos,
@@ -1689,8 +1700,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
     {
         goto handle_interrupt;
     }
-    while (instr = vm->currentInstruction,
-           instr->time <= vm->currentTimeInScript.GetCurrent())
+    while (instr = vm->currentInstruction, instr->time <= vm->currentTimeInScript.GetCurrent())
     {
         switch (instr->opcode)
         {
@@ -1866,7 +1876,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
 
             vm->currentInstruction =
                 (AnmRawInstr *)((u8 *)instr + instr->size);
-            vm->currentTimeInScript = (i32)vm->currentInstruction->time;
+            vm->currentTimeInScript = vm->currentInstruction->time;
             vm->visible = 1;
             continue;
         case ANM_SET_VISIBILITY:
@@ -2203,14 +2213,12 @@ stop:
             if (vm->interpStartTimes[i] >= vm->interpEndTimes[i].current)
             {
                 t = 1.0f;
-                vm->interpEndTimes[i] = 0;
+                vm->interpEndTimes[i].Initialize(0);
             }
             else
             {
-                t = ((f32)vm->interpStartTimes[i].current +
-                     vm->interpStartTimes[i].subFrame) /
-                    ((f32)vm->interpEndTimes[i].current +
-                     vm->interpEndTimes[i].subFrame);
+                t = ((f32)vm->interpStartTimes[i].current + vm->interpStartTimes[i].subFrame) /
+                    ((f32)vm->interpEndTimes[i].current + vm->interpEndTimes[i].subFrame);
             }
             switch (vm->interpModes[i])
             {
@@ -2625,6 +2633,7 @@ void AnmManager::DrawEndingRect(i32 surfaceIdx, i32 rectX, i32 rectY,
     local_20->Release();
 }
 
+#pragma var_order(srcRect, dstSurface, srcSurface, dstRect)
 // FUNCTION: TH07 0x00454e10
 void AnmManager::TakeScreenshot(i32 textureId, i32 srcLeft, i32 srcTop,
                                 i32 srcWidth, i32 srcHeight, i32 dstLeft,
@@ -2635,39 +2644,42 @@ void AnmManager::TakeScreenshot(i32 textureId, i32 srcLeft, i32 srcTop,
     IDirect3DSurface8 *dstSurface;
     RECT srcRect;
 
-    if (this->textures[textureId] != NULL)
+    if (this->textures[textureId] == NULL)
     {
-        Flush();
-        if (g_Supervisor.d3dDevice->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO,
-                                                  &srcSurface) == 0)
-        {
-            if (this->textures[textureId]->GetSurfaceLevel(0, &dstSurface) == 0)
-            {
-                srcRect.left = srcLeft;
-                srcRect.top = srcTop;
-                srcRect.right = srcLeft + srcWidth;
-                srcRect.bottom = srcTop + srcHeight;
-                dstRect.left = dstLeft;
-                dstRect.top = dstTop;
-                dstRect.right = dstLeft + dstWidth;
-                dstRect.bottom = dstTop + dstHeight;
-                if (D3DXLoadSurfaceFromSurface(dstSurface, 0, &dstRect, srcSurface, 0,
-                                               &srcRect, 0xffffffff, 0) == 0)
-                {
-                    dstSurface->Release();
-                    srcSurface->Release();
-                }
-                else
-                {
-                    dstSurface->Release();
-                    srcSurface->Release();
-                }
-            }
-            else
-            {
-                srcSurface->Release();
-            }
-        }
+        return;
+    }
+
+    Flush();
+    if (g_Supervisor.d3dDevice->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO,
+                                              &srcSurface) != 0)
+    {
+        return;
+    }
+
+    if (this->textures[textureId]->GetSurfaceLevel(0, &dstSurface) != 0)
+    {
+        srcSurface->Release();
+        return;
+    }
+
+    srcRect.left = srcLeft;
+    srcRect.top = srcTop;
+    srcRect.right = srcLeft + srcWidth;
+    srcRect.bottom = srcTop + srcHeight;
+    dstRect.left = dstLeft;
+    dstRect.top = dstTop;
+    dstRect.right = dstLeft + dstWidth;
+    dstRect.bottom = dstTop + dstHeight;
+    if (D3DXLoadSurfaceFromSurface(dstSurface, 0, &dstRect, srcSurface, 0,
+                                   &srcRect, 0xffffffff, 0) != 0)
+    {
+        dstSurface->Release();
+        srcSurface->Release();
+    }
+    else
+    {
+        dstSurface->Release();
+        srcSurface->Release();
     }
 }
 
@@ -2713,7 +2725,7 @@ void AnmManager::CopyTexture(i32 param1, i32 param2, RECT *param3, RECT *param4)
 // FUNCTION: TH07 0x00455030
 void AnmManager::SetInterruptActiveVms(AnmVm *vm, i32 vmCount, i16 interrupt)
 {
-    bool bVar1;
+    i32 bVar1;
 
     while (vmCount != 0)
     {
@@ -2812,8 +2824,17 @@ ZunResult AnmManager::DrawTriangleStrip(AnmVm *vm,
                                         VertexTex1DiffuseXyzrwh *vertices,
                                         i32 param3)
 {
-    if (vm->visible == 0 || vm->active == 0 ||
-        vm->color.bytes.a == 0)
+    if (vm->visible == 0)
+    {
+        return ZUN_ERROR;
+    }
+
+    if (vm->active == 0)
+    {
+        return ZUN_ERROR;
+    }
+
+    if (vm->color.bytes.a == 0)
     {
         return ZUN_ERROR;
     }

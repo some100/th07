@@ -286,30 +286,28 @@ ZunResult MidiOutput::ParseFile(i32 fileIdx)
         DebugPrint("error : ‚Ü‚¾MIDI‚ª“Ç‚Ýž‚Ü‚ê‚Ä‚¢‚È‚¢‚Ì‚ÉÄ¶‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚é\r\n");
         return ZUN_ERROR;
     }
-    else
+
+    hdrLength = Ntohl(fileData->length);
+    currentCursor = ((u8 *)fileData + 8 + hdrLength);
+    this->format = Ntohs(fileData->format);
+    this->divisions = Ntohs(fileData->divisions);
+    this->numTracks = Ntohs(fileData->numTracks);
+    this->tracks = (MidiTrack *)malloc(this->numTracks << 5);
+    memset(this->tracks, 0, this->numTracks * sizeof(MidiTrack));
+    for (i = 0; i < this->numTracks; i++)
     {
-        hdrLength = Ntohl(fileData->length);
-        currentCursor = ((u8 *)fileData + 8 + hdrLength);
-        this->format = Ntohs(fileData->format);
-        this->divisions = Ntohs(fileData->divisions);
-        this->numTracks = Ntohs(fileData->numTracks);
-        this->tracks = (MidiTrack *)malloc(this->numTracks << 5);
-        memset(this->tracks, 0, this->numTracks * sizeof(MidiTrack));
-        for (i = 0; i < this->numTracks; i++)
-        {
-            trackLength = Ntohl(*(u32 *)(currentCursor + 4));
-            this->tracks[i].trackLength = trackLength;
-            this->tracks[i].trackData = (u8 *)malloc(trackLength);
-            this->tracks[i].trackPlaying = 1;
-            memcpy(this->tracks[i].trackData, currentCursor + 8, trackLength);
-            currentCursor = currentCursor + 8 + trackLength;
-        }
-        this->tempo = 1000000;
-        this->fileIdx = fileIdx;
-        // STRING: TH07 0x00497280
-        DebugPrint(" midi open %d\n", fileIdx);
-        return ZUN_SUCCESS;
+        trackLength = Ntohl(*(u32 *)(currentCursor + 4));
+        this->tracks[i].trackLength = trackLength;
+        this->tracks[i].trackData = (u8 *)malloc(trackLength);
+        this->tracks[i].trackPlaying = 1;
+        memcpy(this->tracks[i].trackData, currentCursor + 8, trackLength);
+        currentCursor = currentCursor + 8 + trackLength;
     }
+    this->tempo = 1000000;
+    this->fileIdx = fileIdx;
+    // STRING: TH07 0x00497280
+    DebugPrint(" midi open %d\n", fileIdx);
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x004369c0
@@ -699,7 +697,7 @@ void MidiOutput::FadeOutSetVolume(i32 vol)
     }
 }
 
-void MidiTimer::OnTimerElapsed()
+void DummyMidiTimer::OnTimerElapsed()
 {
     UpdatePerfCounter();
 }

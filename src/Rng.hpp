@@ -23,6 +23,11 @@ struct Rng
         return this->GetRandomFloat() * range;
     }
 
+    void SetSeed(u16 newSeed)
+    {
+        this->seed = newSeed;
+    }
+
     u16 seed;
     u16 seedBackup;
     u32 generationCount;

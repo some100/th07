@@ -141,36 +141,40 @@ void Gui::CopyTemplateSpriteToSprite(i32 spriteIdx)
 // FUNCTION: TH07 0x00427e7c
 u32 Gui::OnUpdate(Gui *arg)
 {
-    if (g_GameManager.isTimeStopped == 0)
+    if (g_GameManager.isTimeStopped != 0)
     {
-        if (arg->impl->transitionToScoreScreen != 0)
-        {
-            g_Supervisor.curState = 3;
-            arg->impl->transitionToScoreScreen = 0;
-        }
-        arg->UpdateGui();
-        arg->impl->RunMsg();
-        arg->frameCounter = arg->frameCounter + 1;
-        if ((g_GameManager.currentStage == 6) && (arg->frameCounter == 300))
-        {
-            g_Supervisor.PlayLoadedAudio(0);
-        }
-        if (IS_PRESSED_RAW(TH_BUTTON_SKIP) && g_Supervisor.renderSkipFrames < 8)
-        {
-            g_Supervisor.renderSkipFrames = 8;
-        }
+        return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
+
+    if (arg->impl->transitionToScoreScreen != 0)
+    {
+        g_Supervisor.curState = 3;
+        arg->impl->transitionToScoreScreen = 0;
+    }
+    arg->UpdateGui();
+    arg->impl->RunMsg();
+    arg->frameCounter = arg->frameCounter + 1;
+    if ((g_GameManager.currentStage == 6) && (arg->frameCounter == 300))
+    {
+        g_Supervisor.PlayLoadedAudio(0);
+    }
+    if (IS_PRESSED_RAW(TH_BUTTON_SKIP) && g_Supervisor.renderSkipFrames < 8)
+    {
+        g_Supervisor.renderSkipFrames = 8;
+    }
+
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+#pragma var_order(stringPos, local_30)
 // FUNCTION: TH07 0x00427f22
 u32 Gui::OnDraw(Gui *arg)
 {
     char local_30[32];
     D3DXVECTOR3 stringPos;
 
-    (g_AnmManager->offset).y = 0.0f;
-    (g_AnmManager->offset).x = 0.0f;
+    g_AnmManager->offset.y = 0.0f;
+    g_AnmManager->offset.x = 0.0f;
     if (arg->impl->finishedStage != 0)
     {
         stringPos.x = 144.0f;
@@ -201,11 +205,11 @@ u32 Gui::OnDraw(Gui *arg)
         g_AsciiManager.color = 0xffd0d0ff;
         AsciiManager::AddFormatText(&g_AsciiManager, &stringPos, "Cherry = %8d",
                                     arg->impl->clearCherryMax * 10);
-        if ((6 < g_GameManager.currentStage) ||
-            ((g_GameManager.currentStage == 6 &&
-              (g_GameManager.practice == 0)) &&
+        if (g_GameManager.currentStage >= 7 ||
+            (g_GameManager.currentStage == 6 &&
+             g_GameManager.practice == 0 &&
              (g_GameManager.replay == 0 ||
-              (g_ReplayManager->data->head.stageReplayData[4].data != NULL))))
+              g_ReplayManager->data->head.stageReplayData[4].data != NULL)))
         {
             stringPos.y = stringPos.y + 16.0f;
             g_AsciiManager.color = 0xffffff80;
@@ -219,58 +223,56 @@ u32 Gui::OnDraw(Gui *arg)
                                             4000000);
         }
         stringPos.y = stringPos.y + 32.0f;
-        if (g_GameManager.difficulty == DIFF_EASY)
+        switch (g_GameManager.difficulty)
         {
+        case DIFF_EASY:
             g_AsciiManager.color = 0xffff8080;
             AsciiManager::AddFormatText(&g_AsciiManager, &stringPos,
                                         "Easy Rank    *0.5");
-        }
-        else if (g_GameManager.difficulty == DIFF_NORMAL)
-        {
+            break;
+        case DIFF_NORMAL:
             g_AsciiManager.color = 0xffff8080;
             AsciiManager::AddFormatText(&g_AsciiManager, &stringPos,
                                         "Normal Rank  *1.0");
-        }
-        else if (g_GameManager.difficulty == DIFF_HARD)
-        {
+            break;
+        case DIFF_HARD:
             g_AsciiManager.color = 0xffff8080;
             AsciiManager::AddFormatText(&g_AsciiManager, &stringPos,
                                         "Hard Rank    *1.2");
-        }
-        else if (g_GameManager.difficulty == DIFF_LUNATIC)
-        {
+            break;
+        case DIFF_LUNATIC:
             g_AsciiManager.color = 0xffff8080;
             AsciiManager::AddFormatText(&g_AsciiManager, &stringPos,
                                         "Lunatic Rank *1.5");
-        }
-        else if (g_GameManager.difficulty == DIFF_EXTRA)
-        {
+            break;
+        case DIFF_EXTRA:
             g_AsciiManager.color = 0xffff8080;
             AsciiManager::AddFormatText(&g_AsciiManager, &stringPos,
                                         "Extra Rank   *2.0");
-        }
-        else if (g_GameManager.difficulty == DIFF_PHANTASM)
-        {
+            break;
+        case DIFF_PHANTASM:
             g_AsciiManager.color = 0xffff8080;
             AsciiManager::AddFormatText(&g_AsciiManager, &stringPos,
                                         "Phantasm Rank*2.0");
+            break;
         }
         stringPos.y = stringPos.y + 16.0f;
-        if ((g_GameManager.difficulty < 4) && (g_GameManager.practice == 0))
+        if (g_GameManager.difficulty < 4 && g_GameManager.practice == 0)
         {
-            if ((g_GameManager.defaultCfg)->lifeCount == 3)
+            switch (g_GameManager.defaultCfg->lifeCount)
             {
+            case 3:
                 g_AsciiManager.color = 0xffff8080;
                 AsciiManager::AddFormatText(&g_AsciiManager, &stringPos,
                                             "Player Penalty*0.5");
                 stringPos.y = stringPos.y + 16.0f;
-            }
-            else if ((g_GameManager.defaultCfg)->lifeCount == 4)
-            {
+                break;
+            case 4:
                 g_AsciiManager.color = 0xffff8080;
                 AsciiManager::AddFormatText(&g_AsciiManager, &stringPos,
                                             "Player Penalty*0.2");
                 stringPos.y = stringPos.y + 16.0f;
+                break;
             }
         }
         g_AsciiManager.color = 0xffffffff;
@@ -282,71 +284,70 @@ u32 Gui::OnDraw(Gui *arg)
     arg->DrawStageElements();
     arg->DrawGameScene();
     g_AsciiManager.isGui = 1;
-    if ((arg->impl->bonusScore).isShown != 0)
+    if (arg->impl->bonusScore.isShown != 0)
     {
         g_AsciiManager.color = 0xffffff80;
-        AsciiManager::AddFormatText(&g_AsciiManager, &(arg->impl->bonusScore).pos,
-                                    "BONUS %8d", (arg->impl->bonusScore).fmtArg);
+        AsciiManager::AddFormatText(&g_AsciiManager, &arg->impl->bonusScore.pos,
+                                    "BONUS %8d", arg->impl->bonusScore.fmtArg);
         g_AsciiManager.color = 0xffffffff;
     }
-    if ((arg->impl->fullPowerMode).isShown == 1)
+    switch (arg->impl->fullPowerMode.isShown)
     {
+    case 1:
         g_AsciiManager.color = 0xffc0b0ff;
         AsciiManager::AddFormatText(
-            &g_AsciiManager, &(arg->impl->fullPowerMode).pos, "Full Power Mode!");
+            &g_AsciiManager, &arg->impl->fullPowerMode.pos, "Full Power Mode!");
         g_AsciiManager.color = 0xffffffff;
-    }
-    else if ((arg->impl->fullPowerMode).isShown == 2)
-    {
+        break;
+    case 2:
         g_AsciiManager.scale.x = 0.9f;
         g_AsciiManager.scale.y = 1.0f;
         g_AsciiManager.fontSpacing = 0xb;
         g_AsciiManager.color = 0xffe0b0ff;
         AsciiManager::AddFormatText(&g_AsciiManager,
-                                    &(arg->impl->fullPowerMode).pos,
+                                    &arg->impl->fullPowerMode.pos,
                                     "Supernatural Border!!");
         g_AsciiManager.color = 0xffffffff;
         g_AsciiManager.scale.x = 1.0f;
         g_AsciiManager.scale.y = 1.0f;
         g_AsciiManager.fontSpacing = 0xe;
-    }
-    else if ((arg->impl->fullPowerMode).isShown == 3)
-    {
+        break;
+    case 3:
         g_AsciiManager.color = 0xffc0b0ff;
         AsciiManager::AddFormatText(
-            &g_AsciiManager, &(arg->impl->fullPowerMode).pos, "CherryPoint Max!");
+            &g_AsciiManager, &arg->impl->fullPowerMode.pos, "CherryPoint Max!");
         g_AsciiManager.color = 0xffffffff;
-    }
-    else if ((arg->impl->fullPowerMode).isShown == 4)
-    {
+        break;
+    case 4:
         g_AsciiManager.scale.x = 0.9f;
         g_AsciiManager.scale.y = 1.0f;
         g_AsciiManager.fontSpacing = 0xb;
         g_AsciiManager.color = 0xffe0b0ff;
         AsciiManager::AddFormatText(
-            &g_AsciiManager, &(arg->impl->fullPowerMode).pos, "Border Bonus %7d",
-            (arg->impl->fullPowerMode).fmtArg);
+            &g_AsciiManager, &arg->impl->fullPowerMode.pos, "Border Bonus %7d",
+            arg->impl->fullPowerMode.fmtArg);
         g_AsciiManager.color = 0xffffffff;
         g_AsciiManager.scale.x = 1.0f;
         g_AsciiManager.scale.y = 1.0f;
         g_AsciiManager.fontSpacing = 0xe;
+        break;
     }
-    if ((arg->impl->spellCardBonus).isShown != 0)
+    if (arg->impl->spellCardBonus.isShown != 0)
     {
         g_AsciiManager.color = 0xffff0000;
-        (arg->impl->spellCardBonus).pos.x = 88.0f;
-        (arg->impl->spellCardBonus).pos.y = 80.0f;
+        arg->impl->spellCardBonus.pos.x = (384.0f - (strlen("Spell Card Bonus!") * 16.0f)) / 2.0f + 32.0f;
+        arg->impl->spellCardBonus.pos.y = 80.0f;
         AsciiManager::AddFormatText(
-            &g_AsciiManager, &(arg->impl->spellCardBonus).pos, "Spell Card Bonus!");
-        (arg->impl->spellCardBonus).pos.y =
-            (arg->impl->spellCardBonus).pos.y + 16.0f;
-        sprintf(local_30, "+%d", (arg->impl->spellCardBonus).fmtArg);
-        (arg->impl->spellCardBonus).pos.x =
-            (384.0f - (f32)(u32)(strlen(local_30)) * 32.0f) / 2.0f + 32.0f;
+            &g_AsciiManager, &arg->impl->spellCardBonus.pos, "Spell Card Bonus!");
+        arg->impl->spellCardBonus.pos.y =
+            arg->impl->spellCardBonus.pos.y + 16.0f;
+        sprintf(local_30, "+%d", arg->impl->spellCardBonus.fmtArg);
+        arg->impl->spellCardBonus.pos.x =
+            (384.0f - (strlen(local_30) * 32.0f)) / 2.0f + 32.0f;
         g_AsciiManager.scale.x = 2.0f;
         g_AsciiManager.scale.y = 2.0f;
         g_AsciiManager.color = 0xffff8080;
-        g_AsciiManager.AddString(&(arg->impl->spellCardBonus).pos, local_30);
+        g_AsciiManager.AddString(&arg->impl->spellCardBonus.pos, local_30);
         g_AsciiManager.scale.x = 1.0f;
         g_AsciiManager.scale.y = 1.0f;
         g_AsciiManager.color = 0xffffffff;
@@ -802,59 +803,61 @@ void GuiImpl::MsgRead(i32 msgIdx)
 {
     MsgRawHeader *tmpMsgFile;
 
-    if (msgIdx < this->msg.msgFile->numEntries)
+    if (this->msg.msgFile->numEntries <= msgIdx)
     {
-        tmpMsgFile = this->msg.msgFile;
-        memset(&this->msg, 0, sizeof(GuiMsgVm));
-        this->msg.currentMsgIdx = msgIdx;
-        this->msg.msgFile = tmpMsgFile;
-        this->msg.curInstr = (&this->msg.msgFile->entries)[msgIdx];
-        this->msg.dialogueLines[0].anmFileIdx = -1;
-        this->msg.dialogueLines[1].anmFileIdx = -1;
-        this->msg.fontSize = 0xf;
-        this->msg.textColorsA[0].color = 0xe8f0ff;
-        this->msg.textColorsA[1].color = 0xffe8f0;
-        this->msg.textColorsB[0].color = 0;
-        this->msg.textColorsB[1].color = 0;
-        this->msg.dialogueSkippable = 1;
-        g_BulletManager.RemoveAllBullets(1);
-        g_EnemyManager.RemoveAllEnemies(0, 0);
-        g_ItemManager.RemoveAllItems();
-        if (msgIdx % 10 == 0)
+        return;
+    }
+
+    tmpMsgFile = this->msg.msgFile;
+    memset(&this->msg, 0, sizeof(GuiMsgVm));
+    this->msg.currentMsgIdx = msgIdx;
+    this->msg.msgFile = tmpMsgFile;
+    this->msg.curInstr = (&this->msg.msgFile->entries)[msgIdx];
+    this->msg.dialogueLines[0].anmFileIdx = -1;
+    this->msg.dialogueLines[1].anmFileIdx = -1;
+    this->msg.fontSize = 0xf;
+    this->msg.textColorsA[0].color = 0xe8f0ff;
+    this->msg.textColorsA[1].color = 0xffe8f0;
+    this->msg.textColorsB[0].color = 0;
+    this->msg.textColorsB[1].color = 0;
+    this->msg.dialogueSkippable = 1;
+    g_BulletManager.RemoveAllBullets(1);
+    g_EnemyManager.RemoveAllEnemies(0, 0);
+    g_ItemManager.RemoveAllItems();
+    if (msgIdx % 10 == 0)
+    {
+        switch (g_GameManager.currentStage)
         {
-            switch (g_GameManager.currentStage)
-            {
-            case 1:
-                Gui::CopyTemplateSpriteToSprite(0x60f);
-                break;
-            case 2:
-                Gui::CopyTemplateSpriteToSprite(0x611);
-                break;
-            case 3:
-                Gui::CopyTemplateSpriteToSprite(0x613);
-                break;
-            case 4:
-                Gui::CopyTemplateSpriteToSprite(0x615);
-                break;
-            case 5:
-                Gui::CopyTemplateSpriteToSprite(0x617);
-                break;
-            case 6:
-                Gui::CopyTemplateSpriteToSprite(0x619);
-                g_Stage.spellcardVmsIdx = 2;
-                g_BulletManager.itemType = ITEM_STAR;
-                break;
-            case 7:
-                Gui::CopyTemplateSpriteToSprite(0x61b);
-                g_Stage.spellcardVmsIdx = 1;
-                g_Stage.numSpellcardVms = 2;
-                g_BulletManager.itemType = ITEM_STAR;
-                break;
-            case 8:
-                Gui::CopyTemplateSpriteToSprite(0x61d);
-                g_Stage.spellcardVmsIdx = 2;
-                g_BulletManager.itemType = ITEM_STAR;
-            }
+        case 1:
+            Gui::CopyTemplateSpriteToSprite(0x60f);
+            break;
+        case 2:
+            Gui::CopyTemplateSpriteToSprite(0x611);
+            break;
+        case 3:
+            Gui::CopyTemplateSpriteToSprite(0x613);
+            break;
+        case 4:
+            Gui::CopyTemplateSpriteToSprite(0x615);
+            break;
+        case 5:
+            Gui::CopyTemplateSpriteToSprite(0x617);
+            break;
+        case 6:
+            Gui::CopyTemplateSpriteToSprite(0x619);
+            g_Stage.spellcardVmsIdx = 2;
+            g_BulletManager.itemType = ITEM_STAR;
+            break;
+        case 7:
+            Gui::CopyTemplateSpriteToSprite(0x61b);
+            g_Stage.spellcardVmsIdx = 1;
+            g_Stage.numSpellcardVms = 2;
+            g_BulletManager.itemType = ITEM_STAR;
+            break;
+        case 8:
+            Gui::CopyTemplateSpriteToSprite(0x61d);
+            g_Stage.spellcardVmsIdx = 2;
+            g_BulletManager.itemType = ITEM_STAR;
         }
     }
 }
@@ -1263,14 +1266,13 @@ i32 Gui::MsgWait()
     {
         return 0;
     }
-    else if (this->impl->msg.ignoreWaitCounter == 0)
-    {
-        return -1 < this->impl->msg.currentMsgIdx;
-    }
-    else
+
+    if (this->impl->msg.ignoreWaitCounter > 0)
     {
         return 0;
     }
+
+    return this->impl->msg.currentMsgIdx >= 0;
 }
 
 // FUNCTION: TH07 0x0042ad66
@@ -1280,15 +1282,9 @@ i32 Gui::HasCurrentMsgIdx()
     {
         return 0;
     }
-    else if ((this->impl->msg.currentMsgIdx < 0) &&
-             (this->impl->msg.currentMsgIdx != -2))
-    {
-        return 0;
-    }
-    else
-    {
-        return 1;
-    }
+
+    return this->impl->msg.currentMsgIdx >= 0 ||
+           this->impl->msg.currentMsgIdx == -2;
 }
 
 // FUNCTION: TH07 0x0042adab
@@ -1489,11 +1485,11 @@ void Gui::UpdateGui()
         {
             local_10 <<= 1;
         }
-        if ((g_GameManager.defaultCfg)->lifeCount == 3)
+        if (g_GameManager.defaultCfg->lifeCount == 3)
         {
             local_10 = (local_10 * 5) / 10;
         }
-        else if ((g_GameManager.defaultCfg)->lifeCount == 4)
+        else if (g_GameManager.defaultCfg->lifeCount == 4)
         {
             local_10 = (local_10 << 1) / 10;
         }

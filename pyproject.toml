@@ -13,3 +13,6 @@ dependencies = [
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
+
+[tool.uv.sources]
+reccmp = { git = "https://github.com/isledecomp/reccmp" }

@@ -18,6 +18,12 @@ struct Ending
     ZunResult LoadEnding(const char *endFilePath);
     ZunResult ParseEndFile();
     i32 ReadEndFileParameter();
+    
+    // i have no idea why this exists either
+    static void AnInlineFunctionThatAllocates32BytesAndNothingElse()
+    {
+        i32 idk[8];
+    }
 
     ChainElem *calcChain;
     ChainElem *drawChain;

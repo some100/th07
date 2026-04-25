@@ -81,8 +81,17 @@ SOURCES: List[Path] = list(
 )
 
 parser = argparse.ArgumentParser()
-_ = parser.add_argument("--no-icon", action="store_true")
-_ = parser.add_argument("--no-matching", action="store_true")
+_ = parser.add_argument(
+    "--no-icon",
+    action="store_true",
+    help="build without requiring an icon from the original executable",
+)
+_ = parser.add_argument(
+    "--no-matching", action="store_true", help="build without attempting matching"
+)
+_ = parser.add_argument(
+    "--reccmp", action="store_true", help="output reccmp output to index.html"
+)
 args = parser.parse_args()
 
 
@@ -304,6 +313,7 @@ def compile(src: Path) -> Tuple[int, str]:
 
     return returncode, output
 
+
 def needs_compile(src: Path) -> bool:
     obj = OBJ_DIR / src.with_suffix(".obj")
     if not (OBJ_DIR / src).parent.exists():
@@ -317,11 +327,13 @@ def needs_compile(src: Path) -> bool:
         and os.path.getmtime(obj) >= os.path.getmtime(SCRIPT_PATH)
     )
 
+
 def handle_compile_result(result: Tuple[int, str]):
     if result[1] != "":
         print(result[1], flush=True)
     if result[0] != 0:
         sys.exit(1)
+
 
 env = os.environ.copy()
 
@@ -359,7 +371,7 @@ cflags = [
 ]
 
 if args.no_matching:
-  cflags.append("/DNON_MATCHING")
+    cflags.append("/DNON_MATCHING")
 
 lflags = [
     f"-LIBPATH:{conv_path(DX8_PATH / 'lib')}",
@@ -410,3 +422,8 @@ _ = run_program(
     f"/OUT:{out}",
     env=env,
 )
+
+if args.reccmp:
+    _ = subprocess.check_call(
+        ["reccmp-reccmp", "--target", "TH07", "--html", "index.html", "--nolib"]
+    )

@@ -121,7 +121,7 @@ struct Supervisor
     D3DXMATRIX projectionMatrix;
     D3DVIEWPORT8 viewport;
     D3DPRESENT_PARAMETERS presentParameters;
-    MidiTimer *midiTimer;
+    DummyMidiTimer *midiTimer;
     GameConfiguration cfg;
     i32 calcCount;
     i32 wantedState;

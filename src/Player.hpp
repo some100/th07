@@ -3,6 +3,7 @@
 #include "AnmVm.hpp"
 #include "Chain.hpp"
 #include "EffectManager.hpp"
+#include "GameManager.hpp"
 #include "inttypes.hpp"
 
 typedef void (*BombCallback)(struct Player *);
@@ -168,6 +169,13 @@ struct Player
                                         f32 size, i32 payload);
     static void SpawnBullets(Player *player, u32 timer);
     void StartFireBulletTimer();
+
+    inline void SetToTopLeftPos(AnmVm *vm)
+    {
+        vm->pos[0] += g_GameManager.arcadeRegionTopLeftPos.x;
+        vm->pos[1] += g_GameManager.arcadeRegionTopLeftPos.y;
+        vm->pos[2] = 0.0f;
+    }
 
     AnmVm playerSprite;
     AnmVm orbsSprite[3];

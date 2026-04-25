@@ -7,6 +7,7 @@
 #include "GameErrorContext.hpp"
 #include "GameManager.hpp"
 #include "ScreenEffect.hpp"
+#include "Supervisor.hpp"
 
 // GLOBAL: TH07 0x0049f628
 const char *g_BadEndingPaths[3] = {
@@ -536,6 +537,8 @@ ZunResult Ending::DeletedCallback(Ending *arg)
     arg->drawChain = NULL;
     delete arg;
     arg = NULL;
+    g_Supervisor.isInEnding = 0;
+
     return ZUN_SUCCESS;
 }
 
@@ -555,5 +558,6 @@ ZunResult Ending::RegisterChain()
     ending->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     ending->drawChain->arg = ending;
     g_Chain.AddToDrawChain(ending->drawChain, 1);
+    AnInlineFunctionThatAllocates32BytesAndNothingElse();
     return ZUN_SUCCESS;
 }
