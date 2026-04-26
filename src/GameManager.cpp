@@ -132,15 +132,16 @@ i32 GameManager::ByteCsumAccumulator(u8 *param_1, i32 param_2)
 // FUNCTION: TH07 0x0042d7be
 i32 GameManager::ComputeGameIntegrityCsum()
 {
-    return ByteCsumAccumulator((u8 *)g_GameManager.globals->rng1,
-                               (i32)this->globals +
-                                   (0xac - (i32)this->globals->rng1)) +
-           ByteCsumAccumulator((u8 *)g_GameManager.globals->csumData,
-                               sizeof(g_GameManager.globals->csumData)) +
-           ByteCsumAccumulator((u8 *)g_GameManager.defaultCfg,
-                               sizeof(GameConfiguration)) +
-           ByteCsumAccumulator((u8 *)&g_Supervisor.cfg,
-                               sizeof(GameConfiguration));
+    i32 csum = ByteCsumAccumulator((u8 *)g_GameManager.globals->rng1,
+                                   (i32)this->globals +
+                                       0xac - (i32)this->globals->rng1);
+    csum += ByteCsumAccumulator((u8 *)g_GameManager.globals->csumData,
+                                sizeof(g_GameManager.globals->csumData));
+    csum += ByteCsumAccumulator((u8 *)g_GameManager.defaultCfg,
+                                sizeof(GameConfiguration));
+    csum += ByteCsumAccumulator((u8 *)&g_Supervisor.cfg,
+                                sizeof(GameConfiguration));
+    return csum;
 }
 
 // FUNCTION: TH07 0x0042d83a

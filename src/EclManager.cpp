@@ -728,7 +728,7 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
     u32 i;
 
     memcpy(spellcardName, &instr->args[1], sizeof(spellcardName));
-    for (i = 0; i < 0x30; i += 1)
+    for (i = 0; i < 0x30; i++)
     {
         spellcardName[i] = (u8)spellcardName[i] ^ 0xaa;
     }
@@ -736,7 +736,7 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
     g_BulletManager.RemoveAllBullets(1);
     g_Stage.spellCardState = 1;
     g_Stage.ticksSinceSpellcardStarted = 0;
-    for (i = 0; (i32)i < g_Stage.numSpellcardVms; i += 1)
+    for (i = 0; (i32)i < g_Stage.numSpellcardVms; i++)
     {
         g_AnmManager->SetAnmIdxAndExecuteScript(
             &g_Stage.spellcardVms[i], g_Stage.spellcardVmsIdx + i + 0x2dc);

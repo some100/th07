@@ -128,8 +128,8 @@ void BulletManager::SetActiveSpriteByResolution(AnmVm *sprite,
 }
 
 // FUNCTION: TH07 0x00423730
-i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, f32 x,
-                                     f32 y, f32 angle)
+i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x,
+                                     i32 y, f32 angle)
 {
     f32 bulletAngle;
     Bullet *bullet;
@@ -157,7 +157,7 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, f32 x,
         else
         {
             bulletSpeed = bulletProps->speed1 -
-                          ((bulletProps->speed1 - bulletProps->speed2) * y) /
+                          ((bulletProps->speed1 - bulletProps->speed2) * (f32)y) /
                               (f32)(i32)bulletProps->count2;
         }
         switch (bulletProps->aimMode)
@@ -167,14 +167,14 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, f32 x,
             if ((bulletProps->count1 & 1U) == 0)
             {
                 bulletAngle = bulletProps->angle2 * 0.5f +
-                              (f32)((i32)x / 2) * bulletProps->angle2;
+                              (f32)(x / 2) * bulletProps->angle2;
             }
             else
             {
-                bulletAngle = (f32)(((i32)x + 1) / 2) * bulletProps->angle2;
+                bulletAngle = (f32)((x + 1) / 2) * bulletProps->angle2;
             }
             bulletAngle = bulletAngle + 0.0f;
-            if (((i32)x & 1U) != 0)
+            if ((x & 1U) != 0)
             {
                 bulletAngle = bulletAngle * -1.0f;
             }
@@ -187,13 +187,13 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, f32 x,
         case 2:
             bulletAngle = angle + 0.0f;
         case 3:
-            bulletAngle += y * bulletProps->angle2 + bulletProps->angle1 +
-                           (x * ZUN_2PI) / (f32)(i32)bulletProps->count1;
+            bulletAngle += (f32)y * bulletProps->angle2 + bulletProps->angle1 +
+                           ((f32)x * ZUN_2PI) / (f32)(i32)bulletProps->count1;
             break;
         case 4:
             bulletAngle = angle + 0.0f;
         case 5:
-            bulletAngle = (x * ZUN_2PI) / (f32)(i32)bulletProps->count1 +
+            bulletAngle = ((f32)x * ZUN_2PI) / (f32)(i32)bulletProps->count1 +
                           ZUN_PI / (f32)(i32)bulletProps->count1 + bulletAngle +
                           bulletProps->angle1;
             break;
@@ -206,8 +206,8 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, f32 x,
             bulletSpeed =
                 g_Rng.GetRandomFloatInRange(bulletProps->speed1 - bulletProps->speed2) +
                 bulletProps->speed2;
-            bulletAngle = y * bulletProps->angle2 + bulletProps->angle1 +
-                          (x * ZUN_2PI) / (f32)(i32)bulletProps->count1 + 0.0f;
+            bulletAngle = (f32)y * bulletProps->angle2 + bulletProps->angle1 +
+                          ((f32)x * ZUN_2PI) / (f32)(i32)bulletProps->count1 + 0.0f;
             break;
         case 8:
             bulletAngle =
@@ -681,32 +681,35 @@ void BulletManager::RemoveBulletsInRadius(D3DXVECTOR3 *centerPos, f32 radius)
     }
 }
 
+#pragma var_order(y, angle, x)
 // FUNCTION: TH07 0x00424d20
 i32 BulletManager::SpawnBulletPattern(EnemyBulletShooter *bulletProps)
 {
     f32 angle;
-    i32 local_10;
-    i32 local_8;
+    i32 x;
+    i32 y;
 
-    if (g_BulletManager.bulletCount < 0x400)
+    if (g_BulletManager.bulletCount >= 0x400)
     {
-        bulletProps->sprites = this->bulletTypeTemplates + (i16)bulletProps->sprite;
-        angle = g_Player.AngleToPlayer(&bulletProps->position);
-        for (local_10 = 0; local_10 < bulletProps->count2; local_10 += 1)
+        return 0;
+    }
+
+    bulletProps->sprites = this->bulletTypeTemplates + (i16)bulletProps->sprite;
+    angle = g_Player.AngleToPlayer(&bulletProps->position);
+    for (x = 0; x < bulletProps->count2; x++)
+    {
+        for (y = 0; y < bulletProps->count1; y++)
         {
-            for (local_8 = 0; local_8 < bulletProps->count1; local_8 += 1)
+            if (SpawnSingleBullet(bulletProps, y, x, angle) != 0)
             {
-                if (SpawnSingleBullet(bulletProps, local_8, local_10, angle) != 0)
-                {
-                    goto LAB_00424dce;
-                }
+                goto stop;
             }
         }
-    LAB_00424dce:
-        if ((bulletProps->flags & 0x200) != 0)
-        {
-            g_SoundPlayer.PlaySoundByIdx(bulletProps->soundIdx, 0);
-        }
+    }
+stop:
+    if ((bulletProps->flags & 0x200) != 0)
+    {
+        g_SoundPlayer.PlaySoundByIdx(bulletProps->soundIdx, 0);
     }
     return 0;
 }

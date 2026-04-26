@@ -90,7 +90,7 @@ _ = parser.add_argument(
     "--no-matching", action="store_true", help="build without attempting matching"
 )
 _ = parser.add_argument(
-    "--reccmp", action="store_true", help="output reccmp output to index.html"
+    "--reccmp", nargs="?", const="", help="output reccmp output"
 )
 args = parser.parse_args()
 
@@ -404,12 +404,13 @@ pending = [src for src in SOURCES if needs_compile(src)]
 os.makedirs(BUILD_DIR, exist_ok=True)
 os.chdir(BUILD_DIR)
 
-with ThreadPoolExecutor() as executor:
-    futures = {executor.submit(compile, src): src for src in pending}
+if pending:
+    with ThreadPoolExecutor() as executor:
+        futures = {executor.submit(compile, src): src for src in pending}
 
-    for future in as_completed(futures):
-        src = futures[future]
-        handle_compile_result(future.result())
+        for future in as_completed(futures):
+            src = futures[future]
+            handle_compile_result(future.result())
 
 if not args.no_icon:
     objects.append(conv_path(compile_resources(extract_icon(EXE_PATH))))
@@ -423,7 +424,29 @@ _ = run_program(
     env=env,
 )
 
-if args.reccmp:
+if args.reccmp == "":
     _ = subprocess.check_call(
         ["reccmp-reccmp", "--target", "TH07", "--html", "index.html", "--nolib"]
+    )
+elif args.reccmp == "init":
+    os.chdir(SCRIPT_DIR)
+    _ = subprocess.check_call(
+        ["reccmp-project", "detect", "--search-path", SCRIPT_DIR]
+    )
+    os.chdir(BUILD_DIR)
+    _ = subprocess.check_call(
+        ["reccmp-project", "detect", "--what", "recompiled"]
+    )
+elif not args.reccmp is None:
+    _ = subprocess.check_call(
+        [
+            "reccmp-reccmp",
+            "--target",
+            "TH07",
+            "--html",
+            "index.html",
+            "--nolib",
+            "--verbose",
+            args.reccmp,
+        ]
     )

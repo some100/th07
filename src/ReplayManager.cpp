@@ -95,41 +95,48 @@ u32 ReplayManager::OnUpdateDemoLowPrio(ReplayManager *arg)
 // FUNCTION: TH07 0x00442ee0
 u32 ReplayManager::OnUpdateDemoHighPrio(ReplayManager *arg)
 {
-    if ((g_GameManager.notInMenu != 0) &&
-        (g_GameManager.defaultCfg->slowMode == 0))
+    if (g_GameManager.notInMenu == 0)
     {
-        g_LastFrameGameInput = g_CurFrameGameInput;
-        g_CurFrameGameInput = arg->replayInputs->frameNum;
-        arg->replayInputs = arg->replayInputs + 1;
-        g_IsEighthFrameOfHeldInput = 0;
-        if (g_LastFrameGameInput == g_CurFrameGameInput)
-        {
-            if (0x1d < g_NumOfFramesInputsWereHeld)
-            {
-                g_IsEighthFrameOfHeldInput =
-                    (g_NumOfFramesInputsWereHeld & 0x80000007) == 0;
-                if (0x25 < g_NumOfFramesInputsWereHeld)
-                {
-                    g_NumOfFramesInputsWereHeld = 0x1e;
-                }
-            }
-            g_NumOfFramesInputsWereHeld += 1;
-        }
-        else
-        {
-            g_NumOfFramesInputsWereHeld = 0;
-        }
-        if (arg->frameId % 0x1e == 0)
-        {
-            g_Supervisor.curFps =
-                (i16) * (char *)((i32)&arg->stageReplayData->score + 1) & 0x7f;
-            g_Supervisor.isFpsBad =
-                (i32) * (char *)((i32)&arg->stageReplayData->score + 1) >> 7;
-            arg->stageReplayData =
-                (StageReplayData *)((i32)&arg->stageReplayData->score + 1);
-        }
-        arg->frameId = arg->frameId + 1;
+        return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
+
+    if (g_GameManager.defaultCfg->slowMode != 0)
+    {
+        return CHAIN_CALLBACK_RESULT_CONTINUE;
+    }
+
+    i32 idk = 0;
+    g_LastFrameGameInput = g_CurFrameGameInput;
+    g_CurFrameGameInput = arg->replayInputs->frameNum;
+    arg->replayInputs = arg->replayInputs + 1;
+    g_IsEighthFrameOfHeldInput = 0;
+    if (g_LastFrameGameInput == g_CurFrameGameInput)
+    {
+        if (g_NumOfFramesInputsWereHeld >= 30)
+        {
+            if (g_NumOfFramesInputsWereHeld % 8 == 0)
+                g_IsEighthFrameOfHeldInput = 1;
+            if (g_NumOfFramesInputsWereHeld >= 38)
+            {
+                g_NumOfFramesInputsWereHeld = 30;
+            }
+        }
+        g_NumOfFramesInputsWereHeld++;
+    }
+    else
+    {
+        g_NumOfFramesInputsWereHeld = 0;
+    }
+    if (arg->frameId % 0x1e == 0)
+    {
+        g_Supervisor.curFps =
+            (i16) * (char *)((i32)&arg->stageReplayData->score + 1) & 0x7f;
+        g_Supervisor.isFpsBad =
+            (i32) * (char *)((i32)&arg->stageReplayData->score + 1) >> 7;
+        arg->stageReplayData =
+            (StageReplayData *)((i32)&arg->stageReplayData->score + 1);
+    }
+    arg->frameId = arg->frameId + 1;
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 

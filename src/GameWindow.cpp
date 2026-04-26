@@ -272,9 +272,8 @@ i32 GameWindow::InitD3dInterface()
 }
 
 // FUNCTION: TH07 0x00434a80
-i32 GameWindow::CreateGameWindow(HINSTANCE hInstance)
+i32 GameWindow::CreateGameWindow(HINSTANCE hInstance) // GameWindow.cpp:275
 {
-    bool bVar4;
     WNDCLASSA base_class;
     i32 width;
     i32 height;
@@ -282,12 +281,12 @@ i32 GameWindow::CreateGameWindow(HINSTANCE hInstance)
     memset(&base_class, 0, sizeof(WNDCLASSA));
     base_class.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     base_class.hCursor = LoadCursorA(NULL, IDC_ARROW);
+    base_class.hInstance = hInstance;
     base_class.lpfnWndProc = WindowProc;
     g_GameWindow.lastActiveAppValue = 1;
     g_GameWindow.isAppActive = 0;
     // STRING: TH07 0x00497bd0
     base_class.lpszClassName = "BASE";
-    base_class.hInstance = hInstance;
     RegisterClassA(&base_class);
     if (g_Supervisor.cfg.windowed == 0)
     {
@@ -297,25 +296,26 @@ i32 GameWindow::CreateGameWindow(HINSTANCE hInstance)
             0, "BASE",
             // STRING: TH07 0x00497b9c
             "ìåï˚ódÅXñ≤Å@Å` Perfect Cherry Blossom. ver 1.00b", WS_OVERLAPPEDWINDOW,
-            0, 0, 640, 480, NULL, NULL, hInstance, NULL);
+            0, 0, width, height, NULL, NULL, hInstance, NULL);
     }
     else
     {
         width = GetSystemMetrics(SM_CXFIXEDFRAME) * 2 + 640;
-        height = GetSystemMetrics(SM_CYCAPTION) + 480 +
-                 GetSystemMetrics(SM_CYFIXEDFRAME) * 2;
+        height = 480 + GetSystemMetrics(SM_CYFIXEDFRAME) * 2 + GetSystemMetrics(SM_CYCAPTION);
         g_GameWindow.window = CreateWindowExA(
             0, "BASE", "ìåï˚ódÅXñ≤Å@Å` Perfect Cherry Blossom. ver 1.00b",
-            0x100a0000, -0x80000000, -0x80000000, width, height, NULL, NULL,
+            WS_VISIBLE | WS_SYSMENU | WS_MINIMIZEBOX,
+            CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL,
             hInstance, NULL);
     }
     g_Supervisor.hwndGameWindow = g_GameWindow.window;
-    bVar4 = g_GameWindow.window != NULL;
-    if (bVar4)
+    if (g_GameWindow.window == NULL)
     {
-        SetWindowActive(g_GameWindow.window);
+        return true;
     }
-    return (u32)!bVar4;
+
+    SetWindowActive(g_GameWindow.window);
+    return false;
 }
 
 // FUNCTION: TH07 0x00434bd0

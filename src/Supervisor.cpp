@@ -823,11 +823,7 @@ ZunResult Supervisor::DeletedCallback(Supervisor *arg)
     if (arg->midiOutput != NULL)
     {
         arg->midiOutput->StopPlayback();
-        if (arg->midiOutput != NULL)
-        {
-            arg->midiOutput->MidiOutput::~MidiOutput();
-            free(arg->midiOutput);
-        }
+        delete arg->midiOutput;
         arg->midiOutput = NULL;
     }
     ReplayManager::SaveReplay(NULL, NULL);
@@ -849,20 +845,15 @@ ZunResult Supervisor::DeletedCallback(Supervisor *arg)
     if (g_Supervisor.midiTimer != NULL)
     {
         StopMidiTimer(g_Supervisor.midiTimer);
-        if (g_Supervisor.midiTimer != NULL)
-        {
-            DestroyMidiTimer(g_Supervisor.midiTimer);
-            free(g_Supervisor.midiTimer);
-        }
+        delete g_Supervisor.midiTimer;
         g_Supervisor.midiTimer = NULL;
     }
     return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x00438fef
-void Supervisor::DestroyMidiTimer(MidiTimer *timer)
+DummyMidiTimer::~DummyMidiTimer()
 {
-    timer->MidiTimer::~MidiTimer();
 }
 
 #pragma var_order(chain, res, mgr)

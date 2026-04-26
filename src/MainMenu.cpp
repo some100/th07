@@ -845,245 +845,259 @@ LAB_00456cc0:
 // FUNCTION: TH07 0x00456e40
 void MainMenu::SwapMapping(i16 btnPressed, i16 oldMapping, i16 idk)
 {
-    if (this->controlMapping[0] == btnPressed)
+    if (this->controlMapping.shootButton == btnPressed)
     {
-        this->controlMapping[0] = oldMapping;
+        this->controlMapping.shootButton = oldMapping;
     }
-    if (this->controlMapping[1] == btnPressed)
+    if (this->controlMapping.bombButton == btnPressed)
     {
-        this->controlMapping[1] = oldMapping;
+        this->controlMapping.bombButton = oldMapping;
     }
-    if (this->controlMapping[2] == btnPressed)
+    if (this->controlMapping.focusButton == btnPressed)
     {
-        this->controlMapping[2] = oldMapping;
+        this->controlMapping.focusButton = oldMapping;
     }
-    if (this->controlMapping[4] == btnPressed)
+    if (this->controlMapping.upButton == btnPressed)
     {
-        this->controlMapping[4] = oldMapping;
+        this->controlMapping.upButton = oldMapping;
     }
-    if (this->controlMapping[5] == btnPressed)
+    if (this->controlMapping.downButton == btnPressed)
     {
-        this->controlMapping[5] = oldMapping;
+        this->controlMapping.downButton = oldMapping;
     }
-    if (this->controlMapping[6] == btnPressed)
+    if (this->controlMapping.leftButton == btnPressed)
     {
-        this->controlMapping[6] = oldMapping;
+        this->controlMapping.leftButton = oldMapping;
     }
-    if (this->controlMapping[7] == btnPressed)
+    if (this->controlMapping.rightButton == btnPressed)
     {
-        this->controlMapping[7] = oldMapping;
+        this->controlMapping.rightButton = oldMapping;
     }
-    if (this->controlMapping[3] == btnPressed)
+    if (this->controlMapping.menuButton == btnPressed)
     {
-        this->controlMapping[3] = oldMapping;
+        this->controlMapping.menuButton = oldMapping;
     }
-    if (this->controlMapping[8] == btnPressed)
+    if (this->controlMapping.skipButton == btnPressed)
     {
-        this->controlMapping[8] = oldMapping;
+        this->controlMapping.skipButton = oldMapping;
     }
 }
 
+#pragma var_order(vm, i, btnPressed, controllerState, cursorVmTmp)
 // FUNCTION: TH07 0x00456f6b
 u32 MainMenu::OnUpdateKeyConfig()
 {
+    AnmVm *vm;
+    i32 i;
     i16 btnPressed;
+    u8 *controllerState;
+    AnmVm *cursorVmTmp;
 
-    if (this->menuSubState == 0)
+    switch (this->menuSubState)
     {
+    case 0:
         if (this->stateTimer == 0)
         {
             g_AnmManager->SetInterruptActiveVms(this->vmHead, this->vmCount, 4);
-            for (i32 local_c = 0; local_c < 0xc; local_c += 1)
+            for (i = 0; i < 0xc; i++)
             {
                 g_AnmManager->SetActiveSprite(
-                    this->vmHead + local_c + 0x23,
-                    this->vmHead[local_c + 0x23].baseSpriteIdx + 1);
+                    &this->vmHead[i + 0x23],
+                    this->vmHead[i + 0x23].baseSpriteIdx + 1);
             }
             g_AnmManager->SetActiveSprite(
-                this->vmHead + this->cursor + 0x23,
+                &this->vmHead[this->cursor + 0x23],
                 (i32)this->vmHead[this->cursor + 0x23].baseSpriteIdx);
             this->menuSubState = 0;
             this->inputDelayTimer = 0;
-            this->controlMapping[0] = g_Supervisor.cfg.controllerMapping.shootButton;
-            this->controlMapping[1] = g_Supervisor.cfg.controllerMapping.bombButton;
-            this->controlMapping[2] = g_Supervisor.cfg.controllerMapping.focusButton;
-            this->controlMapping[3] = g_Supervisor.cfg.controllerMapping.menuButton;
-            this->controlMapping[4] = g_Supervisor.cfg.controllerMapping.upButton;
-            this->controlMapping[5] = g_Supervisor.cfg.controllerMapping.downButton;
-            this->controlMapping[6] = g_Supervisor.cfg.controllerMapping.leftButton;
-            this->controlMapping[7] = g_Supervisor.cfg.controllerMapping.rightButton;
-            this->controlMapping[8] = g_Supervisor.cfg.controllerMapping.skipButton;
+            this->controlMapping = g_Supervisor.cfg.controllerMapping;
             g_Supervisor.cfg.controllerMapping.upButton = 0xffff;
             g_Supervisor.cfg.controllerMapping.downButton = 0xffff;
-            UpdateMenuDigits(this->vmHead + 0x2f, this->controlMapping[0]);
-            UpdateMenuDigits(this->vmHead + 0x31, this->controlMapping[1]);
-            UpdateMenuDigits(this->vmHead + 0x33, this->controlMapping[2]);
-            UpdateMenuDigits(this->vmHead + 0x35, this->controlMapping[8]);
-            UpdateMenuDigits(this->vmHead + 0x37, this->controlMapping[3]);
-            UpdateMenuDigits(this->vmHead + 0x39, this->controlMapping[4]);
-            UpdateMenuDigits(this->vmHead + 0x3b, this->controlMapping[5]);
-            UpdateMenuDigits(this->vmHead + 0x3d, this->controlMapping[6]);
-            UpdateMenuDigits(this->vmHead + 0x3f, this->controlMapping[7]);
+
+            vm = &this->vmHead[0x2f];
+            UpdateMenuDigits(vm, this->controlMapping.shootButton);
+            vm += 2;
+            UpdateMenuDigits(vm, this->controlMapping.bombButton);
+            vm += 2;
+            UpdateMenuDigits(vm, this->controlMapping.focusButton);
+            vm += 2;
+            UpdateMenuDigits(vm, this->controlMapping.skipButton);
+            vm += 2;
+            UpdateMenuDigits(vm, this->controlMapping.menuButton);
+            vm += 2;
+            UpdateMenuDigits(vm, this->controlMapping.upButton);
+            vm += 2;
+            UpdateMenuDigits(vm, this->controlMapping.downButton);
+            vm += 2;
+            UpdateMenuDigits(vm, this->controlMapping.leftButton);
+            vm += 2;
+            UpdateMenuDigits(vm, this->controlMapping.rightButton);
+
             this->selected = -1;
         }
         this->menuSubState = 1;
-        for (i32 local_c = 0; local_c < 0xc; local_c += 1)
+        for (i = 0; (u32)i < 0xc; i++)
         {
-            g_AnmManager->DrawStringFormat2(this->vms + local_c, 0xfff0e0, 0x300000,
-                                            g_KeyConfigStrings[local_c]);
+            g_AnmManager->DrawStringFormat2(&this->vms[i], 0xfff0e0, 0x300000,
+                                            g_KeyConfigStrings[i]);
         }
-    }
-    else if (this->menuSubState != 1)
-    {
-        goto LAB_0045786e;
-    }
-    if (MoveCursorVertical(0xc) != 0)
-    {
-        for (i32 local_c = 0; local_c < 0xc; local_c += 1)
+    case 1:
+        if (MoveCursorVertical(0xc) != 0)
         {
-            g_AnmManager->SetActiveSprite(this->vmHead + local_c + 0x23,
-                                          this->vmHead[local_c + 0x23].baseSpriteIdx +
-                                              1);
+            for (i = 0; i < 0xc; i++)
+            {
+                g_AnmManager->SetActiveSprite(&this->vmHead[i + 0x23],
+                                              this->vmHead[i + 0x23].baseSpriteIdx +
+                                                  1);
+            }
+            g_AnmManager->SetActiveSprite(
+                &this->vmHead[this->cursor + 0x23],
+                (i32)this->vmHead[this->cursor + 0x23].baseSpriteIdx);
         }
+        if (this->selected != this->cursor)
+        {
+            this->cursorVm = &this->vms[this->cursor];
+            // this should be using setpendinginterrupt?
+            cursorVmTmp = this->cursorVm;
+            cursorVmTmp->pendingInterrupt = 1;
+        }
+        this->selected = this->cursor;
+
+        vm = &this->vmHead[0x2f];
+        UpdateMenuDigits(vm, this->controlMapping.shootButton);
+        vm += 2;
+        UpdateMenuDigits(vm, this->controlMapping.bombButton);
+        vm += 2;
+        UpdateMenuDigits(vm, this->controlMapping.focusButton);
+        vm += 2;
+        UpdateMenuDigits(vm, this->controlMapping.skipButton);
+        vm += 2;
+        UpdateMenuDigits(vm, this->controlMapping.menuButton);
+        vm += 2;
+        UpdateMenuDigits(vm, this->controlMapping.upButton);
+        vm += 2;
+        UpdateMenuDigits(vm, this->controlMapping.downButton);
+        vm += 2;
+        UpdateMenuDigits(vm, this->controlMapping.leftButton);
+        vm += 2;
+        UpdateMenuDigits(vm, this->controlMapping.rightButton);
+
+        for (i = 0x41; i <= 0x42; i++)
+        {
+            g_AnmManager->SetActiveSprite(&this->vmHead[i],
+                                          this->vmHead[i].baseSpriteIdx + 1);
+        }
+        i = g_Supervisor.cfg.shotSlow + 0x41;
         g_AnmManager->SetActiveSprite(
-            this->vmHead + this->cursor + 0x23,
-            (i32)this->vmHead[this->cursor + 0x23].baseSpriteIdx);
-    }
-    if (this->selected != this->cursor)
-    {
-        this->cursorVm = this->vms + this->cursor;
-        this->cursorVm->pendingInterrupt = 1;
-    }
-    this->selected = this->cursor;
-    UpdateMenuDigits(this->vmHead + 0x2f, this->controlMapping[0]);
-    UpdateMenuDigits(this->vmHead + 0x31, this->controlMapping[1]);
-    UpdateMenuDigits(this->vmHead + 0x33, this->controlMapping[2]);
-    UpdateMenuDigits(this->vmHead + 0x35, this->controlMapping[8]);
-    UpdateMenuDigits(this->vmHead + 0x37, this->controlMapping[3]);
-    UpdateMenuDigits(this->vmHead + 0x39, this->controlMapping[4]);
-    UpdateMenuDigits(this->vmHead + 0x3b, this->controlMapping[5]);
-    UpdateMenuDigits(this->vmHead + 0x3d, this->controlMapping[6]);
-    UpdateMenuDigits(this->vmHead + 0x3f, this->controlMapping[7]);
-    for (i32 local_c = 0x41; local_c < 0x43; local_c += 1)
-    {
-        g_AnmManager->SetActiveSprite(this->vmHead + local_c,
-                                      this->vmHead[local_c].baseSpriteIdx + 1);
-    }
-    g_AnmManager->SetActiveSprite(
-        this->vmHead + g_Supervisor.cfg.shotSlow + 0x41,
-        (i32)this->vmHead[g_Supervisor.cfg.shotSlow + 0x41].baseSpriteIdx);
-    btnPressed = 0;
-    while (btnPressed < 0x20 &&
-           ((Controller::GetControllerState()[btnPressed] & 0x80) == 0))
-    {
-        btnPressed += 1;
-    }
-    if ((btnPressed < 0x20) && (g_LastJoystickInput != btnPressed))
-    {
-        switch (this->cursor)
+            &this->vmHead[i],
+            (i32)this->vmHead[i].baseSpriteIdx);
+
+        controllerState = Controller::GetControllerState();
+        for (btnPressed = 0; btnPressed < 0x20; btnPressed++)
         {
-        case 0:
-            SwapMapping(btnPressed, this->controlMapping[0], 1);
-            this->controlMapping[0] = btnPressed;
-            break;
-        case 1:
-            SwapMapping(btnPressed, this->controlMapping[1], 0);
-            this->controlMapping[1] = btnPressed;
-            break;
-        case 2:
-            SwapMapping(btnPressed, this->controlMapping[2], 1);
-            this->controlMapping[2] = btnPressed;
-            break;
-        case 3:
-            SwapMapping(btnPressed, this->controlMapping[8], 0);
-            this->controlMapping[8] = btnPressed;
-            break;
-        case 4:
-            SwapMapping(btnPressed, this->controlMapping[3], 1);
-            this->controlMapping[3] = btnPressed;
-            break;
-        case 5:
-            SwapMapping(btnPressed, this->controlMapping[4], 0);
-            this->controlMapping[4] = btnPressed;
-            break;
-        case 6:
-            SwapMapping(btnPressed, this->controlMapping[5], 1);
-            this->controlMapping[5] = btnPressed;
-            break;
-        case 7:
-            SwapMapping(btnPressed, this->controlMapping[6], 0);
-            this->controlMapping[6] = btnPressed;
-            break;
-        case 8:
-            SwapMapping(btnPressed, this->controlMapping[7], 1);
-            this->controlMapping[7] = btnPressed;
-            break;
-        default:
-            goto switchD_00457548_default;
+            if (controllerState[btnPressed] & 0x80)
+            {
+                break;
+            }
         }
-        g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-        g_SoundPlayer.ProcessQueues();
-    }
-switchD_00457548_default:
-    if (WAS_PRESSED_RAW(TH_BUTTON_LEFT) &&
-        this->cursor == 9)
-    {
-        g_Supervisor.cfg.shotSlow = 1 - g_Supervisor.cfg.shotSlow;
-    }
-    if (WAS_PRESSED_RAW(TH_BUTTON_RIGHT) &&
-        this->cursor == 9)
-    {
-        g_Supervisor.cfg.shotSlow = 1 - g_Supervisor.cfg.shotSlow;
-    }
-    g_LastJoystickInput = btnPressed;
-    if (IS_PRESSED_RAW(TH_BUTTON_ANY))
-    {
-        this->idleFrames = 0;
-    }
-    if (this->idleFrames < 0xe10)
-    {
+        if ((btnPressed < 0x20) && (g_LastJoystickInput != btnPressed))
+        {
+            switch (this->cursor)
+            {
+            case 0:
+                SwapMapping(btnPressed, this->controlMapping.shootButton, 1);
+                this->controlMapping.shootButton = btnPressed;
+                break;
+            case 1:
+                SwapMapping(btnPressed, this->controlMapping.bombButton, 0);
+                this->controlMapping.bombButton = btnPressed;
+                break;
+            case 2:
+                SwapMapping(btnPressed, this->controlMapping.focusButton, 1);
+                this->controlMapping.focusButton = btnPressed;
+                break;
+            case 4:
+                SwapMapping(btnPressed, this->controlMapping.menuButton, 0);
+                this->controlMapping.menuButton = btnPressed;
+                break;
+            case 5:
+                SwapMapping(btnPressed, this->controlMapping.upButton, 0);
+                this->controlMapping.upButton = btnPressed;
+                break;
+            case 6:
+                SwapMapping(btnPressed, this->controlMapping.downButton, 0);
+                this->controlMapping.downButton = btnPressed;
+                break;
+            case 7:
+                SwapMapping(btnPressed, this->controlMapping.leftButton, 0);
+                this->controlMapping.leftButton = btnPressed;
+                break;
+            case 8:
+                SwapMapping(btnPressed, this->controlMapping.rightButton, 0);
+                this->controlMapping.rightButton = btnPressed;
+                break;
+            case 3:
+                SwapMapping(btnPressed, this->controlMapping.skipButton, 0);
+                this->controlMapping.skipButton = btnPressed;
+                break;
+            default:
+                goto switchD_00457548_default;
+            }
+            g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
+            g_SoundPlayer.ProcessQueues();
+        }
+    switchD_00457548_default:
+        g_LastJoystickInput = btnPressed;
+
+        if (WAS_PRESSED_RAW(TH_BUTTON_LEFT))
+        {
+            switch (this->cursor)
+            {
+            case 9:
+                g_Supervisor.cfg.shotSlow = 1 - g_Supervisor.cfg.shotSlow;
+            }
+        }
+        if (WAS_PRESSED_RAW(TH_BUTTON_RIGHT))
+        {
+            switch (this->cursor)
+            {
+            case 9:
+                g_Supervisor.cfg.shotSlow = 1 - g_Supervisor.cfg.shotSlow;
+            }
+        }
+        if (g_CurFrameRawInput)
+        {
+            this->idleFrames = 0;
+        }
+        if (this->idleFrames >= 3600)
+        {
+            goto exit_config;
+        }
         if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
         {
-            if (this->cursor == 10)
+            switch (this->cursor)
             {
+            case 10:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
                 g_SoundPlayer.ProcessQueues();
-                this->controlMapping[0] = g_ControllerMapping.shootButton;
-                this->controlMapping[1] = g_ControllerMapping.bombButton;
-                this->controlMapping[2] = g_ControllerMapping.focusButton;
-                this->controlMapping[3] = g_ControllerMapping.menuButton;
-                this->controlMapping[4] = g_ControllerMapping.upButton;
-                this->controlMapping[5] = g_ControllerMapping.downButton;
-                this->controlMapping[6] = g_ControllerMapping.leftButton;
-                this->controlMapping[7] = g_ControllerMapping.rightButton;
-                this->controlMapping[8] = g_ControllerMapping.skipButton;
+                this->controlMapping = g_ControllerMapping;
                 g_Supervisor.cfg.shotSlow = 1;
-            }
-            else if (this->cursor == 0xb)
-            {
-                goto LAB_0045782a;
+                break;
+            case 11:
+            exit_config:
+                g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
+                g_SoundPlayer.ProcessQueues();
+                SetGameState(STATE_OPTIONS);
+                g_Supervisor.cfg.controllerMapping = this->controlMapping;
+                this->cursor = 7;
+                return CHAIN_CALLBACK_RESULT_CONTINUE;
             }
         }
-    LAB_0045786e:
-        this->idleFrames = this->idleFrames + 1;
-        this->inputDelayTimer = this->inputDelayTimer + 1;
-        this->stateTimer = this->stateTimer + 1;
-        return CHAIN_CALLBACK_RESULT_CONTINUE;
+        break;
     }
-LAB_0045782a:
-    g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-    g_SoundPlayer.ProcessQueues();
-    SetGameState(STATE_OPTIONS);
-    g_Supervisor.cfg.controllerMapping.shootButton = this->controlMapping[0];
-    g_Supervisor.cfg.controllerMapping.bombButton = this->controlMapping[1];
-    g_Supervisor.cfg.controllerMapping.focusButton = this->controlMapping[2];
-    g_Supervisor.cfg.controllerMapping.menuButton = this->controlMapping[3];
-    g_Supervisor.cfg.controllerMapping.upButton = this->controlMapping[4];
-    g_Supervisor.cfg.controllerMapping.downButton = this->controlMapping[5];
-    g_Supervisor.cfg.controllerMapping.leftButton = this->controlMapping[6];
-    g_Supervisor.cfg.controllerMapping.rightButton = this->controlMapping[7];
-    g_Supervisor.cfg.controllerMapping.skipButton = this->controlMapping[8];
-    this->cursor = 7;
+    this->idleFrames = this->idleFrames + 1;
+    this->inputDelayTimer = this->inputDelayTimer + 1;
+    this->stateTimer = this->stateTimer + 1;
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
@@ -1147,7 +1161,7 @@ u32 MainMenu::OnUpdateSelectDifficulty()
                 {
                     this->cursor = 0;
                 }
-                for (i32 local_c = 0; local_c < 2; local_c += 1)
+                for (i32 local_c = 0; local_c < 2; local_c++)
                 {
                     g_AnmManager->SetActiveSprite(
                         this->vmHead + local_c + 0xa2,
@@ -1163,7 +1177,7 @@ u32 MainMenu::OnUpdateSelectDifficulty()
                 {
                     this->cursor = 1;
                 }
-                for (i32 local_c = 0; local_c < 4; local_c += 1)
+                for (i32 local_c = 0; local_c < 4; local_c++)
                 {
                     g_AnmManager->SetActiveSprite(
                         this->vmHead + local_c + 0x43,
@@ -1204,7 +1218,7 @@ u32 MainMenu::OnUpdateSelectDifficulty()
             {
                 if (local_1c == 2)
                 {
-                    for (i32 local_c = 0; local_c < 2; local_c += 1)
+                    for (i32 local_c = 0; local_c < 2; local_c++)
                     {
                         g_AnmManager->SetActiveSprite(
                             this->vmHead + local_c + 0xa2,
@@ -1217,7 +1231,7 @@ u32 MainMenu::OnUpdateSelectDifficulty()
             }
             else
             {
-                for (i32 local_c = 0; local_c < 4; local_c += 1)
+                for (i32 local_c = 0; local_c < 4; local_c++)
                 {
                     g_AnmManager->SetActiveSprite(
                         this->vmHead + local_c + 0x43,
@@ -2350,7 +2364,7 @@ i32 MainMenu::DrawPracticeMenu()
         g_GameManager.clrd[g_GameManager.shotType + g_GameManager.character * 2]
             .difficultyClearedWithoutRetries[g_Supervisor.cfg.defaultDifficulty];
     for (local_c = 0; local_1c.y = local_1c.y + 16.0f, local_c < 6;
-         local_c += 1)
+         local_c++)
     {
         g_AsciiManager.isSelected = (i32)(local_c == this->cursor);
         if (local_c == this->cursor)

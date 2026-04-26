@@ -91,7 +91,7 @@ i32 EffectManager::InitDeceleratingBurstFast(Effect *effect)
     effect->velocity.x = (g_Rng.GetRandomFloatInRange(256.0f) - 128.0f) / 12.0f;
     effect->velocity.y = (g_Rng.GetRandomFloatInRange(256.0f) - 128.0f) / 12.0f;
     effect->velocity.z = 0.0f;
-    effect->acceleration = -effect->velocity * 0.05263158f;
+    effect->acceleration = -effect->velocity / 19.0f;
     effect->velocity *= g_Supervisor.effectiveFramerateMultiplier;
     effect->acceleration *= g_Supervisor.effectiveFramerateMultiplier;
     return 0;
@@ -113,9 +113,9 @@ i32 EffectManager::InitDeceleratingBurst(Effect *effect)
     effect->velocity.y =
         ((g_Rng.GetRandomFloatInRange(256.0f) - 128.0f) * 4.0f) / 33.0f;
     effect->velocity.z = 0.0f;
-    effect->acceleration = -effect->velocity * 0.05f;
-    effect->velocity.x *= g_Supervisor.effectiveFramerateMultiplier;
-    effect->acceleration.x *= g_Supervisor.effectiveFramerateMultiplier;
+    effect->acceleration = -effect->velocity / 20.0f;
+    effect->velocity *= g_Supervisor.effectiveFramerateMultiplier;
+    effect->acceleration *= g_Supervisor.effectiveFramerateMultiplier;
     return 0;
 }
 
@@ -462,13 +462,13 @@ i32 EffectManager::InitRandomDirWithSpeed(Effect *effect)
     f32 local_8;
 
     // double intentionally used here, strangely
-    if (effect->custom.x > -990.0)
+    if (effect->custom.x <= -990.0)
     {
-        local_8 = utils::AddNormalizeAngle(effect->custom.x, 0.0f);
+        local_8 = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
     }
     else
     {
-        local_8 = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
+        local_8 = utils::AddNormalizeAngle(effect->custom.x, 0.0f);
     }
     effect->emitterPosition = effect->pos1;
     effect->emitterPosition.z = 0.0f;

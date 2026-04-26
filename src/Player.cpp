@@ -963,7 +963,7 @@ i32 Player::CheckCollisionWithEnemy(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
                         (this->bombProjectiles[i].payload +
                          this->bombProjectiles[i].lifetime);
                     this->bombParticleTime = this->bombParticleTime + 1;
-                    if ((this->bombParticleTime & 0x80000003) == 0)
+                    if ((this->bombParticleTime % 4) == 0)
                     {
                         if (i < 0x60)
                         {

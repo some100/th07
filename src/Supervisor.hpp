@@ -84,7 +84,6 @@ struct Supervisor
     void CheckTiming();
     static i32 CheckVSync();
     static void DrawFpsCounter(i32 param_1);
-    static void DestroyMidiTimer(MidiTimer *timer);
     i32 FadeOutMusic(f32 musicFadeFrames);
     static void StopMidiTimer(MidiTimer *timer);
     HRESULT DisableFog();

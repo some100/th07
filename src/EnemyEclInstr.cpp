@@ -206,7 +206,7 @@ void EnemyEclInstr::ExInsDespawnLargeBulletAndSavePos(Enemy *enemy,
         }
         if (((bullet->state != BULLET_INACTIVE) &&
              (bullet->state != BULLET_DESPAWN)) &&
-            (60.0f <= (bullet->sprites.spriteBullet.sprite)->heightPx))
+            (60.0f <= bullet->sprites.spriteBullet.sprite->heightPx))
         {
             break;
         }
@@ -612,11 +612,11 @@ void EnemyEclInstr::ExInsBurstLargeBullets(Enemy *enemy, EclRawInstr *instr)
     {
         if ((bullet->state != BULLET_INACTIVE) &&
             ((((g_GameManager.difficulty < 2 &&
-                (48.0f < (bullet->sprites.spriteBullet.sprite)->heightPx)) &&
+                (48.0f < bullet->sprites.spriteBullet.sprite->heightPx)) &&
                (enemy->position.y - 64.0f < bullet->pos.y)) &&
               (bullet->pos.y < enemy->position.y + 64.0f)) ||
              ((1 < g_GameManager.difficulty &&
-               (48.0f < (bullet->sprites.spriteBullet.sprite)->heightPx)) &&
+               (48.0f < bullet->sprites.spriteBullet.sprite->heightPx)) &&
               (enemy->position.y - 48.0f < bullet->pos.y &&
                (bullet->pos.y < enemy->position.y + 48.0f)))))
         {
@@ -707,16 +707,20 @@ void EnemyEclInstr::ExInsYoumuRedirectBulletsToPlayer(Enemy *enemy,
 
     bullet = g_BulletManager.bullets;
     BombEffects::RegisterChain(3, 0x10, 1, 0x50cfcfff, 0);
-    for (i = 0; i < 0x400; i++)
+    for (i = 0; i < 0x400; i++, bullet++)
     {
-        if ((bullet->state != BULLET_INACTIVE) && (bullet->state2 == 1))
+        if (bullet->state == BULLET_INACTIVE)
+        {
+            continue;
+        }
+
+        if (bullet->state2 == 1)
         {
             bullet->AddTargetVelocityCommand(0, 0, 0x5a, 0.026666667f,
                                              g_Player.AngleToPlayer(&bullet->pos));
             bullet->commands[1].type = 0;
             bullet->state2 = 2;
         }
-        bullet = bullet + 1;
     }
 }
 
@@ -817,32 +821,29 @@ void EnemyEclInstr::ExInsYuyukoCountButterflyBullets(Enemy *enemy,
     }
 }
 
+#pragma var_order(local_104, local_e4, i, bullet, j)
 // FUNCTION: TH07 0x00419a50
 void EnemyEclInstr::ExInsBurstLargeBullets2(Enemy *enemy, EclRawInstr *instr)
 {
-    f32 fVar5;
-    f32 local_104;
     i32 j;
     Bullet *bullet;
     i32 i;
     EnemyBulletShooter local_e4;
+    f32 local_104;
 
     bullet = g_BulletManager.bullets;
     memset(&local_e4, 0, sizeof(EnemyBulletShooter));
     local_e4.soundOverride = -1;
-    if (g_GameManager.difficulty == DIFF_HARD)
-    {
-        local_104 = 128.0f;
-    }
-    else
-    {
-        local_104 = 180.0f;
-    }
+    local_104 = g_GameManager.difficulty == DIFF_HARD ? 128.0f : 180.0f;
     BombEffects::RegisterChain(3, 8, 1, 0x50cfcfff, 0);
-    for (i = 0; i < 0x400; i++)
+    for (i = 0; i < 0x400; i++, bullet++)
     {
-        if ((((bullet->state != BULLET_INACTIVE) &&
-              (48.0f < (bullet->sprites.spriteBullet.sprite)->heightPx)) &&
+        if (bullet->state == BULLET_INACTIVE)
+        {
+            continue;
+        }
+
+        if (((bullet->sprites.spriteBullet.sprite->heightPx > 48.0f) &&
              (enemy->position.y - local_104 < bullet->pos.y)) &&
             (bullet->pos.y < local_104 + enemy->position.y))
         {
@@ -872,9 +873,8 @@ void EnemyEclInstr::ExInsBurstLargeBullets2(Enemy *enemy, EclRawInstr *instr)
                 }
                 else
                 {
-                    fVar5 = 0.7853982f;
                     local_e4.angle1 = utils::AddNormalizeAngle(
-                        g_Rng.GetRandomFloatInRange(4.712389f), fVar5);
+                        g_Rng.GetRandomFloatInRange(4.712389f), 0.7853982f);
                 }
                 local_e4.speed1 = 0.1f;
                 local_e4.count1 = 1;
@@ -887,7 +887,6 @@ void EnemyEclInstr::ExInsBurstLargeBullets2(Enemy *enemy, EclRawInstr *instr)
             }
             bullet->Initialize();
         }
-        bullet = bullet + 1;
     }
 }
 
@@ -925,7 +924,7 @@ void EnemyEclInstr::ExInsSpawnBulletsWithDirChange(Enemy *enemy,
             if ((((bullet->state != BULLET_INACTIVE) &&
                   ((bullet->exFlags & 0x40U) == 0)) &&
                  (bullet->pos.y < 320.0f)) &&
-                (60.0f < (bullet->sprites.spriteBullet.sprite)->heightPx))
+                (60.0f < bullet->sprites.spriteBullet.sprite->heightPx))
             {
                 local_e4.position = bullet->pos;
                 if (enemy->timer.current % 2 == 0)
@@ -985,7 +984,7 @@ void EnemyEclInstr::ExInsSpawnBulletsWithDirChange2(Enemy *enemy,
             if ((((bullet->state != BULLET_INACTIVE) &&
                   ((bullet->exFlags & 0x40U) == 0)) &&
                  (bullet->pos.y < 320.0f)) &&
-                (60.0f < (bullet->sprites.spriteBullet.sprite)->heightPx))
+                (60.0f < bullet->sprites.spriteBullet.sprite->heightPx))
             {
                 local_e4.position = bullet->pos;
                 if (iVar1 == 0)

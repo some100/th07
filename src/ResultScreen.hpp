@@ -8,6 +8,15 @@
 #include "ZunResult.hpp"
 #include "inttypes.hpp"
 
+#define TH7K_MAGIC 'K7HT'
+#define CATK_MAGIC 'KTAC'
+#define HSCR_MAGIC 'RCSH'
+#define CLRD_MAGIC 'DRLC'
+#define PSCR_MAGIC 'RCSP'
+#define PLST_MAGIC 'TSLP'
+#define LSNM_MAGIC 'MNSL'
+#define VRSM_MAGIC 'MSRV'
+
 struct Th7k
 {
     u32 magic;

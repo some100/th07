@@ -395,7 +395,7 @@ address|name|type
 004386f3|Supervisor::CheckVSync|function
 00438986|Supervisor::AddedCallback|function
 00438de2|Supervisor::DeletedCallback|function
-00438fef|Supervisor::DestroyMidiTimer|function
+00438fef|DummyMidiTimer::~DummyMidiTimer|function
 00439000|Supervisor::RegisterChain|function
 004390a5|Supervisor::DrawFpsCounter|function
 00439401|ZunTimer::Increment|function

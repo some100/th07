@@ -1,28 +1,17 @@
 # Contributing
 
-Contributions are welcome. Before anything can be done, `reccmp` must be installed from git. Create a venv, then install `reccmp`:
+Contributions are welcome. Before anything can be done, `reccmp` must be installed from git. This is already done for you if you're using `uv`. 
 
+First, copy the original game binary `th07.exe` into the root of the repository. This is required so that `reccmp` has some kind of base to compare against.
+
+Then, simply run the command:
 ```sh
-pip install git+https://github.com/isledecomp/reccmp
+uv run build.py --reccmp init
 ```
 
-Copy the original game binary `th07.exe` into the root of the repository. This is required so that `reccmp` has some kind of base to compare against.
+Now, you can finally start diffing. After each (re)build, run `uv run reccmp-reccmp --target TH07 --html index.html --nolib` to get a matching summary of all files in the program, and output a webpage showing the diff of every function in the program. Or, alternatively, run `uv run reccmp-reccmp --target TH07 --verbose 0x00FNADDR` on a particular function to diff that function in specific. You'll get a lot of "\[ERROR\] Failed to match xyz" errors in the console. These can be ignored.
 
-Now, build the repository using the build script with uv:
-
-```sh
-uv run build.py
-```
-
-Afterwards, with `reccmp`, run:
-
-```sh
-reccmp-project detect --search-path "path/to/folder/with/th07.exe"
-cd build
-reccmp-project detect --what recompiled
-```
-
-Now, you can finally start diffing. After each (re)build, run `reccmp-reccmp --target TH07 --html index.html --nolib` to get a matching summary of all files in the program, and output a webpage showing the diff of every function in the program. Or, alternatively, run `reccmp-reccmp --target TH07 --verbose 0x00FNADDR` on a particular function to diff that function in specific. You'll get a lot of "\[ERROR\] Failed to match xyz" errors in the console. These can be ignored.
+For convenience purposes, you can also use `uv run build.py --reccmp` to rebuild and run reccmp at the same time, or `uv run build.py --reccmp 0x00FNADDR` to rebuild and diff a function at the same time.
 
 # Matching
 
@@ -40,7 +29,7 @@ void EclManager::Unload() {
 }
 ```
 
-This function is still mostly unprocessed Ghidra decompiler output. While it looks reasonable, it may have different output than the original assembly. Call `reccmp-reccmp --target TH07 --verbose 0x0040e4f0` to get a detailed diff.
+This function is still mostly unprocessed Ghidra decompiler output. While it looks reasonable, it may have different output than the original assembly. Call `uv run build.py --reccmp 0x0040e4f0` to get a detailed diff.
 
 ```
 ---

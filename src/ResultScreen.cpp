@@ -179,12 +179,12 @@ ScoreDat *ResultScreen::OpenScore(const char *path)
                         local_28 = local_c->fileLength - local_c->dataOffset;
                         while (0 < local_28)
                         {
-                            if (local_24->magic == 'TH7K')
+                            if (local_24->magic == TH7K_MAGIC)
                             {
                                 bVar2 = true;
                                 local_2c = local_24;
                             }
-                            if ((local_24->magic == 'VRSM') && (local_24->version == 1))
+                            if ((local_24->magic == VRSM_MAGIC) && (local_24->version == 1))
                             {
                                 if (g_Supervisor.CheckIntegrity(
                                         ((Vrsm *)local_24)->versionStr,
@@ -271,7 +271,7 @@ u32 ResultScreen::GetHighScore(ScoreDat *scoreDat, ScoreListNode *node,
     for (local_c = scoreDat->fileLength - scoreDat->dataOffset; 0 < local_c;
          local_c = local_c - (u32)pTVar2->th7kLen)
     {
-        if ((((local_8->magic == 'HSCR') && (local_8->version == 1)) &&
+        if ((((local_8->magic == HSCR_MAGIC) && (local_8->version == 1)) &&
              (local_8->character == character)) &&
             (local_8->difficulty == difficulty))
         {
@@ -335,7 +335,7 @@ ZunResult ResultScreen::ParseCatk(ScoreDat *scoreDat, Catk *catk)
         for (local_c = scoreDat->fileLength - scoreDat->dataOffset; 0 < local_c;
              local_c = local_c - (u32)pTVar1->th7kLen)
         {
-            if ((local_8->magic == 'CATK') && (local_8->version == 1))
+            if ((local_8->magic == CATK_MAGIC) && (local_8->version == 1))
             {
                 if (0x8c < (u16)local_8->idx)
                 {
@@ -364,7 +364,7 @@ ZunResult ResultScreen::ParseLsnm(ScoreDat *scoreDat, Lsnm *param_2)
         {
             return ZUN_ERROR;
         }
-        if ((local_8->magic == 'LSNM') && (local_8->version == 1))
+        if ((local_8->magic == LSNM_MAGIC) && (local_8->version == 1))
         {
             break;
         }
@@ -375,10 +375,12 @@ ZunResult ResultScreen::ParseLsnm(ScoreDat *scoreDat, Lsnm *param_2)
     return ZUN_SUCCESS;
 }
 
+#pragma function(memset)
+#pragma var_order(local_8, i, local_10, j, idk)
 // FUNCTION: TH07 0x00445192
 ZunResult ResultScreen::ParseClrd(ScoreDat *scoreDat, Clrd *clrd)
 {
-    u16 *puVar1;
+    i32 idk;
     i32 j;
     i32 local_10;
     i32 i;
@@ -388,39 +390,36 @@ ZunResult ResultScreen::ParseClrd(ScoreDat *scoreDat, Clrd *clrd)
     {
         return ZUN_ERROR;
     }
-    else
+
+    for (i = 0; i < 6; i++)
     {
-        for (i = 0; i < 6; i++)
+        memset(clrd + i, 0, sizeof(Clrd));
+        clrd[i].magic = CLRD_MAGIC;
+        clrd[i].th7kLen2 = sizeof(Clrd);
+        clrd[i].th7kLen = sizeof(Clrd);
+        clrd[i].version = 1;
+        clrd[i].characterShotType = (u8)i;
+        for (j = 0; j < 5; j++)
         {
-            memset(clrd + i, 0, sizeof(Clrd));
-            clrd[i].magic = 'CLRD';
-            clrd[i].th7kLen2 = sizeof(Clrd);
-            clrd[i].th7kLen = sizeof(Clrd);
-            clrd[i].version = 1;
-            clrd[i].characterShotType = (u8)i;
-            for (j = 0; j < 5; j++)
-            {
-                clrd[i].difficultyClearedWithRetries[j] = 1;
-                clrd[i].difficultyClearedWithoutRetries[j] = 1;
-            }
+            clrd[i].difficultyClearedWithRetries[j] = 1;
+            clrd[i].difficultyClearedWithoutRetries[j] = 1;
         }
-        local_8 = (Clrd *)(scoreDat->xorseed + scoreDat->dataOffset);
-        for (local_10 = scoreDat->fileLength - scoreDat->dataOffset; 0 < local_10;
-             local_10 = local_10 - (u32)*puVar1)
-        {
-            if ((local_8->magic == 'CLRD') && (local_8->version == 1))
-            {
-                if (5 < local_8->characterShotType)
-                {
-                    break;
-                }
-                clrd[local_8->characterShotType] = *local_8;
-            }
-            puVar1 = &local_8->th7kLen;
-            local_8 = (Clrd *)((u8 *)local_8 + local_8->th7kLen);
-        }
-        return ZUN_SUCCESS;
     }
+    local_8 = (Clrd *)(scoreDat->xorseed + scoreDat->dataOffset);
+    for (local_10 = scoreDat->fileLength - scoreDat->dataOffset; 0 < local_10;)
+    {
+        if ((local_8->magic == CLRD_MAGIC) && (local_8->version == 1))
+        {
+            if (local_8->characterShotType >= 6)
+            {
+                break;
+            }
+            clrd[local_8->characterShotType] = *local_8;
+        }
+        local_10 -= (u32)local_8->th7kLen;
+        local_8 = (Clrd *)((u8 *)local_8 + local_8->th7kLen);
+    }
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x004452f4
@@ -448,7 +447,7 @@ ZunResult ResultScreen::ParsePscr(ScoreDat *scoreDat, Pscr *pscr)
                 for (local_1c = 0; local_1c < 4; local_1c = local_1c + 1)
                 {
                     memset(local_8, 0, sizeof(Pscr));
-                    local_8->magic = 'PSCR';
+                    local_8->magic = PSCR_MAGIC;
                     local_8->th7kLen2 = sizeof(Pscr);
                     local_8->th7kLen = sizeof(Pscr);
                     local_8->version = 1;
@@ -464,7 +463,7 @@ ZunResult ResultScreen::ParsePscr(ScoreDat *scoreDat, Pscr *pscr)
         for (local_18 = scoreDat->fileLength - scoreDat->dataOffset; 0 < local_18;
              local_18 = local_18 - (u32)pTVar1->th7kLen)
         {
-            if ((local_c->magic == 'PSCR') && (local_c->version == 1))
+            if ((local_c->magic == PSCR_MAGIC) && (local_c->version == 1))
             {
                 if ((5 < local_c->character) ||
                     (4 < local_c->difficulty || (6 < local_c->stage)))
@@ -492,7 +491,7 @@ ZunResult ResultScreen::ParsePlst(ScoreDat *scoreDat, Plst *param_2)
     for (local_c = scoreDat->fileLength - scoreDat->dataOffset; 0 < local_c;
          local_c = local_c - (u32)*puVar1)
     {
-        if ((local_8->magic == 'PLST') && (local_8->version == 1))
+        if ((local_8->magic == PLST_MAGIC) && (local_8->version == 1))
         {
             param_2 = local_8;
         }
@@ -537,7 +536,7 @@ void ResultScreen::WriteScore()
 
     fileBuffer = (u8 *)malloc(0xa0000);
     memcpy(fileBuffer, this->scoreDat, sizeof(ScoreDat));
-    this->th7kHeader.magic = 'TH7K';
+    this->th7kHeader.magic = TH7K_MAGIC;
     this->th7kHeader.th7kLen2 = sizeof(Th7k);
     this->th7kHeader.th7kLen = sizeof(Th7k);
     this->th7kHeader.version = 1;
@@ -551,7 +550,7 @@ void ResultScreen::WriteScore()
             clrd = g_GameManager.clrd;
             for (i = 0; i < 6; i++)
             {
-                clrd->magic = 'CLRD';
+                clrd->magic = CLRD_MAGIC;
                 clrd->th7kLen2 = sizeof(Clrd);
                 clrd->th7kLen = sizeof(Clrd);
                 clrd->version = 1;
@@ -562,7 +561,7 @@ void ResultScreen::WriteScore()
             catk = g_GameManager.catk;
             for (i = 0; i < 141; i++)
             {
-                if (catk->magic == 'CATK')
+                if (catk->magic == CATK_MAGIC)
                 {
                     catk->idx = i;
                     catk->th7kLen2 = sizeof(Catk);
@@ -593,7 +592,7 @@ void ResultScreen::WriteScore()
             g_Supervisor.UpdateStartupTime();
             memcpy(fileBuffer + local_14 + sizeof(this->lsnmHeader),
                    &g_GameManager.plst, sizeof(Plst));
-            vrsm.magic = 'VRSM';
+            vrsm.magic = VRSM_MAGIC;
             vrsm.version = 1;
             vrsm.th7kLen2 = sizeof(Vrsm);
             vrsm.th7kLen = sizeof(Vrsm);
@@ -651,7 +650,7 @@ void ResultScreen::WriteScore()
                 {
                     break;
                 }
-                if (local_18->data->magic == 'HSCR')
+                if (local_18->data->magic == HSCR_MAGIC)
                 {
                     local_18->data->character = local_1c;
                     local_18->data->difficulty = i;
@@ -2642,7 +2641,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
             GetHighScore(arg->scoreDat, arg->scoreLists[i] + j, j, i, NULL);
         }
     }
-    arg->lsnmHeader.magic = 'LSNM';
+    arg->lsnmHeader.magic = LSNM_MAGIC;
     arg->lsnmHeader.version = 1;
     arg->lsnmHeader.th7kLen2 = sizeof(Lsnm);
     arg->lsnmHeader.th7kLen = sizeof(Lsnm);
@@ -2677,7 +2676,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
         arg->totalPlayCountPerCharacter[i + 1] = 0;
         for (local_1c = 0; local_1c < 141; local_1c = local_1c + 1)
         {
-            if (((local_18->magic == 'CATK') && (local_18->version == 1)) &&
+            if (((local_18->magic == CATK_MAGIC) && (local_18->version == 1)) &&
                 (local_18->numSuccessesPerShot[i] != 0))
             {
                 arg->totalPlayCountPerCharacter[i + 1] =

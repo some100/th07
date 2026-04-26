@@ -31,6 +31,21 @@ struct TextHelper
                                         u32 outlineType, char *string,
                                         IDirect3DTexture8 *outTexture);
     bool TryAllocateBuffer(i32 width, i32 height, D3DFORMAT format);
+    
+    D3DFORMAT GetFormat()
+    {
+        return this->format;
+    }
+    
+    i32 GetWidth()
+    {
+        return this->width;
+    }
+    
+    i32 GetHeight()
+    {
+        return this->height;
+    }
 
     D3DFORMAT format;
     i32 width;

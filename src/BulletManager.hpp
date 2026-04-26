@@ -91,6 +91,7 @@ struct EnemyBulletShooter
     i32 soundOverride;
     BulletTypeSprites *sprites;
 };
+C_ASSERT(sizeof(EnemyBulletShooter) == 0xd4);
 
 struct EnemyLaserShooter
 {
@@ -231,7 +232,7 @@ struct BulletManager
                                             Bullet *bullet, i32 spriteOffset);
     i32 SpawnBulletPattern(struct EnemyBulletShooter *bulletProps);
     Laser *SpawnLaserPattern(struct EnemyLaserShooter *laserProps);
-    i32 SpawnSingleBullet(EnemyBulletShooter *bulletProps, f32 x, f32 y,
+    i32 SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x, i32 y,
                           f32 angle);
     void StopBulletMovement();
 

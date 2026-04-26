@@ -41,18 +41,8 @@ D3DCOLOR g_SpellcardTimeColors[4] = {
 // FUNCTION: TH07 0x00427ae0
 i32 Gui::IsStageFinished()
 {
-    i32 local_c;
-
-    if (this->impl->stageClearTextVm.activeSpriteIdx < 0 ||
-        this->impl->stageClearTextVm.isStopped == 0)
-    {
-        local_c = 0;
-    }
-    else
-    {
-        local_c = 1;
-    }
-    return local_c;
+    return (this->impl->stageClearTextVm.activeSpriteIdx >= 0 &&
+            this->impl->stageClearTextVm.isStopped != 0);
 }
 
 // FUNCTION: TH07 0x00427b21

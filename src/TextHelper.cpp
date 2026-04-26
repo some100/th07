@@ -335,7 +335,7 @@ bool TextHelper::CopyTextToSurface(IDirect3DSurface8 *surface)
     i32 dstWidthBytes;
     u8 *dstBuf;
 
-    if (this->gdiobj2 != NULL)
+    if (!(u8)(u32)(this->gdiobj2 != NULL))
     {
         return false;
     }
@@ -343,8 +343,8 @@ bool TextHelper::CopyTextToSurface(IDirect3DSurface8 *surface)
     surface->GetDesc(&surfaceDesc);
     rectToLock.left = 0;
     rectToLock.top = 0;
-    rectToLock.right = this->width;
-    rectToLock.bottom = this->height;
+    rectToLock.right = this->GetWidth();
+    rectToLock.bottom = this->GetHeight();
     if (surface->LockRect(&lockedRect, &rectToLock, 0) != 0)
     {
         return false;
@@ -354,9 +354,9 @@ bool TextHelper::CopyTextToSurface(IDirect3DSurface8 *surface)
     srcWidthBytes = this->imageWidthInBytes;
     srcBuf = (u8 *)this->buffer;
     dstBuf = (u8 *)lockedRect.pBits;
-    if (surfaceDesc.Format == this->format)
+    if (surfaceDesc.Format == this->GetFormat())
     {
-        for (i = 0; i < this->height; i++)
+        for (i = 0; i < this->GetHeight(); i++)
         {
             memcpy(dstBuf, srcBuf, srcWidthBytes);
             srcBuf += srcWidthBytes;
