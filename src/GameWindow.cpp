@@ -560,14 +560,14 @@ char *GameWindow::FormatCapability(const char *capabilityName,
 // FUNCTION: TH07 0x00435230
 void GameWindow::FormatD3DCapabilities(D3DCAPS8 *caps, char *buf)
 {
-    i32 iVar1;
     char *strPos;
 
+    strPos = buf;
     // STRING: TH07 0x0049786c
-    iVar1 = sprintf(buf, "現在のビデオカード、及びドライバの能力詳細\r\n");
+    strPos += sprintf(strPos, "現在のビデオカード、及びドライバの能力詳細\r\n");
     // STRING: TH07 0x00497858
     strPos = FormatCapability("　走査線取得能力 : ", caps->Caps,
-                              D3DCAPS_READ_SCANLINE, buf + iVar1);
+                              D3DCAPS_READ_SCANLINE, strPos);
     // STRING: TH07 0x00497834
     strPos = FormatCapability("　ウィンドウモードのレンダリング : ", caps->Caps2,
                               D3DCAPS2_CANRENDERWINDOWED, strPos);
@@ -580,11 +580,11 @@ void GameWindow::FormatD3DCapabilities(D3DCAPS8 *caps, char *buf)
         "　プレゼンテーション間隔（垂直同期）: ", caps->PresentationIntervals,
         D3DPRESENT_INTERVAL_ONE, strPos);
     // STRING: TH07 0x004977b4
-    iVar1 = sprintf(strPos, "　-- デバイス能力 ------------------------------\r\n");
+    strPos += sprintf(strPos, "　-- デバイス能力 ------------------------------\r\n");
     strPos =
         // STRING: TH07 0x0049778c
         FormatCapability("　System -> 非ローカルVRAMブリット : ", caps->DevCaps,
-                         D3DDEVCAPS_CANBLTSYSTONONLOCAL, strPos + iVar1);
+                         D3DDEVCAPS_CANBLTSYSTONONLOCAL, strPos);
     // STRING: TH07 0x00497774
     strPos = FormatCapability("　ハードウェア T&L : ", caps->DevCaps,
                               D3DDEVCAPS_HWTRANSFORMANDLIGHT, strPos);
@@ -607,12 +607,12 @@ void GameWindow::FormatD3DCapabilities(D3DCAPS8 *caps, char *buf)
         // STRING: TH07 0x004976b4
         FormatCapability("　頂点バッファにビデオメモリを使用 : ", caps->DevCaps,
                          D3DDEVCAPS_TLVERTEXVIDEOMEMORY, strPos);
-    iVar1 =
+    strPos +=
         // STRING: TH07 0x00497680
         sprintf(strPos, "　-- プリミティブ能力 ---------------------------\r\n");
     // STRING: TH07 0x00497670
     strPos = FormatCapability("　半透明処理 : ", caps->PrimitiveMiscCaps,
-                              D3DPMISCCAPS_BLENDOP, strPos + iVar1);
+                              D3DPMISCCAPS_BLENDOP, strPos);
     strPos = FormatCapability(
         // STRING: TH07 0x00497650
         "　ポイントのクリッピング処理 : ", caps->PrimitiveMiscCaps,
@@ -637,10 +637,10 @@ void GameWindow::FormatD3DCapabilities(D3DCAPS8 *caps, char *buf)
         "　デプステストON/OFF切り替え : ", caps->PrimitiveMiscCaps,
         D3DPMISCCAPS_MASKZ, strPos);
     // STRING: TH07 0x00497580
-    iVar1 = sprintf(strPos, "　-- ラスタ能力 --------------------------------\r\n");
+    strPos += sprintf(strPos, "　-- ラスタ能力 --------------------------------\r\n");
     // STRING: TH07 0x00497564
     strPos = FormatCapability("　異方性フィルタリング : ", caps->RasterCaps,
-                              D3DPRASTERCAPS_ANISOTROPY, strPos + iVar1);
+                              D3DPRASTERCAPS_ANISOTROPY, strPos);
     // STRING: TH07 0x00497548
     strPos = FormatCapability("　アンチエイリアシング : ", caps->RasterCaps,
                               D3DPRASTERCAPS_ANTIALIASEDGES, strPos);
@@ -663,10 +663,10 @@ void GameWindow::FormatD3DCapabilities(D3DCAPS8 *caps, char *buf)
     strPos = FormatCapability("　デプステスト : ", caps->RasterCaps,
                               D3DPRASTERCAPS_ZTEST, strPos);
     // STRING: TH07 0x0049749c
-    iVar1 = sprintf(strPos, "　-- シェーディング能力 -----------------------\r\n");
+    strPos += sprintf(strPos, "　-- シェーディング能力 -----------------------\r\n");
     // STRING: TH07 0x00497480
     strPos = FormatCapability("　グーローシェーディング : ", caps->ShadeCaps,
-                              D3DPSHADECAPS_COLORGOURAUDRGB, strPos + iVar1);
+                              D3DPSHADECAPS_COLORGOURAUDRGB, strPos);
     // STRING: TH07 0x0049745c
     strPos = FormatCapability("　α成分のグーローシェーディング : ", caps->ShadeCaps,
                               D3DPSHADECAPS_ALPHAGOURAUDBLEND, strPos);
@@ -676,11 +676,11 @@ void GameWindow::FormatD3DCapabilities(D3DCAPS8 *caps, char *buf)
     // STRING: TH07 0x00497404
     strPos += sprintf(strPos, "　-- テクスチャ能力 ---------------------------\r\n");
     // STRING: TH07 0x004973e0
-    iVar1 = sprintf(strPos, "　最大テクスチャサイズ : (%d, %d)\r\n",
+    strPos += sprintf(strPos, "　最大テクスチャサイズ : (%d, %d)\r\n",
                     caps->MaxTextureWidth, caps->MaxTextureHeight);
     // STRING: TH07 0x004973c8
     strPos = FormatCapability("　α付きテクスチャ : ", caps->TextureCaps,
-                              D3DPTEXTURECAPS_ALPHA, strPos + iVar1);
+                              D3DPTEXTURECAPS_ALPHA, strPos);
     // STRING: TH07 0x004973a8
     strPos = FormatCapability("　テクスチャトランスフォーム : ", caps->TextureCaps,
                               D3DPTEXTURECAPS_PROJECTED, strPos);
@@ -691,7 +691,7 @@ void GameWindow::FormatD3DCapabilities(D3DCAPS8 *caps, char *buf)
     strPos = FormatCapability("　バイリニア補間（縮小） : ", caps->TextureFilterCaps,
                               D3DPTFILTERCAPS_MINFLINEAR, strPos);
     // STRING: TH07 0x00497340
-    sprintf(strPos, "--------------------------------------------\r\n");
+    strPos += sprintf(strPos, "--------------------------------------------\r\n");
 }
 
 // FUNCTION: TH07 0x004356a0

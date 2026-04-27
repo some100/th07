@@ -156,8 +156,8 @@ struct AnmVm : AnmVmBase
         this->pendingInterrupt = interrupt;
     }
 
-    i32 *GetVar(i32 *paramId, u16 mask, u8 idx);
-    f32 *GetFloatVar(f32 *param_1, u16 mask, u8 idx);
+    i32 *GetVar(i32 *paramId, u16 mask, u32 idx);
+    f32 *GetFloatVar(f32 *param_1, u16 mask, u32 idx);
     f32 GetFloatVarValue(f32 param_1);
     i32 GetVarValue(i32 arg);
     void Initialize();

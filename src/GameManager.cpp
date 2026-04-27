@@ -15,6 +15,7 @@
 #include "SoundPlayer.hpp"
 #include "Stage.hpp"
 #include "Supervisor.hpp"
+#include "ZunMemory.hpp"
 #include "ZunResult.hpp"
 #include "dxutil.hpp"
 
@@ -112,19 +113,18 @@ i32 GameManager::IsInBounds(f32 x, f32 y, f32 widthPx, f32 heightPx)
     return 1;
 }
 
+#pragma var_order(i, local_c)
 // FUNCTION: TH07 0x0042d75a
 i32 GameManager::ByteCsumAccumulator(u8 *param_1, i32 param_2)
 {
-    u8 *local_10;
     i32 local_c;
+    i32 i;
 
     local_c = 0;
-    local_10 = param_1;
-    for (i32 i = 0; i < param_2; ++i)
+    for (i = 0; i < param_2; i++, param_1++)
     {
-        local_c += (u32)*local_10;
+        local_c += (u32)*param_1;
         g_GameManager.globals->curCsum += g_GameManager.globals->csumData[2];
-        local_10 += 1;
     }
     return local_c;
 }
@@ -133,8 +133,7 @@ i32 GameManager::ByteCsumAccumulator(u8 *param_1, i32 param_2)
 i32 GameManager::ComputeGameIntegrityCsum()
 {
     i32 csum = ByteCsumAccumulator((u8 *)g_GameManager.globals->rng1,
-                                   (i32)this->globals +
-                                       0xac - (i32)this->globals->rng1);
+                                   (i32) & this->globals->curCsum - (i32)this->globals->rng1);
     csum += ByteCsumAccumulator((u8 *)g_GameManager.globals->csumData,
                                 sizeof(g_GameManager.globals->csumData));
     csum += ByteCsumAccumulator((u8 *)g_GameManager.defaultCfg,
@@ -531,43 +530,36 @@ void IncrementCappedAgain(u32 *param, u32 cap)
     }
 }
 
+#pragma var_order(size, shotTypeAndChar, uVar2)
 // FUNCTION: TH07 0x0042e83e
 ZunResult GameManager::AddedCallback(GameManager *arg)
 {
     u16 uVar2;
+    i32 shotTypeAndChar;
+    u32 size;
 
     g_Supervisor.checkTiming = 0;
-    arg->difficultyMask = 1 << ((u8)arg->difficulty & 0x1f);
-    arg->shotTypeAndCharacter = (arg->shotType + arg->character * 2);
+    arg->difficultyMask = 1 << arg->difficulty;
+    arg->shotTypeAndCharacter = (arg->character * 2 + arg->shotType);
     g_Supervisor.currentTime = timeGetTime();
     g_Supervisor.effectiveFramerateMultiplier = 1.0f;
-    if (g_Supervisor.curState == 3)
-    {
-        arg->globals->guiScore = arg->globals->score;
-        arg->globals->guiScoreDifference = 0;
-        if (Player::RegisterChain(0) != ZUN_SUCCESS)
-        {
-            // STRING: TH07 0x00498064
-            g_GameErrorContext.Log("error : ƒvƒŒƒCƒ„[‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½\r\n");
-            return ZUN_ERROR;
-        }
-    }
-    else
+    if (g_Supervisor.curState != 3)
     {
         DrawLoadingSprite();
-        SAFE_FREE(arg->defaultCfg);
-        SAFE_FREE(arg->globals);
+        SAFE_DELETE(arg->defaultCfg);
+        SAFE_DELETE(arg->globals);
 
-        arg->tmpBuffer = malloc(g_Rng.GetRandomU32InRange(0xffff) + 0x10);
+        size = g_Rng.GetRandomU32InRange(0xffff) + 0x10;
+        arg->tmpBuffer = malloc(size);
         arg->defaultCfg = new GameConfiguration;
         arg->globals = new ZunGlobals;
         InitializeRngAndCsum();
         *arg->defaultCfg = g_Supervisor.cfg;
-        free(arg->tmpBuffer);
+        ZunMemory::Free(arg->tmpBuffer);
         arg->powerItemCountForScore = 0;
         arg->cherry = arg->globals->cherryStart;
         arg->cherryPlus = arg->globals->cherryStart;
-        if (3 < g_GameManager.difficulty)
+        if (g_GameManager.difficulty >= 4)
         {
             arg->defaultCfg->lifeCount = 2;
         }
@@ -620,74 +612,68 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
         arg->globals->spellCardsCaptured = 0;
         if (g_GameManager.practice == 0)
         {
-            if (arg->difficulty == DIFF_EASY)
+            switch (arg->difficulty)
             {
+            case DIFF_EASY:
                 arg->cherryMax = arg->globals->cherryStart + 200000;
-            }
-            else if (arg->difficulty == DIFF_NORMAL)
-            {
+                break;
+            case DIFF_NORMAL:
                 arg->cherryMax = arg->globals->cherryStart + 200000;
-            }
-            else if (arg->difficulty == DIFF_HARD)
-            {
+                break;
+            case DIFF_HARD:
                 arg->cherryMax = arg->globals->cherryStart + 250000;
-            }
-            else if (arg->difficulty == DIFF_LUNATIC)
-            {
+                break;
+            case DIFF_LUNATIC:
                 arg->cherryMax = arg->globals->cherryStart + 300000;
-            }
-            else if (arg->difficulty == DIFF_EXTRA)
-            {
+                break;
+            case DIFF_EXTRA:
                 arg->cherryMax = arg->globals->cherryStart + 400000;
                 arg->cherry = arg->globals->cherryStart + 200000;
-            }
-            else if (arg->difficulty == DIFF_PHANTASM)
-            {
+                break;
+            case DIFF_PHANTASM:
                 arg->cherryMax = arg->globals->cherryStart + 400000;
                 arg->cherry = arg->globals->cherryStart + 300000;
+                break;
             }
         }
         else
         {
-            if (arg->difficulty == DIFF_EASY)
+            switch (arg->difficulty)
             {
+            case DIFF_EASY:
                 arg->cherryMax = arg->globals->cherryStart + 200000;
-            }
-            else if (arg->difficulty == DIFF_NORMAL)
-            {
+                break;
+            case DIFF_NORMAL:
                 arg->cherryMax = arg->globals->cherryStart + 200000;
-            }
-            else if (arg->difficulty == DIFF_HARD)
-            {
+                break;
+            case DIFF_HARD:
                 arg->cherryMax = arg->globals->cherryStart + 250000;
-            }
-            else if (arg->difficulty == DIFF_LUNATIC)
-            {
+                break;
+            case DIFF_LUNATIC:
                 arg->cherryMax = arg->globals->cherryStart + 300000;
+                break;
             }
-            if (arg->currentStage == 1)
+            switch (arg->currentStage + 1)
             {
+            case 2:
                 arg->cherry = arg->cherryMax;
-            }
-            else if (arg->currentStage == 2)
-            {
+                break;
+            case 3:
                 arg->cherryMax += 50000;
                 arg->cherry = arg->cherryMax;
-            }
-            else if (arg->currentStage == 3)
-            {
+                break;
+            case 4:
                 arg->cherryMax += 100000;
                 arg->cherry = arg->cherryMax;
-            }
-            else if (arg->currentStage == 4)
-            {
+                break;
+            case 5:
                 arg->cherryMax += 150000;
                 arg->cherry = arg->cherryMax;
-            }
-            else if (arg->currentStage == 5)
-            {
+                break;
+            case 6:
                 arg->cherryMax += 200000;
                 arg->cherry = arg->cherryMax;
+                break;
             }
         }
         if (g_GameManager.replay == 0)
@@ -735,6 +721,17 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
             arg->defaultCfg->slowMode = 0;
         }
     }
+    else
+    {
+        arg->globals->guiScore = arg->globals->score;
+        arg->globals->guiScoreDifference = 0;
+        if (Player::RegisterChain(0) != ZUN_SUCCESS)
+        {
+            // STRING: TH07 0x00498064
+            g_GameErrorContext.Log("error : ƒvƒŒƒCƒ„[‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½\r\n");
+            return ZUN_ERROR;
+        }
+    }
     arg->subrank = 0;
     arg->globals->pointItemsCollectedThisStage = 0;
     arg->globals->grazeInStage = 0;
@@ -742,28 +739,36 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
     arg->currentStage = arg->currentStage + 1;
     if (g_GameManager.replay == 0)
     {
+        shotTypeAndChar = g_GameManager.shotTypeAndCharacter;
         if ((arg->globals->numRetries == 0) &&
-            ((i32)(u32)arg->clrd[g_GameManager.shotTypeAndCharacter]
+            ((i32)(u32)arg->clrd[shotTypeAndChar]
                  .difficultyClearedWithRetries[g_GameManager.difficulty] <
              arg->currentStage - 1))
         {
-            arg->clrd[g_GameManager.shotTypeAndCharacter]
+            arg->clrd[shotTypeAndChar]
                 .difficultyClearedWithRetries[g_GameManager.difficulty] =
-                (char)arg->currentStage - 1;
+                arg->currentStage - 1;
         }
-        if ((i32)(u32)arg->clrd[g_GameManager.shotTypeAndCharacter]
+        if ((i32)(u32)arg->clrd[shotTypeAndChar]
                 .difficultyClearedWithoutRetries[g_GameManager.difficulty] <
             arg->currentStage - 1)
         {
-            arg->clrd[g_GameManager.shotTypeAndCharacter]
+            arg->clrd[shotTypeAndChar]
                 .difficultyClearedWithoutRetries[g_GameManager.difficulty] =
-                (char)arg->currentStage - 1;
+                arg->currentStage - 1;
         }
     }
-    if ((arg->demo != 0) && (arg->currentStage != 1))
+    if (arg->practice != 0)
     {
-        arg->globals->currentPower = 128.0f;
-        arg->RegenerateGameIntegrityCsum();
+        switch (arg->currentStage)
+        {
+        case 1:
+            break;
+        default:
+            arg->globals->currentPower = 128.0f;
+            arg->RegenerateGameIntegrityCsum();
+            break;
+        }
     }
     if (g_GameManager.replay != 0)
     {
@@ -774,97 +779,85 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
         g_Rng.seed = uVar2;
     }
     arg->stageRngSeed = g_Rng.seed;
-    if (Stage::RegisterChain(arg->currentStage) == ZUN_SUCCESS)
-    {
-        if (BulletManager::RegisterChain("data/etama.anm") == ZUN_SUCCESS)
-        {
-            if (EnemyManager::RegisterChain(
-                    g_AnmStageFiles[arg->currentStage].stageName1,
-                    g_AnmStageFiles[arg->currentStage].stageName2) == ZUN_SUCCESS)
-            {
-                if (g_EclManager.Load(g_EclPaths[arg->currentStage]) == ZUN_SUCCESS)
-                {
-                    if (EffectManager::RegisterChain() == ZUN_SUCCESS)
-                    {
-                        if (Gui::RegisterChain() == ZUN_SUCCESS)
-                        {
-                            if (g_GameManager.replay == 0)
-                            {
-                                // STRING: TH07 0x00497e1c
-                                ReplayManager::RegisterChain(0, "replay/th7_00.rpy");
-                            }
-                            g_Supervisor.LoadAudio(0, (g_Stage.stdData)->bgmPaths[0]);
-                            g_Supervisor.LoadAudio(1, (g_Stage.stdData)->bgmPaths[1]);
-                            if (arg->currentStage == 6)
-                            {
-                                g_Supervisor.StopAudio();
-                                g_Supervisor.LoadAudio(2, "bgm/th07_13b.mid");
-                            }
-                            else
-                            {
-                                g_Supervisor.PlayLoadedAudio(0);
-                            }
-                            while (g_SoundPlayer.ProcessQueues() != 0)
-                                ;
-                            arg->isInPauseMenu = 0;
-                            arg->notInMenu = 1;
-                            if (g_Supervisor.curState != 3)
-                            {
-                                g_Supervisor.framerateMultiplier = 0.0f;
-                                g_Supervisor.fpsAccumulator = 0.0f;
-                            }
-                            arg->isTimeStopped = 0;
-                            arg->globals->score = 0;
-                            arg->finished = 0;
-                            g_AsciiManager.InitializeVms();
-                            g_GameManager.slowModeSlowActive = 0;
-                            Supervisor::DrawFpsCounter(0);
-                            // STRING: TH07 0x00497e08
-                            Supervisor::DebugPrint2("random seed %d %d\r\n", (u32)g_Rng.seed,
-                                                    g_Rng.generationCount);
-                            return ZUN_SUCCESS;
-                        }
-                        else
-                        {
-                            // STRING: TH07 0x00497e30
-                            g_GameErrorContext.Log("error : 2D•\Ž¦‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½\r\n");
-                            return ZUN_ERROR;
-                        }
-                    }
-                    else
-                    {
-                        // STRING: TH07 0x00497e58
-                        g_GameErrorContext.Log("error : ƒGƒtƒFƒNƒg‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½\r\n");
-                        return ZUN_ERROR;
-                    }
-                }
-                else
-                {
-                    // STRING: TH07 0x00497e84
-                    g_GameErrorContext.Log("error : “G“ª”]‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½\r\n");
-                    return ZUN_ERROR;
-                }
-            }
-            else
-            {
-                // STRING: TH07 0x00497f4c
-                g_GameErrorContext.Log("error : “G‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½\r\n");
-                return ZUN_ERROR;
-            }
-        }
-        else
-        {
-            // STRING: TH07 0x00498010
-            g_GameErrorContext.Log("error : “G’e‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½\r\n");
-            return ZUN_ERROR;
-        }
-    }
-    else
+    if (Stage::RegisterChain(arg->currentStage) != ZUN_SUCCESS)
     {
         // STRING: TH07 0x00498038
         g_GameErrorContext.Log("error : ”wŒiƒf[ƒ^‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½\r\n");
         return ZUN_ERROR;
     }
+
+    if (BulletManager::RegisterChain("data/etama.anm") != ZUN_SUCCESS)
+    {
+        // STRING: TH07 0x00498010
+        g_GameErrorContext.Log("error : “G’e‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½\r\n");
+        return ZUN_ERROR;
+    }
+
+    if (EnemyManager::RegisterChain(
+            g_AnmStageFiles[arg->currentStage].stageName1,
+            g_AnmStageFiles[arg->currentStage].stageName2) != ZUN_SUCCESS)
+    {
+        // STRING: TH07 0x00497f4c
+        g_GameErrorContext.Log("error : “G‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½\r\n");
+        return ZUN_ERROR;
+    }
+
+    if (g_EclManager.Load(g_EclPaths[arg->currentStage]) != ZUN_SUCCESS)
+    {
+        // STRING: TH07 0x00497e84
+        g_GameErrorContext.Log("error : “G“ª”]‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½\r\n");
+        return ZUN_ERROR;
+    }
+
+    if (EffectManager::RegisterChain() != ZUN_SUCCESS)
+    {
+        // STRING: TH07 0x00497e58
+        g_GameErrorContext.Log("error : ƒGƒtƒFƒNƒg‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½\r\n");
+        return ZUN_ERROR;
+    }
+
+    if (Gui::RegisterChain() != ZUN_SUCCESS)
+    {
+        // STRING: TH07 0x00497e30
+        g_GameErrorContext.Log("error : 2D•\Ž¦‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½\r\n");
+        return ZUN_ERROR;
+    }
+
+    if (g_GameManager.replay == 0)
+    {
+        // STRING: TH07 0x00497e1c
+        ReplayManager::RegisterChain(0, "replay/th7_00.rpy");
+    }
+    g_Supervisor.LoadAudio(0, g_Stage.stdData->bgmPaths[0]);
+    g_Supervisor.LoadAudio(1, g_Stage.stdData->bgmPaths[1]);
+    if (arg->currentStage != 6)
+    {
+        g_Supervisor.PlayLoadedAudio(0);
+    }
+    else
+    {
+        g_Supervisor.StopAudio();
+        g_Supervisor.LoadAudio(2, "bgm/th07_13b.mid");
+    }
+    while (g_SoundPlayer.ProcessQueues() != 0)
+        ;
+    arg->isInPauseMenu = 0;
+    arg->notInMenu = 1;
+    if (g_Supervisor.curState != 3)
+    {
+        g_Supervisor.framerateMultiplier = 0.0f;
+        g_Supervisor.fpsAccumulator = 0.0f;
+    }
+    arg->isTimeStopped = 0;
+    arg->globals->score = 0;
+    arg->finished = 0;
+    g_AsciiManager.InitializeVms();
+    g_GameManager.slowModeSlowActive = 0;
+    Supervisor::DrawFpsCounter(0);
+    // STRING: TH07 0x00497e08
+    Supervisor::DebugPrint2("random seed %d %d\r\n", (u32)g_Rng.seed,
+                            g_Rng.GetGenCount());
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x0042f2e4
@@ -1066,43 +1059,44 @@ i32 GameManager::HasReachedMaxClearsAllShotTypes()
                : 1;
 }
 
+#pragma var_order(spellCardsCaptured, i, j)
 // FUNCTION: TH07 0x0042f94c
 i32 GameManager::HasUnlockedPhantomAndMaxClears()
 {
-    i32 local_10;
-    i32 local_8;
+    i32 j;
+    i32 i;
+    i32 spellCardsCaptured;
 
-    local_8 = 0;
-    for (i32 i = 0; i < 141; i++)
+    spellCardsCaptured = 0;
+    for (i = 0; i < 141; i++)
     {
-        if (this->catk[i].numSuccessesPerShot[6] != 0)
+        if (this->catk[i].numSuccessesPerShot[6] > 0)
         {
-            local_8 = local_8 + 1;
+            spellCardsCaptured++;
         }
     }
-    if (local_8 > 60)
+    if (spellCardsCaptured >= 60)
     {
-        for (local_10 = 0; local_10 < 6; local_10 = local_10 + 1)
+        for (j = 0; j < 6; j++)
         {
-            if (this->clrd[local_10].difficultyClearedWithRetries[4] == 99)
+            if (this->clrd[j].difficultyClearedWithRetries[4] == 99)
             {
-                this->clrd[local_10].difficultyClearedWithRetries[5] = 99;
+                this->clrd[j].difficultyClearedWithRetries[5] = 99;
             }
         }
     }
-    if ((((this->clrd[0].difficultyClearedWithRetries[5] == 99) ||
-          (this->clrd[1].difficultyClearedWithRetries[5] == 99)) ||
-         (this->clrd[2].difficultyClearedWithRetries[5] == 99)) ||
-        ((this->clrd[3].difficultyClearedWithRetries[5] == 99 ||
-          (this->clrd[4].difficultyClearedWithRetries[5] == 99)) ||
-         (this->clrd[5].difficultyClearedWithRetries[5] == 99)))
+
+    if (this->clrd[0].difficultyClearedWithRetries[5] == 99)
     {
-        return 1;
+        spellCardsCaptured = 60;
     }
-    else
-    {
-        return 0;
-    }
+
+    return this->clrd[0].difficultyClearedWithRetries[5] == 99 ||
+           this->clrd[1].difficultyClearedWithRetries[5] == 99 ||
+           this->clrd[2].difficultyClearedWithRetries[5] == 99 ||
+           this->clrd[3].difficultyClearedWithRetries[5] == 99 ||
+           this->clrd[4].difficultyClearedWithRetries[5] == 99 ||
+           this->clrd[5].difficultyClearedWithRetries[5] == 99;
 }
 
 #pragma optimize("s", off)

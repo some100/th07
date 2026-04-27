@@ -16,6 +16,7 @@ address|name|type
 0049526c|IPbg4File|vtable
 0049528c|CStreamingSound|vtable
 00495290|CSound|vtable
+004964f4|g_DifficultyWeightsList|global
 00496c0c|DummyMidiTimer|vtable
 00497260|MidiTimer|vtable
 00497264|MidiOutput|vtable
@@ -59,6 +60,7 @@ address|name|type
 0049f4a8|g_OptionsStrings|global
 0049f4cc|g_MainMenuStrings|global
 0049f4ec|g_CharactersAndShotTypesStrings|global
+0049f504|g_DifficultyPointItemWeightsList|global
 0049f518|g_DifficultyNameTable|global
 0049f530|g_ShooterTable|global
 0049f548|g_ShooterTable2|global

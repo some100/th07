@@ -1573,36 +1573,28 @@ f32 AnmVm::GetFloatVarValue(f32 param_1)
     switch ((i32)param_1)
     {
     case 10000:
-        param_1 = (f32)this->intVars1[0];
-        break;
+        return (f32)this->intVars1[0];
     case 0x2711:
-        param_1 = (f32)this->intVars1[1];
-        break;
+        return (f32)this->intVars1[1];
     case 0x2712:
-        param_1 = (f32)this->intVars1[2];
-        break;
+        return (f32)this->intVars1[2];
     case 0x2713:
-        param_1 = (f32)this->intVars1[3];
-        break;
+        return (f32)this->intVars1[3];
     case 0x2714:
-        param_1 = this->floatVars[0];
-        break;
+        return this->floatVars[0];
     case 0x2715:
-        param_1 = this->floatVars[1];
-        break;
+        return this->floatVars[1];
     case 0x2716:
-        param_1 = this->floatVars[2];
-        break;
+        return this->floatVars[2];
     case 0x2717:
-        param_1 = this->floatVars[3];
-        break;
+        return this->floatVars[3];
     case 0x2718:
-        param_1 = (f32)this->intVars2[0];
-        break;
+        return (f32)this->intVars2[0];
     case 0x2719:
-        param_1 = (f32)this->intVars2[1];
+        return (f32)this->intVars2[1];
+    default:
+        return param_1;
     }
-    return param_1;
 }
 
 // FUNCTION: TH07 0x00450b20
@@ -1611,91 +1603,78 @@ i32 AnmVm::GetVarValue(i32 arg)
     switch (arg)
     {
     case 10000:
-        arg = this->intVars1[0];
-        break;
+        return this->intVars1[0];
     case 0x2711:
-        arg = this->intVars1[1];
-        break;
+        return this->intVars1[1];
     case 0x2712:
-        arg = this->intVars1[2];
-        break;
+        return this->intVars1[2];
     case 0x2713:
-        arg = this->intVars1[3];
-        break;
+        return this->intVars1[3];
     case 0x2714:
-        arg = this->floatVars[0];
-        break;
+        return this->floatVars[0];
     case 0x2715:
-        arg = this->floatVars[1];
-        break;
+        return this->floatVars[1];
     case 0x2716:
-        arg = this->floatVars[2];
-        break;
+        return this->floatVars[2];
     case 0x2717:
-        arg = this->floatVars[3];
-        break;
+        return this->floatVars[3];
     case 0x2718:
-        arg = this->intVars2[0];
-        break;
+        return this->intVars2[0];
     case 0x2719:
-        arg = this->intVars2[1];
+        return this->intVars2[1];
+    default:
+        return arg;
     }
-    return arg;
 }
 
 // FUNCTION: TH07 0x00450c10
-f32 *AnmVm::GetFloatVar(f32 *param_1, u16 mask, u8 idx)
+f32 *AnmVm::GetFloatVar(f32 *param_1, u16 mask, u32 idx)
 {
-    if (((u32)mask & 1 << (idx & 0x1f)) != 0)
+    if (((u32)mask & 1 << idx) == 0)
     {
-        u32 uVar1 = *param_1;
-        switch (uVar1)
-        {
-        case 0x2714:
-            param_1 = this->floatVars;
-            break;
-        case 0x2715:
-            param_1 = this->floatVars + 1;
-            break;
-        case 0x2716:
-            param_1 = this->floatVars + 2;
-            break;
-        case 0x2717:
-            param_1 = this->floatVars + 3;
-        }
+        return param_1;
     }
-    return param_1;
+
+    switch ((u32)*param_1)
+    {
+    case 0x2714:
+        return &this->floatVars[0];
+    case 0x2715:
+        return &this->floatVars[1];
+    case 0x2716:
+        return &this->floatVars[2];
+    case 0x2717:
+        return &this->floatVars[3];
+    default:
+        return param_1;
+    }
 }
 
 // FUNCTION: TH07 0x00450ca0
-i32 *AnmVm::GetVar(i32 *paramId, u16 mask, u8 idx)
+i32 *AnmVm::GetVar(i32 *paramId, u16 mask, u32 idx)
 {
-    if (((u32)mask & 1 << (idx & 0x1f)) != 0)
+    if (((u32)mask & 1 << idx) == 0)
     {
-        switch (*paramId)
-        {
-        case 10000:
-            paramId = this->intVars1;
-            break;
-        case 0x2711:
-            paramId = this->intVars1 + 1;
-            break;
-        case 0x2712:
-            paramId = this->intVars1 + 2;
-            break;
-        case 0x2713:
-            paramId = this->intVars1 + 3;
-            break;
-        default:
-            break;
-        case 0x2718:
-            paramId = this->intVars2;
-            break;
-        case 0x2719:
-            paramId = this->intVars2 + 1;
-        }
+        return paramId;
     }
-    return paramId;
+
+    switch (*paramId)
+    {
+    case 10000:
+        return &this->intVars1[0];
+    case 0x2711:
+        return &this->intVars1[1];
+    case 0x2712:
+        return &this->intVars1[2];
+    case 0x2713:
+        return &this->intVars1[3];
+    case 0x2718:
+        return &this->intVars2[0];
+    case 0x2719:
+        return &this->intVars2[1];
+    default:
+        return paramId;
+    }
 }
 
 #pragma var_order(instr, nextInstr, i, t)
@@ -2442,7 +2421,7 @@ void AnmManager::DrawStringFormat(AnmVm *vm, D3DCOLOR textColor,
                            outlineType, (char *)" ", vm->sprite->cols, vm->sprite->rows);
 
     x = (vm->sprite->startPixelInclusive.x + vm->sprite->widthPx * vm->sprite->cols) -
-                  ((f32)strlen(buf) * (f32)fontWidth * vm->sprite->cols) / 2.0f;
+        ((f32)strlen(buf) * (f32)fontWidth * vm->sprite->cols) / 2.0f;
 
     this->DrawTextToSprite(vm->sprite->sourceFileIndex, x, vm->sprite->startPixelInclusive.y,
                            vm->sprite->textureWidth, vm->sprite->textureHeight, fontWidth,

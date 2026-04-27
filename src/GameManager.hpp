@@ -97,19 +97,19 @@ struct GameManager
     // FUNCTION: TH07 0x00404fe0
     i32 CheckGameIntegrity()
     {
-        if (this->globals->curCsum ==
-            this->globals->csumData[2] *
-                    ((i32)this->globals + (0x130 - (i32)this->globals->rng1)) +
-                this->globals->rng1[2])
-        {
-            if (this->globals->csumAsSum + this->globals->rng2[3] ==
-                (i32)this->csumFloat)
-            {
-                return 0;
-            }
-        }
-
-        return 1;
+#ifdef NON_MATCHING
+        return 0;
+#else
+        // This is incredibly ugly but its the only way to get a match on this function
+        return (this->globals->curCsum ==
+                this->globals->rng1[2] + this->globals->csumData[2] *
+                                             ((i32) & this->globals->curCsum - (i32)this->globals->rng1 +
+                                                          sizeof(this->globals->csumData) + sizeof(GameConfiguration) * 2)) &&
+                       (this->globals->csumAsSum + this->globals->rng2[3] ==
+                        (i32)this->csumFloat)
+                   ? 0
+                   : 1;
+#endif
     }
 
     void AddCurrentPower(i32 amount);
@@ -132,7 +132,7 @@ struct GameManager
     {
         if (CheckGameIntegrity() != 0)
         {
-            memset(&g_Supervisor, -1, sizeof(Supervisor));
+            NUKE_SUPERVISOR();
         }
         this->globals->deaths += (f32)amount;
         RegenerateGameIntegrityCsum();

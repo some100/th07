@@ -28,6 +28,11 @@ struct Rng
         this->seed = newSeed;
     }
 
+    u32 GetGenCount()
+    {
+        return this->generationCount;
+    }
+
     u16 seed;
     u16 seedBackup;
     u32 generationCount;
