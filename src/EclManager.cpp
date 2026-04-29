@@ -857,7 +857,7 @@ void EclManager::EndSpellcard(Enemy *enemy, EclRawInstr *instr)
                             .name);
                     while (0 < local_10)
                     {
-                        local_10 += -1;
+                        local_10--;
                         local_18 +=
                             g_GameManager.catk[g_EnemyManager.spellcardInfo.spellcardIdx]
                                 .name[local_10];

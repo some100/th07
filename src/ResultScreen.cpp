@@ -668,7 +668,7 @@ void ResultScreen::WriteScore()
                     local_14 += sizeof(Hscr);
                 }
                 local_18 = local_18->next;
-                local_c += 1;
+                local_c++;
             } while (local_c < 10);
         }
         i++;

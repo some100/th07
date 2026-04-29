@@ -520,7 +520,7 @@ i32 Enemy::HandleLifeCallback()
         {
             break;
         }
-        local_c += 1;
+        local_c++;
     }
     this->life = this->lifeCallbackThreshold[local_c];
     g_EclManager.CallEclSub(&this->currentContext,
@@ -956,7 +956,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                             if (((local_44 == 20) || (local_44 == 0x1e)) &&
                                 (((enemy->timer).current & 1U) != 0))
                             {
-                                local_44 += -10;
+                                local_44 -= 10;
                             }
                             if (((4 < g_GameManager.currentStage) &&
                                  (g_GameManager.currentStage < 7)) &&

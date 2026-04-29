@@ -499,153 +499,133 @@ i32 EffectManager::UpdateNoOp(Effect *effect)
     return 1;
 }
 
+#pragma var_order(effect, i)
 // FUNCTION: TH07 0x0041c1c0
 Effect *EffectManager::SpawnParticles(i32 effectId, D3DXVECTOR3 *pos,
                                       i32 numParticles, D3DCOLOR color)
 {
-    i32 iVar1;
-    i16 local_1c;
+    i32 i;
     Effect *effect;
 
-    i32 i = 0;
-    effect = this->effects + this->nextIndex;
-    while (i < 400)
+    effect = &this->effects[this->nextIndex];
+    for (i = 0; i < 400; i++)
     {
-        this->nextIndex = this->nextIndex + 1;
-        if (399 < this->nextIndex)
+        this->nextIndex++;
+        if (this->nextIndex >= 400)
         {
             this->nextIndex = 0;
         }
-        if (effect->inUseFlag == 0)
+        if (effect->inUseFlag != 0)
         {
-            effect->is2D = 0;
-            effect->inUseFlag = 1;
-            effect->effectId = (u8)effectId;
-            effect->pos1 = *pos;
-            iVar1 = g_EffectMapping[effectId].anmId;
-            local_1c = (i16)iVar1;
-            effect->vm.anmFileIdx = local_1c;
-            g_AnmManager->SetAndExecuteScript(&effect->vm,
-                                              g_AnmManager->scripts[iVar1]);
-            effect->vm.zWriteDisable = 1;
-            effect->vm.color.color = color;
-            effect->callback = g_EffectMapping[effectId].updateCallback;
-            effect->timer = 0;
-            effect->isFadingOut = 0;
-            effect->fadeOutTime = 0;
-            effect->custom.x = 0.0f;
-            effect->custom.y = 0.0f;
-            effect->custom.z = 0.0f;
-            if ((g_EffectMapping[effectId].initCallback != NULL) &&
-                (g_EffectMapping[effectId].initCallback(effect) != 0))
-            {
-                effect->inUseFlag = 0;
-            }
-            numParticles += -1;
-            if (numParticles == 0)
-            {
-                break;
-            }
             if (this->nextIndex == 0)
             {
                 effect = this->effects;
             }
             else
             {
-                effect = effect + 1;
+                effect++;
             }
+            continue;
         }
-        else if (this->nextIndex == 0)
+
+        effect->is2D = 0;
+        effect->inUseFlag = 1;
+        effect->effectId = (u8)effectId;
+        effect->pos1 = *pos;
+        g_AnmManager->SetAnmIdxAndExecuteScript(&effect->vm, g_EffectMapping[effectId].anmId);
+        effect->vm.zWriteDisable = 1;
+        effect->vm.color.color = color;
+        effect->callback = g_EffectMapping[effectId].updateCallback;
+        effect->timer = 0;
+        effect->isFadingOut = 0;
+        effect->fadeOutTime = 0;
+        effect->custom = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+        if ((g_EffectMapping[effectId].initCallback != NULL) &&
+            (g_EffectMapping[effectId].initCallback(effect) != 0))
+        {
+            effect->inUseFlag = 0;
+        }
+        numParticles--;
+        if (numParticles == 0)
+        {
+            break;
+        }
+        if (this->nextIndex == 0)
         {
             effect = this->effects;
         }
         else
         {
-            effect = effect + 1;
+            effect++;
         }
-        ++i;
     }
-    if (i < 400)
-    {
-        return effect;
-    }
-    else
-    {
-        return this->effects + 0x198;
-    }
+
+    return i >= 400 ? &this->effects[0x198] : effect;
 }
 
+#pragma var_order(effect, i)
 // FUNCTION: TH07 0x0041c400
 Effect *EffectManager::SpawnMovingParticles(i32 effectId, D3DXVECTOR3 *pos,
                                             D3DXVECTOR3 *velocity,
                                             i32 numParticles, D3DCOLOR color)
 {
-    Effect *effect = &this->effects[this->nextIndex];
+    i32 i;
+    Effect *effect;
 
-    i32 i = 0;
-    while (i < 400)
+    effect = &this->effects[this->nextIndex];
+
+    for (i = 0; i < 400; i++)
     {
-        this->nextIndex = this->nextIndex + 1;
-        if (399 < this->nextIndex)
+        this->nextIndex++;
+        if (this->nextIndex >= 400)
         {
             this->nextIndex = 0;
         }
-        if (effect->inUseFlag == 0)
+        if (effect->inUseFlag != 0)
         {
-            effect->is2D = 0;
-            effect->inUseFlag = 1;
-            effect->effectId = effectId;
-            effect->pos1 = *pos;
-            i16 local_10 = g_EffectMapping[effectId].anmId;
-            effect->vm.anmFileIdx = local_10;
-            g_AnmManager->SetAndExecuteScript(
-                &effect->vm, g_AnmManager->scripts[g_EffectMapping[effectId].anmId]);
-            effect->vm.color.color = color;
-            effect->callback = g_EffectMapping[effectId].updateCallback;
-            effect->timer = 0;
-            effect->isFadingOut = 0;
-            effect->fadeOutTime = 0;
-            effect->custom = *velocity;
-            if ((g_EffectMapping[effectId].initCallback != NULL) &&
-                (g_EffectMapping[effectId].initCallback(effect) != 0))
-            {
-                effect->inUseFlag = 0;
-            }
-            numParticles += -1;
-            if (numParticles == 0)
-            {
-                break;
-            }
             if (this->nextIndex == 0)
             {
                 effect = this->effects;
             }
             else
             {
-                effect = effect + 1;
+                effect++;
             }
+            continue;
         }
-        else if (this->nextIndex == 0)
+
+        effect->is2D = 0;
+        effect->inUseFlag = 1;
+        effect->effectId = effectId;
+        effect->pos1 = *pos;
+        g_AnmManager->SetAnmIdxAndExecuteScript(&effect->vm, g_EffectMapping[effectId].anmId);
+        effect->vm.color.color = color;
+        effect->callback = g_EffectMapping[effectId].updateCallback;
+        effect->timer = 0;
+        effect->isFadingOut = 0;
+        effect->fadeOutTime = 0;
+        effect->custom = *velocity;
+        if ((g_EffectMapping[effectId].initCallback != NULL) &&
+            (g_EffectMapping[effectId].initCallback(effect) != 0))
+        {
+            effect->inUseFlag = 0;
+        }
+        numParticles--;
+        if (numParticles == 0)
+        {
+            break;
+        }
+        if (this->nextIndex == 0)
         {
             effect = this->effects;
         }
         else
         {
-            effect = effect + 1;
+            effect++;
         }
-        ++i;
     }
 
-    Effect *local_20;
-    if (i < 400)
-    {
-        local_20 = effect;
-    }
-    else
-    {
-        local_20 = this->effects + 0x198;
-    }
-    return local_20;
+    return i >= 400 ? &this->effects[0x198] : effect;
 }
 
 // FUNCTION: TH07 0x0041c610
@@ -653,27 +633,20 @@ Effect *EffectManager::SpawnEffect(i32 effectId, D3DXVECTOR3 *pos, i32 param_3,
                                    i32 param_4, D3DCOLOR color)
 {
     Effect *effect;
-    i16 local_18;
-    i32 iVar1;
 
-    effect = this->effects + param_3 + 400;
+    effect = &this->effects[param_3 + 400];
     effect->is2D = 0;
     effect->inUseFlag = 1;
     effect->effectId = effectId;
     effect->pos1 = *pos;
-    iVar1 = g_EffectMapping[effectId].anmId;
-    local_18 = (i16)iVar1;
-    effect->vm.anmFileIdx = local_18;
-    g_AnmManager->SetAndExecuteScript(&effect->vm, g_AnmManager->scripts[iVar1]);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&effect->vm, g_EffectMapping[effectId].anmId);
     effect->vm.zWriteDisable = 1;
     effect->vm.color.color = color;
     effect->callback = g_EffectMapping[effectId].updateCallback;
     effect->timer = 0;
     effect->isFadingOut = 0;
     effect->fadeOutTime = 0;
-    effect->custom.x = 0.0f;
-    effect->custom.y = 0.0f;
-    effect->custom.z = 0.0f;
+    effect->custom = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
     if (g_EffectMapping[effectId].initCallback != NULL)
     {
         if (g_EffectMapping[effectId].initCallback(effect) != 0)
@@ -684,10 +657,11 @@ Effect *EffectManager::SpawnEffect(i32 effectId, D3DXVECTOR3 *pos, i32 param_3,
     return effect;
 }
 
+#pragma var_order(effect, i)
 // FUNCTION: TH07 0x0041c790
 u32 EffectManager::OnUpdate(EffectManager *arg)
 {
-    i32 local_c;
+    i32 i;
     Effect *effect;
 
     effect = arg->effects;
@@ -700,52 +674,51 @@ u32 EffectManager::OnUpdate(EffectManager *arg)
     arg->specialEffects[1].head = NULL;
     arg->specialEffects[2].head = NULL;
     arg->specialEffects[3].head = NULL;
-    for (local_c = 0; local_c < 0x198; local_c += 1)
+    for (i = 0; i < 0x198; i++, effect++)
     {
-        if (effect->inUseFlag != 0)
+        if (effect->inUseFlag == 0)
         {
-            arg->activeEffectsCount = arg->activeEffectsCount + 1;
-            if ((effect->callback == NULL) || (effect->callback(effect) == 1))
+            continue;
+        }
+
+        arg->activeEffectsCount++;
+        if (effect->callback != NULL && effect->callback(effect) != 1)
+        {
+            effect->inUseFlag = 0;
+            continue;
+        }
+
+        if (g_AnmManager->ExecuteScript(&effect->vm) != 0)
+        {
+            effect->inUseFlag = 0;
+            continue;
+        }
+
+        effect->timer++;
+        effect->head = NULL;
+        if ((effect->is2D == 1) || (effect->is2D == 3))
+        {
+            arg->specialEffectsPtrs[1]->head = effect;
+            arg->specialEffectsPtrs[1] = effect;
+        }
+        else if (effect->is2D == 0)
+        {
+            if (effect->vm.blendMode != 0)
             {
-                if (g_AnmManager->ExecuteScript(&effect->vm) == 0)
-                {
-                    effect->timer++;
-                    effect->head = NULL;
-                    if ((effect->is2D == 1) || (effect->is2D == 3))
-                    {
-                        arg->specialEffectsPtrs[1]->head = effect;
-                        arg->specialEffectsPtrs[1] = effect;
-                    }
-                    else if (effect->is2D == 0)
-                    {
-                        if (effect->vm.blendMode == 0)
-                        {
-                            arg->specialEffectsPtrs[0]->head = effect;
-                            arg->specialEffectsPtrs[0] = effect;
-                        }
-                        else
-                        {
-                            arg->specialEffectsPtrs[3]->head = effect;
-                            arg->specialEffectsPtrs[3] = effect;
-                        }
-                    }
-                    else
-                    {
-                        arg->specialEffectsPtrs[2]->head = effect;
-                        arg->specialEffectsPtrs[2] = effect;
-                    }
-                }
-                else
-                {
-                    effect->inUseFlag = 0;
-                }
+                arg->specialEffectsPtrs[3]->head = effect;
+                arg->specialEffectsPtrs[3] = effect;
             }
             else
             {
-                effect->inUseFlag = 0;
+                arg->specialEffectsPtrs[0]->head = effect;
+                arg->specialEffectsPtrs[0] = effect;
             }
         }
-        effect = effect + 1;
+        else
+        {
+            arg->specialEffectsPtrs[2]->head = effect;
+            arg->specialEffectsPtrs[2] = effect;
+        }
     }
     arg->frameCounter = arg->frameCounter + 1;
     if ((arg->frameCounter % 300 == 100) &&
@@ -764,103 +737,106 @@ u32 EffectManager::OnDraw(EffectManager *arg)
 {
     Effect *effect;
 
-    for (effect = arg->specialEffects[0].head; effect != NULL;
-         effect = effect->head)
+    effect = arg->specialEffects[0].head;
+    while (effect != NULL)
     {
         effect->vm.pos = effect->pos1;
         effect->vm.pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         effect->vm.pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         g_AnmManager->Draw(&effect->vm);
+        effect = effect->head;
     }
-    for (effect = arg->specialEffects[2].head; effect != NULL;
-         effect = effect->head)
+    effect = arg->specialEffects[2].head;
+    while (effect != NULL)
     {
         effect->vm.pos = effect->pos1;
         g_AnmManager->DrawBillboard(&effect->vm);
+        effect = effect->head;
     }
-    for (effect = arg->specialEffects[3].head; effect != NULL;
-         effect = effect->head)
+    effect = arg->specialEffects[3].head;
+    while (effect != NULL)
     {
         effect->vm.pos = effect->pos1;
         effect->vm.pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         effect->vm.pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         g_AnmManager->Draw(&effect->vm);
+        effect = effect->head;
     }
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+#pragma var_order(effect, a, counter, b, g, r, temp)
 // FUNCTION: TH07 0x0041cb80
 i32 EffectManager::UpdateSpecialEffect()
 {
-    bool bVar1;
-    i32 blue;
-    i32 green;
-    i32 red;
-    i32 alpha;
-    f32 local_1c;
-    f32 local_18;
-    f32 local_14;
-    f32 local_c;
+    int temp;
+    f32 r;
+    f32 g;
+    f32 b;
+    int counter;
+    f32 a;
     Effect *effect;
 
     effect = this->specialEffects[1].head;
-    bVar1 = false;
-    if (g_Supervisor.cfg.effectQuality != QUALITY_WORST)
+    counter = 0;
+
+    if (g_Supervisor.cfg.effectQuality == QUALITY_WORST)
     {
-        while ((effect != NULL &&
-                ((bVar1 = (bool)(bVar1 ^ 1),
-                  g_Supervisor.cfg.effectQuality != QUALITY_MEDIUM || (!bVar1)))))
-        {
-            if (effect->effectId == 20)
-            {
-                local_1c = (f32)effect->vm.color.bytes.r;
-                local_18 = (f32)effect->vm.color.bytes.g;
-                local_14 = (f32)effect->vm.color.bytes.b;
-                local_c = (f32)effect->vm.color.bytes.a;
-                alpha = local_1c * this->globalColorMultiplierR;
-                if (0xff < alpha)
-                {
-                    alpha = 0xff;
-                }
-                effect->vm.color.bytes.r = (u8)alpha;
-                red = local_18 * this->globalColorMultiplierG;
-                if (0xff < red)
-                {
-                    red = 0xff;
-                }
-                effect->vm.color.bytes.g = (u8)red;
-                green = local_14 * this->globalColorMultiplierB;
-                if (0xff < green)
-                {
-                    green = 0xff;
-                }
-                effect->vm.color.bytes.b = (u8)green;
-                blue = local_c * this->globalColorMultiplierA;
-                if (0xff < blue)
-                {
-                    blue = 0xff;
-                }
-                effect->vm.color.bytes.a = (u8)blue;
-            }
-            effect->vm.pos = effect->pos1;
-            if (effect->is2D == 1)
-            {
-                g_AnmManager->DrawBillboard(&effect->vm);
-            }
-            else
-            {
-                g_AnmManager->DrawProjected(&effect->vm);
-            }
-            if (effect->effectId == 20)
-            {
-                effect->vm.color.bytes.r = (u8)local_1c;
-                effect->vm.color.bytes.g = (u8)local_18;
-                effect->vm.color.bytes.b = (u8)local_14;
-                effect->vm.color.bytes.a = (u8)local_c;
-            }
-            effect = effect->head;
-        }
+        return 1;
     }
+
+    while (effect != NULL)
+    {
+        counter++;
+        if (g_Supervisor.cfg.effectQuality == QUALITY_MEDIUM)
+        {
+            if (counter & 1)
+            {
+                return 1;
+            }
+        }
+
+        if (effect->effectId == 20)
+        {
+            r = (f32)effect->vm.color.bytes.r;
+            g = (f32)effect->vm.color.bytes.g;
+            b = (f32)effect->vm.color.bytes.b;
+            a = (f32)effect->vm.color.bytes.a;
+
+            temp = r * this->globalColorMultiplierR;
+            effect->vm.color.bytes.r = (temp > 255) ? 255 : temp;
+
+            temp = g * this->globalColorMultiplierG;
+            effect->vm.color.bytes.g = (temp > 255) ? 255 : temp;
+
+            temp = b * this->globalColorMultiplierB;
+            effect->vm.color.bytes.b = (temp > 255) ? 255 : temp;
+
+            temp = a * this->globalColorMultiplierA;
+            effect->vm.color.bytes.a = (temp > 255) ? 255 : temp;
+        }
+
+        effect->vm.pos = effect->pos1;
+        if (effect->is2D == 1)
+        {
+            g_AnmManager->DrawBillboard(&effect->vm);
+        }
+        else
+        {
+            g_AnmManager->DrawProjected(&effect->vm);
+        }
+
+        if (effect->effectId == 20)
+        {
+            effect->vm.color.bytes.r = (u8)r;
+            effect->vm.color.bytes.g = (u8)g;
+            effect->vm.color.bytes.b = (u8)b;
+            effect->vm.color.bytes.a = (u8)a;
+        }
+
+        effect = effect->head;
+    }
+
     return 1;
 }
 

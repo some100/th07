@@ -1161,7 +1161,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
                 }
             }
         bulletLoopContinue:
-            local_14 += -1;
+            local_14--;
             if (local_14 < 0)
             {
                 local_14 = 0x3ff;

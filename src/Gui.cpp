@@ -502,7 +502,7 @@ ZunResult Gui::ActualAddedCallback()
         }
         for (local_8 = 0; local_8 < 0xe; local_8 += 1)
         {
-            for (local_c = 0; local_c < 0xc; local_c += 1)
+            for (local_c = 0; local_c < 0xc; local_c++)
             {
                 uVar8 = local_8 + local_c & 1;
                 local_30 = (i16)uVar8 + 0x726;
@@ -1378,12 +1378,12 @@ void Gui::UpdateGui()
     if (this->impl->activeTransitionQuads != 0)
     {
         local_8 = 0xa8;
-        for (local_c = 0; local_c < 0xa8; local_c += 1)
+        for (local_c = 0; local_c < 0xa8; local_c++)
         {
             if (g_AnmManager->ExecuteScript(this->impl->transitionQuads + local_c) !=
                 0)
             {
-                local_8 += -1;
+                local_8--;
             }
         }
         this->impl->activeTransitionQuads = local_8;

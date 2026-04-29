@@ -72,7 +72,7 @@ i32 MusicRoom::ProcessInput()
         {
             this->listingOffset = this->cursor;
         }
-        for (local_c = 0; local_c < 0x1f; local_c += 1)
+        for (local_c = 0; local_c < 0x1f; local_c++)
         {
             if (this->cursor == local_c)
             {
@@ -99,7 +99,7 @@ i32 MusicRoom::ProcessInput()
             this->cursor = 0;
             this->listingOffset = 0;
         }
-        for (local_c = 0; local_c < 0x1f; local_c += 1)
+        for (local_c = 0; local_c < 0x1f; local_c++)
         {
             if (this->cursor == local_c)
             {
@@ -119,7 +119,7 @@ i32 MusicRoom::ProcessInput()
             g_SoundPlayer.StartBGM("thbgm.dat");
         }
         g_Supervisor.PlayAudio(this->trackDescriptors[this->selectedIdx].path);
-        for (local_c = 0; local_c < 8; local_c += 1)
+        for (local_c = 0; local_c < 8; local_c++)
         {
             memset(local_54, 0, 0x40);
             memcpy(local_54,

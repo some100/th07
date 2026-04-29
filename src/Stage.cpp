@@ -954,7 +954,7 @@ ZunResult Stage::UpdateObjects()
                 }
                 if (vm->currentInstruction != NULL)
                 {
-                    local_c += 1;
+                    local_c++;
                 }
             }
             if (local_c == 0)

@@ -23,11 +23,11 @@ struct Effect
     ZunTimer timer;
     i32 unused_2c4;
     EffectCallback callback;
-    u8 inUseFlag;
+    i8 inUseFlag;
     i8 effectId;
     u8 isFadingOut;
     i8 fadeOutTime;
-    u8 is2D;
+    i8 is2D;
     // pad 3
     Effect *head;
 };

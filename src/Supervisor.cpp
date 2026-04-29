@@ -1152,7 +1152,7 @@ i32 Supervisor::SnapshotScreen(const char *param_1)
                 local_1c->bmiHeader.biCompression = 0;
                 backBuffer->LockRect(&local_40, NULL, 0);
                 bytesPerRow = 0;
-                for (y = 479; -1 < y; y += -1)
+                for (y = 479; -1 < y; y--)
                 {
                     local_2c = (u8 *)((u8 *)local_18 + local_24 * bytesPerRow);
                     local_28 = (u8 *)((u8 *)local_40.pBits + local_40.Pitch * y);

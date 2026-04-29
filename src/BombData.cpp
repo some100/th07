@@ -884,7 +884,7 @@ void BombData::BombMarisaACalcFocus(Player *player)
         {
             if (subInfo->state != 0)
             {
-                for (j = 7; 0 < j; j += -1)
+                for (j = 7; 0 < j; j--)
                 {
                     subInfo->bombRegionPositionsTrails[j] =
                         subInfo->bombRegionPositionsTrails[j - 1];
@@ -1260,7 +1260,7 @@ void BombData::BombSakuyaACalc(Player *player)
                             player->bombStartPos + local_c->bombRegionVelocities;
                         local_c->bombRegionVelocities.z = 0.0f;
                         player->bombProjectiles[local_8].payload = 0;
-                        local_24 += -1;
+                        local_24--;
                     }
                 }
                 else
@@ -1753,7 +1753,7 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
                 local_c->state = 1;
                 g_AnmManager->ExecuteAnmIdx(local_c->vms, i + 0x40d);
                 local_c->bombRegionPositions = player->positionCenter;
-                for (local_20 = 0x1f; -1 < local_20; local_20 += -1)
+                for (local_20 = 0x1f; -1 < local_20; local_20--)
                 {
                     local_c->bombRegionPositionsTrails[local_20] =
                         local_c->bombRegionPositions;
@@ -1821,7 +1821,7 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
                 local_c->bombRegionVelocities +=
                     g_Supervisor.effectiveFramerateMultiplier *
                     local_c->bombRegionAcceleration;
-                for (local_20 = 0x1f; 0 < local_20; local_20 += -1)
+                for (local_20 = 0x1f; 0 < local_20; local_20--)
                 {
                     local_c->bombRegionPositionsTrails[local_20] =
                         local_c->bombRegionPositionsTrails[local_20 - 1];

@@ -509,7 +509,7 @@ i32 ShtData::DrawBulletWithTrail(Player *player, PlayerBullet *bullet)
     origAlpha = bullet->vm.color.bytes.a;
     for (local_c = 0; (local_c < bullet->trailLength &&
                        (bullet->posHistory[local_c].x != -999.0f));
-         local_c += 1)
+         local_c++)
     {
         bullet->vm.pos = bullet->posHistory[local_c];
         bullet->vm.color.bytes.a =
@@ -2229,7 +2229,7 @@ void Player::BreakBorder(u32 unused)
     g_GameManager.cherryPlus = g_GameManager.globals->cherryStart;
     SpawnBombEffect(&this->positionCenter, 32.0f, 16.0f, 0x32, 8);
     local_10 = -ZUN_PI;
-    for (local_c = 0; local_c < 0x20; local_c += 1, local_10 += 0.19634955f)
+    for (local_c = 0; local_c < 0x20; local_c++, local_10 += 0.19634955f)
     {
         effect = g_EffectManager.SpawnParticles(0x1d, &this->positionCenter, 1,
                                                 0xffffffff);

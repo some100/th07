@@ -456,7 +456,7 @@ void EnemyEclInstr::ExInsShootBulletsAlongLaser(Enemy *enemy,
             local_28 = -local_10;
             local_8 = local_34;
             bullet = g_BulletManager.bullets;
-            for (local_c = 0; local_c < 0x400; local_c += 1)
+            for (local_c = 0; local_c < 0x400; local_c++)
             {
                 if ((((bullet->state != BULLET_INACTIVE) &&
                       (bullet->state != BULLET_DESPAWN)) &&
