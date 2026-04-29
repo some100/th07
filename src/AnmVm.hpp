@@ -155,6 +155,11 @@ struct AnmVm : AnmVmBase
     {
         this->pendingInterrupt = interrupt;
     }
+    
+    void SetRotationZ(f32 z)
+    {
+        this->rotation.z = z;
+    }
 
     i32 *GetVar(i32 *paramId, u16 mask, u32 idx);
     f32 *GetFloatVar(f32 *param_1, u16 mask, u32 idx);

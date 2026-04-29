@@ -24,7 +24,7 @@ struct Effect
     i32 unused_2c4;
     EffectCallback callback;
     u8 inUseFlag;
-    u8 effectId;
+    i8 effectId;
     u8 isFadingOut;
     i8 fadeOutTime;
     u8 is2D;

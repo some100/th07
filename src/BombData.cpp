@@ -1252,13 +1252,13 @@ void BombData::BombSakuyaACalc(Player *player)
                         local_c->angle = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
                         local_c->speed = g_Rng.GetRandomFloatInRange(6.0f) + 5.5f;
                         local_c->accel = g_Rng.GetRandomFloatInRange(0.1f) + 0.1f;
-                        (local_c->bombRegionAcceleration).x =
+                        local_c->bombRegionAcceleration.x =
                             g_Rng.GetRandomFloatInRange(0.06283186f) - 0.03141593f;
-                        (local_c->bombRegionVelocities).x = cosf(local_c->angle) * 24.0f;
-                        (local_c->bombRegionVelocities).y = sinf(local_c->angle) * 24.0f;
+                        local_c->bombRegionVelocities.x = cosf(local_c->angle) * 24.0f;
+                        local_c->bombRegionVelocities.y = sinf(local_c->angle) * 24.0f;
                         local_c->bombRegionPositions =
                             player->bombStartPos + local_c->bombRegionVelocities;
-                        (local_c->bombRegionVelocities).z = 0.0f;
+                        local_c->bombRegionVelocities.z = 0.0f;
                         player->bombProjectiles[local_8].payload = 0;
                         local_24 += -1;
                     }
@@ -1266,11 +1266,11 @@ void BombData::BombSakuyaACalc(Player *player)
                 else
                 {
                     local_c->angle = utils::AddNormalizeAngle(
-                        local_c->angle, (local_c->bombRegionAcceleration).x);
+                        local_c->angle, local_c->bombRegionAcceleration.x);
                     local_c->speed = local_c->speed + local_c->accel;
-                    (local_c->bombRegionVelocities).x =
+                    local_c->bombRegionVelocities.x =
                         cosf(local_c->angle) * local_c->speed;
-                    (local_c->bombRegionVelocities).y =
+                    local_c->bombRegionVelocities.y =
                         sinf(local_c->angle) * local_c->speed;
                     if (player->bombProjectiles[local_8].payload < 0x1e)
                     {
@@ -1403,13 +1403,13 @@ void BombData::BombSakuyaACalcFocus(Player *player)
                     local_c->speed = g_Rng.GetRandomFloatInRange(1.0f) + 0.5f;
                     local_c->accel = g_Rng.GetRandomFloatInRange(0.1f) + 0.03f;
                     g_Rng.GetRandomU16(); // What
-                    (local_c->bombRegionAcceleration).x = -0.15707964f;
-                    (local_c->bombRegionVelocities).x = cosf(local_c->angle) * 24.0f;
-                    (local_c->bombRegionVelocities).y = sinf(local_c->angle) * 24.0f;
+                    local_c->bombRegionAcceleration.x = -0.15707964f;
+                    local_c->bombRegionVelocities.x = cosf(local_c->angle) * 24.0f;
+                    local_c->bombRegionVelocities.y = sinf(local_c->angle) * 24.0f;
                     local_c->bombRegionPositions =
                         player->positionCenter + local_c->bombRegionVelocities;
-                    (local_c->timer) = 0;
-                    (local_c->bombRegionVelocities).z = 0.0f;
+                    local_c->timer = 0;
+                    local_c->bombRegionVelocities.z = 0.0f;
                     player->bombProjectiles[local_8].payload = 0;
                 }
                 local_c = local_c + 1;
@@ -1422,11 +1422,11 @@ void BombData::BombSakuyaACalcFocus(Player *player)
         {
             if (local_c->state != 0)
             {
-                if (((local_c->timer) < 0x1e) ||
-                    (0x45 < (local_c->timer).current))
+                if ((local_c->timer < 0x1e) ||
+                    (0x45 < local_c->timer.current))
                 {
-                    if (((local_c->timer) == (local_c->timer).previous) ||
-                        ((local_c->timer).current != 0x46))
+                    if ((local_c->timer == local_c->timer.previous) ||
+                        (local_c->timer.current != 0x46))
                     {
                         bVar4 = false;
                     }
@@ -1449,17 +1449,17 @@ void BombData::BombSakuyaACalcFocus(Player *player)
                         local_c->speed = 14.0f;
                     }
                     local_c->speed = local_c->speed + local_c->accel;
-                    (local_c->bombRegionVelocities).x =
+                    local_c->bombRegionVelocities.x =
                         cosf(local_c->angle) * local_c->speed;
-                    (local_c->bombRegionVelocities).y =
+                    local_c->bombRegionVelocities.y =
                         sinf(local_c->angle) * local_c->speed;
                 }
                 else
                 {
                     local_c->angle = utils::AddNormalizeAngle(
-                        local_c->angle, (local_c->bombRegionAcceleration).x);
-                    (local_c->bombRegionVelocities).x = 0.0f;
-                    (local_c->bombRegionVelocities).y = 0.0f;
+                        local_c->angle, local_c->bombRegionAcceleration.x);
+                    local_c->bombRegionVelocities.x = 0.0f;
+                    local_c->bombRegionVelocities.y = 0.0f;
                 }
                 if (player->bombProjectiles[local_8].payload == 0)
                 {
@@ -1628,7 +1628,7 @@ void BombData::BombSakuyaBCalc(Player *player)
                 }
                 local_c->vms[0].pos.y = local_74 + 224.0f;
                 local_c->vms[0].pos.z = 0.49f;
-                (local_c->bombRegionVelocities).z = 0.0f;
+                local_c->bombRegionVelocities.z = 0.0f;
                 local_c = local_c + 1;
             }
         }
@@ -1758,12 +1758,12 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
                     local_c->bombRegionPositionsTrails[local_20] =
                         local_c->bombRegionPositions;
                 }
-                (local_c->bombRegionVelocities).x = 0.0f;
-                (local_c->bombRegionVelocities).y = 0.0f;
-                (local_c->bombRegionVelocities).z = 0.0f;
-                (local_c->bombRegionAcceleration).x = 0.0f;
-                (local_c->bombRegionAcceleration).y = -0.008f;
-                (local_c->bombRegionAcceleration).z = 0.0f;
+                local_c->bombRegionVelocities.x = 0.0f;
+                local_c->bombRegionVelocities.y = 0.0f;
+                local_c->bombRegionVelocities.z = 0.0f;
+                local_c->bombRegionAcceleration.x = 0.0f;
+                local_c->bombRegionAcceleration.y = -0.008f;
+                local_c->bombRegionAcceleration.z = 0.0f;
                 local_c = local_c + 1;
             }
             player->verticalMovementSpeedMultiplierDuringBomb = 1.5f;

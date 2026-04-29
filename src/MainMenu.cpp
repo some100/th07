@@ -2238,6 +2238,7 @@ u32 MainMenu::OnUpdateSelectReplay()
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+#pragma var_order(vm, i, replayAmount, iVar2)
 // FUNCTION: TH07 0x0045b5ef
 i32 MainMenu::DrawReplayMenu()
 {
@@ -2251,8 +2252,7 @@ i32 MainMenu::DrawReplayMenu()
                                 "No.   Name       Date  Player   Rank");
     replayAmount = this->chosenReplay - this->chosenReplay % 0xf;
     iVar2 = replayAmount + 0xf;
-    vm = &this->vmHead[0x86];
-    while (replayAmount < iVar2 && (replayAmount < this->replayFilesNum))
+    for (vm = &this->vmHead[0x86]; replayAmount < iVar2 && replayAmount < this->replayFilesNum; vm++, replayAmount++)
     {
         g_AsciiManager.isSelected = replayAmount == this->chosenReplay;
         if (replayAmount == this->chosenReplay)
@@ -2272,11 +2272,8 @@ i32 MainMenu::DrawReplayMenu()
             g_CharacterAndShottypeReplayStrings[this->replays[replayAmount]
                                                     .data.shotType],
             g_DifficultyStrings[this->replays[replayAmount].data.difficulty]);
-        vm = vm + 1;
-        replayAmount += 1;
     }
-    if (((this->menuSubState == 2) || (this->menuSubState == 3)) &&
-        (this->currentReplay != NULL))
+    if ((this->menuSubState == 2 || this->menuSubState == 3) && this->currentReplay != NULL)
     {
         g_AsciiManager.color = 0xffffffff;
         g_AsciiManager.isSelected = 0;
@@ -2288,7 +2285,7 @@ i32 MainMenu::DrawReplayMenu()
                                     // STRING: TH07 0x00495540
                                     "Stage    LastScore");
         vm = &this->vmHead[0x96];
-        for (i = 0; i < 7; i++)
+        for (i = 0; i < 7; i++, vm++)
         {
             if (this->menuSubState == 3)
             {
@@ -2337,7 +2334,6 @@ i32 MainMenu::DrawReplayMenu()
                 AsciiManager::AddFormatText(&g_AsciiManager, &vm[1].pos, "%s %9d0",
                                             g_PhantasmReplayString);
             }
-            vm = vm + 1;
         }
     }
     g_AsciiManager.color = 0xffffffff;

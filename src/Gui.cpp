@@ -752,7 +752,7 @@ ZunResult Gui::ActualAddedCallback()
 // FUNCTION: TH07 0x00429935
 ZunResult Gui::LoadMsg(const char *param_1)
 {
-    i32 iVar4;
+    i32 i;
 
     FreeMsgFile();
     this->impl->msg.msgFile = (MsgRawHeader *)FileSystem::OpenFile(param_1, 0);
@@ -762,18 +762,15 @@ ZunResult Gui::LoadMsg(const char *param_1)
         g_GameErrorContext.Log("error : メッセージファイル %s が読み込めませんでした\r\n", param_1);
         return ZUN_ERROR;
     }
-    else
+
+    this->impl->msg.currentMsgIdx = -1;
+    this->impl->msg.curInstr = NULL;
+    for (i = 0; i < this->impl->msg.msgFile->numEntries; i++)
     {
-        this->impl->msg.currentMsgIdx = -1;
-        this->impl->msg.curInstr = NULL;
-        for (iVar4 = 0; iVar4 < this->impl->msg.msgFile->numEntries; iVar4 += 1)
-        {
-            (&this->impl->msg.msgFile->entries)[iVar4] =
-                (MsgRawInstr *)((u8 *)&this->impl->msg.msgFile->numEntries +
-                                (i32)(&this->impl->msg.msgFile->entries)[iVar4]);
-        }
-        return ZUN_SUCCESS;
+        (&this->impl->msg.msgFile->entries)[i] =
+            (MsgRawInstr *)((i32)(&this->impl->msg.msgFile->entries)[i] + (i32) & this->impl->msg.msgFile->numEntries);
     }
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x004299f8

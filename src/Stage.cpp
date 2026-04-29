@@ -69,9 +69,13 @@ Stage::Stage()
 // FUNCTION: TH07 0x004052d0
 f32 InterpCubic(f32 p0, f32 p1, f32 p2, f32 p3, f32 t)
 {
-    return (t - 1.0f) * t * t * p3 + (1.0f - t) * (1.0f - t) * t * p2 +
-           (3.0f - t * 2.0f) * t * t * p1 +
-           (t * 2.0f + 1.0f) * (t - 1.0f) * (t - 1.0f) * p0;
+    f32 v[4];
+    v[0] = (t - 1.0f) * (t - 1.0f) * (2.0f * t + 1.0f);
+    v[2] = t * t * (3.0f - 2.0f * t);
+    v[1] = (1.0f - t) * (1.0f - t) * t;
+    v[3] = (t - 1.0f) * t * t;
+
+    return v[0] * p0 + v[2] * p1 + v[1] * p2 + v[3] * p3;
 }
 
 // FUNCTION: TH07 0x00405370

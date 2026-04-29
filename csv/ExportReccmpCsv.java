@@ -30,11 +30,28 @@ import java.math.BigDecimal;
 public class ExportReccmpCsv extends GhidraScript {
 
     private String formatValue(double val) {
-        String s = new BigDecimal(Double.toString(val)).toPlainString();
+        if (val == 0.0) return "0.0";
 
-        if (!s.contains(".")) {
-            s += ".0";
+        double abs = Math.abs(val);
+        int exp = (int) Math.floor(Math.log10(abs));
+
+        String s;
+
+        if (exp <= -5) {
+            s = String.format("%.15e", val);
+
+            s = s.replace("E", "e").replaceAll("e\\+", "e");
+
+            s = s.replaceAll("0+e", "e");
+            s = s.replaceAll("\\.e", "e");
+        } else {
+            s = new BigDecimal(Double.toString(val)).toPlainString();
+
+            if (!s.contains(".")) {
+                s += ".0";
+            }
         }
+
         return s;
     }
 

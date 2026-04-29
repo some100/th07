@@ -63,27 +63,6 @@ struct MainMenu
         i32 idk[5];
     }
 
-    __forceinline void UpdateKeyConfigMenuDigits(AnmVm *vm)
-    {
-        UpdateMenuDigits(vm, this->controlMapping.shootButton);
-        vm += 2;
-        UpdateMenuDigits(vm, this->controlMapping.bombButton);
-        vm += 2;
-        UpdateMenuDigits(vm, this->controlMapping.focusButton);
-        vm += 2;
-        UpdateMenuDigits(vm, this->controlMapping.skipButton);
-        vm += 2;
-        UpdateMenuDigits(vm, this->controlMapping.menuButton);
-        vm += 2;
-        UpdateMenuDigits(vm, this->controlMapping.upButton);
-        vm += 2;
-        UpdateMenuDigits(vm, this->controlMapping.downButton);
-        vm += 2;
-        UpdateMenuDigits(vm, this->controlMapping.leftButton);
-        vm += 2;
-        UpdateMenuDigits(vm, this->controlMapping.rightButton);
-    }
-
     i32 cursor;
     i32 selected;
     i32 menuSubState;

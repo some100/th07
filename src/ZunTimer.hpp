@@ -39,6 +39,11 @@ struct ZunTimer
         return this->current;
     }
 
+    f32 AsFloat()
+    {
+        return (f32)this->current + this->subFrame;
+    }
+
     void operator=(i32 current)
     {
         this->current = current;
