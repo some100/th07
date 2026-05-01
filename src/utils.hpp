@@ -18,4 +18,9 @@ namespace utils
 {
 f32 AddNormalizeAngle(f32 a, f32 b);
 void Rotate(D3DXVECTOR3 *out, D3DXVECTOR3 *point, f32 angle);
+
+inline f32 NormalizeAngle(f32 a)
+{
+    return AddNormalizeAngle(a, 0.0f);
+}
 } // namespace utils

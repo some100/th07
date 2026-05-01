@@ -4,6 +4,7 @@
 #include "AsciiManager.hpp"
 #include "Chain.hpp"
 #include "GameManager.hpp"
+#include "ItemManager.hpp"
 #include "Player.hpp"
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
@@ -97,32 +98,27 @@ void BulletManager::SetActiveSpriteByResolution(AnmVm *sprite,
                                                 Bullet *bullet,
                                                 i32 spriteOffset)
 {
-    f32 fVar1;
-
-    if ((i32)sprite->activeSpriteIdx !=
-        bulletTypeTemplate->activeSpriteIdx + spriteOffset)
+    if (sprite->activeSpriteIdx != bulletTypeTemplate->activeSpriteIdx + spriteOffset)
     {
-        fVar1 = (bullet->sprites.spriteBullet.sprite)->heightPx;
-        if (fVar1 < 16.0f == (fVar1 == 16.0f))
+        if (bullet->sprites.spriteBullet.sprite->heightPx <= 16.0f)
         {
-            fVar1 = (bullet->sprites.spriteBullet.sprite)->heightPx;
-            if (fVar1 < 32.0f == (fVar1 == 32.0f))
+            g_AnmManager->SetActiveSprite(sprite,
+                                          bulletTypeTemplate->activeSpriteIdx +
+                                              g_BulletSpriteOffset16Px[spriteOffset]);
+        }
+        else
+        {
+            if (bullet->sprites.spriteBullet.sprite->heightPx <= 32.0f)
             {
                 g_AnmManager->SetActiveSprite(
-                    sprite, bulletTypeTemplate->activeSpriteIdx + spriteOffset);
+                    sprite, bulletTypeTemplate->activeSpriteIdx +
+                                g_BulletSpriteOffset32Px[spriteOffset]);
             }
             else
             {
                 g_AnmManager->SetActiveSprite(
-                    sprite, (i32)bulletTypeTemplate->activeSpriteIdx +
-                                g_BulletSpriteOffset32Px[spriteOffset]);
+                    sprite, bulletTypeTemplate->activeSpriteIdx + spriteOffset);
             }
-        }
-        else
-        {
-            g_AnmManager->SetActiveSprite(sprite,
-                                          (i32)bulletTypeTemplate->activeSpriteIdx +
-                                              g_BulletSpriteOffset16Px[spriteOffset]);
         }
     }
 }
@@ -131,157 +127,147 @@ void BulletManager::SetActiveSpriteByResolution(AnmVm *sprite,
 i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x,
                                      i32 y, f32 angle)
 {
+    u32 unused;
     f32 bulletAngle;
     Bullet *bullet;
     i32 i;
     f32 bulletSpeed;
 
-    bullet = this->bulletsStart;
+    // i is assigned twice here for some reason.
     i = 0;
-    while (i < 0x400 && (bullet->state != BULLET_INACTIVE))
+    for (bullet = this->bulletsStart, i = 0; i < 0x400; i++)
     {
-        bullet = bullet + 1;
+        if (bullet->state == BULLET_INACTIVE)
+        {
+            break;
+        }
+        bullet++;
         if (bullet->state == BULLET_END_ARRAY)
         {
             bullet = this->bullets;
         }
-        i++;
     }
-    if (i < 0x400)
+    if (i >= 0x400)
     {
-        bulletAngle = 0.0f;
-        if (bulletProps->count2 < 2)
+        return 1;
+    }
+
+    bulletAngle = 0.0f;
+    if (bulletProps->count2 > 1)
+    {
+        bulletSpeed = bulletProps->speed1 -
+                      ((bulletProps->speed1 - bulletProps->speed2) * (f32)y) /
+                          (f32)(i32)bulletProps->count2;
+    }
+    else
+    {
+        bulletSpeed = bulletProps->speed1;
+    }
+    switch (bulletProps->aimMode)
+    {
+    case 0:
+    case 1:
+        if ((bulletProps->count1 & 1U) != 0)
         {
-            bulletSpeed = bulletProps->speed1;
+            bulletAngle += bulletProps->angle2 * (f32)((x + 1) / 2);
         }
         else
         {
-            bulletSpeed = bulletProps->speed1 -
-                          ((bulletProps->speed1 - bulletProps->speed2) * (f32)y) /
-                              (f32)(i32)bulletProps->count2;
+            bulletAngle += (f32)(x / 2) * bulletProps->angle2 + bulletProps->angle2 * 0.5f;
         }
-        switch (bulletProps->aimMode)
+        if ((x & 1U) != 0)
         {
-        case 0:
-        case 1:
-            if ((bulletProps->count1 & 1U) == 0)
-            {
-                bulletAngle = bulletProps->angle2 * 0.5f +
-                              (f32)(x / 2) * bulletProps->angle2;
-            }
-            else
-            {
-                bulletAngle = (f32)((x + 1) / 2) * bulletProps->angle2;
-            }
-            bulletAngle = bulletAngle + 0.0f;
-            if ((x & 1U) != 0)
-            {
-                bulletAngle = bulletAngle * -1.0f;
-            }
-            if (bulletProps->aimMode == 0)
-            {
-                bulletAngle = bulletAngle + angle;
-            }
-            bulletAngle = bulletAngle + bulletProps->angle1;
-            break;
-        case 2:
-            bulletAngle = angle + 0.0f;
-        case 3:
-            bulletAngle += (f32)y * bulletProps->angle2 + bulletProps->angle1 +
-                           ((f32)x * ZUN_2PI) / (f32)(i32)bulletProps->count1;
-            break;
-        case 4:
-            bulletAngle = angle + 0.0f;
-        case 5:
-            bulletAngle = ((f32)x * ZUN_2PI) / (f32)(i32)bulletProps->count1 +
-                          ZUN_PI / (f32)(i32)bulletProps->count1 + bulletAngle +
-                          bulletProps->angle1;
-            break;
-        case 6:
-            bulletAngle =
-                g_Rng.GetRandomFloatInRange(bulletProps->angle1 - bulletProps->angle2) +
-                bulletProps->angle2;
-            break;
-        case 7:
-            bulletSpeed =
-                g_Rng.GetRandomFloatInRange(bulletProps->speed1 - bulletProps->speed2) +
-                bulletProps->speed2;
-            bulletAngle = (f32)y * bulletProps->angle2 + bulletProps->angle1 +
-                          ((f32)x * ZUN_2PI) / (f32)(i32)bulletProps->count1 + 0.0f;
-            break;
-        case 8:
-            bulletAngle =
-                g_Rng.GetRandomFloatInRange(bulletProps->angle1 - bulletProps->angle2) +
-                bulletProps->angle2;
-            bulletSpeed =
-                g_Rng.GetRandomFloatInRange(bulletProps->speed1 - bulletProps->speed2) +
-                bulletProps->speed2;
+            bulletAngle *= -1.0f;
         }
-        bullet->state = BULLET_NORMAL;
-        bullet->spawned = 1;
-        bullet->grazed = 0;
-        bullet->timer1 = 0;
-        bullet->timer2 = 0;
-        bullet->speed = bulletSpeed;
-        bullet->angle = utils::AddNormalizeAngle(bulletAngle, 0.0f);
-        bullet->pos = bulletProps->position;
-        bullet->pos.z = 0.1f;
-        AngleToVector(&bullet->velocity, bulletAngle,
-                      bulletSpeed * g_Supervisor.effectiveFramerateMultiplier);
-        bullet->exFlags = (i16)bulletProps->flags;
-        bullet->spriteOffset = bulletProps->spriteOffset;
-        bullet->state2 = 0;
-        if ((bullet->sprites.spriteBullet.anmFileIdx !=
-             (bulletProps->sprites->spriteBullet).anmFileIdx) ||
-            ((bulletProps->sprites->spriteBullet).currentInstruction != NULL))
+        if (bulletProps->aimMode == 0)
         {
-            bullet->sprites.spriteBullet = bulletProps->sprites->spriteBullet;
+            bulletAngle += angle;
         }
-        if ((bullet->sprites.spriteSpawnEffectDonut.anmFileIdx !=
-             (bulletProps->sprites->spriteSpawnEffectDonut).anmFileIdx) ||
-            ((bulletProps->sprites->spriteSpawnEffectDonut).currentInstruction !=
-             NULL))
-        {
-            bullet->sprites.spriteSpawnEffectDonut =
-                bulletProps->sprites->spriteSpawnEffectDonut;
-        }
-        bullet->sprites.grazeSize = bulletProps->sprites->grazeSize;
-        bullet->sprites.unused_b88 = bulletProps->sprites->unused_b88;
-        bullet->sprites.bulletHeight = bulletProps->sprites->bulletHeight;
-        bullet->sprites.collisionType = bulletProps->sprites->collisionType;
-        bullet->soundIdx = bulletProps->soundOverride;
-        bullet->spawnDelay = 0;
-        if ((i32)bullet->sprites.spriteBullet.activeSpriteIdx !=
+        bulletAngle += bulletProps->angle1;
+        break;
+    case 2:
+        bulletAngle += angle;
+    case 3:
+        bulletAngle += ((f32)x * ZUN_2PI) / (f32)(i32)bulletProps->count1;
+        bulletAngle += (f32)y * bulletProps->angle2 + bulletProps->angle1;
+        break;
+    case 4:
+        bulletAngle += angle;
+    case 5:
+        bulletAngle += ZUN_PI / (f32)(i32)bulletProps->count1;
+        bulletAngle += ((f32)x * ZUN_2PI) / (f32)(i32)bulletProps->count1;
+        bulletAngle += bulletProps->angle1;
+        break;
+    case 6:
+        bulletAngle =
+            g_Rng.GetRandomFloatInRange(bulletProps->angle1 - bulletProps->angle2) +
+            bulletProps->angle2;
+        break;
+    case 7:
+        bulletSpeed = g_Rng.GetRandomFloatInRange(bulletProps->speed1 - bulletProps->speed2) + bulletProps->speed2;
+        bulletAngle += ((f32)x * ZUN_2PI) / (f32)(i32)bulletProps->count1;
+        bulletAngle += (f32)y * bulletProps->angle2 + bulletProps->angle1;
+        break;
+    case 8:
+        bulletAngle =
+            g_Rng.GetRandomFloatInRange(bulletProps->angle1 - bulletProps->angle2) +
+            bulletProps->angle2;
+        bulletSpeed =
+            g_Rng.GetRandomFloatInRange(bulletProps->speed1 - bulletProps->speed2) +
+            bulletProps->speed2;
+    }
+    bullet->state = BULLET_NORMAL;
+    bullet->spawned = 1;
+    bullet->grazed = 0;
+    bullet->timer1 = 0;
+    bullet->timer2 = 0;
+    bullet->speed = bulletSpeed;
+    bullet->angle = utils::AddNormalizeAngle(bulletAngle, 0.0f);
+    bullet->pos = bulletProps->position;
+    bullet->pos.z = 0.1f;
+    AngleToVector(&bullet->velocity, bulletAngle,
+                  bulletSpeed * g_Supervisor.effectiveFramerateMultiplier);
+    bullet->exFlags = (i16)bulletProps->flags;
+    bullet->spriteOffset = bulletProps->spriteOffset;
+    bullet->state2 = 0;
+    AnmVm::AssignVm(&bullet->sprites.spriteBullet, &bulletProps->sprites->spriteBullet);
+    AnmVm::AssignVm(&bullet->sprites.spriteSpawnEffectDonut, &bulletProps->sprites->spriteSpawnEffectDonut);
+    bullet->sprites.grazeSize = bulletProps->sprites->grazeSize;
+    bullet->sprites.unused_b88 = bulletProps->sprites->unused_b88;
+    bullet->sprites.bulletHeight = bulletProps->sprites->bulletHeight;
+    bullet->sprites.collisionType = bulletProps->sprites->collisionType;
+    bullet->soundIdx = bulletProps->soundOverride;
+    bullet->spawnDelay = 0;
+    if ((i32)bullet->sprites.spriteBullet.activeSpriteIdx !=
+        (i32)(bulletProps->sprites->spriteBullet).activeSpriteIdx +
+            (i32)bulletProps->spriteOffset)
+    {
+        g_AnmManager->SetActiveSprite(
+            &bullet->sprites.spriteBullet,
             (i32)(bulletProps->sprites->spriteBullet).activeSpriteIdx +
-                (i32)bulletProps->spriteOffset)
+                (i32)bulletProps->spriteOffset);
+    }
+    if ((i32)bullet->sprites.spriteSpawnEffectDonut.activeSpriteIdx !=
+        (i32)(bulletProps->sprites->spriteSpawnEffectDonut).activeSpriteIdx +
+            (i32)bulletProps->spriteOffset)
+    {
+        if (bullet->sprites.spriteBullet.sprite->heightPx <= 16.0f)
         {
             g_AnmManager->SetActiveSprite(
-                &bullet->sprites.spriteBullet,
-                (i32)(bulletProps->sprites->spriteBullet).activeSpriteIdx +
-                    (i32)bulletProps->spriteOffset);
+                &bullet->sprites.spriteSpawnEffectDonut,
+                (i32)(bulletProps->sprites->spriteSpawnEffectDonut)
+                        .activeSpriteIdx +
+                    g_BulletSpriteOffset16Px[bulletProps->spriteOffset]);
         }
-        if ((i32)bullet->sprites.spriteSpawnEffectDonut.activeSpriteIdx !=
-            (i32)(bulletProps->sprites->spriteSpawnEffectDonut).activeSpriteIdx +
-                (i32)bulletProps->spriteOffset)
+        else
         {
-            if ((bullet->sprites.spriteBullet.sprite)->heightPx > 16.0f)
+            if (bullet->sprites.spriteBullet.sprite->heightPx <= 32.0f)
             {
-                if ((bullet->sprites.spriteBullet.sprite)->heightPx > 32.0f)
-                {
-                    g_AnmManager->SetActiveSprite(
-                        &bullet->sprites.spriteSpawnEffectDonut,
-                        (i32)(bulletProps->sprites->spriteSpawnEffectDonut)
-                                .activeSpriteIdx +
-                            (i32)bulletProps->spriteOffset);
-                }
-                else
-                {
-                    g_AnmManager->SetActiveSprite(
-                        &bullet->sprites.spriteSpawnEffectDonut,
-                        (i32)(bulletProps->sprites->spriteSpawnEffectDonut)
-                                .activeSpriteIdx +
-                            g_BulletSpriteOffset32Px[bulletProps->spriteOffset]);
-                }
+                g_AnmManager->SetActiveSprite(
+                    &bullet->sprites.spriteSpawnEffectDonut,
+                    (i32)(bulletProps->sprites->spriteSpawnEffectDonut)
+                            .activeSpriteIdx +
+                        g_BulletSpriteOffset32Px[bulletProps->spriteOffset]);
             }
             else
             {
@@ -289,88 +275,60 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x,
                     &bullet->sprites.spriteSpawnEffectDonut,
                     (i32)(bulletProps->sprites->spriteSpawnEffectDonut)
                             .activeSpriteIdx +
-                        g_BulletSpriteOffset16Px[bulletProps->spriteOffset]);
-            }
-        }
-        if ((bulletProps->flags & 2) == 0)
-        {
-            if ((bulletProps->flags & 4) == 0)
-            {
-                if ((bulletProps->flags & 8) != 0)
-                {
-                    if ((bullet->sprites.spriteSpawnEffectSlow.anmFileIdx !=
-                         (bulletProps->sprites->spriteSpawnEffectSlow).anmFileIdx) ||
-                        ((bulletProps->sprites->spriteSpawnEffectSlow)
-                             .currentInstruction != NULL))
-                    {
-                        bullet->sprites.spriteSpawnEffectSlow =
-                            bulletProps->sprites->spriteSpawnEffectSlow;
-                    }
-                    SetActiveSpriteByResolution(
-                        &bullet->sprites.spriteSpawnEffectSlow,
-                        &bulletProps->sprites->spriteSpawnEffectSlow, bullet,
                         (i32)bulletProps->spriteOffset);
-                    bullet->state = BULLET_SPAWNING_SLOW;
-                    bullet->pos -= bullet->velocity * 4.0f;
-                }
-            }
-            else
-            {
-                if ((bullet->sprites.spriteSpawnEffectNormal.anmFileIdx !=
-                     (bulletProps->sprites->spriteSpawnEffectNormal).anmFileIdx) ||
-                    ((bulletProps->sprites->spriteSpawnEffectNormal)
-                         .currentInstruction != NULL))
-                {
-                    bullet->sprites.spriteSpawnEffectNormal =
-                        bulletProps->sprites->spriteSpawnEffectNormal;
-                }
-                SetActiveSpriteByResolution(
-                    &bullet->sprites.spriteSpawnEffectNormal,
-                    &bulletProps->sprites->spriteSpawnEffectNormal, bullet,
-                    (i32)bulletProps->spriteOffset);
-                bullet->state = BULLET_SPAWNING_NORMAL;
-                bullet->pos -= bullet->velocity * 4.0f;
             }
         }
-        else
-        {
-            if ((bullet->sprites.spriteSpawnEffectFast.anmFileIdx !=
-                 (bulletProps->sprites->spriteSpawnEffectFast).anmFileIdx) ||
-                ((bulletProps->sprites->spriteSpawnEffectFast).currentInstruction !=
-                 NULL))
-            {
-                bullet->sprites.spriteSpawnEffectFast =
-                    bulletProps->sprites->spriteSpawnEffectFast;
-            }
-            SetActiveSpriteByResolution(&bullet->sprites.spriteSpawnEffectFast,
-                                        &bulletProps->sprites->spriteSpawnEffectFast,
-                                        bullet, bulletProps->spriteOffset);
-            bullet->state = BULLET_SPAWNING_FAST;
-            bullet->pos.x -= bullet->velocity.x * 4.0f;
-        }
-        memcpy(bullet->commands, bulletProps->commands, sizeof(bullet->commands));
-        bullet->moreFlags = bulletProps->flags;
-        bullet->exFlags = 0;
-        bullet->curCmdIdx = 0;
-        bullet->RunCommands();
-        if ((this->screenClearTime != 0) && ((bullet->moreFlags & 0x1000) == 0))
-        {
-            bullet->state = BULLET_DESPAWN;
-        }
-        if (bullet[1].state == BULLET_END_ARRAY)
-        {
-            this->bulletsStart = this->bullets;
-        }
-        else
-        {
-            this->bulletsStart = bullet + 1;
-        }
-        return 0;
+    }
+
+    unused = bulletProps->flags;
+    if (bulletProps->flags & 2)
+    {
+        AnmVm::AssignVm(&bullet->sprites.spriteSpawnEffectFast, &bulletProps->sprites->spriteSpawnEffectFast);
+        SetActiveSpriteByResolution(&bullet->sprites.spriteSpawnEffectFast,
+                                    &bulletProps->sprites->spriteSpawnEffectFast,
+                                    bullet, bulletProps->spriteOffset);
+        bullet->state = BULLET_SPAWNING_FAST;
+        bullet->pos -= bullet->velocity * 4.0f;
+    }
+    else if (bulletProps->flags & 4)
+    {
+        AnmVm::AssignVm(&bullet->sprites.spriteSpawnEffectNormal, &bulletProps->sprites->spriteSpawnEffectNormal);
+        SetActiveSpriteByResolution(
+            &bullet->sprites.spriteSpawnEffectNormal,
+            &bulletProps->sprites->spriteSpawnEffectNormal, bullet,
+            (i32)bulletProps->spriteOffset);
+        bullet->state = BULLET_SPAWNING_NORMAL;
+        bullet->pos -= bullet->velocity * 4.0f;
+    }
+    else if (bulletProps->flags & 8)
+    {
+        AnmVm::AssignVm(&bullet->sprites.spriteSpawnEffectSlow, &bulletProps->sprites->spriteSpawnEffectSlow);
+        SetActiveSpriteByResolution(
+            &bullet->sprites.spriteSpawnEffectSlow,
+            &bulletProps->sprites->spriteSpawnEffectSlow, bullet,
+            (i32)bulletProps->spriteOffset);
+        bullet->state = BULLET_SPAWNING_SLOW;
+        bullet->pos -= bullet->velocity * 4.0f;
+    }
+    memcpy(bullet->commands, bulletProps->commands, sizeof(bullet->commands));
+    bullet->moreFlags = bulletProps->flags;
+    bullet->exFlags = 0;
+    bullet->curCmdIdx = 0;
+    bullet->RunCommands();
+    if ((this->screenClearTime != 0) && ((bullet->moreFlags & 0x1000) == 0))
+    {
+        bullet->state = BULLET_DESPAWN;
+    }
+    bullet++;
+    if (bullet->state == BULLET_END_ARRAY)
+    {
+        this->bulletsStart = this->bullets;
     }
     else
     {
-        return 1;
+        this->bulletsStart = bullet;
     }
+    return 0;
 }
 
 // FUNCTION: TH07 0x00424290
@@ -509,6 +467,7 @@ switchD_00424354_caseD_2:
     this->curCmdIdx = this->curCmdIdx + 1;
 }
 
+#pragma var_order(local_10, i, local_18, bullet, laser, local_24, local_28)
 // FUNCTION: TH07 0x00424740
 void BulletManager::RemoveAllBullets(i32 param_1)
 {
@@ -521,68 +480,74 @@ void BulletManager::RemoveAllBullets(i32 param_1)
     D3DXVECTOR3 local_10;
 
     bullet = g_BulletManager.bullets;
-    for (i = 0; i < 0x400; i++)
+    for (i = 0; i < 0x400; i++, bullet++)
     {
-        if ((bullet->state != BULLET_INACTIVE) &&
-            (bullet->state != BULLET_DESPAWN))
+        if (bullet->state == BULLET_INACTIVE || bullet->state == BULLET_DESPAWN)
         {
-            if ((param_1 == 0) || (8 < param_1))
+            continue;
+        }
+        if (param_1 != 0 && param_1 < 9)
+        {
+            if (param_1 < 3)
             {
-                bullet->state = BULLET_DESPAWN;
+                g_ItemManager.SpawnItem(&bullet->pos, this->itemType, param_1);
             }
             else
             {
-                if (param_1 < 3)
-                {
-                    g_ItemManager.SpawnItem(&bullet->pos, this->itemType, param_1);
-                }
-                else
-                {
-                    g_ItemManager.SpawnItem(&bullet->pos, ITEM_STAR, 1);
-                }
-                memset(bullet, 0, sizeof(Bullet));
+                g_ItemManager.SpawnItem(&bullet->pos, ITEM_CHERRY_SMALL, 1);
             }
+            memset(bullet, 0, sizeof(Bullet));
         }
-        bullet = bullet + 1;
+        else
+        {
+            bullet->state = BULLET_DESPAWN;
+        }
     }
     laser = this->lasers;
-    for (i = 0; i < 0x40; i++)
+    for (i = 0; i < 0x40; i++, laser++)
     {
-        if ((laser->inUse != 0) && ((laser->flags & 4) == 0 || (param_1 == 10)))
+        if (laser->inUse == 0)
         {
-            if (laser->state < 2)
+            continue;
+        }
+        if ((laser->flags & 4) != 0 && (param_1 != 10))
+        {
+            continue;
+        }
+
+        if (laser->state < 2)
+        {
+            laser->state = 2;
+            laser->timer = 0;
+            laser->width = laser->targetWidth;
+            if ((param_1 != 0) && (param_1 < 9))
             {
-                laser->state = 2;
-                laser->timer = 0;
-                laser->width = laser->targetWidth;
-                if ((param_1 != 0) && (param_1 < 9))
+                local_28 = laser->startOffset;
+                sincosf(&local_18, &local_24, laser->angle);
+                while (laser->endOffset > local_28)
                 {
-                    local_28 = laser->startOffset;
-                    sincosf(&local_18, &local_24, laser->angle);
-                    while (local_28 < laser->endOffset)
+                    local_10.x = local_24 * local_28 + laser->pos.x;
+                    local_10.y = local_18 * local_28 + laser->pos.y;
+                    local_10.z = 0.0f;
+                    if (param_1 < 3)
                     {
-                        local_10.x = local_24 * local_28 + (laser->pos).x;
-                        local_10.y = local_18 * local_28 + (laser->pos).y;
-                        local_10.z = 0.0f;
-                        if (param_1 < 3)
-                        {
-                            g_ItemManager.SpawnItem(&local_10, this->itemType, param_1);
-                        }
-                        else
-                        {
-                            g_ItemManager.SpawnItem(&local_10, ITEM_STAR, 1);
-                        }
-                        local_28 += 32.0f;
+                        g_ItemManager.SpawnItem(&local_10, this->itemType, param_1);
                     }
+                    else
+                    {
+                        g_ItemManager.SpawnItem(&local_10, ITEM_CHERRY_SMALL, 1);
+                    }
+                    local_28 += 32.0f;
                 }
             }
-            laser->grazeInterval = 0;
         }
-        laser = laser + 1;
+        laser->grazeInterval = 0;
     }
     this->screenClearTime = 10;
 }
 
+#pragma var_order(local_8, local_c, local_10, i, local_18, bullet, local_28, \
+                  laser, local_30, local_34)
 // FUNCTION: TH07 0x004249a0
 i32 BulletManager::DespawnBullets(i32 param_1, i32 turnIntoItem)
 {
@@ -601,52 +566,53 @@ i32 BulletManager::DespawnBullets(i32 param_1, i32 turnIntoItem)
     local_8 = 2000;
     local_10 = 0;
     bullet = g_BulletManager.bullets;
-    for (i = 0; i < 0x400; i++)
+    for (i = 0; i < 0x400; i++, bullet++)
     {
-        if (bullet->state != BULLET_INACTIVE)
+        if (bullet->state == BULLET_INACTIVE)
         {
-            g_ItemManager.SpawnItem(&bullet->pos, this->itemType, 1);
-            g_AsciiManager.CreatePopup1(&bullet->pos, local_8,
-                                        ((local_8 < param_1) - 1 & 0xffffff01) - 1);
-            local_c += local_8;
-            local_10 += 1;
-            local_8 += 20;
-            if (param_1 < local_8)
-            {
-                local_8 = param_1;
-            }
-            bullet->state = BULLET_DESPAWN;
+            continue;
         }
-        bullet = bullet + 1;
+
+        g_ItemManager.SpawnItem(&bullet->pos, this->itemType, 1);
+        g_AsciiManager.CreatePopup1(&bullet->pos, local_8,
+                                    local_8 >= param_1 ? -256 : -1);
+        local_c += local_8;
+        local_10 += 1;
+        local_8 += 20;
+        if (local_8 > param_1)
+        {
+            local_8 = param_1;
+        }
+        bullet->state = BULLET_DESPAWN;
     }
     laser = this->lasers;
-    for (i = 0; i < 0x40; i++)
+    for (i = 0; i < 0x40; i++, laser++)
     {
-        if (laser->inUse != 0)
+        if (laser->inUse == 0)
         {
-            if (laser->state < 2)
+            continue;
+        }
+        if (laser->state < 2)
+        {
+            laser->state = 2;
+            laser->timer = 0;
+            laser->width = laser->targetWidth;
+            if (turnIntoItem != 0)
             {
-                laser->state = 2;
-                laser->timer = 0;
-                laser->width = laser->targetWidth;
-                if (turnIntoItem != 0)
+                g_ItemManager.SpawnItem(&laser->pos, this->itemType, 1);
+                local_34 = laser->startOffset;
+                sincosf(&local_18, &local_30, laser->angle);
+                while (laser->endOffset > local_34)
                 {
-                    g_ItemManager.SpawnItem(&laser->pos, this->itemType, 1);
-                    local_34 = laser->startOffset;
-                    sincosf(&local_18, &local_30, laser->angle);
-                    while (local_34 < laser->endOffset)
-                    {
-                        local_28.x = local_30 * local_34 + (laser->pos).x;
-                        local_28.y = local_18 * local_34 + (laser->pos).y;
-                        local_28.z = 0.0f;
-                        g_ItemManager.SpawnItem(&local_28, this->itemType, 1);
-                        local_34 += 32.0f;
-                    }
+                    local_28.x = local_30 * local_34 + laser->pos.x;
+                    local_28.y = local_18 * local_34 + laser->pos.y;
+                    local_28.z = 0.0f;
+                    g_ItemManager.SpawnItem(&local_28, this->itemType, 1);
+                    local_34 += 32.0f;
                 }
             }
-            laser->grazeInterval = 0;
         }
-        laser = laser + 1;
+        laser->grazeInterval = 0;
     }
     this->screenClearTime = 10;
     return local_c;
@@ -979,351 +945,340 @@ void Bullet::UpdateBulletBounce()
     }
 }
 
+#pragma var_order(local_8, i, local_10, local_14, local_20, bullet, local_24, laser, local_38)
 // FUNCTION: TH07 0x00425a50
 u32 BulletManager::OnUpdate(BulletManager *arg)
 {
-    i32 iVar3;
-    f32 fVar4;
-    i32 local_140;
-    D3DXVECTOR3 local_38;
-    Laser *laser;
-    u32 local_28;
-    Bullet *bullets;
-    D3DXVECTOR3 local_20;
-    i32 local_14;
-    f32 local_10;
+    i32 local_8;
     i32 i;
+    f32 local_10;
+    i32 local_14;
+    D3DXVECTOR3 local_20;
+    Bullet *bullet;
+    i32 local_24;
+    Laser *laser;
+    D3DXVECTOR3 local_38;
 
     local_14 = 0;
-    bullets = arg->bullets;
-    if (g_GameManager.isTimeStopped == 0)
+    bullet = arg->bullets;
+    if (g_GameManager.isTimeStopped != 0)
     {
-        g_ItemManager.OnUpdate();
-        arg->bulletCount = 0;
-        arg->bulletsHeadPtrs[5] = NULL;
-        arg->bulletsHeadPtrs[4] = NULL;
-        arg->bulletsHeadPtrs[3] = NULL;
-        arg->bulletsHeadPtrs[2] = NULL;
-        arg->bulletsHeadPtrs[1] = NULL;
-        arg->bulletsHeadPtrs[0] = NULL;
-        for (i = 0; i < 0x400; i++)
+        return CHAIN_CALLBACK_RESULT_CONTINUE;
+    }
+
+    g_ItemManager.OnUpdate();
+    arg->bulletCount = 0;
+    arg->bulletsPtrs[5] = NULL;
+    arg->bulletsPtrs[4] = NULL;
+    arg->bulletsPtrs[3] = NULL;
+    arg->bulletsPtrs[2] = NULL;
+    arg->bulletsPtrs[1] = NULL;
+    arg->bulletsPtrs[0] = NULL;
+
+    for (i = 0; i < 0x400; i++)
+    {
+        if (bullet->state == BULLET_INACTIVE)
         {
-            if (bullets->state == BULLET_INACTIVE)
+            goto bullet_loop_continue;
+        }
+        arg->bulletCount++;
+
+        switch (bullet->state)
+        {
+        switch_break:
+            bullet->state = BULLET_NORMAL;
+            bullet->timer1.InitializeForPopup();
+        case BULLET_NORMAL:
+            bullet->RunCommands();
+            if (bullet->exFlags != 0)
             {
-                goto bulletLoopContinue;
-            }
-            arg->bulletCount = arg->bulletCount + 1;
-            switch (bullets->state)
-            {
-            case BULLET_NORMAL:
-                goto switchD_00425b82_caseD_1;
-            case BULLET_SPAWNING_FAST:
-                bullets->timer2--;
-                bullets->pos += bullets->velocity * 0.5f;
-                iVar3 = g_AnmManager->ExecuteScript(
-                    &(bullets->sprites).spriteSpawnEffectFast);
-                break;
-            case BULLET_SPAWNING_NORMAL:
-                bullets->timer2--;
-                bullets->pos += bullets->velocity * 0.4f;
-                iVar3 = g_AnmManager->ExecuteScript(
-                    &(bullets->sprites).spriteSpawnEffectNormal);
-                break;
-            case BULLET_SPAWNING_SLOW:
-                bullets->timer2--;
-                bullets->pos = bullets->velocity * 0.33333334f + bullets->pos;
-                iVar3 = g_AnmManager->ExecuteScript(
-                    &(bullets->sprites).spriteSpawnEffectSlow);
-                break;
-            case BULLET_DESPAWN:
-                bullets->pos += bullets->velocity * 0.5f;
-                iVar3 = g_AnmManager->ExecuteScript(
-                    &(bullets->sprites).spriteSpawnEffectDonut);
-                if (iVar3 != 0)
+                if ((bullet->exFlags & 1) != 0)
                 {
-                    bullets->Initialize();
-                    goto bulletLoopContinue;
+                    bullet->UpdateBulletBurstSpeed();
                 }
-            default:
-                goto switchD_00425b82_default;
+                if ((bullet->exFlags & 0x10) != 0)
+                {
+                    bullet->UpdateBulletTargetVelocity();
+                }
+                if ((bullet->exFlags & 0x20) != 0)
+                {
+                    bullet->UpdateBulletTargetAngle();
+                }
+                if ((bullet->exFlags & 0x40) != 0)
+                {
+                    bullet->UpdateBulletDirChangeAndResume();
+                }
+                if ((bullet->exFlags & 0x100) != 0)
+                {
+                    bullet->UpdateBulletDirChangeAbsoluteAndResume();
+                }
+                if ((bullet->exFlags & 0x80) != 0)
+                {
+                    bullet->UpdateBulletDirChangeAimAtPlayer();
+                }
+                if ((bullet->exFlags & 0xc00) != 0)
+                {
+                    bullet->UpdateBulletBounce();
+                }
             }
-            if (iVar3 == 0)
+
+            if (bullet->spawnDelay != 0)
             {
-            switchD_00425b82_default:
-                bullets->timer1++;
-                bullets->timer2++;
-                bullets->next = arg->bulletsHeadPtrs[(bullets->sprites).collisionType];
-                arg->bulletsHeadPtrs[(bullets->sprites).collisionType] = bullets;
+                bullet->spawnDelay--;
+            }
+            bullet->pos += bullet->velocity;
+
+            if (bullet->spawnDelay == 0)
+            {
+                if (g_GameManager.IsInBounds(
+                        bullet->pos.x, bullet->pos.y,
+                        bullet->sprites.spriteBullet.sprite->widthPx,
+                        bullet->sprites.spriteBullet.sprite->heightPx) == 0)
+                {
+                    if ((bullet->exFlags & 0xdc0) != 0)
+                    {
+                        bullet->outOfBoundsTime++;
+                        if (bullet->outOfBoundsTime >= 0x80)
+                        {
+                            bullet->Initialize();
+                            goto bullet_loop_continue;
+                        }
+                        goto do_collision;
+                    }
+                    else
+                    {
+                        if (bullet->outOfBoundsTime == 0)
+                        {
+                            bullet->Initialize();
+                            goto bullet_loop_continue;
+                        }
+                        bullet->outOfBoundsTime--;
+                        goto do_collision;
+                    }
+                }
+                bullet->outOfBoundsTime = 0;
+                goto do_collision;
+            }
+
+        do_collision:
+            if ((bullet->grazed == 0) && (bullet->timer2.GetCurrent() >= 16))
+            {
+                local_8 = g_Player.CheckGraze(&bullet->pos, &bullet->sprites.grazeSize);
+                if (local_8 == 1)
+                {
+                    bullet->grazed = 1;
+                    goto do_sprite_anim;
+                }
+                if (local_8 == 2)
+                {
+                    if ((bullet->moreFlags & 0x1000) == 0)
+                    {
+                        bullet->state = BULLET_DESPAWN;
+                        g_ItemManager.SpawnItem(&bullet->pos, g_Player.itemType, 1);
+                    }
+                    goto do_sprite_anim;
+                }
+            }
+
+            local_8 = g_Player.CalcKillboxCollision(&bullet->pos, &bullet->sprites.grazeSize);
+            if (local_8 != 0)
+            {
+                if (local_8 != 2 || (bullet->moreFlags & 0x1000) == 0)
+                {
+                    bullet->state = BULLET_DESPAWN;
+                    if (local_8 == 2)
+                    {
+                        g_ItemManager.SpawnItem(&bullet->pos, g_Player.itemType, 1);
+                    }
+                }
+            }
+
+        do_sprite_anim:
+            if (bullet->sprites.spriteBullet.currentInstruction != NULL)
+            {
+                g_AnmManager->ExecuteScript(&bullet->sprites.spriteBullet);
+            }
+            goto update_timers;
+
+        case BULLET_SPAWNING_FAST:
+            bullet->timer2--;
+            bullet->pos += bullet->velocity / 2.0f;
+            if (!g_AnmManager->ExecuteScript(&bullet->sprites.spriteSpawnEffectFast))
+            {
+                goto update_timers;
+            }
+            goto switch_break;
+
+        case BULLET_SPAWNING_NORMAL:
+            bullet->timer2--;
+            bullet->pos += bullet->velocity / 2.5f;
+            if (!g_AnmManager->ExecuteScript(&bullet->sprites.spriteSpawnEffectNormal))
+            {
+                goto update_timers;
+            }
+            goto switch_break;
+
+        case BULLET_SPAWNING_SLOW:
+            bullet->timer2--;
+            bullet->pos += bullet->velocity / 3.0f;
+            if (!g_AnmManager->ExecuteScript(&bullet->sprites.spriteSpawnEffectSlow))
+            {
+                goto update_timers;
+            }
+            goto switch_break;
+
+        case BULLET_DESPAWN:
+            bullet->pos += bullet->velocity / 2.0f;
+            if (g_AnmManager->ExecuteScript(&bullet->sprites.spriteSpawnEffectDonut))
+            {
+                bullet->Initialize();
+                goto bullet_loop_continue;
+            }
+            goto update_timers;
+
+        default:
+            goto update_timers;
+        }
+
+    update_timers:
+        bullet->timer1++;
+        bullet->timer2++;
+        bullet->next = arg->bulletsPtrs[bullet->sprites.collisionType];
+        arg->bulletsPtrs[bullet->sprites.collisionType] = bullet;
+
+    bullet_loop_continue:
+        local_14--;
+        if (local_14 < 0)
+        {
+            local_14 = 0x3ff;
+            bullet += 0x400;
+        }
+        bullet--;
+    }
+
+    laser = arg->lasers;
+    for (i = 0; i < 0x40; i++, laser++)
+    {
+        if (laser->inUse == 0)
+        {
+            continue;
+        }
+
+        laser->endOffset = g_Supervisor.effectiveFramerateMultiplier * laser->speed + laser->endOffset;
+        if (laser->startLength < laser->endOffset - laser->startOffset)
+        {
+            laser->startOffset = laser->endOffset - laser->startLength;
+        }
+        if (laser->startOffset < 0.0f)
+        {
+            laser->startOffset = 0.0f;
+        }
+        local_20.y = laser->width / 2.0f;
+        local_20.x = laser->endOffset - laser->startOffset;
+        local_38.x = (laser->endOffset - laser->startOffset) / 2.0f + laser->startOffset + laser->pos.x;
+        local_38.y = laser->pos.y;
+        laser->vm0.scale.x = laser->width / laser->vm0.sprite->widthPx;
+        local_10 = laser->endOffset - laser->startOffset;
+        laser->vm0.scale.y = local_10 / laser->vm0.sprite->heightPx;
+        laser->vm0.rotation.z = utils::NormalizeAngle(1.5707964f + laser->angle);
+        laser->vm0.flags |= 4;
+
+        switch (laser->state)
+        {
+        case 0:
+            if ((laser->flags & 1) != 0)
+            {
+                local_24 = (laser->timer.AsFloat() * 255.0f) / (f32)laser->startTime;
+                if (local_24 > 0xff)
+                {
+                    local_24 = 0xff;
+                }
+                laser->vm0.color.color = local_24 << 0x18;
             }
             else
             {
-                bullets->state = BULLET_NORMAL;
-                bullets->timer1.Initialize(0);
-            switchD_00425b82_caseD_1:
-                bullets->RunCommands();
-                if (bullets->exFlags != 0)
+                i32 waitTime = laser->startTime > 30 ? 30 : laser->startTime;
+                if (laser->startTime - waitTime < laser->timer.GetCurrent())
                 {
-                    if ((bullets->exFlags & 1U) != 0)
-                    {
-                        bullets->UpdateBulletBurstSpeed();
-                    }
-                    if ((bullets->exFlags & 0x10U) != 0)
-                    {
-                        bullets->UpdateBulletTargetVelocity();
-                    }
-                    if ((bullets->exFlags & 0x20U) != 0)
-                    {
-                        bullets->UpdateBulletTargetAngle();
-                    }
-                    if ((bullets->exFlags & 0x40U) != 0)
-                    {
-                        bullets->UpdateBulletDirChangeAndResume();
-                    }
-                    if ((bullets->exFlags & 0x100U) != 0)
-                    {
-                        bullets->UpdateBulletDirChangeAbsoluteAndResume();
-                    }
-                    if ((bullets->exFlags & 0x80U) != 0)
-                    {
-                        bullets->UpdateBulletDirChangeAimAtPlayer();
-                    }
-                    if ((bullets->exFlags & 0xc00U) != 0)
-                    {
-                        bullets->UpdateBulletBounce();
-                    }
-                }
-                if (bullets->spawnDelay != 0)
-                {
-                    bullets->spawnDelay = bullets->spawnDelay - 1;
-                }
-                bullets->pos += bullets->velocity;
-                if (bullets->spawnDelay != 0)
-                {
-                LAB_00425dd7:
-                    if ((bullets->grazed == 0) && (0xf < (bullets->timer2).current))
-                    {
-                        iVar3 = g_Player.CheckGraze(&bullets->pos,
-                                                    &(bullets->sprites).grazeSize);
-                        if (iVar3 == 1)
-                        {
-                            bullets->grazed = 1;
-                            goto LAB_00425e76;
-                        }
-                        if ((iVar3 == 2) && ((bullets->moreFlags & 0x1000) == 0))
-                        {
-                            bullets->state = BULLET_DESPAWN;
-                            g_ItemManager.SpawnItem(&bullets->pos, g_Player.itemType, 1);
-                        }
-                    }
-                    else
-                    {
-                    LAB_00425e76:
-                        iVar3 = g_Player.CalcKillboxCollision(
-                            &bullets->pos, &(bullets->sprites).grazeSize);
-                        if ((iVar3 != 0) &&
-                            ((iVar3 != 2 || ((bullets->moreFlags & 0x1000) == 0)) &&
-                             (bullets->state = BULLET_DESPAWN, iVar3 == 2)))
-                        {
-                            g_ItemManager.SpawnItem(&bullets->pos, g_Player.itemType, 1);
-                        }
-                    }
-                    if ((bullets->sprites).spriteBullet.currentInstruction != NULL)
-                    {
-                        g_AnmManager->ExecuteScript(&bullets->sprites.spriteBullet);
-                    }
-                    goto switchD_00425b82_default;
-                }
-                if (g_GameManager.IsInBounds(
-                        bullets->pos.x, bullets->pos.y,
-                        ((bullets->sprites).spriteBullet.sprite)->widthPx,
-                        ((bullets->sprites).spriteBullet.sprite)->heightPx) != 0)
-                {
-                    bullets->outOfBoundsTime = 0;
-                    goto LAB_00425dd7;
-                }
-                if ((bullets->exFlags & 0xdc0U) == 0)
-                {
-                    if (bullets->outOfBoundsTime != 0)
-                    {
-                        bullets->outOfBoundsTime = bullets->outOfBoundsTime - 1;
-                        goto LAB_00425dd7;
-                    }
-                    bullets->Initialize();
+                    local_10 = (laser->timer.AsFloat() * laser->width) / (f32)laser->startTime;
                 }
                 else
                 {
-                    bullets->outOfBoundsTime = bullets->outOfBoundsTime + 1;
-                    if (bullets->outOfBoundsTime < 0x80)
-                    {
-                        goto LAB_00425dd7;
-                    }
-                    bullets->Initialize();
+                    local_10 = 1.2f;
                 }
+                laser->targetWidth = local_10;
+                laser->vm0.scale.x = local_10 / 16.0f;
+                local_20.x = local_10 / 2.0f;
             }
-        bulletLoopContinue:
-            local_14--;
-            if (local_14 < 0)
+            if (laser->timer >= laser->grazeDelay)
             {
-                local_14 = 0x3ff;
-                bullets = bullets + 0x400;
+                g_Player.CalcLaserHitbox(&local_38, &local_20, &laser->pos, laser->angle, laser->timer.GetCurrent() % 0xc == 0);
             }
-            bullets = bullets - 1;
-        }
-        laser = arg->lasers;
-        for (i = 0; i < 0x40; i++)
-        {
-            if (laser->inUse != 0)
+            if (laser->timer < laser->startTime)
             {
-                laser->endOffset =
-                    g_Supervisor.effectiveFramerateMultiplier * laser->speed +
-                    laser->endOffset;
-                if (laser->startLength < laser->endOffset - laser->startOffset)
-                {
-                    laser->startOffset = laser->endOffset - laser->startLength;
-                }
-                if (laser->startOffset < 0.0f)
-                {
-                    laser->startOffset = 0.0f;
-                }
-                local_20.y = laser->width / 2.0f;
-                local_20.x = laser->endOffset - laser->startOffset;
-                local_38.x = (laser->endOffset - laser->startOffset) / 2.0f +
-                             laser->startOffset + (laser->pos).x;
-                local_38.y = (laser->pos).y;
-                laser->vm0.scale.x = laser->width / (laser->vm0.sprite)->widthPx;
-                laser->vm0.scale.y = (laser->endOffset - laser->startOffset) /
-                                     (laser->vm0.sprite)->heightPx;
-                laser->vm0.rotation.z =
-                    utils::AddNormalizeAngle(laser->angle + 1.5707964f, 0.0f);
-                laser->vm0.updateRotation = 1;
-                if (laser->state == 0)
-                {
-                    if ((laser->flags & 1) == 0)
-                    {
-                        if (laser->startTime < 0x1f)
-                        {
-                            local_140 = laser->startTime;
-                        }
-                        else
-                        {
-                            local_140 = 0x1e;
-                        }
-                        if (laser->startTime - local_140 < laser->timer.current)
-                        {
-                            local_10 = (((f32)laser->timer.current + laser->timer.subFrame) *
-                                        laser->width) /
-                                       (f32)laser->startTime;
-                        }
-                        else
-                        {
-                            local_10 = 1.2f;
-                        }
-                        laser->targetWidth = local_10;
-                        laser->vm0.scale.x = local_10 / 16.0f;
-                        local_20.x = local_10 / 2.0f;
-                    }
-                    else
-                    {
-                        local_28 =
-                            (((f32)laser->timer.current + laser->timer.subFrame) * 255.0f) /
-                            (f32)laser->startTime;
-                        if (0xff < (i32)local_28)
-                        {
-                            local_28 = 0xff;
-                        }
-                        laser->vm0.color.color = local_28 << 0x18;
-                    }
-                    if (laser->grazeDelay <= laser->timer.current)
-                    {
-                        g_Player.CalcLaserHitbox(&local_38, &local_20, &laser->pos,
-                                                 laser->angle,
-                                                 laser->timer.current % 0xc == 0);
-                    }
-                    if (laser->startTime <= laser->timer.current)
-                    {
-                        laser->timer = 0;
-                        laser->state = laser->state + 1;
-                        laser->targetWidth = laser->width;
-                        goto LAB_004267a8;
-                    }
-                }
-                else
-                {
-                    if (laser->state == 1)
-                    {
-                    LAB_004267a8:
-                        g_Player.CalcLaserHitbox(&local_38, &local_20, &laser->pos,
-                                                 laser->angle,
-                                                 laser->timer.current % 0xc == 0);
-                        if (laser->timer < laser->duration)
-                        {
-                            goto LAB_004269d9;
-                        }
-                        laser->timer = 0;
-                        laser->state = laser->state + 1;
-                        if (laser->endTime == 0)
-                        {
-                            laser->inUse = 0;
-                            goto LAB_004263d8;
-                        }
-                    }
-                    else if (laser->state != 2)
-                    {
-                        goto LAB_004269d9;
-                    }
-                    if ((laser->flags & 1) == 0)
-                    {
-                        if (0 < laser->endTime)
-                        {
-                            fVar4 = laser->width -
-                                    (((f32)laser->timer.current + laser->timer.subFrame) *
-                                     laser->width) /
-                                        (f32)laser->endTime;
-                            laser->vm0.scale.x = fVar4 / 16.0f;
-                            local_20.x = fVar4 / 2.0f;
-                        }
-                    }
-                    else
-                    {
-                        local_28 =
-                            (((f32)laser->timer.current + laser->timer.subFrame) * 255.0f) /
-                            (f32)laser->startTime;
-                        if (0xff < (i32)local_28)
-                        {
-                            local_28 = 0xff;
-                        }
-                        laser->vm0.color.color = local_28 << 0x18;
-                    }
-                    if (laser->timer < laser->grazeInterval)
-                    {
-                        g_Player.CalcLaserHitbox(&local_38, &local_20, &laser->pos,
-                                                 laser->angle,
-                                                 laser->timer.current % 0xc == 0);
-                    }
-                    if (laser->endTime <= laser->timer.current)
-                    {
-                        laser->inUse = 0;
-                        goto LAB_004263d8;
-                    }
-                }
-            LAB_004269d9:
-                if (640.0f <= laser->startOffset)
-                {
-                    laser->inUse = 0;
-                }
-                laser->timer++;
-                g_AnmManager->ExecuteScript(&laser->vm0);
+                break;
             }
-        LAB_004263d8:
-            laser = laser + 1;
+            laser->timer.InitializeForPopup();
+            laser->state++;
+            laser->targetWidth = laser->width;
+        case 1:
+            g_Player.CalcLaserHitbox(&local_38, &local_20, &laser->pos, laser->angle, laser->timer.GetCurrent() % 0xc == 0);
+            if (laser->timer < laser->duration)
+            {
+                break;
+            }
+            laser->timer.InitializeForPopup();
+            laser->state++;
+            if (laser->endTime == 0)
+            {
+                laser->inUse = 0;
+                continue;
+            }
+        case 2:
+            if ((laser->flags & 1) != 0)
+            {
+                local_24 = (laser->timer.AsFloat() * 255.0f) / (f32)laser->startTime;
+                if (local_24 > 0xff)
+                {
+                    local_24 = 0xff;
+                }
+                laser->vm0.color.color = local_24 << 0x18;
+            }
+            else
+            {
+                if (laser->endTime > 0)
+                {
+                    local_10 = laser->width - (laser->timer.AsFloat() * laser->width) / (f32)laser->endTime;
+                    laser->vm0.scale.x = local_10 / 16.0f;
+                    local_20.x = local_10 / 2.0f;
+                }
+            }
+            if (laser->timer < laser->grazeInterval)
+            {
+                g_Player.CalcLaserHitbox(&local_38, &local_20, &laser->pos, laser->angle, laser->timer.GetCurrent() % 0xc == 0);
+            }
+            if (laser->timer < laser->endTime)
+            {
+                break;
+            }
+            laser->inUse = 0;
+            continue;
         }
-        if (arg->screenClearTime != 0)
+        if (laser->startOffset >= 640.0f)
         {
-            arg->screenClearTime = arg->screenClearTime - 1;
+            laser->inUse = 0;
         }
-        arg->time++;
-        arg->updateCount = arg->updateCount + 1;
+        laser->timer++;
+        g_AnmManager->ExecuteScript(&laser->vm0);
     }
+
+    if (arg->screenClearTime != 0)
+    {
+        arg->screenClearTime--;
+    }
+
+    arg->time++;
+    arg->updateCount++;
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
@@ -1357,61 +1312,65 @@ void Bullet::Draw()
     g_AnmManager->Draw(vm);
 }
 
+#pragma var_order(i, local_c, laser, local_14, local_18, bullet)
 // FUNCTION: TH07 0x00426c40
 u32 BulletManager::OnDraw(BulletManager *arg)
 {
-    i32 i;
+    Bullet *bullet;
     f32 local_18;
     f32 local_14;
+    Laser *laser;
     f32 local_c;
+    i32 i;
 
-    Laser *laser = arg->lasers;
-    for (i = 0; i < 0x40; i++)
+    laser = arg->lasers;
+    for (i = 0; i < 0x40; i++, laser++)
     {
-        if (laser->inUse != 0)
+        if (laser->inUse == 0)
         {
-            sincosf(&local_c, &local_18, laser->angle);
-            local_14 =
-                (laser->endOffset - laser->startOffset) / 2.0f + laser->startOffset;
-            laser->vm0.pos.x = local_18 * local_14 + (laser->pos).x;
-            laser->vm0.pos.y = local_c * local_14 + (laser->pos).y;
-            laser->vm0.pos.z = 0.05f;
-            laser->color = -1;
-            laser->vm0.pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-            laser->vm0.pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
-            g_AnmManager->Draw(&laser->vm0);
-            if (((laser->startOffset < 16.0f) || (laser->speed == 0.0f)) &&
-                (laser->hideWarning == 0 || (laser->state != 0)))
-            {
-                laser->vm1.pos.x = local_18 * laser->startOffset + (laser->pos).x;
-                laser->vm1.pos.y = local_c * laser->startOffset + (laser->pos).y;
-                laser->vm1.pos.z = 0.05f;
-                laser->vm1.color = laser->vm0.color;
-                laser->vm1.flag6 = 1;
-                laser->vm1.color.color =
-                    (laser->vm1.color.color & 0xffffff) | 0xff000000;
-                laser->vm1.scale.x =
-                    ((16.0f - laser->startOffset) / 16.0f) * (laser->width / 10.0f);
-                laser->vm1.scale.y = laser->vm1.scale.x;
-                if (laser->vm1.scale.y > 0.0f)
-                {
-                    laser->vm1.scale.x = laser->width / 10.0f;
-                    laser->vm1.scale.y = laser->vm1.scale.x;
-                }
-                laser->vm1.pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-                laser->vm1.pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
-                g_AnmManager->Draw(&laser->vm1);
-            }
+            continue;
         }
-        laser = laser + 1;
+        sincosf(&local_c, &local_18, laser->angle);
+        local_14 =
+            (laser->endOffset - laser->startOffset) / 2.0f + laser->startOffset;
+        laser->vm0.pos.x = local_18 * local_14 + laser->pos.x;
+        laser->vm0.pos.y = local_c * local_14 + laser->pos.y;
+        laser->vm0.pos.z = 0.05f;
+        laser->color = (laser->color & 0xff000000) | 0xffffff;
+        laser->vm0.pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
+        laser->vm0.pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
+        g_AnmManager->Draw(&laser->vm0);
+        if ((laser->startOffset < 16.0f || laser->speed == 0.0f) &&
+            (laser->hideWarning == 0 || laser->state != 0))
+        {
+            laser->vm1.pos.x = local_18 * laser->startOffset + laser->pos.x;
+            laser->vm1.pos.y = local_c * laser->startOffset + laser->pos.y;
+            laser->vm1.pos.z = 0.05f;
+            laser->vm1.color.color = laser->vm0.color.color;
+            laser->vm1.flag6 = 1;
+            laser->vm1.color.color =
+                (laser->vm1.color.color & 0xffffff) | 0xff000000;
+            laser->vm1.scale.x =
+                (laser->width / 10.0f) * ((16.0f - laser->startOffset) / 16.0f);
+            laser->vm1.scale.y = laser->vm1.scale.x;
+            if (laser->vm1.scale.y <= 0.0f)
+            {
+                laser->vm1.scale.x = laser->width / 10.0f;
+                laser->vm1.scale.y = laser->vm1.scale.x;
+            }
+            laser->vm1.pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
+            laser->vm1.pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
+            g_AnmManager->Draw(&laser->vm1);
+        }
     }
     g_ItemManager.OnDraw();
     for (i = 0; i < 6; i++)
     {
-        for (Bullet *bullet = arg->bulletsHeadPtrs[i]; bullet != NULL;
-             bullet = bullet->next)
+        bullet = arg->bulletsPtrs[i];
+        while (bullet != NULL)
         {
             bullet->Draw();
+            bullet = bullet->next;
         }
     }
     return CHAIN_CALLBACK_RESULT_CONTINUE;

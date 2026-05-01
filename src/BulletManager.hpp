@@ -84,7 +84,7 @@ struct EnemyBulletShooter
     i32 unused_b0[3];
     i16 count1;
     i16 count2;
-    i16 aimMode;
+    u16 aimMode;
     i16 unused_c2;
     u32 flags;
     i32 soundIdx;
@@ -250,7 +250,7 @@ struct BulletManager
     ZunTimer time;
     i32 updateCount;
     const char *etamaAnmPath;
-    Bullet *bulletsHeadPtrs[6];
+    Bullet *bulletsPtrs[6];
     Bullet *bulletsStart;
     ItemType itemType;
 };

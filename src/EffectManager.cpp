@@ -670,10 +670,10 @@ u32 EffectManager::OnUpdate(EffectManager *arg)
     arg->specialEffectsPtrs[1] = &arg->specialEffects[1];
     arg->specialEffectsPtrs[2] = &arg->specialEffects[2];
     arg->specialEffectsPtrs[3] = &arg->specialEffects[3];
-    arg->specialEffects[0].head = NULL;
-    arg->specialEffects[1].head = NULL;
-    arg->specialEffects[2].head = NULL;
-    arg->specialEffects[3].head = NULL;
+    arg->specialEffects[0].next = NULL;
+    arg->specialEffects[1].next = NULL;
+    arg->specialEffects[2].next = NULL;
+    arg->specialEffects[3].next = NULL;
     for (i = 0; i < 0x198; i++, effect++)
     {
         if (effect->inUseFlag == 0)
@@ -695,28 +695,28 @@ u32 EffectManager::OnUpdate(EffectManager *arg)
         }
 
         effect->timer++;
-        effect->head = NULL;
+        effect->next = NULL;
         if ((effect->is2D == 1) || (effect->is2D == 3))
         {
-            arg->specialEffectsPtrs[1]->head = effect;
+            arg->specialEffectsPtrs[1]->next = effect;
             arg->specialEffectsPtrs[1] = effect;
         }
         else if (effect->is2D == 0)
         {
             if (effect->vm.blendMode != 0)
             {
-                arg->specialEffectsPtrs[3]->head = effect;
+                arg->specialEffectsPtrs[3]->next = effect;
                 arg->specialEffectsPtrs[3] = effect;
             }
             else
             {
-                arg->specialEffectsPtrs[0]->head = effect;
+                arg->specialEffectsPtrs[0]->next = effect;
                 arg->specialEffectsPtrs[0] = effect;
             }
         }
         else
         {
-            arg->specialEffectsPtrs[2]->head = effect;
+            arg->specialEffectsPtrs[2]->next = effect;
             arg->specialEffectsPtrs[2] = effect;
         }
     }
@@ -737,30 +737,30 @@ u32 EffectManager::OnDraw(EffectManager *arg)
 {
     Effect *effect;
 
-    effect = arg->specialEffects[0].head;
+    effect = arg->specialEffects[0].next;
     while (effect != NULL)
     {
         effect->vm.pos = effect->pos1;
         effect->vm.pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         effect->vm.pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         g_AnmManager->Draw(&effect->vm);
-        effect = effect->head;
+        effect = effect->next;
     }
-    effect = arg->specialEffects[2].head;
+    effect = arg->specialEffects[2].next;
     while (effect != NULL)
     {
         effect->vm.pos = effect->pos1;
         g_AnmManager->DrawBillboard(&effect->vm);
-        effect = effect->head;
+        effect = effect->next;
     }
-    effect = arg->specialEffects[3].head;
+    effect = arg->specialEffects[3].next;
     while (effect != NULL)
     {
         effect->vm.pos = effect->pos1;
         effect->vm.pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         effect->vm.pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         g_AnmManager->Draw(&effect->vm);
-        effect = effect->head;
+        effect = effect->next;
     }
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
@@ -777,7 +777,7 @@ i32 EffectManager::UpdateSpecialEffect()
     f32 a;
     Effect *effect;
 
-    effect = this->specialEffects[1].head;
+    effect = this->specialEffects[1].next;
     counter = 0;
 
     if (g_Supervisor.cfg.effectQuality == QUALITY_WORST)
@@ -834,7 +834,7 @@ i32 EffectManager::UpdateSpecialEffect()
             effect->vm.color.bytes.a = (u8)a;
         }
 
-        effect = effect->head;
+        effect = effect->next;
     }
 
     return 1;

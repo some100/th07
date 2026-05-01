@@ -29,7 +29,7 @@ struct Effect
     i8 fadeOutTime;
     i8 is2D;
     // pad 3
-    Effect *head;
+    Effect *next;
 };
 C_ASSERT(sizeof(Effect) == 0x2d8);
 

@@ -155,10 +155,18 @@ struct AnmVm : AnmVmBase
     {
         this->pendingInterrupt = interrupt;
     }
-    
+
     void SetRotationZ(f32 z)
     {
         this->rotation.z = z;
+    }
+
+    static void AssignVm(AnmVm *out, AnmVm *vm)
+    {
+        if (out->anmFileIdx != vm->anmFileIdx || vm->currentInstruction != NULL)
+        {
+            *out = *vm;
+        }
     }
 
     i32 *GetVar(i32 *paramId, u16 mask, u32 idx);
