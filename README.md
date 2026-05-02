@@ -8,7 +8,7 @@ This project is still in early stages. The game is "playable," as in you can loa
 
 ## Building
 
-This project requires the original th07.exe 1.00b executable for extracting the icon. Copy it to the root directory of the repository.
+This project requires the original th07.exe 1.00b executable for extracting the icon. Copy it to the resources directory of the repository.
 
 ### Dependencies
 

@@ -63,6 +63,24 @@ struct MainMenu
         i32 idk[5];
     }
 
+    i32 IsSelected(i32 idx)
+    {
+        i32 selected = idx == this->cursor;
+        return selected;
+    }
+
+    i32 IsReplaySelected(i32 idx)
+    {
+        i32 selected = idx == this->chosenReplay;
+        return selected;
+    }
+
+    i32 IsStageSelected(i32 idx)
+    {
+        i32 selected = idx == this->selectedStage;
+        return selected;
+    }
+
     i32 cursor;
     i32 selected;
     i32 menuSubState;

@@ -6,12 +6,12 @@ First, copy the original game binary `th07.exe` into the root of the repository.
 
 Then, simply run the command:
 ```sh
-uv run build.py --reccmp init
+uv run build.py reccmp --init
 ```
 
 Now, you can finally start diffing. After each (re)build, run `uv run reccmp-reccmp --target TH07 --html index.html --nolib` to get a matching summary of all files in the program, and output a webpage showing the diff of every function in the program. Or, alternatively, run `uv run reccmp-reccmp --target TH07 --verbose 0x00FNADDR` on a particular function to diff that function in specific. You'll get a lot of "\[ERROR\] Failed to match xyz" errors in the console. These can be ignored.
 
-For convenience purposes, you can also use `uv run build.py --reccmp` to rebuild and run reccmp at the same time, or `uv run build.py --reccmp 0x00FNADDR` to rebuild and diff a function at the same time.
+For convenience purposes, you can also use `uv run build.py reccmp` to rebuild and run reccmp at the same time, or `uv run build.py reccmp 0x00FNADDR` to rebuild and diff a function at the same time.
 
 # Matching
 
@@ -29,7 +29,7 @@ void EclManager::Unload() {
 }
 ```
 
-This function is still mostly unprocessed Ghidra decompiler output. While it looks reasonable, it may have different output than the original assembly. Call `uv run build.py --reccmp 0x0040e4f0` to get a detailed diff.
+This function is still mostly unprocessed Ghidra decompiler output. While it looks reasonable, it may have different output than the original assembly. Call `uv run build.py reccmp 0x0040e4f0` to get a detailed diff.
 
 ```
 ---

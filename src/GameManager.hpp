@@ -149,6 +149,11 @@ struct GameManager
         RegenerateGameIntegrityCsum();
     }
 
+    void SetReplay(i32 replay)
+    {
+        this->replay = replay;
+    }
+
     static ZunResult RegisterChain();
     static void CutChain();
 

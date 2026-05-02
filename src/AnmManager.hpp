@@ -246,6 +246,22 @@ struct AnmManager
         }
     }
 
+    i32 ShouldDraw(AnmVm *vm)
+    {
+        if (vm->sprite == NULL)
+        {
+            return false;
+        }
+        else if (vm->sprite->sourceFileIndex < 0)
+        {
+            return false;
+        }
+        else
+        {
+            return this->textures[vm->sprite->sourceFileIndex] != NULL;
+        }
+    }
+
     void SetVertexShader(u8 value)
     {
         this->currentVertexShader = value;
@@ -295,10 +311,18 @@ struct AnmManager
     {
         this->scriptsExecutedThisFrame = value;
     }
-    
+
     void SetFlushes(i32 value)
     {
         this->flushesThisFrame = value;
+    }
+
+    void ClearFrameState()
+    {
+        this->scriptTicksThisFrame = 0;
+        this->renderStateChangesThisFrame = 0;
+        this->scriptsExecutedThisFrame = 0;
+        this->flushesThisFrame = 0;
     }
 
     ZunColor color;

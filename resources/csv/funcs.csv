@@ -1146,7 +1146,7 @@ address|name|type
 0047e7c7|_Strftime|library
 0047e7f9|strftime|library
 0047e814|time|library
-0047e84d|chdir|library
+0047e84d|_chdir|library
 0047e8e9|rand|library
 0047e90b|_purecall|library
 0047e914|_ArrayUnwind|library

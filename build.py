@@ -1,5 +1,4 @@
 import argparse
-import hashlib
 import os
 import shutil
 import subprocess
@@ -90,7 +89,14 @@ _ = parser.add_argument(
 _ = parser.add_argument(
     "--no-matching", action="store_true", help="build without attempting matching"
 )
-_ = parser.add_argument("--reccmp", nargs="?", const="", help="output reccmp output")
+subparsers = parser.add_subparsers(dest="command")
+
+parser_reccmp = subparsers.add_parser("reccmp", help="output reccmp output")
+_ = parser_reccmp.add_argument(
+    "address", nargs="?", default=None, help="optional function address for displaying diff"
+)
+_ = parser_reccmp.add_argument("--init", action="store_true", help="initialize reccmp project")
+_ = parser_reccmp.add_argument("--svg", action="store_true", help="generate progress svg")
 args = parser.parse_args()
 
 
@@ -421,38 +427,39 @@ _ = run_program(
     env=env,
 )
 
-if args.reccmp == "":
-    _ = subprocess.check_call(
-        ["reccmp-reccmp", "--target", "TH07", "--html", "index.html", "--nolib"]
-    )
-elif args.reccmp == "init":
-    os.chdir(SCRIPT_DIR)
-    _ = subprocess.check_call(["reccmp-project", "detect", "--search-path", SCRIPT_DIR])
-    os.chdir(BUILD_DIR)
-    _ = subprocess.check_call(["reccmp-project", "detect", "--what", "recompiled"])
-elif args.reccmp == "svg":
-    _ = subprocess.check_call(
-        [
-            "reccmp-reccmp",
-            "--target",
-            "TH07",
-            "--svg",
-            RESOURCE_DIR / "progress.svg",
-            "--svg-icon",
-            RESOURCE_DIR / "svgicon.png",
-            "--nolib",
-        ]
-    )
-elif not args.reccmp is None:
-    _ = subprocess.check_call(
-        [
-            "reccmp-reccmp",
-            "--target",
-            "TH07",
-            "--html",
-            "index.html",
-            "--nolib",
-            "--verbose",
-            args.reccmp,
-        ]
-    )
+if args.command == "reccmp":
+    if args.init:
+        os.chdir(SCRIPT_DIR)
+        _ = subprocess.check_call(["reccmp-project", "detect", "--search-path", SCRIPT_DIR])
+        os.chdir(BUILD_DIR)
+        _ = subprocess.check_call(["reccmp-project", "detect", "--what", "recompiled"])
+    elif args.svg:
+        _ = subprocess.check_call(
+            [
+                "reccmp-reccmp",
+                "--target",
+                "TH07",
+                "--svg",
+                RESOURCE_DIR / "progress.svg",
+                "--svg-icon",
+                RESOURCE_DIR / "svgicon.png",
+                "--nolib",
+            ]
+        )
+    elif args.address:
+        _ = subprocess.check_call(
+            [
+                "reccmp-reccmp",
+                "--target",
+                "TH07",
+                "--html",
+                "index.html",
+                "--nolib",
+                "--verbose",
+                args.address,
+            ]
+        )
+    else:
+        _ = subprocess.check_call(
+            ["reccmp-reccmp", "--target", "TH07", "--html", "index.html", "--nolib"]
+        )
