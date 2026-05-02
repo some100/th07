@@ -1,15 +1,15 @@
 targets:
   TH07:
-    filename: th07.exe
+    filename: resources/th07.exe
     source_root: src
     hash:
       sha256: 35467eaf8dc7fc85f024f16fb2037255f151cefda33cf4867bc9122aaa2e80ca
     encoding: "shift_jis"
     data_sources:
-        - csv/floats.csv
-        - csv/funcs.csv
-        - csv/globals.csv
-        - csv/strings.csv
+        - resources/csv/floats.csv
+        - resources/csv/funcs.csv
+        - resources/csv/globals.csv
+        - resources/csv/strings.csv
     ghidra:
       ignore_types: []
       ignore_functions: []

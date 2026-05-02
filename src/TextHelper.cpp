@@ -10,9 +10,6 @@
 
 #pragma optimize("s", on)
 
-// GLOBAL: TH07 0x0049fe28
-IDirect3DSurface8 *g_TextBufferSurface;
-
 // GLOBAL: TH07 0x0049ed98
 FormatInfo g_FormatInfoArray[7] = {
     {
@@ -72,6 +69,9 @@ FormatInfo g_FormatInfoArray[7] = {
         0,
     },
 };
+
+// GLOBAL: TH07 0x0049fe28
+IDirect3DSurface8 *g_TextBufferSurface;
 
 // FUNCTION: TH07 0x00431a0f
 TextHelper::TextHelper()

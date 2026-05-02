@@ -18,9 +18,6 @@
 #include "ZunMath.hpp"
 #include "dsutil.hpp"
 
-// GLOBAL: TH07 0x01347938
-EclManager g_EclManager;
-
 // GLOBAL: TH07 0x0049f560
 const char *g_EclPaths[10] = {
     "dummy",
@@ -34,6 +31,9 @@ const char *g_EclPaths[10] = {
     "data/ecldata8.ecl",
     NULL,
 };
+
+// GLOBAL: TH07 0x01347938
+EclManager g_EclManager;
 
 // GLOBAL: TH07 0x01347aa0
 EclGlobalVars g_GlobalEclVars;

@@ -24,9 +24,6 @@
 
 #pragma optimize("s", on)
 
-// GLOBAL: TH07 0x00575950
-Supervisor g_Supervisor;
-
 // GLOBAL: TH07 0x0049ee40
 ControllerMapping g_ControllerMapping = {0, 1, 2, 4, -1, -1, -1, -1, 3};
 
@@ -48,14 +45,8 @@ u16 g_IsEighthFrameOfHeldInput;
 // GLOBAL: TH07 0x004b9e60
 u16 g_NumOfFramesInputsWereHeld;
 
-// GLOBAL: TH07 0x0135e298
-LARGE_INTEGER g_PerformanceCounter;
-
-// GLOBAL: TH07 0x0135e2a0
-u32 g_LastTime;
-
-// GLOBAL: TH07 0x0135e2a4
-u32 g_LastTimeIsSet;
+// GLOBAL: TH07 0x00575950
+Supervisor g_Supervisor;
 
 // GLOBAL: TH07 0x0135dfec
 u32 g_FpsUpdateCounter;
@@ -68,6 +59,15 @@ char g_FpsCounterBuffer[256];
 
 // GLOBAL: TH07 0x0135e1f0
 u32 g_NumFramesSinceLastTime;
+
+// GLOBAL: TH07 0x0135e298
+LARGE_INTEGER g_PerformanceCounter;
+
+// GLOBAL: TH07 0x0135e2a0
+u32 g_LastTime;
+
+// GLOBAL: TH07 0x0135e2a4
+u32 g_LastTimeIsSet;
 
 // FUNCTION: TH07 0x00437903
 void Supervisor::DebugPrint2(const char *fmt, ...)

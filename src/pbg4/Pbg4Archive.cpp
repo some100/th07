@@ -5,10 +5,11 @@
 #include "Lzss.hpp"
 #include "Pbg4File.hpp"
 
+// GLOBAL: TH07 0x004b9e68
+Pbg4Archive g_UnusedPbg4ArchiveArray[20];
+
 // GLOBAL: TH07 0x00626258
 Pbg4Archive g_Pbg4Archive;
-
-Pbg4Archive g_UnusedPbg4ArchiveArray[20];
 
 // FUNCTION: TH07 0x0045f6b0
 Pbg4Archive::Pbg4Archive()
@@ -67,9 +68,6 @@ void Pbg4Archive::Release()
     SAFE_DELETE(this->fileAbstraction);
     this->numOfEntries = 0;
 }
-
-// SYNTHETIC: TH07 0x0045f8d0
-// Pbg4Entry::`vector deleting destructor'
 
 #pragma var_order(entry, dstLen, dstBuf, srcBuf, dwBytes)
 // FUNCTION: TH07 0x0045f960

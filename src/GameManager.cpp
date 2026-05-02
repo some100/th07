@@ -21,15 +21,6 @@
 
 #pragma optimize("s", on)
 
-// GLOBAL: TH07 0x00626270
-GameManager g_GameManager;
-
-// GLOBAL: TH07 0x0062f8b4
-ChainElem g_GameManagerCalcChain;
-
-// GLOBAL: TH07 0x0062f8d4
-ChainElem g_GameManagerDrawChain;
-
 // GLOBAL: TH07 0x0049f5d0
 i32 g_RankArray[6][3] = {
     {16, 12, 20},
@@ -39,6 +30,15 @@ i32 g_RankArray[6][3] = {
     {16, 15, 16},
     {16, 15, 16},
 };
+
+// GLOBAL: TH07 0x00626270
+GameManager g_GameManager;
+
+// GLOBAL: TH07 0x0062f8b4
+ChainElem g_GameManagerCalcChain;
+
+// GLOBAL: TH07 0x0062f8d4
+ChainElem g_GameManagerDrawChain;
 
 // FUNCTION: TH07 0x0042d560
 GameManager::GameManager()

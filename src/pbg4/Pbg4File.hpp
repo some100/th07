@@ -52,5 +52,5 @@ struct Pbg4File : IPbg4File
     u32 access;
 };
 
-extern u32 g_SeekModes[3];
+extern const u32 g_SeekModes[3];
 extern const char *g_AccessModes[3];

@@ -18,10 +18,11 @@ os.chdir(SCRIPT_DIR)
 
 SRC_DIR = SCRIPT_DIR / "src"
 BUILD_DIR = SCRIPT_DIR / "build"
+RESOURCE_DIR = SCRIPT_DIR / "resources"
 OBJ_DIR = BUILD_DIR / "objects"
 MSVC_PATH = SCRIPT_DIR / "thirdparty" / "msvc"
 DX8_PATH = SCRIPT_DIR / "thirdparty" / "dx8"
-EXE_PATH = SCRIPT_DIR / "th07.exe"
+EXE_PATH = RESOURCE_DIR / "th07.exe"
 BUILD_PATH = BUILD_DIR / "th07.exe"
 
 VS_PATH = MSVC_PATH / "PROGRAM FILES" / "MICROSOFT VISUAL STUDIO .NET"
@@ -89,9 +90,7 @@ _ = parser.add_argument(
 _ = parser.add_argument(
     "--no-matching", action="store_true", help="build without attempting matching"
 )
-_ = parser.add_argument(
-    "--reccmp", nargs="?", const="", help="output reccmp output"
-)
+_ = parser.add_argument("--reccmp", nargs="?", const="", help="output reccmp output")
 args = parser.parse_args()
 
 
@@ -351,8 +350,6 @@ env["LIB"] = (
 )
 install_hackery(env)
 
-out = BUILD_DIR / "th07.exe"
-
 cflags = [
     "/nologo",
     "/W3",
@@ -364,7 +361,7 @@ cflags = [
     "/Gr",
     "/GL",
     "/Gy",
-    "/Gf",
+    "/GF",
     "/Zi",
     "/DNDEBUG",
     f"-I{conv_path(DX8_PATH / 'include')}",
@@ -420,7 +417,7 @@ _ = run_program(
     *objects,
     *lflags,
     *libs,
-    f"/OUT:{out}",
+    f"/OUT:{BUILD_PATH}",
     env=env,
 )
 
@@ -430,12 +427,21 @@ if args.reccmp == "":
     )
 elif args.reccmp == "init":
     os.chdir(SCRIPT_DIR)
-    _ = subprocess.check_call(
-        ["reccmp-project", "detect", "--search-path", SCRIPT_DIR]
-    )
+    _ = subprocess.check_call(["reccmp-project", "detect", "--search-path", SCRIPT_DIR])
     os.chdir(BUILD_DIR)
+    _ = subprocess.check_call(["reccmp-project", "detect", "--what", "recompiled"])
+elif args.reccmp == "svg":
     _ = subprocess.check_call(
-        ["reccmp-project", "detect", "--what", "recompiled"]
+        [
+            "reccmp-reccmp",
+            "--target",
+            "TH07",
+            "--svg",
+            RESOURCE_DIR / "progress.svg",
+            "--svg-icon",
+            RESOURCE_DIR / "svgicon.png",
+            "--nolib",
+        ]
     )
 elif not args.reccmp is None:
     _ = subprocess.check_call(

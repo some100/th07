@@ -5,7 +5,7 @@
 #include "Supervisor.hpp"
 
 // GLOBAL: TH07 0x0049512c
-D3DFORMAT g_TextureFormatD3D8Mapping[6] = {
+const D3DFORMAT g_TextureFormatD3D8Mapping[6] = {
     D3DFMT_UNKNOWN,
     D3DFMT_A8R8G8B8,
     D3DFMT_A1R5G5B5,
@@ -15,7 +15,7 @@ D3DFORMAT g_TextureFormatD3D8Mapping[6] = {
 };
 
 // GLOBAL: TH07 0x00495144
-i32 g_TextureBytesPerPixel[7] = {4, 4, 2, 2, 3, 2, 0};
+const i32 g_TextureBytesPerPixel[7] = {4, 4, 2, 2, 3, 2, 0};
 
 // this is here i guess? but why
 // FUNCTION: TH07 0x004010b0

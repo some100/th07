@@ -233,5 +233,5 @@ struct AnmVm : AnmVmBase
 };
 C_ASSERT(sizeof(AnmVm) == 0x24c);
 
-extern D3DFORMAT g_TextureFormatD3D8Mapping[6];
-extern i32 g_TextureBytesPerPixel[7];
+extern const D3DFORMAT g_TextureFormatD3D8Mapping[6];
+extern const i32 g_TextureBytesPerPixel[7];

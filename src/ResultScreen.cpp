@@ -18,6 +18,13 @@
 
 #pragma optimize("s", on)
 
+// GLOBAL: TH07 0x004964f4
+static const f32 g_DifficultyWeightsList[] = {-30.0f, -10.0f, 20.0f, 30.0f, 30.0f};
+
+// GLOBAL: TH07 0x0049ec30
+// STRING: TH07 0x004969c8
+const char *g_AlphabetList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,:;_@abcdefghijklmnopqrstuvwxyz+-/*=%0123456789#!?'\"$(){}[]<>&\\|~^ --";
+
 // GLOBAL: TH07 0x0049ec34
 const char *g_CharacterList[6] = {
     // STRING: TH07 0x004969b0
@@ -38,10 +45,6 @@ const char *g_CharacterList[6] = {
 // STRING: TH07 0x00496938
 const char *g_TotalForAllProtagonists = "全主人公合計  　";
 
-// GLOBAL: TH07 0x0049ec30
-// STRING: TH07 0x004969c8
-const char *g_AlphabetList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,:;_@abcdefghijklmnopqrstuvwxyz+-/*=%0123456789#!?'\"$(){}[]<>&\\|~^ --";
-
 // GLOBAL: TH07 0x0049f4ec
 const char *g_CharactersAndShotTypesStrings[6] = {
     "ReimuA ",
@@ -51,6 +54,9 @@ const char *g_CharactersAndShotTypesStrings[6] = {
     "SakuyaA",
     "SakuyaB",
 };
+
+// GLOBAL: TH07 0x0049f504
+static const f32 g_DifficultyPointItemWeightsList[] = {1.0f, 1.5f, 1.5f, 2.0f, 2.5f};
 
 // GLOBAL: TH07 0x0049f518
 const char *g_DifficultyNameTable[6] = {
@@ -67,12 +73,6 @@ const char *g_DifficultyNameTable[6] = {
     // STRING: TH07 0x00496508
     "  Phantasm",
 };
-
-// GLOBAL: TH07 0x004964f4
-static const f32 g_DifficultyWeightsList[] = {-30.0f, -10.0f, 20.0f, 30.0f, 30.0f};
-
-// GLOBAL: TH07 0x0049f504
-static const f32 g_DifficultyPointItemWeightsList[] = {1.0f, 1.5f, 1.5f, 2.0f, 2.5f};
 
 // FUNCTION: TH07 0x00444a5b
 ResultScreen::ResultScreen()

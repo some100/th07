@@ -21,6 +21,14 @@
 
 #pragma optimize("s", on)
 
+// GLOBAL: TH07 0x0049f618
+D3DCOLOR g_SpellcardTimeColors[4] = {
+    0xa0d0ff,
+    0xa080ff,
+    0xe080c0,
+    0xff4040,
+};
+
 // GLOBAL: TH07 0x0049fbf0
 Gui g_Gui;
 
@@ -29,14 +37,6 @@ ChainElem g_GuiCalcChain;
 
 // GLOBAL: TH07 0x0062f8f4
 ChainElem g_GuiDrawChain;
-
-// GLOBAL: TH07 0x0049f618
-D3DCOLOR g_SpellcardTimeColors[4] = {
-    0xa0d0ff,
-    0xa080ff,
-    0xe080c0,
-    0xff4040,
-};
 
 // FUNCTION: TH07 0x00427ae0
 i32 Gui::IsStageFinished()

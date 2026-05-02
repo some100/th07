@@ -17,8 +17,15 @@
 #include "ZunResult.hpp"
 #include "dxutil.hpp"
 
-// GLOBAL: TH07 0x0049f474
-i16 g_LastJoystickInput;
+// GLOBAL: TH07 0x0049ea7c
+const char *g_DemoReplayPaths[3] = {
+    // STRING: TH07 0x00495ae8
+    "data/demo/demorpy0.rpy",
+    // STRING: TH07 0x00495ad0
+    "data/demo/demorpy1.rpy",
+    // STRING: TH07 0x00495ab8
+    "data/demo/demorpy2.rpy",
+};
 
 // GLOBAL: TH07 0x0049f40c
 const char *g_StagePracticeStrings[6] = {
@@ -83,6 +90,9 @@ const char *g_CharacterAndShottypeReplayStrings[6] = {
     // STRING: TH07 0x00495b00
     "SakuyaB",
 };
+
+// GLOBAL: TH07 0x0049f474
+i16 g_LastJoystickInput;
 
 // GLOBAL: TH07 0x0049f478
 const char *g_KeyConfigStrings[12] = {
@@ -152,16 +162,6 @@ const char *g_MainMenuStrings[8] = {
     "äeéÌê›íËÇ≈Ç´Ç‹Ç∑",
     // STRING: TH07 0x004959dc
     "Ç¢ÇÎÇ¢ÇÎÇ∆èIóπÇµÇ‹Ç∑",
-};
-
-// GLOBAL: TH07 0x0049ea7c
-const char *g_DemoReplayPaths[3] = {
-    // STRING: TH07 0x00495ae8
-    "data/demo/demorpy0.rpy",
-    // STRING: TH07 0x00495ad0
-    "data/demo/demorpy1.rpy",
-    // STRING: TH07 0x00495ab8
-    "data/demo/demorpy2.rpy",
 };
 
 #pragma optimize("s", on)

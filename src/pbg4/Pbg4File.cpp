@@ -3,7 +3,7 @@
 #include "../inttypes.hpp"
 
 // GLOBAL: TH07 0x00495120
-u32 g_SeekModes[3] = {0, 1, 2};
+const u32 g_SeekModes[3] = {0, 1, 2};
 
 // would it really not have been simpler to just type the letter where its used
 // GLOBAL: TH07 0x0049ea70

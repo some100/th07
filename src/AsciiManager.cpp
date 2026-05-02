@@ -12,14 +12,14 @@
 #include "Supervisor.hpp"
 #include "ZunResult.hpp"
 
+// GLOBAL: TH07 0x0134cdf4
+ChainElem g_AsciiManagerOnDrawMenusChain;
+
 // GLOBAL: TH07 0x0134ce18
 AsciiManager g_AsciiManager;
 
 // GLOBAL: TH07 0x0135dfac
 ChainElem g_AsciiManagerCalcChain;
-
-// GLOBAL: TH07 0x0134cdf4
-ChainElem g_AsciiManagerOnDrawMenusChain;
 
 // GLOBAL: TH07 0x0135dfcc
 ChainElem g_AsciiManagerOnDrawPopupsChain;

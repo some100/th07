@@ -9,15 +9,6 @@
 #include "ZunResult.hpp"
 #include "utils.hpp"
 
-// GLOBAL: TH07 0x012fe250
-EffectManager g_EffectManager;
-
-// GLOBAL: TH07 0x013478f8
-ChainElem g_EffectManagerCalcChain;
-
-// GLOBAL: TH07 0x01347918
-ChainElem g_EffectManagerDrawChain;
-
 // GLOBAL: TH07 0x0049efc0
 EffectTypeInfo g_EffectMapping[34] = {
     {0x2ab, NULL, NULL},
@@ -63,6 +54,15 @@ EffectTypeInfo g_EffectMapping[34] = {
      EffectManager::InitRandomDirWithSpeed},
     {0x2b1, EffectManager::UpdateGather60Frames, EffectManager::InitRandomDir},
 };
+
+// GLOBAL: TH07 0x012fe250
+EffectManager g_EffectManager;
+
+// GLOBAL: TH07 0x013478f8
+ChainElem g_EffectManagerCalcChain;
+
+// GLOBAL: TH07 0x01347918
+ChainElem g_EffectManagerDrawChain;
 
 // FUNCTION: TH07 0x0041a210
 EffectManager::EffectManager()

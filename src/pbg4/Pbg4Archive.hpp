@@ -15,6 +15,9 @@ struct Pbg4Entry
         }
     }
 
+    // SYNTHETIC: TH07 0x0045f8d0
+    // Pbg4Entry::`vector deleting destructor'
+
     char *filename;
     u32 dataOffset;
     u32 decompressedSize;

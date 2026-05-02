@@ -12,8 +12,14 @@
 #include "SoundPlayer.hpp"
 #include "d3dx8.h"
 
-// GLOBAL: TH07 0x00575c70
-ItemManager g_ItemManager;
+// GLOBAL: TH07 0x0049ecf8
+i32 g_CherryBonusFullPower[30] = {10, 20, 30, 50, 60, 70,
+                                  90, 100, 200, 400, 500, 600,
+                                  800, 900, 1000, 3000, 4000, 5000,
+                                  7000, 8000, 9000, 11000, 12000};
+
+// GLOBAL: TH07 0x0049ed74
+i32 g_PowerLevels[9] = {8, 16, 32, 48, 64, 80, 96, 128, 999};
 
 // GLOBAL: TH07 0x0049efa0
 u8 g_ItemDropTable[32] = {
@@ -51,14 +57,8 @@ u8 g_ItemDropTable[32] = {
     2,
 };
 
-// GLOBAL: TH07 0x0049ecf8
-i32 g_CherryBonusFullPower[30] = {10, 20, 30, 50, 60, 70,
-                                  90, 100, 200, 400, 500, 600,
-                                  800, 900, 1000, 3000, 4000, 5000,
-                                  7000, 8000, 9000, 11000, 12000};
-
-// GLOBAL: TH07 0x0049ed74
-i32 g_PowerLevels[9] = {8, 16, 32, 48, 64, 80, 96, 128, 999};
+// GLOBAL: TH07 0x00575c70
+ItemManager g_ItemManager;
 
 // FUNCTION: TH07 0x004325c0
 void AngleToVector(D3DXVECTOR3 *out, f32 angle, f32 speed)

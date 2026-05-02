@@ -12,18 +12,6 @@
 #include "d3dx8.h"
 #include "utils.hpp"
 
-// GLOBAL: TH07 0x009a9b00
-EnemyManager g_EnemyManager;
-
-// GLOBAL: TH07 0x012fe210
-ChainElem g_EnemyManagerCalcChain;
-
-// GLOBAL: TH07 0x009a9adc
-ChainElem g_EnemyManagerDrawChain1;
-
-// GLOBAL: TH07 0x012fe230
-ChainElem g_EnemyManagerDrawChain2;
-
 // GLOBAL: TH07 0x0049f1b8
 u32 g_SpellcardScore[141] = {
     0x1E8480, 0x1E8480, 0x2191C0, 0x2191C0, 0x249F00, 0x249F00, 0x249F00,
@@ -47,6 +35,18 @@ u32 g_SpellcardScore[141] = {
     0x3D0900, 0x6ACFC0, 0x6ACFC0, 0x6ACFC0, 0x7A1200, 0x7A1200, 0x7A1200,
     0x7A1200, 0x7A1200, 0x7A1200, 0x7A1200, 0x7A1200, 0x3D0900, 0x7A1200,
     0x3D0900};
+
+// GLOBAL: TH07 0x009a9adc
+ChainElem g_EnemyManagerDrawChain1;
+
+// GLOBAL: TH07 0x009a9b00
+EnemyManager g_EnemyManager;
+
+// GLOBAL: TH07 0x012fe210
+ChainElem g_EnemyManagerCalcChain;
+
+// GLOBAL: TH07 0x012fe230
+ChainElem g_EnemyManagerDrawChain2;
 
 // FUNCTION: TH07 0x0041e920
 void Enemy::Move()
