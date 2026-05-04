@@ -6,6 +6,9 @@
 #include "GameManager.hpp"
 #include "inttypes.hpp"
 
+extern const char *g_ShooterTable[6];
+extern const char *g_ShooterTable2[6];
+
 typedef void (*BombCallback)(struct Player *);
 
 typedef enum PlayerState
@@ -57,8 +60,6 @@ C_ASSERT(sizeof(BombProjectile) == 0x20);
 
 struct PlayerBombSubInfo
 {
-    PlayerBombSubInfo();
-
     i32 state;
     i32 counter;
     f32 accel;
@@ -75,8 +76,6 @@ struct PlayerBombSubInfo
 
 struct PlayerBombInfo
 {
-    PlayerBombInfo();
-
     i32 isInUse;
     i32 isFocus;
     i32 bombDuration;
@@ -91,8 +90,6 @@ struct PlayerBombInfo
 
 struct PlayerBullet
 {
-    PlayerBullet();
-
     AnmVm vm;
     D3DXVECTOR3 pos;
     D3DXVECTOR3 posHistory[16];
@@ -123,8 +120,6 @@ struct PlayerBulletTimer
 
 struct Player
 {
-    Player();
-
     static ZunResult RegisterChain(u32 param_1);
     static void CutChain();
 
@@ -237,11 +232,16 @@ struct Player
     struct ShtData *shooterData2;
 };
 C_ASSERT(sizeof(Player) == 0xb7e78);
+extern Player g_Player;
 
 typedef i32 (*ShtFunc1)(Player *, PlayerBullet *, i32, struct ShtEntry *);
+extern ShtFunc1 g_ShtFireFuncs[6];
 typedef i32 (*ShtFunc2)(Player *, PlayerBullet *);
+extern ShtFunc2 g_ShtUpdateFuncs[6];
 typedef i32 (*ShtFunc3)(Player *, PlayerBullet *);
+extern ShtFunc3 g_ShtDrawFuncs[2];
 typedef i32 (*ShtFunc4)(Player *, PlayerBullet *, D3DXVECTOR3 *);
+extern ShtFunc4 g_ShtHitFuncs[4];
 
 struct ShtEntry
 {
@@ -312,11 +312,4 @@ struct ShtData
     f32 speedDiagonalFocus;
     ShtLevel levels;
 };
-
-extern Player g_Player;
-extern ShtFunc1 g_ShtFireFuncs[6];
-extern ShtFunc2 g_ShtUpdateFuncs[6];
-extern ShtFunc3 g_ShtDrawFuncs[2];
-extern ShtFunc4 g_ShtHitFuncs[4];
-extern const char *g_ShooterTable[6];
-extern const char *g_ShooterTable2[6];
+C_ASSERT(sizeof(ShtData) == 0x3c);

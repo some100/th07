@@ -38,5 +38,4 @@ struct GameErrorContext
         }
     }
 };
-
 extern GameErrorContext g_GameErrorContext;

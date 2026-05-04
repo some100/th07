@@ -21,13 +21,21 @@
 // GLOBAL: TH07 0x0049f560
 const char *g_EclPaths[10] = {
     "dummy",
+    // STRING: TH07 0x00497f38
     "data/ecldata1.ecl",
+    // STRING: TH07 0x00497f24
     "data/ecldata2.ecl",
+    // STRING: TH07 0x00497f10
     "data/ecldata3.ecl",
+    // STRING: TH07 0x00497efc
     "data/ecldata4.ecl",
+    // STRING: TH07 0x00497ee8
     "data/ecldata5.ecl",
+    // STRING: TH07 0x00497ed4
     "data/ecldata6.ecl",
+    // STRING: TH07 0x00497ec0
     "data/ecldata7.ecl",
+    // STRING: TH07 0x00497eac
     "data/ecldata8.ecl",
     NULL,
 };

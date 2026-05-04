@@ -1,8 +1,228 @@
 address|text|type
+0048d6a3|>read error|string
+0048d6d8|1.0.5|string
+0048da74|Application transferred too many scanlines|string
+0048daa0|Invalid SOS parameters for sequential JPEG|string
+0048dacc|Corrupt JPEG data: found marker 0x%02x instead of RST%d|string
+0048db04|Premature end of JPEG file|string
+0048db20|Warning: unknown JFIF revision number %d.%02d|string
+0048db50|Corrupt JPEG data: bad Huffman code|string
+0048db74|Corrupt JPEG data: premature end of data segment|string
+0048dba8|Corrupt JPEG data: %u extraneous bytes before marker 0x%02x|string
+0048dbe8|Inconsistent progression sequence for component %d coefficient %d|string
+0048dc2c|Unknown Adobe color transform code %d|string
+0048dc54|Obtained XMS handle %u|string
+0048dc6c|Freed XMS handle %u|string
+0048dc80|Unrecognized component IDs %d %d %d, assuming YCbCr|string
+0048dcb4|Opened temporary file %s|string
+0048dcd0|Closed temporary file %s|string
+0048dcec|  Ss=%d, Se=%d, Ah=%d, Al=%d|string
+0048dd0c|    Component %d: dc=%d ac=%d|string
+0048dd2c|Start Of Scan: %d components|string
+0048dd4c|Start of Image|string
+0048dd5c|    Component %d: %dhx%dv q=%d|string
+0048dd7c|Start Of Frame 0x%02x: width=%u, height=%u, components=%d|string
+0048ddb8|Smoothing not supported with nonstandard sampling ratios|string
+0048ddf4|RST%d|string
+0048ddfc|At marker 0x%02x, recovery action %d|string
+0048de24|Selected %d colors for quantization|string
+0048de48|Quantizing to %d colors|string
+0048de60|Quantizing to %d = %d*%d*%d colors|string
+0048de84|        %4u %4u %4u %4u %4u %4u %4u %4u|string
+0048deac|Unexpected marker 0x%02x|string
+0048dec8|Skipping marker 0x%02x, length %u|string
+0048deec|    with %d x %d thumbnail image|string
+0048df10|Unknown JFIF minor revision number %d.%02d|string
+0048df3c|Warning: thumbnail image size does not match data length %u|string
+0048df78|JFIF APP0 marker, density %dx%d  %d|string
+0048df9c|        %3d %3d %3d %3d %3d %3d %3d %3d|string
+0048dfc4|End Of Image|string
+0048dfd4|Obtained EMS handle %u|string
+0048dfec|Freed EMS handle %u|string
+0048e000|Define Restart Interval %u|string
+0048e01c|Define Quantization Table %d  precision %d|string
+0048e048|Define Huffman Table 0x%02x|string
+0048e064|Define Arithmetic Table 0x%02x: 0x%02x|string
+0048e08c|Unknown APP14 marker (not Adobe), length %u|string
+0048e0b8|Unknown APP0 marker (not JFIF), length %u|string
+0048e0e8|Adobe APP14 marker: version %d, flags 0x%04x 0x%04x, transform %d|string
+0048e12c|Caution: quantization tables are too coarse for baseline JPEG|string
+0048e16c|6a  7-Feb-96|string
+0048e17c|Copyright (C) 1996, Thomas G. Lane|string
+0048e1a0|Write to XMS failed|string
+0048e1b4|Read from XMS failed|string
+0048e1cc|Image too wide for this implementation|string
+0048e1f4|Virtual array controller messed up|string
+0048e218|Unsupported marker type 0x%02x|string
+0048e238|Application transferred too few scanlines|string
+0048e264|Write failed on temporary file --- out of disk space?|string
+0048e29c|Seek failed on temporary file|string
+0048e2bc|Read failed on temporary file|string
+0048e2dc|Failed to create temporary file %s|string
+0048e300|Invalid JPEG file structure: SOS before SOF|string
+0048e32c|Invalid JPEG file structure: two SOI markers|string
+0048e35c|Unsupported JPEG process: SOF type 0x%02x|string
+0048e388|Invalid JPEG file structure: missing SOS marker|string
+0048e3b8|Invalid JPEG file structure: two SOF markers|string
+0048e3e8|Cannot quantize to more than %d colors|string
+0048e410|Cannot quantize to fewer than %d colors|string
+0048e438|Cannot quantize more than %d color components|string
+0048e468|Insufficient memory (case %d)|string
+0048e488|Not a JPEG file: starts with 0x%02x 0x%02x|string
+0048e4b4|Quantization table 0x%02x was not defined|string
+0048e4e0|JPEG datastream contains no image|string
+0048e504|Huffman table 0x%02x was not defined|string
+0048e52c|Backing store not supported|string
+0048e548|Requested feature was omitted at compile time|string
+0048e578|Not implemented yet|string
+0048e58c|Invalid color quantization mode change|string
+0048e5b4|Scan script does not transmit all data|string
+0048e5dc|Cannot transcode due to multiple use of quantization table %d|string
+0048e61c|Premature end of input file|string
+0048e638|Empty input file|string
+0048e64c|Maximum supported image dimension is %u pixels|string
+0048e67c|Missing Huffman code table entry|string
+0048e6a0|Huffman code size table overflow|string
+0048e6c4|Fractional sampling not implemented yet|string
+0048e6ec|Output file write error --- out of disk space?|string
+0048e71c|Input file read error|string
+0048e734|Didn\'t expect more than one scan|string
+0048e758|Write to EMS failed|string
+0048e76c|Read from EMS failed|string
+0048e784|Empty JPEG image (DNL not supported)|string
+0048e7ac|Bogus DQT index %d|string
+0048e7c0|Bogus DHT index %d|string
+0048e7d4|Bogus DHT counts|string
+0048e7e8|Bogus DAC value 0x%x|string
+0048e800|Bogus DAC index %d|string
+0048e814|Unsupported color conversion request|string
+0048e83c|Too many color components: %d, max %d|string
+0048e864|CCIR601 sampling not implemented yet|string
+0048e88c|Suspension not allowed here|string
+0048e8a8|Buffer passed to JPEG library is too small|string
+0048e8d4|Bogus virtual array access|string
+0048e8f0|JPEG parameter struct mismatch: library thinks size is %u, caller expects %u|string
+0048e940|Improper call to JPEG library in state %d|string
+0048e96c|Invalid scan script at entry %d|string
+0048e98c|Bogus sampling factors|string
+0048e9a4|Invalid progressive parameters at scan script entry %d|string
+0048e9dc|Invalid progressive parameters Ss=%d Se=%d Ah=%d Al=%d|string
+0048ea14|Unsupported JPEG data precision %d|string
+0048ea38|Invalid memory pool code %d|string
+0048ea54|Sampling factors too large for interleaved scan|string
+0048ea84|Wrong JPEG library version: library is %d, caller expects %d|string
+0048eac4|Bogus marker length|string
+0048ead8|Bogus JPEG colorspace|string
+0048eaf0|Bogus input colorspace|string
+0048eb08|IDCT output block size %d not supported|string
+0048eb30|Invalid component ID %d in SOS|string
+0048eb50|Bogus buffer control mode|string
+0048eb6c|MAX_ALLOC_CHUNK is wrong, please fix|string
+0048eb94|ALIGN_TYPE is wrong, please fix|string
+0048ebb4|Sorry, there are legal restrictions on arithmetic coding|string
+0048ebf0|Bogus message code %d|string
+0048ec08|0123456789ABCDEF1.0.5|string
+0048ec94|zlib version error|string
+0048eca8|zlib memory error|string
+0048ecbc|Unknown zlib error|string
+0048ecd0|1.1.3|string
+0048ecd8|Incompatible libpng version in application and library|string
+0048ed10|Missing PLTE before IDAT|string
+0048ed2c|Missing IHDR before IDAT|string
+0048ed48|PNG file corrupted by ASCII conversion|string
+0048ed70|Not a PNG file|string
+0048ed80|Extra compressed data|string
+0048ed98|Decompression error|string
+0048edac|Not enough image data|string
+0048edc4|Invalid attempt to read row data|string
+0048ede8|Width too large for libpng to process image data.|string
+0048ee3e|p?png_do_dither returned rowbytes=0|string
+0048ee64|NULL row buffer|string
+0048ee74|Width too large to process image data; rowbytes will overflow.|string
+0048eebf|?Call to NULL read function|string
+0048eedc|same structure.  Resetting write_data_fn to NULL.|string
+0048ef10|It\'s an error to set both read_data_fn and write_data_fn in the |string
+0048f1b0|need dictionary|string
+0048f1c0|incorrect data check|string
+0048f1d8|incorrect header check|string
+0048f1f0|invalid window size|string
+0048f204|unknown compression method|string
+0048f220|Out of Memory|string
+0048f2a8|invalid chunk type|string
+0048f2bc|Ignoring bad adaptive filter type|string
+0048f2e0|CRC error|string
+0048f2ec|Unknown filter method in IHDR|string
+0048f30c|Unknown compression method in IHDR|string
+0048f330|Unknown interlace method in IHDR|string
+0048f354|Invalid color type/bit depth combination in IHDR|string
+0048f388|Invalid color type in IHDR|string
+0048f3a4|Invalid bit depth in IHDR|string
+0048f3c0|Invalid image size in IHDR|string
+0048f3dc|Invalid IHDR chunk|string
+0048f3f0|Out of place IHDR|string
+0048f404|Truncating incorrect tRNS chunk length|string
+0048f42c|Invalid palette chunk|string
+0048f444|Duplicate PLTE chunk|string
+0048f45c|Invalid PLTE after IDAT|string
+0048f474|Missing IHDR before PLTE|string
+0048f490|Incorrect IEND chunk length|string
+0048f4ac|No image in file|string
+0048f4c0|Ignoring incorrect gAMA value when sRGB is also present|string
+0048f507|@Duplicate gAMA chunk|string
+0048f520|Out of place gAMA chunk|string
+0048f538|Invalid gAMA after IDAT|string
+0048f550|Incorrect gAMA chunk length|string
+0048f56c|Missing IHDR before gAMA|string
+0048f588|Unknown sRGB intent|string
+0048f59c|Duplicate sRGB chunk|string
+0048f5b4|Out of place sRGB chunk|string
+0048f5cc|Invalid sRGB after IDAT|string
+0048f5e4|Incorrect sRGB chunk length|string
+0048f600|Missing IHDR before sRGB|string
+0048f61c|tRNS chunk not allowed with alpha channel|string
+0048f648|Incorrect tRNS chunk length|string
+0048f664|Duplicate tRNS chunk|string
+0048f67c|Invalid tRNS after IDAT|string
+0048f694|Zero length tRNS chunk|string
+0048f6ac|Missing PLTE before tRNS|string
+0048f6c8|Missing IHDR before tRNS|string
+0048f6e4|unknown critical chunk|string
+0048f6fc|Extra compression data|string
+0048f714|Decompression Error|string
+0048feac|invalid bit length repeat|string
+0048fec8|too many length or distance symbols|string
+0048feec|invalid stored block lengths|string
+0048ff0c|invalid block type|string
+0048ff20|incompatible version|string
+0048ff38|buffer error|string
+0048ff48|insufficient memory|string
+0048ff5c|data error|string
+0048ff68|stream error|string
+0048ff78|file error|string
+0048ff84|stream end|string
+0048ff9f|?invalid distance code|string
+0048ffb8|invalid literal/length code|string
+004901c8|incomplete dynamic bit lengths tree|string
+004901ec|oversubscribed dynamic bit lengths tree|string
+00490214|incomplete literal/length tree|string
+00490234|oversubscribed literal/length tree|string
+00490258|empty distance tree with lengths|string
+0049027c|incomplete distance tree|string
+00490298|oversubscribed distance tree|string
+00490524|HH:mm:ss|string
+00490530|dddd, MMMM dd, yyyy|string
+00490544|MM/dd/yy|string
 00490550|PM|string
 00490554|AM|string
+00490558|December|string
+00490564|November|string
+00490570|October|string
+00490578|September|string
+00490584|August|string
 0049058c|July|string
 00490594|June|string
+0049059c|April|string
+004905a4|March|string
 004905ac|February|string
 004905b8|January|string
 004905c0|Dec|string
@@ -17,6 +237,13 @@ address|text|type
 004905e4|Mar|string
 004905e8|Feb|string
 004905ec|Jan|string
+004905f0|Saturday|string
+004905fc|Friday|string
+00490604|Thursday|string
+00490610|Wednesday|string
+0049061c|Tuesday|string
+00490624|Monday|string
+0049062c|Sunday|string
 00490634|Sat|string
 00490638|Fri|string
 0049063c|Thu|string
@@ -25,15 +252,113 @@ address|text|type
 00490648|Mon|string
 0049064c|Sun|string
 00490650|a/p|string
+00490654|am/pm|string
+00490700|CorExitProcess|string
+00490710|mscoree.dll|string
+0049079c|(null)|string
+00490964|SunMonTueWedThuFriSat|string
+0049097c|JanFebMarAprMayJunJulAugSepOctNovDec|string
+00490de4|runtime error |string
+00490df8|TLOSS error\r\n|string
+00490e08|SING error\r\n|string
+00490e18|DOMAIN error\r\n|string
+00490e28|R6028\r\n- unable to initialize heap\r\n|string
+00490e50|R6027\r\n- not enough space for lowio initialization\r\n|string
+00490e88|R6026\r\n- not enough space for stdio initialization\r\n|string
+00490ec0|R6025\r\n- pure virtual function call\r\n|string
+00490ee8|R6024\r\n- not enough space for _onexit/atexit table\r\n|string
+00490f20|R6019\r\n- unable to open console device\r\n|string
+00490f4c|R6018\r\n- unexpected heap error\r\n|string
+00490f70|R6017\r\n- unexpected multithread lock error\r\n|string
+00490fa0|R6016\r\n- not enough space for thread data\r\n|string
+00490fd0|\r\nThis application has requested the Runtime to terminate it in an unusual way.\nPlease contact the application\'s support team for more information.\r\n|string
+00491068|R6009\r\n- not enough space for environment\r\n|string
+00491094|R6008\r\n- not enough space for arguments\r\n|string
+004910c0|R6002\r\n- floating point not loaded\r\n|string
+004910e8|Microsoft Visual C++ Runtime Library|string
+00491114|Runtime Error!\n\nProgram: |string
+00491134|<program name unknown>|string
+0049116c|e+000|string
+00491186|GAIsProcessorFeaturePresent|string
+004911a4|KERNEL32|string
+004911f4|_nextafter|string
+0049124c|floor|string
+004912a8|log10|string
 004912b0|pow|string
 004912b4|exp|string
 00491320|exp2|string
+00491328|exp10|string
+00494d04|InitializeCriticalSectionAndSpinCount|string
+00494d2c|kernel32.dll|string
+00494da4|Program: |string
+00494db0|A buffer overrun has been detected which has corrupted the program\'s\ninternal state.  The program cannot safely continue execution and must\nnow be terminated.\n|string
+00494e50|Buffer overrun detected!|string
+00494e70|A security error of unknown cause has been detected which has\ncorrupted the program\'s internal state.  The program cannot safely\ncontinue execution and must now be terminated.\n|string
+00494f24|Unknown security failure detected!|string
+00494f54|GetProcessWindowStation|string
+00494f6c|GetUserObjectInformationA|string
+00494f88|GetLastActivePopup|string
+00494f9c|GetActiveWindow|string
+00494fac|MessageBoxA|string
+00494fb8|user32.dll|string
+0049501c|1#QNAN|string
+00495024|1#INF|string
+0049502c|1#IND|string
+00495034|1#SNAN|string
 00495084|ファイル %s のオープン中にエラーが発生しました\r\n|string
+004950b8|info : %s error\r\n|string
+004950cc|info : %s close arcfile\r\n|string
+004950e8|info : %s not found\r\n|string
+00495100|info : %s open arcfile\r\n|string
 0049523c|a|string
 00495240|w|string
 00495244|r|string
+00495294|Streaming File Open %s\r\n|string
+004952b0|error : m_apDSBuffer[0]->GetCurrentPosition in HandleWaveStreamNotification\r\n|string
+00495300|error : m_pWaveFile->Read(+) in HandleWaveStreamNotification\r\n|string
+00495340|error : m_pWaveFile->ResetFile in HandleWaveStreamNotification\r\n|string
+00495384|error : m_pWaveFile->Read in HandleWaveStreamNotification\r\n|string
+004953c0|error : Buffer->Lock in HandleWaveStreamNotification\r\n|string
+004953f8|error : FillBufferWithSound in HandleWaveStreamNotification\r\n|string
+00495438|error : RestoreBuffer in HandleWaveStreamNotification\r\n|string
+00495470|Stream Skip\n|string
+00495480|Success \r\n|string
+0049548c|StreamingSound Create \r\n|string
+004954a8|data/title01.anm|string
+004954bc|data/title/phantasm.jpg|string
+004954d4|%s %9d0 (%3d)|string
+004954e4|Stage    HI-Score|string
+004954f8|Stage6|string
+00495500|Stage5|string
+00495508|Stage4|string
+00495510|Stage3|string
+00495518|Stage2|string
+00495520|Stage1|string
+00495528|%s ----------|string
+00495538|%s %9d0|string
+00495540|Stage    LastScore|string
+00495554|       %2.3f%%|string
+00495564|%s %8s  %6s %7s  %8s|string
+0049557c|No.   Name       Date  Player   Rank|string
+004955a4|Stage6  |string
+004955b0|Stage5  |string
+004955bc|Stage4  |string
+004955c8|Stage3  |string
+004955d4|Stage2  |string
+004955e0|Stage1  |string
+004955ec|Phantasm|string
+004955f8|Extra   |string
+00495604|Lunatic |string
+00495610|Hard    |string
+0049561c|Normal  |string
+00495628|Easy    |string
 00495634|リプレイデータが異常\r\n|string
 0049564c|../|string
+00495650|User |string
+00495658|./replay/%s|string
+00495664|th7_ud????.rpy|string
+00495674|./replay|string
+00495680|data/title/select00.jpg|string
 00495698|おおよそ終了します|string
 004956ac|初期設定に戻します|string
 004956c0|ショット押しっぱなしで低速移動になるようにします|string
@@ -46,6 +371,7 @@ address|text|type
 004957a8|低速移動ボタンを設定します|string
 004957c4|ボム、キャンセルボタンを設定します|string
 004957e8|ショット、決定ボタンを設定します|string
+0049580c|bgm/th07_01.mid|string
 0049581c|おいそれと終了します|string
 00495834|パッド操作のボタン配置を変更します|string
 00495858|全て初期設定にします|string
@@ -55,6 +381,8 @@ address|text|type
 004958f8|ＢＧＭの再生方法を変更します。（初期設定　ＷＡＶ）|string
 0049592c|画面の色数を変更します。３２ＢＩＴだと最も綺麗に表示されます。|string
 0049596c|プレイヤーの初期数を変更します。（初期設定　３）|string
+004959a0|error : Demo Play is not ready\r\n|string
+004959c4|data/title/title00.jpg|string
 004959dc|いろいろと終了します|string
 004959f4|各種設定できます|string
 00495a08|音楽を聴けます|string
@@ -63,6 +391,15 @@ address|text|type
 00495a60|ステージを選択し、練習を開始します|string
 00495a84|エキストラステージを開始します|string
 00495aa4|ゲームを開始します|string
+00495ab8|data/demo/demorpy2.rpy|string
+00495ad0|data/demo/demorpy1.rpy|string
+00495ae8|data/demo/demorpy0.rpy|string
+00495b00|SakuyaB|string
+00495b08|SakuyaA|string
+00495b10|MarisaB|string
+00495b18|MarisaA|string
+00495b20|ReimuB |string
+00495b28|ReimuA |string
 00495b30|%sが読み込めないです。\r\n|string
 00495b4c|アニメが格納できません。テーブルが不足しています\r\n|string
 00495b80|スプライトが格納できません。テーブルが不足しています\r\n|string
@@ -72,9 +409,32 @@ address|text|type
 00495c5c|テクスチャ格納先が足りません\r\n|string
 00495c7c|アニメが読み込めません。データが失われてるか壊れています\r\n|string
 00495cb8|error : イメージがαを持っていません\r\n|string
+00495ce0|Sound Que Add %d\r\n|string
 00495cf4|atention : ストリーミング用スレッドは終了しました。\r\n|string
+00495d2c|locked\n|string
+00495d34|Sound : Fade Out Stage %d\r\n|string
+00495d50|Sound : Handle Close Stage\r\n|string
+00495d70|Sound : Thread Stop Wait Stage\r\n|string
+00495d94|Sound : Thread Stop Stage\r\n|string
+00495db0|Sound : ReOpen Stage\r\n|string
+00495dc8|Sound : Recreate Stage\r\n|string
+00495de4|Sound : Stop Stage\r\n|string
+00495dfc|Sound : Play Stage\r\n|string
+00495e14|Sound : Fill Buffer Stage\r\n|string
+00495e30|Sound : Reset Stage\r\n|string
+00495e48|Sound : Load Stage\r\n|string
+00495e60|Sound : PreLoad Stage\r\n|string
 00495e78|error : Sound ファイルが読み込めない データを確認 %s\r\n|string
+00495eb0|stop comp\r\n|string
+00495ebc|stop m_dwNotifyThreadID\r\n|string
+00495ed8|Streming BGM stop\r\n|string
+00495eec|load comp\r\n|string
+00495ef8|Streming BGM Load no %d\r\n|string
+00495f14|error : bgmfile is not find %s\r\n|string
+00495f38|Streming BGM PreLoad %d\r\n|string
+00495f54|Streming BGM Reopen %d\r\n|string
 00495f70|error : ストリーミング用サウンドバッファを作成出来ませんでした\r\n|string
+00495fb4|Streming BGM Start\r\n|string
 00495fcc|data|string
 00495fd4|fmt |string
 00495fdc|Wav ファイルじゃない? %s\r\n|string
@@ -84,10 +444,65 @@ address|text|type
 00496024|DirectSound は正常に初期化されました\r\n|string
 0049604c|DirectSound オブジェクトの初期化が失敗したよ\r\n|string
 0049607c|data/wav/se_pause.wav|string
+00496094|data/wav/se_bonus2.wav|string
+004960ac|data/wav/se_bonus.wav|string
+004960c4|data/wav/se_border.wav|string
+004960dc|data/wav/se_powerup.wav|string
+004960f4|data/wav/se_graze.wav|string
+0049610c|data/wav/se_timeout.wav|string
+00496124|data/wav/se_extend.wav|string
+0049613c|data/wav/se_kira02.wav|string
+00496154|data/wav/se_kira01.wav|string
+0049616c|data/wav/se_kira00.wav|string
+00496184|data/wav/se_item00.wav|string
+0049619c|data/wav/se_damage00.wav|string
+004961b8|data/wav/se_nep00.wav|string
+004961d0|data/wav/se_enep01.wav|string
+004961e8|data/wav/se_lazer01.wav|string
+00496200|data/wav/se_lazer00.wav|string
+00496218|data/wav/se_cat00.wav|string
+00496230|data/wav/se_gun00.wav|string
+00496248|data/wav/se_select00.wav|string
+00496264|data/wav/se_cancel00.wav|string
+00496280|data/wav/se_ok00.wav|string
+00496298|data/wav/se_tan02.wav|string
+004962b0|data/wav/se_tan01.wav|string
+004962c8|data/wav/se_tan00.wav|string
+004962e0|data/wav/se_power1.wav|string
+004962f8|data/wav/se_power0.wav|string
+00496310|data/wav/se_pldead00.wav|string
+0049632c|data/wav/se_enep00.wav|string
+00496344|data/wav/se_plst00.wav|string
+0049635c|Stg.PlayTimeAll = %d\r\n|string
+00496374|        |string
+00496380|data/result00.anm|string
+00496394|data/result/result.jpg|string
+004963ac|--/--|string
+004963b4|--------|string
 004963c0|DMYS|string
+004963c8|No.%.2d -------- --/--  -------          0|string
+004963f4|      %8s|string
+00496400|No.%.2d %8s %5s  %7s %9d0|string
+0049641c|No.   Name     Date   Player Score|string
+00496440|MaxBonus %8d|string
+00496450|%3d/%3d|string
+00496458|---/---|string
+00496460|No.%.2d|string
+00496468| %5s   %3.2f|string
+00496478|%8s %9d%1d(C)|string
+00496488|%8s %9d%1d(1)|string
+00496498|%8s %9d%1d(%d)|string
 004964a8|%8s|string
 004964ac|    |string
+004964b4|No  Name      Score(Stage)  Date   Slow|string
+004964dc|      100%%|string
+004964e8|    %3.2f%%|string
 00496508|  Phantasm|string
+00496514|     Extra|string
+00496520|   Lunatic|string
+0049652c|      Hard|string
+00496538|    Normal|string
+00496544|      Easy|string
 00496550|%9d|string
 00496554|リトライ回数  　 %6d %6d %6d %6d %6d %6d|string
 00496580|リトライ回数  　 %6d %6d %6d %6d %6d %6d %6d|string
@@ -97,13 +512,26 @@ address|text|type
 00496638|コンティニュー   %6d %6d %6d %6d %6d %6d %6d|string
 00496668|クリア回数  　　 %6d %6d %6d %6d %6d %6d|string
 00496694|クリア回数  　　 %6d %6d %6d %6d %6d %6d %6d|string
+004966c4|%s %6d %6d %6d %6d %6d %6d|string
+004966e0|%s %6d %6d %6d %6d %6d %6d %6d|string
 00496700|プレイ回数　　　 　Easy 　Norm 　Hard 　Luna  Extra  Total|string
 00496740|プレイ回数　　　 　Easy 　Norm 　Hard 　Luna  Extra Phants  Total|string
 00496784|総プレイ時間 %.2d:%.2d:%.2d|string
 004967a0|総起動時間   %.2d:%.2d:%.2d|string
+004967bc|./replay/th7_%.2d.rpy|string
+004967d4|replay|string
+004967dc|%m/%d|string
 004967e4|HSCR|string
 004967ec|%s %3d枚中%3d枚取得（キャラ切り替え↓↑）|string
 00496818|？？？？？|string
+00496824|warning : score.dat chapter size is ZERO\r\n|string
+00496850|warning : score.dat exesumcheck error\r\n|string
+00496878|warning : score.dat version mismatch\r\n|string
+004968a0|warning : header size is mismatch\r\n|string
+004968c4|warning : score.dat chksum error\r\n|string
+004968e8|warning : score.dat size is short\r\n|string
+0049690c|info : score recreate\r\n|string
+00496924|info : score load\r\n|string
 00496938|全主人公合計  　|string
 0049694c|十六夜 咲夜 (時)|string
 00496960|十六夜 咲夜 (幻)|string
@@ -111,8 +539,33 @@ address|text|type
 00496988|霧雨 魔理沙 (魔)|string
 0049699c|博麗 霊夢 (夢)　|string
 004969b0|博麗 霊夢 (霊)　|string
+004969c8|ABCDEFGHIJKLMNOPQRSTUVWXYZ.,:;_@abcdefghijklmnopqrstuvwxyz+-/*=%0123456789#!?\'\"$(){}[]<>&\\\|~^ --|string
+00496a2c|info : Replay File rewrite %s\r\n|string
+00496a4c|info : Size %d -> %d\r\n|string
+00496a64|info : original size %d\r\n|string
+00496a80|info : Replay File write %s\r\n|string
+00496aa0|NO NAME|string
 00496aa8|T7RP|string
+00496ab0|data/player02.anm|string
+00496ac4|data/player01.anm|string
+00496ad8|data/player00.anm|string
+00496aec|data/ply02bs.sht|string
+00496b00|data/ply02as.sht|string
+00496b14|data/ply01bs.sht|string
+00496b28|data/ply01as.sht|string
+00496b3c|data/ply00bs.sht|string
+00496b50|data/ply00as.sht|string
+00496b64|data/ply02b.sht|string
+00496b74|data/ply02a.sht|string
+00496b84|data/ply01b.sht|string
+00496b94|data/ply01a.sht|string
+00496ba4|data/ply00b.sht|string
+00496bb4|data/ply00a.sht|string
+00496bc4|data/musiccmt.txt|string
+00496bd8|data/music00.anm|string
+00496bec|data/result/music.jpg|string
 00496c04|%2d.|string
+00496c10|%d %d|string
 00496c18|debug|string
 00496c1e||string
 00496c20|フォルダが書込み禁止属性になっているか、ディスクがいっぱいいっぱいになってませんか？\r\n|string
@@ -140,14 +593,20 @@ address|text|type
 00496f60|snapShotScreen : 確保しくり\r\n|string
 00496f80|16bit は取り込めない\r\n|string
 00496f9c|%2d|string
+00496fa0|%.02ffps|string
 00496fac|thbgm.dat|string
 00496fb8|error : BGM の初期化に失敗しました\r\n|string
+00496fe0|bgm/thbgm.fmt|string
 00496ff0|error : 文字の初期化に失敗しました\r\n|string
+00497018|data/text.anm|string
+00497028|bgm/init.mid|string
+00497038|data/title/th07logo.jpg|string
 00497050|垂直同期が取れてないか、リフレッシュレートが高すぎます。\r\n|string
 0049708c|強制６０フレームモードで動作します\r\n|string
 004970b4|垂直同期が取れてないか、リフレッシュレートが高すぎます\r\n|string
 004970f0|error : データファイルが存在しません\r\n|string
 00497118|error : データのバージョンが違います\r\n|string
+00497140|th07_%.4x%c.ver|string
 00497150|th07.dat|string
 0049715c|有効なパッドを発見しました\r\n|string
 0049717c|DirectInput は正常に初期化されました\r\n|string
@@ -155,11 +614,18 @@ address|text|type
 004971d8|DirectInput SetDataFormat が使用できません\r\n|string
 00497208|DirectInput が使用できません\r\n|string
 00497228|0100b|string
+00497230|scene %d -> %d\r\n|string
 00497244|alq チェック %f / %f = %f\r\n|string
+00497268|error :\r\n|string
+00497274| midi play\n|string
+00497280| midi open %d\n|string
 00497290|error : まだMIDIが読み込まれていないのに再生しようとしている\r\n|string
 004972d0|error : MIDI File が読み込めない %s \rv\r\n|string
+004972fc|main sum %d\r\n|string
 0049730c|.lnk|string
 00497314|二つは起動できません\r\n|string
+0049732c|Touhou YouYouMu App|string
+00497340|--------------------------------------------\r\n|string
 00497370|　バイリニア補間（縮小） : |string
 0049738c|　バイリニア補間（拡大） : |string
 004973a8|　テクスチャトランスフォーム : |string
@@ -220,29 +686,140 @@ address|text|type
 00497b9c|東方妖々夢　～ Perfect Cherry Blossom. ver 1.00b|string
 00497bd0|BASE|string
 00497bd8|Direct3D オブジェクトは何故か作成出来なかった\r\n|string
+00497c08|snapshot/th%.3d.bmp|string
+00497c1c|snapshot|string
 00497c28|再起動を要するオプションが変更されたので再起動します\r\n|string
+00497c60|th07.cfg|string
+00497c6c|./log.txt|string
 00497c78|log|string
+00497c7c|---------------------------------------------------------- \r\n|string
 00497cbc|ＭＳ ゴシック|string
+00497ccc|%s write ...\r\n|string
+00497cdc|error : %s write error\r\n|string
+00497cf8|error : %s is not found.\r\n|string
+00497d14|%s Load ... \r\n|string
+00497d24|%s Decode ... \r\n|string
+00497d38|error : %s is not found in arcfile.\r\n|string
+00497d60|error : DIERR_INPUTLOST %d\r\n|string
+00497d80|error : DIERR_INPUTLOST\r\n|string
 00497d9c|使えるパッドが存在しないようです、残念\r\n|string
 00497dc8|東方動作記録 --------------------------------------------- \r\n|string
+00497e08|random seed %d %d\r\n|string
+00497e1c|replay/th7_00.rpy|string
 00497e30|error : 2D表示の初期化に失敗しました\r\n|string
 00497e58|error : エフェクトの初期化に失敗しました\r\n|string
 00497e84|error : 敵頭脳の初期化に失敗しました\r\n|string
+00497eac|data/ecldata8.ecl|string
+00497ec0|data/ecldata7.ecl|string
+00497ed4|data/ecldata6.ecl|string
+00497ee8|data/ecldata5.ecl|string
+00497efc|data/ecldata4.ecl|string
+00497f10|data/ecldata3.ecl|string
+00497f24|data/ecldata2.ecl|string
+00497f38|data/ecldata1.ecl|string
 00497f4c|error : 敵の初期化に失敗しました\r\n|string
+00497f70|data/stg8enm.anm|string
+00497f84|data/stg7enm.anm|string
+00497f98|data/stg6enm.anm|string
+00497fac|data/stg5enm.anm|string
+00497fc0|data/stg4enm.anm|string
+00497fd4|data/stg3enm.anm|string
+00497fe8|data/stg2enm.anm|string
+00497ffc|data/stg1enm.anm|string
 00498010|error : 敵弾の初期化に失敗しました\r\n|string
 00498038|error : 背景データの初期化に失敗しました\r\n|string
 00498064|error : プレイヤーの初期化に失敗しました\r\n|string
 00498090|error : スコアファイルの読み取りに失敗しました\r\n|string
+004980c4|score.dat|string
+004980d0|dummy|string
 004980d8|%.2d|string
 004980e0|MAX|string
+004980e4|%d/%d|string
 004980ec|%d|string
 004980f0|%.9d|string
 004980f8|%1d|string
 004980fc|%.8d|string
 00498104| |string
 00498108|error : メッセージファイル %s が読み込めませんでした\r\n|string
+00498140|data/msg8.dat|string
+00498150|data/std8txt.anm|string
+00498164|data/face_08_00.anm|string
+00498178|data/msg7.dat|string
+00498188|data/std7txt.anm|string
+0049819c|data/face_07_00.anm|string
+004981b0|data/msg6.dat|string
+004981c0|data/std6txt.anm|string
+004981d4|data/face_06_00.anm|string
+004981e8|data/msg5.dat|string
+004981f8|data/std5txt.anm|string
+0049820c|data/face_05_00.anm|string
+00498220|data/msg4.dat|string
+00498230|data/std4txt.anm|string
+00498244|data/face_04_00.anm|string
+00498258|data/msg3.dat|string
+00498268|data/std3txt.anm|string
+0049827c|data/face_03_00.anm|string
+00498290|data/msg2.dat|string
+004982a0|data/std2txt.anm|string
+004982b4|data/face_02_00.anm|string
+004982c8|data/msg1.dat|string
+004982d8|data/std1txt.anm|string
+004982ec|data/face_01_00.anm|string
+00498300|data/loading3.anm|string
+00498314|data/face_sk00.anm|string
+00498328|data/loading2.anm|string
+0049833c|data/face_mr00.anm|string
+00498350|data/loading.anm|string
+00498364|data/face_rm00.anm|string
+00498378|data/front.anm|string
 00498388|+%d|string
+0049838c|Spell Card Bonus!|string
+004983a0|Border Bonus %7d|string
+004983b4|CherryPoint Max!|string
+004983c8|Supernatural Border!!|string
+004983e0|Full Power Mode!|string
+004983f4|BONUS %8d|string
+00498400|Total = %8d0|string
+00498410|Player Penalty*0.2|string
+00498424|Player Penalty*0.5|string
+00498438|Phantasm Rank*2.0|string
+0049844c|Extra Rank   *2.0|string
+00498460|Lunatic Rank *1.5|string
+00498474|Hard Rank    *1.2|string
+00498488|Normal Rank  *1.0|string
+0049849c|Easy Rank    *0.5|string
+004984b0|Bomb   = %8d|string
+004984c0|Player =%9d|string
+004984cc|Cherry = %8d|string
+004984dc|Graze  = %8d|string
+004984ec|Point  = %8d|string
+004984fc|Clear  = %8d|string
+0049850c|All Clear!|string
+00498518|Stage Clear|string
+00498524|data/etama.anm|string
+00498534|data/end21.end|string
+00498544|data/end20.end|string
+00498554|data/end11.end|string
+00498564|data/end10.end|string
+00498574|data/end01.end|string
+00498584|data/end00.end|string
+00498594|data/end20b.end|string
+004985a4|data/end10b.end|string
+004985b4|data/end00b.end|string
+004985c4|data/staff01.anm|string
 004985d8|error : エンディングファイルが読み込めない、ファイルが破壊されています\r\n|string
+00498624|data/eff08.anm|string
+00498634|data/eff07.anm|string
+00498644|data/eff06.anm|string
+00498654|data/eff05.anm|string
+00498664|data/eff04b.anm|string
+00498674|data/eff04.anm|string
+00498684|data/eff03.anm|string
+00498694|data/eff02.anm|string
+004986a4|data/eff01.anm|string
+004986b4|bgm/th07_13b.mid|string
+004986c8|error : sub anim overflow\r\n|string
+004986e4|error : no Stack Ret\r\n|string
 00498700|敵データの読み込みに失敗しました、データが壊れてるか失われています\r\n|string
 00498748|時符「プライベートスクウェア」|string
 00498768|時符「パーフェクトスクウェア」|string
@@ -257,6 +834,30 @@ address|text|type
 0049885c|霊符「夢想封印　集」|string
 00498874|霊符「夢想封印　散」|string
 0049888c|ステージデータが見つかりません。データが壊れています\r\n|string
+004988c4|data/stg8bg.anm|string
+004988d4|data/stg7bg.anm|string
+004988e4|data/stg6bg.anm|string
+004988f4|data/stg5bg.anm|string
+00498904|data/stg4bg5.anm|string
+00498918|data/stg4bg4.anm|string
+0049892c|data/stg4bg3.anm|string
+00498940|data/stg4bg2.anm|string
+00498954|data/stg4bg.anm|string
+00498964|data/stg3bg.anm|string
+00498974|data/stg2bg.anm|string
+00498984|data/stg1bg.anm|string
+00498994|data/stage8.std|string
+004989a4|data/stage7.std|string
+004989b4|data/stage6.std|string
+004989c4|data/stage5.std|string
+004989d4|data/stage4.std|string
+004989e4|data/stage3.std|string
+004989f4|data/stage2.std|string
+00498a04|data/stage1.std|string
+00498a14|data/capture.anm|string
+00498a28|data/ascii.anm|string
+00498a38|UnPause|string
+00498a40|Pause|string
 0049ad82|DirectInput8Create|string
 0049ad96|DINPUT8.dll|string
 0049ada2|DSOUND.dll|string

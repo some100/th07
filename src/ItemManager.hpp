@@ -2,6 +2,8 @@
 
 #include "AnmVm.hpp"
 
+extern u8 g_ItemDropTable[32];
+
 void AngleToVector(D3DXVECTOR3 *out, f32 angle, f32 speed);
 
 typedef enum ItemType
@@ -55,6 +57,4 @@ struct ItemManager
     struct Item listHead;
     struct Item *listTail;
 };
-
 extern ItemManager g_ItemManager;
-extern u8 g_ItemDropTable[32];

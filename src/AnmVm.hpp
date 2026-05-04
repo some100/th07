@@ -8,6 +8,9 @@
 #include "inttypes.hpp"
 #include "utils.hpp"
 
+extern const D3DFORMAT g_TextureFormatD3D8Mapping[6];
+extern const i32 g_TextureBytesPerPixel[7];
+
 typedef enum AnmOpcode
 {
     ANM_EXIT_HIDE = -1,
@@ -121,10 +124,6 @@ struct AnmRawInstr
 
 struct AnmVmBase
 {
-    // FUNCTION: TH07 0x004011b0
-    AnmVmBase()
-    {
-    }
     D3DXVECTOR3 rotation;
     D3DXVECTOR3 angleVel;
     D3DXVECTOR2 scale;
@@ -232,6 +231,3 @@ struct AnmVm : AnmVmBase
     u8 unused_242[10];
 };
 C_ASSERT(sizeof(AnmVm) == 0x24c);
-
-extern const D3DFORMAT g_TextureFormatD3D8Mapping[6];
-extern const i32 g_TextureBytesPerPixel[7];

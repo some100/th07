@@ -14,12 +14,6 @@ MusicRoom g_MusicRoom;
 // GLOBAL: TH07 0x01363eac
 i32 g_MusicRoomExists;
 
-// FUNCTION: TH07 0x0043a69b
-MusicRoom::MusicRoom()
-{
-    memset(this, 0, sizeof(MusicRoom));
-}
-
 // FUNCTION: TH07 0x0043a760
 ZunResult MusicRoom::CheckInputEnable()
 {

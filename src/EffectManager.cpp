@@ -17,13 +17,20 @@ EffectTypeInfo g_EffectMapping[34] = {
     {0x2ae, EffectManager::UpdatePhysics, EffectManager::InitDeceleratingBurst},
     {0x2b3, EffectManager::UpdatePhysics,
      EffectManager::InitDeceleratingBurstFast},
-    {0x2b4, EffectManager::UpdatePhysics, EffectManager::InitDeceleratingBurst},
-    {0x2b5, EffectManager::UpdatePhysics, EffectManager::InitDeceleratingBurst},
-    {0x2b6, EffectManager::UpdatePhysics, EffectManager::InitDeceleratingBurst},
-    {0x2b7, EffectManager::UpdatePhysics, EffectManager::InitDeceleratingBurst},
-    {0x2b8, EffectManager::UpdatePhysics, EffectManager::InitDeceleratingBurst},
-    {0x2b9, EffectManager::UpdatePhysics, EffectManager::InitDeceleratingBurst},
-    {0x2ba, EffectManager::UpdatePhysics, EffectManager::InitDeceleratingBurst},
+    {0x2b4, EffectManager::UpdatePhysics,
+     EffectManager::InitDeceleratingBurstFast},
+    {0x2b5, EffectManager::UpdatePhysics,
+     EffectManager::InitDeceleratingBurstFast},
+    {0x2b6, EffectManager::UpdatePhysics,
+     EffectManager::InitDeceleratingBurstFast},
+    {0x2b7, EffectManager::UpdatePhysics,
+     EffectManager::InitDeceleratingBurstFast},
+    {0x2b8, EffectManager::UpdatePhysics,
+     EffectManager::InitDeceleratingBurstFast},
+    {0x2b9, EffectManager::UpdatePhysics,
+     EffectManager::InitDeceleratingBurstFast},
+    {0x2ba, EffectManager::UpdatePhysics,
+     EffectManager::InitDeceleratingBurstFast},
     {0x2bb, NULL, NULL},
     {0x2bc, EffectManager::UpdateOrbitEffect, EffectManager::Init2dEffect},
     {0x2bc, EffectManager::UpdateOrbitEffect, EffectManager::Init2dEffect},
@@ -72,11 +79,6 @@ EffectManager::EffectManager()
     this->globalColorMultiplierG = 1.0;
     this->globalColorMultiplierB = 1.0;
     this->globalColorMultiplierA = 1.0;
-}
-
-// FUNCTION: TH07 0x0041a2f0
-Effect::Effect()
-{
 }
 
 // FUNCTION: TH07 0x0041a350

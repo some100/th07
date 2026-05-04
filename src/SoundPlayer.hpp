@@ -117,5 +117,4 @@ struct SoundPlayer
     i32 bgmSeekOffset;
 };
 C_ASSERT(sizeof(SoundPlayer) == 0x39cc);
-
 extern SoundPlayer g_SoundPlayer;

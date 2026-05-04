@@ -4,6 +4,9 @@
 
 #include "../inttypes.hpp"
 
+extern const u32 g_SeekModes[3];
+extern const char *g_AccessModes[3];
+
 // VTABLE: TH07 0x0049526c
 struct IPbg4File
 {
@@ -51,6 +54,3 @@ struct Pbg4File : IPbg4File
     HANDLE handle;
     u32 access;
 };
-
-extern const u32 g_SeekModes[3];
-extern const char *g_AccessModes[3];

@@ -126,5 +126,4 @@ struct ReplayManager
     u16 replayEventFlags;
 };
 C_ASSERT(sizeof(ReplayManager) == 0xd8);
-
 extern ReplayManager *g_ReplayManager;

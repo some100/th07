@@ -12,7 +12,6 @@
 #include "GameManager.hpp"
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
-#include "ZunMemory.hpp"
 #include "ZunResult.hpp"
 #include "pbg4/Lzss.hpp"
 
@@ -73,13 +72,6 @@ const char *g_DifficultyNameTable[6] = {
     // STRING: TH07 0x00496508
     "  Phantasm",
 };
-
-// FUNCTION: TH07 0x00444a5b
-ResultScreen::ResultScreen()
-{
-    memset(this, 0, sizeof(ResultScreen));
-    this->cursor = 1;
-}
 
 // FUNCTION: TH07 0x00444b56
 i32 ResultScreen::LinkScore(ScoreListNode *prevNode, Hscr *hscr)
@@ -386,11 +378,13 @@ ZunResult ResultScreen::ParseLsnm(ScoreDat *scoreDat, Lsnm *param_2)
 // FUNCTION: TH07 0x00445192
 ZunResult ResultScreen::ParseClrd(ScoreDat *scoreDat, Clrd *clrd)
 {
-    i32 idk;
+    ScoreDat *scoreDatCopy;
     i32 j;
     i32 local_10;
     i32 i;
     Clrd *local_8;
+
+    scoreDatCopy = scoreDat;
 
     if (clrd == NULL)
     {
@@ -411,8 +405,9 @@ ZunResult ResultScreen::ParseClrd(ScoreDat *scoreDat, Clrd *clrd)
             clrd[i].difficultyClearedWithoutRetries[j] = 1;
         }
     }
-    local_8 = (Clrd *)(scoreDat->xorseed + scoreDat->dataOffset);
-    for (local_10 = scoreDat->fileLength - scoreDat->dataOffset; 0 < local_10;)
+    local_8 = (Clrd *)(scoreDatCopy->xorseed + scoreDatCopy->dataOffset);
+    local_10 = scoreDatCopy->fileLength - scoreDatCopy->dataOffset;
+    while (0 < local_10)
     {
         if ((local_8->magic == CLRD_MAGIC) && (local_8->version == 1))
         {
@@ -2805,7 +2800,6 @@ ZunResult ResultScreen::RegisterChain(u32 param_1)
     resultScreen->drawChain->arg = resultScreen;
     g_Chain.AddToDrawChain(resultScreen->drawChain, 0xd);
 
-    AnInlineFunctionThatAllocates24BytesAndNothingElse();
     return ZUN_SUCCESS;
 }
 

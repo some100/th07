@@ -20,7 +20,10 @@ C_ASSERT(sizeof(TrackDescriptor) == 0x292);
 
 struct MusicRoom
 {
-    MusicRoom();
+    MusicRoom()
+    {
+        memset(this, 0, sizeof(MusicRoom));
+    }
 
     static ZunResult RegisterChain();
 
@@ -46,5 +49,4 @@ struct MusicRoom
     AnmVm descriptionSprites[8];
 };
 C_ASSERT(sizeof(MusicRoom) == 0x5c04);
-
 extern MusicRoom g_MusicRoom;

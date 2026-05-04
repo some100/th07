@@ -53,12 +53,14 @@ EclInterpFn g_EclInterpFuncs[8] = {
 // FUNCTION: TH07 0x00417b90
 void EnemyEclInstr::ExInsSetPosToBoss(Enemy *enemy, EclRawInstr *instr)
 {
-    enemy->position = g_EnemyManager.bosses[instr->args[1].i]->position;
-    enemy->axisSpeed = g_EnemyManager.bosses[instr->args[1].i]->axisSpeed;
-    enemy->angle = g_EnemyManager.bosses[instr->args[1].i]->angle;
-    enemy->flags4 = enemy->flags4 | 1;
+    i32 bossIdx = instr->args[1].i;
+    enemy->position = g_EnemyManager.bosses[bossIdx]->position;
+    enemy->axisSpeed = g_EnemyManager.bosses[bossIdx]->axisSpeed;
+    enemy->angle = g_EnemyManager.bosses[bossIdx]->angle;
+    enemy->flags4 |= 1;
 }
 
+#pragma var_order(i, bullet, local_10)
 // FUNCTION: TH07 0x00417c30
 void EnemyEclInstr::ExInsAliceCurveBullets(Enemy *enemy, EclRawInstr *instr)
 {

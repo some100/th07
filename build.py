@@ -92,11 +92,31 @@ _ = parser.add_argument(
 subparsers = parser.add_subparsers(dest="command")
 
 parser_reccmp = subparsers.add_parser("reccmp", help="output reccmp output")
-_ = parser_reccmp.add_argument(
-    "address", nargs="?", default=None, help="optional function address for displaying diff"
+parser_stackcmp = subparsers.add_parser(
+    "stackcmp", help="compare stack layout with stackcmp"
 )
-_ = parser_reccmp.add_argument("--init", action="store_true", help="initialize reccmp project")
-_ = parser_reccmp.add_argument("--svg", action="store_true", help="generate progress svg")
+parser_datacmp = subparsers.add_parser("datacmp", help="compare globals with datacmp")
+parser_roadmap = subparsers.add_parser(
+    "roadmap", help="compare symbol locations with roadmap"
+)
+
+_ = parser_reccmp.add_argument(
+    "address",
+    nargs="?",
+    default=None,
+    help="optional function address for displaying diff",
+)
+_ = parser_reccmp.add_argument(
+    "--init",
+    action="store_true",
+    help="initialize reccmp project",
+)
+_ = parser_reccmp.add_argument(
+    "--svg", action="store_true", help="generate progress svg"
+)
+_ = parser_stackcmp.add_argument(
+    "address", help="function address for displaying stack layout"
+)
 args = parser.parse_args()
 
 
@@ -423,43 +443,77 @@ _ = run_program(
     *objects,
     *lflags,
     *libs,
+    f"/order:@{conv_path(RESOURCE_DIR / 'order.txt')}",
     f"/OUT:{BUILD_PATH}",
     env=env,
 )
 
-if args.command == "reccmp":
-    if args.init:
-        os.chdir(SCRIPT_DIR)
-        _ = subprocess.check_call(["reccmp-project", "detect", "--search-path", SCRIPT_DIR])
-        os.chdir(BUILD_DIR)
-        _ = subprocess.check_call(["reccmp-project", "detect", "--what", "recompiled"])
-    elif args.svg:
-        _ = subprocess.check_call(
+
+match args.command:
+    case "reccmp":
+        if args.init:
+            os.chdir(SCRIPT_DIR)
+            _ = subprocess.check_call(
+                ["reccmp-project", "detect", "--search-path", SCRIPT_DIR]
+            )
+            os.chdir(BUILD_DIR)
+            _ = subprocess.check_call(
+                ["reccmp-project", "detect", "--what", "recompiled"]
+            )
+        elif args.svg:
+            _ = subprocess.check_call(
+                [
+                    "reccmp-reccmp",
+                    "--target",
+                    "TH07",
+                    "--svg",
+                    RESOURCE_DIR / "progress.svg",
+                    "--svg-icon",
+                    RESOURCE_DIR / "svgicon.png",
+                    "--nolib",
+                ]
+            )
+        elif args.address:
+            _ = subprocess.check_call(
+                [
+                    "reccmp-reccmp",
+                    "--target",
+                    "TH07",
+                    "--html",
+                    "index.html",
+                    "--nolib",
+                    "--verbose",
+                    args.address,
+                ]
+            )
+        else:
+            _ = subprocess.check_call(
+                ["reccmp-reccmp", "--target", "TH07", "--html", "index.html", "--nolib"]
+            )
+    case "stackcmp":
+        _ = subprocess.call(
             [
-                "reccmp-reccmp",
+                "reccmp-stackcmp",
                 "--target",
                 "TH07",
-                "--svg",
-                RESOURCE_DIR / "progress.svg",
-                "--svg-icon",
-                RESOURCE_DIR / "svgicon.png",
-                "--nolib",
-            ]
-        )
-    elif args.address:
-        _ = subprocess.check_call(
-            [
-                "reccmp-reccmp",
-                "--target",
-                "TH07",
-                "--html",
-                "index.html",
-                "--nolib",
-                "--verbose",
                 args.address,
             ]
         )
-    else:
-        _ = subprocess.check_call(
-            ["reccmp-reccmp", "--target", "TH07", "--html", "index.html", "--nolib"]
+    case "datacmp":
+        _ = subprocess.call(
+            [
+                "reccmp-datacmp",
+                "--target",
+                "TH07",
+            ]
         )
+    case "roadmap":
+        _ = subprocess.call(
+            [
+                "reccmp-roadmap",
+                "--target",
+                "TH07",
+            ]
+        )
+    case _:
+        pass

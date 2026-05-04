@@ -7,8 +7,6 @@ typedef i32 (*EffectCallback)(struct Effect *);
 
 struct Effect
 {
-    Effect();
-
     AnmVm vm;
     D3DXVECTOR3 pos1;
     D3DXVECTOR3 custom;
@@ -100,5 +98,4 @@ struct EffectManager
     i32 frameCounter;
 };
 C_ASSERT(sizeof(EffectManager) == 0x496a8);
-
 extern EffectManager g_EffectManager;

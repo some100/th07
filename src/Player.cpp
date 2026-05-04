@@ -87,26 +87,6 @@ const char *g_ShooterTable2[6] = {
 // GLOBAL: TH07 0x004bdad8
 Player g_Player;
 
-// FUNCTION: TH07 0x0043b7f0
-Player::Player()
-{
-}
-
-// FUNCTION: TH07 0x0043ba10
-PlayerBullet::PlayerBullet()
-{
-}
-
-// FUNCTION: TH07 0x0043baa0
-PlayerBombInfo::PlayerBombInfo()
-{
-}
-
-// FUNCTION: TH07 0x0043bb10
-PlayerBombSubInfo::PlayerBombSubInfo()
-{
-}
-
 // FUNCTION: TH07 0x0043bbd0
 void DefaultFireBulletCallback(Player *player, PlayerBullet *bullet,
                                ShtEntry *shtEntry)
@@ -421,7 +401,7 @@ i32 ShtData::UpdateOrbLaser(Player *player, PlayerBullet *bullet)
         return 1;
     }
 
-    if ((player->timers[bullet->timerIdx].timer < 71) &&
+    if ((player->timers[bullet->timerIdx].timer <= 70) &&
         (bullet->vm.isStopped != 0))
     {
         bullet->vm.pendingInterrupt = 1;
@@ -1030,6 +1010,10 @@ i32 Player::CheckBombGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
                 this->itemType = bombProjectile->payload;
                 return 2;
             }
+        }
+        else
+        {
+            continue; // this is completely pointless
         }
     }
     return 0;

@@ -5,6 +5,8 @@
 #include "ReplayManager.hpp"
 #include "Supervisor.hpp"
 
+#pragma optimize("s", on)
+
 typedef enum GameState
 {
     STATE_PRE_INPUT = 0,
@@ -25,7 +27,10 @@ typedef enum GameState
 
 struct MainMenu
 {
-    MainMenu();
+    MainMenu()
+    {
+        memset(this, 0, sizeof(MainMenu));
+    }
 
     static ZunResult RegisterChain(u32 param_1);
 
@@ -55,13 +60,6 @@ struct MainMenu
     void SwapMapping(i16 btnPressed, i16 oldMapping, i16 idk);
     ZunResult UpdateMenuDigits(AnmVm *param_1, i16 param_2);
     void SetGameState(GameState state);
-
-    // i have no idea why this exists but mainmenu::registerchain's stack layout
-    // wouldnt match without this
-    static void AnInlineFunctionThatAllocates20BytesAndNothingElse()
-    {
-        i32 idk[5];
-    }
 
     i32 IsSelected(i32 idx)
     {
@@ -111,3 +109,5 @@ struct MainMenu
     GameConfiguration cfg;
 };
 C_ASSERT(sizeof(MainMenu) == 0xd158);
+
+#pragma optimize("s", off)

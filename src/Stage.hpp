@@ -11,6 +11,7 @@ struct StageAnms
     const char *stageName1;
     const char *stageName2;
 };
+extern StageAnms g_AnmStageFiles[9];
 
 struct StdRawHeader
 {
@@ -168,6 +169,4 @@ struct Stage
     i32 isDarkening;
 };
 C_ASSERT(sizeof(Stage) == 0x52b4);
-
 extern Stage g_Stage;
-extern StageAnms g_AnmStageFiles[9];

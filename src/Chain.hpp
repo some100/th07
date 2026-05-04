@@ -53,5 +53,4 @@ struct Chain
     ChainElem drawChain;
 };
 C_ASSERT(sizeof(Chain) == 0x40);
-
 extern Chain g_Chain;

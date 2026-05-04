@@ -16,26 +16,42 @@
 // GLOBAL: TH07 0x0049f588
 StageAnms g_AnmStageFiles[9] = {
     {"dummy", "dummy"},
+    // STRING: TH07 0x00497ffc
     {"data/stg1enm.anm", NULL},
+    // STRING: TH07 0x00497fe8
     {"data/stg2enm.anm", NULL},
+    // STRING: TH07 0x00497fd4
     {"data/stg3enm.anm", NULL},
+    // STRING: TH07 0x00497fc0
     {"data/stg4enm.anm", NULL},
+    // STRING: TH07 0x00497fac
     {"data/stg5enm.anm", NULL},
+    // STRING: TH07 0x00497f98
     {"data/stg6enm.anm", NULL},
+    // STRING: TH07 0x00497f84
     {"data/stg7enm.anm", NULL},
+    // STRING: TH07 0x00497f70
     {"data/stg8enm.anm", NULL},
 };
 
 // GLOBAL: TH07 0x0049f64c
 const char *g_StageFiles[9] = {
     "dummy",
+    // STRING: TH07 0x00498a04
     "data/stage1.std",
+    // STRING: TH07 0x004989f4
     "data/stage2.std",
+    // STRING: TH07 0x004989e4
     "data/stage3.std",
+    // STRING: TH07 0x004989d4
     "data/stage4.std",
+    // STRING: TH07 0x004989c4
     "data/stage5.std",
+    // STRING: TH07 0x004989b4
     "data/stage6.std",
+    // STRING: TH07 0x004989a4
     "data/stage7.std",
+    // STRING: TH07 0x00498994
     "data/stage8.std",
 };
 

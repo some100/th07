@@ -25,7 +25,9 @@ struct MidiTimer
     i32 StopTimer();
     void UpdatePerfCounter();
 
-    virtual void OnTimerElapsed() {}
+    virtual void OnTimerElapsed()
+    {
+    }
     static void CALLBACK DefaultTimerCallback(u32 delay, u32 wPeriodMin,
                                               DWORD_PTR dwUser, DWORD_PTR dw1,
                                               DWORD_PTR dw2);
@@ -202,5 +204,4 @@ struct DummyMidiTimer : MidiTimer
 
     virtual void OnTimerElapsed();
 };
-
 extern LARGE_INTEGER g_PerfCounter;

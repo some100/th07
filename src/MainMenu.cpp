@@ -17,6 +17,7 @@
 #include "ZunMemory.hpp"
 #include "ZunResult.hpp"
 #include "dxutil.hpp"
+#include "utils.hpp"
 
 // GLOBAL: TH07 0x0049ea7c
 const char *g_DemoReplayPaths[3] = {
@@ -68,9 +69,13 @@ const char *g_PhantasmReplayString = "Phantasm";
 
 // GLOBAL: TH07 0x0049f444
 const char *g_DifficultyStrings[6] = {
+    // STRING: TH07 0x00495628
     "Easy    ",
+    // STRING: TH07 0x0049561c
     "Normal  ",
+    // STRING: TH07 0x00495610
     "Hard    ",
+    // STRING: TH07 0x00495604
     "Lunatic ",
     "Extra   ",
     "Phantasm",
@@ -93,7 +98,7 @@ const char *g_CharacterAndShottypeReplayStrings[6] = {
 };
 
 // GLOBAL: TH07 0x0049f474
-i16 g_LastJoystickInput;
+i16 g_LastJoystickInput = 32;
 
 // GLOBAL: TH07 0x0049f478
 const char *g_KeyConfigStrings[12] = {
@@ -186,12 +191,6 @@ void MainMenu::SetGameState(GameState gameState)
     this->stateTimer = 0;
     this->menuSubState = 0;
     this->idleFrames = 0;
-}
-
-// FUNCTION: TH07 0x0045547d
-MainMenu::MainMenu()
-{
-    memset(this, 0, sizeof(MainMenu));
 }
 
 // FUNCTION: TH07 0x004554d6
@@ -2790,7 +2789,8 @@ ZunResult MainMenu::RegisterChain(u32 param_1)
     mgr->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     mgr->drawChain->arg = mgr;
     g_Chain.AddToDrawChain(mgr->drawChain, 0);
-    AnInlineFunctionThatAllocates20BytesAndNothingElse();
+
+    UselessStack::EightBytes();
     return ZUN_SUCCESS;
 }
 

@@ -37,7 +37,7 @@ D3DCOLOR g_BulletColorsArray[28] = {
 
 // GLOBAL: TH07 0x0049eec8
 D3DCOLOR g_DefaultBulletColors[28] = {
-    0xFFF0F0F0, 0xFFF0F0F0, 0xFFFFFFFC, 0xFFFFE0E0, 0xFFFFE0E0, 0xFFFFE0E0,
+    0xFFF0F0F0, 0xFFF0F0F0, 0xFFFFFFFF, 0xFFFFE0E0, 0xFFFFE0E0, 0xFFFFE0E0,
     0xFFFFE0FF, 0xFFFFE0FF, 0xFFFFE0FF, 0xFFE0E0FF, 0xFFE0E0FF, 0xFFE0E0FF,
     0xFFE0FFFF, 0xFFE0FFFF, 0xFFE0FFFF, 0xFFE0FFE0, 0xFFE0FFE0, 0xFFE0FFE0,
     0xFFE0FFE0, 0xFFE0FFE0, 0xFFE0FFE0, 0xFFFFFFE0, 0xFFFFFFE0, 0xFFFFFFE0,
@@ -51,7 +51,7 @@ i32 g_BulletSpriteOffset16Px[16] = {0, 1, 1, 1, 1, 2, 2, 2,
                                     2, 3, 3, 3, 4, 4, 4, 0};
 
 // GLOBAL: TH07 0x0049ef80
-i32 g_BulletSpriteOffset32Px[8] = {0, 1, 1, 2, 3, 4};
+i32 g_BulletSpriteOffset32Px[8] = {0, 1, 1, 2, 2, 3, 4, 0};
 
 // GLOBAL: TH07 0x0062f934
 ChainElem g_BulletManagerDrawChain;
@@ -62,34 +62,12 @@ BulletManager g_BulletManager;
 // GLOBAL: TH07 0x009a9abc
 ChainElem g_BulletManagerCalcChain;
 
-// FUNCTION: TH07 0x004232e0
 void BulletManager::Initialize()
 {
     memset(this, 0, sizeof(BulletManager));
     this->bulletsStart = this->bullets;
     this->bullets[0x400].state = BULLET_END_ARRAY;
     this->itemType = ITEM_POINT_BULLET;
-}
-
-// FUNCTION: TH07 0x00423330
-BulletManager::BulletManager()
-{
-    Initialize();
-}
-
-// FUNCTION: TH07 0x00423420
-BulletTypeSprites::BulletTypeSprites()
-{
-}
-
-// FUNCTION: TH07 0x00423510
-Bullet::Bullet()
-{
-}
-
-// FUNCTION: TH07 0x004235d0
-Laser::Laser()
-{
 }
 
 // FUNCTION: TH07 0x00423660
@@ -701,7 +679,7 @@ Laser *BulletManager::SpawnLaserPattern(EnemyLaserShooter *laserShooter)
         }
 
         g_AnmManager->SetAnmIdxAndExecuteScript(&laser->vm0, laserShooter->sprite + 0x20a);
-        AnInlineFunctionThatAllocates4BytesAndNothingElse();
+        UselessStack::FourBytes();
         g_AnmManager->SetActiveSprite(&laser->vm0,
                                       (i32)laser->vm0.activeSpriteIdx +
                                           (i32)laserShooter->spriteOffset);

@@ -10,7 +10,6 @@
 
 struct RetryMenu
 {
-    RetryMenu();
     void OnDraw();
     i32 OnUpdate();
 
@@ -23,7 +22,6 @@ C_ASSERT(sizeof(RetryMenu) == 0x194c);
 
 struct PauseMenu
 {
-    PauseMenu();
     i32 OnUpdate();
     void OnDraw();
 
@@ -58,8 +56,6 @@ struct AsciiManagerString
 
 struct AsciiManager
 {
-    AsciiManager();
-
     static ZunResult RegisterChain();
     static void CutChain();
 
@@ -113,5 +109,4 @@ struct AsciiManager
     AsciiManagerPopup popups[723];
 };
 C_ASSERT(sizeof(AsciiManager) == 0x11194);
-
 extern AsciiManager g_AsciiManager;

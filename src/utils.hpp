@@ -24,3 +24,19 @@ inline f32 NormalizeAngle(f32 a)
     return AddNormalizeAngle(a, 0.0f);
 }
 } // namespace utils
+
+// completely useless functions for matching stack layout with temporaries
+// these are more so bandaid fixes since there could be something else causing
+// mismatches, like an improperly inlined function
+namespace UselessStack
+{
+inline void FourBytes()
+{
+    i32 idk;
+}
+
+inline void EightBytes()
+{
+    i32 idk[2];
+}
+} // namespace UselessStack

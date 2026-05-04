@@ -25,6 +25,7 @@ struct VertexTex1DiffuseXyz
     D3DXVECTOR2 textureUV;
 };
 C_ASSERT(sizeof(VertexTex1DiffuseXyz) == 0x18);
+extern VertexTex1DiffuseXyz g_PrimitivesToDrawUnknown[4];
 
 struct VertexTex1Xyzrwh
 {
@@ -32,6 +33,8 @@ struct VertexTex1Xyzrwh
     f32 w;
     D3DXVECTOR2 textureUV;
 };
+C_ASSERT(sizeof(VertexTex1Xyzrwh) == 0x18);
+extern VertexTex1Xyzrwh g_PrimitivesToDrawVertexBuf[4];
 
 struct VertexTex1DiffuseXyzrwh
 {
@@ -43,6 +46,7 @@ struct VertexTex1DiffuseXyzrwh
     D3DXVECTOR2 textureUV;
 };
 C_ASSERT(sizeof(VertexTex1DiffuseXyzrwh) == 0x1c);
+extern VertexTex1DiffuseXyzrwh g_PrimitivesToDrawNoVertexBuf[4];
 
 struct RenderVertexInfo
 {
@@ -371,8 +375,4 @@ struct AnmManager
     i32 screenshotDstHeight;
 };
 C_ASSERT(sizeof(AnmManager) == 0x17e560);
-
 extern AnmManager *g_AnmManager;
-extern VertexTex1DiffuseXyzrwh g_PrimitivesToDrawNoVertexBuf[4];
-extern VertexTex1Xyzrwh g_PrimitivesToDrawVertexBuf[4];
-extern VertexTex1DiffuseXyz g_PrimitivesToDrawUnknown[4];

@@ -17,6 +17,8 @@
 #define LSNM_MAGIC 'MNSL'
 #define VRSM_MAGIC 'MSRV'
 
+#pragma optimize("s", on)
+
 struct Th7k
 {
     u32 magic;
@@ -136,7 +138,11 @@ C_ASSERT(sizeof(ScoreDat) == 0x1c);
 
 struct ResultScreen
 {
-    ResultScreen();
+    ResultScreen()
+    {
+        memset(this, 0, sizeof(ResultScreen));
+        this->cursor = 1;
+    }
 
     static ZunResult RegisterChain(u32 param_1);
 
@@ -170,11 +176,6 @@ struct ResultScreen
     static void FreeAllScores(ScoreListNode *scores);
     static ZunResult ParseLsnm(ScoreDat *scoreDat, Lsnm *param_2);
     void WriteScore();
-
-    static void AnInlineFunctionThatAllocates24BytesAndNothingElse()
-    {
-        i32 idk[6];
-    }
 
     ScoreDat *scoreDat;
     i32 frameTimer;
@@ -213,3 +214,5 @@ struct ResultScreen
     ReplayHeaderAndData defaultReplay;
 };
 C_ASSERT(sizeof(ResultScreen) == 0xce6c);
+
+#pragma optimize("s", off)

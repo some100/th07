@@ -4,6 +4,8 @@
 #include "ItemManager.hpp"
 #include "ZunResult.hpp"
 
+extern D3DCOLOR *g_BulletColor;
+
 typedef enum BulletState
 {
     BULLET_INACTIVE = 0,
@@ -26,8 +28,6 @@ struct BulletTypeInfo
 
 struct BulletTypeSprites
 {
-    BulletTypeSprites();
-
     AnmVm spriteBullet;
     AnmVm spriteSpawnEffectFast;
     AnmVm spriteSpawnEffectNormal;
@@ -122,8 +122,6 @@ struct EnemyLaserShooter
 
 struct Laser
 {
-    Laser();
-
     struct AnmVm vm0;
     struct AnmVm vm1;
     D3DXVECTOR3 pos;
@@ -151,8 +149,6 @@ C_ASSERT(sizeof(Laser) == 0x4ec);
 
 struct Bullet
 {
-    Bullet();
-
     BulletCommand *AddCommand(i32 command, i32 flag, u32 type);
     void AddAngleAccelCommand(i32 command, i32 flag, i32 duration, f32 angle,
                               f32 speed);
@@ -212,7 +208,10 @@ C_ASSERT(sizeof(Bullet) == 0xd68);
 
 struct BulletManager
 {
-    BulletManager();
+    BulletManager()
+    {
+        Initialize();
+    }
 
     static ZunResult RegisterChain(const char *etamaAnmPath);
     static void CutChain();
@@ -255,6 +254,4 @@ struct BulletManager
     ItemType itemType;
 };
 C_ASSERT(sizeof(BulletManager) == 0x37a164);
-
 extern BulletManager g_BulletManager;
-extern D3DCOLOR *g_BulletColor;

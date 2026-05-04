@@ -5,6 +5,9 @@
 #include "AnmManager.hpp"
 #include "EclManager.hpp"
 
+extern EclExInstr g_EclExInstr[24];
+extern EclInterpFn g_EclInterpFuncs[8];
+
 namespace EnemyEclInstr
 {
 
@@ -38,6 +41,3 @@ i32 IsPointInRotatedRect(D3DXVECTOR3 *param_1, D3DXVECTOR3 *param_2,
                          D3DXVECTOR3 *param_3, D3DXVECTOR3 *param_4,
                          f32 param_5, f32 param_6);
 void ModifyEffect1eAcceleration();
-
-extern EclExInstr g_EclExInstr[24];
-extern EclInterpFn g_EclInterpFuncs[8];

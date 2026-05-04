@@ -46,7 +46,5 @@ struct GameWindow
     u32 power_off_active;
 };
 #pragma pack(pop)
-
 C_ASSERT(sizeof(GameWindow) == 0x2c);
-
 extern GameWindow g_GameWindow;

@@ -6,6 +6,8 @@
 #include "EffectManager.hpp"
 #include "inttypes.hpp"
 
+extern u32 g_SpellcardScore[141];
+
 struct EnemyHistory
 {
     D3DXVECTOR3 position;
@@ -194,6 +196,4 @@ struct EnemyManager
     Enemy *enemyHead[4];
 };
 C_ASSERT(sizeof(EnemyManager) == 0x954710);
-
 extern EnemyManager g_EnemyManager;
-extern u32 g_SpellcardScore[141];

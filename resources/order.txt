@@ -1,0 +1,10 @@
+?D3DXMatrixIdentity@@YIPAUD3DXMATRIX@@PAU1@@Z
+?NextTick@ZunTimer@@QAEHXZ
+?Initialize@AnmVm@@QAEXXZ
+??0AnmVm@@QAE@XZ
+??0AnmVmBase@@QAE@XZ
+?RegenerateGameIntegrityCsum@GameManager@@QAEXXZ
+?SetBombsRemainingAndComputeCsum@GameManager@@QAEXH@Z
+?UpdateScripts@AsciiManager@@QAEXXZ
+??0AsciiManager@@QAE@XZ
+??0RetryMenu@@QAE@XZ

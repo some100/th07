@@ -37,5 +37,4 @@ struct BombData
     BombCallback calcFocus;
     BombCallback drawFocus;
 };
-
 extern BombData g_BombData[6];

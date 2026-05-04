@@ -243,5 +243,4 @@ struct GameManager
     i32 subrank;
 };
 C_ASSERT(sizeof(GameManager) == 0x9644);
-
 extern GameManager g_GameManager;

@@ -31,7 +31,6 @@ VertexTex1Xyzrwh g_PrimitivesToDrawVertexBuf[4];
 // GLOBAL: TH07 0x004ba078
 VertexTex1DiffuseXyz g_PrimitivesToDrawUnknown[4];
 
-// FUNCTION: TH07 0x0044d3e0
 AnmManager::AnmManager()
 {
     memset(this, 0, sizeof(AnmManager));
@@ -76,7 +75,6 @@ AnmManager::AnmManager()
     this->screenshotTextureId = -1;
 }
 
-// FUNCTION: TH07 0x0044d620
 AnmManager::~AnmManager()
 {
 }

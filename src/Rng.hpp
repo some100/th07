@@ -37,5 +37,4 @@ struct Rng
     u16 seedBackup;
     u32 generationCount;
 };
-
 extern Rng g_Rng;

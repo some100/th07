@@ -8,35 +8,33 @@
 #include "GameManager.hpp"
 #include "ScreenEffect.hpp"
 #include "Supervisor.hpp"
+#include "utils.hpp"
 
 // GLOBAL: TH07 0x0049f628
 const char *g_BadEndingPaths[3] = {
+    // STRING: TH07 0x004985b4
     "data/end00b.end",
+    // STRING: TH07 0x004985a4
     "data/end10b.end",
+    // STRING: TH07 0x00498594
     "data/end20b.end",
 };
 
 // GLOBAL: TH07 0x0049f634
 const char *g_NormalEndingPaths[6] = {
+    // STRING: TH07 0x00498584
     "data/end00.end",
+    // STRING: TH07 0x00498574
     "data/end01.end",
+    // STRING: TH07 0x00498564
     "data/end10.end",
+    // STRING: TH07 0x00498554
     "data/end11.end",
+    // STRING: TH07 0x00498544
     "data/end20.end",
+    // STRING: TH07 0x00498534
     "data/end21.end",
 };
-
-// FUNCTION: TH07 0x0041d180
-Ending::Ending()
-{
-    memset(this, 0, sizeof(Ending));
-    this->line2Delay = 8;
-    this->timer2.Initialize(0);
-    this->timer1.Initialize(0);
-    this->backgroundPos.x = 0.0f;
-    this->backgroundPos.y = 0.0f;
-    this->backgroundScrollSpeed = 0.0f;
-}
 
 // FUNCTION: TH07 0x0041d2f0
 u32 Ending::OnUpdate(Ending *arg)
@@ -558,6 +556,5 @@ ZunResult Ending::RegisterChain()
     ending->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     ending->drawChain->arg = ending;
     g_Chain.AddToDrawChain(ending->drawChain, 1);
-    AnInlineFunctionThatAllocates32BytesAndNothingElse();
     return ZUN_SUCCESS;
 }

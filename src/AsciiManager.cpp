@@ -11,6 +11,7 @@
 #include "SoundPlayer.hpp"
 #include "Supervisor.hpp"
 #include "ZunResult.hpp"
+#include "utils.hpp"
 
 // GLOBAL: TH07 0x0134cdf4
 ChainElem g_AsciiManagerOnDrawMenusChain;
@@ -34,21 +35,6 @@ void AsciiManager::UpdateScripts()
     g_AnmManager->ExecuteScript(&this->otherOtherVms[2]);
     g_AnmManager->ExecuteScript(&this->otherOtherVms[3]);
     g_AnmManager->ExecuteScript(&this->otherVms[2]);
-}
-
-// FUNCTION: TH07 0x004014a0
-AsciiManager::AsciiManager()
-{
-}
-
-// FUNCTION: TH07 0x00401690
-RetryMenu::RetryMenu()
-{
-}
-
-// FUNCTION: TH07 0x00401720
-PauseMenu::PauseMenu()
-{
 }
 
 // FUNCTION: TH07 0x004017b0
@@ -1045,6 +1031,7 @@ i32 PauseMenu::OnUpdate()
         g_AnmManager->ExecuteScript(&this->menuBackground);
     }
     this->numFrames++;
+    UselessStack::FourBytes();
     return 0;
 }
 

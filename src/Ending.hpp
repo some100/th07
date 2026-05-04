@@ -5,7 +5,16 @@
 
 struct Ending
 {
-    Ending();
+    Ending()
+    {
+        memset(this, 0, sizeof(Ending));
+        this->line2Delay = 8;
+        this->timer2.Initialize(0);
+        this->timer1.Initialize(0);
+        this->backgroundPos.x = 0.0f;
+        this->backgroundPos.y = 0.0f;
+        this->backgroundScrollSpeed = 0.0f;
+    }
 
     static ZunResult RegisterChain();
 
@@ -18,12 +27,6 @@ struct Ending
     ZunResult LoadEnding(const char *endFilePath);
     ZunResult ParseEndFile();
     i32 ReadEndFileParameter();
-    
-    // i have no idea why this exists either
-    static void AnInlineFunctionThatAllocates32BytesAndNothingElse()
-    {
-        i32 idk[8];
-    }
 
     ChainElem *calcChain;
     ChainElem *drawChain;

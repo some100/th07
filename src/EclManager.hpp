@@ -5,6 +5,8 @@
 #include "inttypes.hpp"
 #include "utils.hpp"
 
+extern const char *g_EclPaths[10];
+
 // values from
 // https://en.touhouwiki.net/wiki/User:Mddass/Touhou_File_Format_Specification/ECL
 typedef enum EclVarId
@@ -128,6 +130,7 @@ struct EclGlobalVars
     f32 floatVars[4];
 };
 C_ASSERT(sizeof(EclGlobalVars) == 0x20);
+extern EclGlobalVars g_GlobalEclVars;
 
 struct EclContextArgs
 {
@@ -167,7 +170,4 @@ struct EclManager
     EclRawHeader *eclFile;
     EclRawInstr **subTable;
 };
-
 extern EclManager g_EclManager;
-extern const char *g_EclPaths[10];
-extern EclGlobalVars g_GlobalEclVars;

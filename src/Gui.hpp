@@ -189,5 +189,4 @@ struct Gui
     u32 bossColor[8];
 };
 C_ASSERT(sizeof(Gui) == 0x94);
-
 extern Gui g_Gui;

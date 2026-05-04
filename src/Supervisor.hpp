@@ -8,6 +8,13 @@
 #include "MidiOutput.hpp"
 #include "inttypes.hpp"
 
+extern u16 g_CurFrameRawInput;
+extern u16 g_CurFrameGameInput;
+extern u16 g_LastFrameRawInput;
+extern u16 g_LastFrameGameInput;
+extern u16 g_IsEighthFrameOfHeldInput;
+extern u16 g_NumOfFramesInputsWereHeld;
+
 struct ControllerMapping
 {
     i16 shootButton;
@@ -20,6 +27,7 @@ struct ControllerMapping
     i16 rightButton;
     i16 skipButton;
 };
+extern ControllerMapping g_ControllerMapping;
 
 typedef enum MusicMode
 {
@@ -160,16 +168,7 @@ struct Supervisor
     char *version;
 };
 #pragma pack(pop)
-
 C_ASSERT(sizeof(Supervisor) == 0x2d0);
+extern Supervisor g_Supervisor;
 
 #define NUKE_SUPERVISOR() memset(&g_Supervisor, -1, sizeof(g_Supervisor))
-
-extern Supervisor g_Supervisor;
-extern ControllerMapping g_ControllerMapping;
-extern u16 g_CurFrameRawInput;
-extern u16 g_CurFrameGameInput;
-extern u16 g_LastFrameRawInput;
-extern u16 g_LastFrameGameInput;
-extern u16 g_IsEighthFrameOfHeldInput;
-extern u16 g_NumOfFramesInputsWereHeld;
