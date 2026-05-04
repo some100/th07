@@ -5,6 +5,8 @@
 #include "AnmVm.hpp"
 #include "Chain.hpp"
 
+#pragma optimize("s", on)
+
 struct TrackDescriptor
 {
     TrackDescriptor()
@@ -49,4 +51,5 @@ struct MusicRoom
     AnmVm descriptionSprites[8];
 };
 C_ASSERT(sizeof(MusicRoom) == 0x5c04);
-extern MusicRoom g_MusicRoom;
+
+#pragma optimize("s", off)

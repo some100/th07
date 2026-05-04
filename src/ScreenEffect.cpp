@@ -311,6 +311,7 @@ ZunResult BombEffects::DeletedCallback(BombEffects *arg)
     g_Chain.Cut(arg->drawChain);
     arg->drawChain = NULL;
     delete arg;
+    arg = NULL;
     return ZUN_SUCCESS;
 }
 

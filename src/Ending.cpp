@@ -8,7 +8,6 @@
 #include "GameManager.hpp"
 #include "ScreenEffect.hpp"
 #include "Supervisor.hpp"
-#include "utils.hpp"
 
 // GLOBAL: TH07 0x0049f628
 const char *g_BadEndingPaths[3] = {

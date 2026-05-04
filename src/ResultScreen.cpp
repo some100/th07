@@ -2752,10 +2752,8 @@ ZunResult ResultScreen::DeletedCallback(ResultScreen *arg)
     g_Chain.Cut(arg->drawChain);
     arg->drawChain = NULL;
 
-    if (arg != NULL)
-    {
-        delete arg;
-    }
+    delete arg;
+    arg = NULL;
 
     return ZUN_SUCCESS;
 }

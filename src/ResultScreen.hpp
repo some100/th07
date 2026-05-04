@@ -5,6 +5,7 @@
 #include "AnmVm.hpp"
 #include "Chain.hpp"
 #include "ReplayManager.hpp"
+#include "ZunMemory.hpp"
 #include "ZunResult.hpp"
 #include "inttypes.hpp"
 
@@ -142,6 +143,10 @@ struct ResultScreen
     {
         memset(this, 0, sizeof(ResultScreen));
         this->cursor = 1;
+    }
+    ~ResultScreen()
+    {
+        ZunMemory::Free(this->scoreDat);
     }
 
     static ZunResult RegisterChain(u32 param_1);

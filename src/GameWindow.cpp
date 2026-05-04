@@ -1,5 +1,4 @@
 #include "GameWindow.hpp"
-#include "ZunResult.hpp"
 
 #include <d3d8.h>
 #include <direct.h>
@@ -20,6 +19,7 @@ typedef __w64 long SHANDLE_PTR; // i dont know anymore bro
 #include "SoundPlayer.hpp"
 #include "Stage.hpp"
 #include "Supervisor.hpp"
+#include "ZunResult.hpp"
 #include "dxutil.hpp"
 
 // GLOBAL: TH07 0x00575c20

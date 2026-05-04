@@ -2,8 +2,6 @@
 
 #include <stddef.h>
 
-#include "Supervisor.hpp"
-
 // GLOBAL: TH07 0x0049512c
 const D3DFORMAT g_TextureFormatD3D8Mapping[6] = {
     D3DFMT_UNKNOWN,

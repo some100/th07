@@ -2,7 +2,6 @@
 
 #include <d3d8.h>
 
-#include "AnmManager.hpp"
 #include "EclManager.hpp"
 
 extern EclExInstr g_EclExInstr[24];

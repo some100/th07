@@ -3,7 +3,6 @@
 #include <d3d8.h>
 
 #include "AnmVm.hpp"
-#include "ZunMath.hpp"
 #include "ZunResult.hpp"
 #include "ZunTimer.hpp"
 #include "inttypes.hpp"
@@ -75,6 +74,11 @@ struct AsciiManager
     void InitializeVms();
     void InitializeOtherVms();
     void UpdateScripts();
+
+    void SetColor(D3DCOLOR color)
+    {
+        this->color = color;
+    }
 
     void SetFadeState(i32 fadeState)
     {

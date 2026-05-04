@@ -425,12 +425,13 @@ ZunResult ReplayManager::DeletedCallback(ReplayManager *arg)
         g_Chain.Cut(arg->rngCalcChain);
         arg->rngCalcChain = NULL;
     }
-    free(g_ReplayManager->data);
+    ZunMemory::Free(g_ReplayManager->data);
     if (arg->unused_40 != NULL)
     {
-        free(arg->unused_40);
+        ZunMemory::Free(arg->unused_40);
     }
-    free(g_ReplayManager);
+    delete g_ReplayManager;
+    g_ReplayManager = NULL;
     g_ReplayManager = NULL;
     return ZUN_SUCCESS;
 }

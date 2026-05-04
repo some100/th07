@@ -1,6 +1,5 @@
 #pragma once
 
-#include "AnmManager.hpp"
 #include "ItemManager.hpp"
 #include "ZunResult.hpp"
 

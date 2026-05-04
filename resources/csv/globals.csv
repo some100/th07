@@ -142,7 +142,6 @@ address|name|type
 0135e2a0|g_LastTime|global
 0135e2a4|g_LastTimeIsSet|global
 0135e2a8|g_MusicRoom|global
-01363eac|g_MusicRoomExists|global
 01363fc4|CodePage_01363fc4|global
 0136510c|uNumber_0136510c|global
 01365228|lpMem_01365228|global
