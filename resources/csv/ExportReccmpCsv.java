@@ -110,7 +110,7 @@ public class ExportReccmpCsv extends GhidraScript {
 
     private String exportStrings(Program p) {
         StringBuilder csvFile = new StringBuilder();
-        csvFile.append("address|text|type\n");
+        csvFile.append("address|text|type|size\n");
         DataIterator datas = p.getListing().getDefinedData(true);
         while (datas.hasNext()) {
             Data data = datas.next();
@@ -121,12 +121,15 @@ public class ExportReccmpCsv extends GhidraScript {
             String address = data.getAddressString(false, false);
             String text = escapeControlChars(data.getValue().toString());
             String type = "string";
+            int size = data.getLength();
             csvFile
                 .append(address)
                 .append("|")
                 .append(text)
                 .append("|")
                 .append(type)
+                .append("|")
+                .append(size)
                 .append("\n");
         }
         return csvFile.toString();
@@ -134,7 +137,7 @@ public class ExportReccmpCsv extends GhidraScript {
 
     private String exportFloats(Program p) {
         StringBuilder csvFile = new StringBuilder();
-        csvFile.append("address|name|type\n");
+        csvFile.append("address|name|type|size\n");
         DataIterator datas = p.getListing().getDefinedData(true);
         while (datas.hasNext()) {
             Data data = datas.next();
@@ -151,12 +154,15 @@ public class ExportReccmpCsv extends GhidraScript {
             );
             else name = formatValue(val.toBigDecimal().doubleValue());
             String type = "float";
+            int size = data.getLength();
             csvFile
                 .append(address)
                 .append("|")
                 .append(name)
                 .append("|")
                 .append(type)
+                .append("|")
+                .append(size)
                 .append("\n");
         }
         return csvFile.toString();
@@ -164,16 +170,16 @@ public class ExportReccmpCsv extends GhidraScript {
 
     private String exportGlobals(Program p) {
         StringBuilder csvFile = new StringBuilder();
-        csvFile.append("address|name|type\n");
+        csvFile.append("address|name|type|size\n");
 
         SymbolIterator symbols = p.getSymbolTable().getAllSymbols(true);
         while (symbols.hasNext()) {
             Symbol symbol = symbols.next();
             if (symbol.getSymbolType() != SymbolType.LABEL) continue;
             if (symbol.getSource() != SourceType.USER_DEFINED) continue;
-            if (
-                p.getListing().getDefinedDataAt(symbol.getAddress()) == null
-            ) continue;
+
+            Data data = p.getListing().getDefinedDataAt(symbol.getAddress());
+            if (data == null) continue;
             String address = symbol.getAddress().toString(false, false);
 
             String name = symbol.getName(true);
@@ -182,12 +188,15 @@ public class ExportReccmpCsv extends GhidraScript {
                 name = symbol.getParentNamespace().getName();
                 type = "vtable";
             }
+            int size = data.getLength();
             csvFile
                 .append(address)
                 .append("|")
                 .append(name)
                 .append("|")
                 .append(type)
+                .append("|")
+                .append(size)
                 .append("\n");
         }
         return csvFile.toString();
