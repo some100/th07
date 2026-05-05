@@ -2630,7 +2630,7 @@ restart:
                     }
                     g_EnemyManager.bosses[enemy->bossId] = NULL;
                     enemy->flags2 &= 0xbf;
-                    g_AsciiManager.otherVms[enemy->bossId + 3].pendingInterrupt = 2;
+                    g_AsciiManager.otherOtherVms[enemy->bossId].pendingInterrupt = 2;
                     enemy->ResetEffectArray();
                 }
                 else
@@ -2646,7 +2646,7 @@ restart:
                                         ? instr->args[0].i
                                         : GetVarValue(enemy, instr->args[0].i);
                     enemy->bossId = local_5ec;
-                    g_AsciiManager.otherVms[enemy->bossId + 3].pendingInterrupt = 1;
+                    g_AsciiManager.otherOtherVms[enemy->bossId].pendingInterrupt = 1;
                 }
                 break;
             }

@@ -1240,9 +1240,9 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                     local_6c = -999.0f;
                 }
                 uVar14 = enemy->bossId;
-                g_AsciiManager.otherVms[uVar14 + 3].pos.x = local_6c;
-                g_AsciiManager.otherVms[uVar14 + 3].pos.y = 472.0;
-                g_AsciiManager.otherVms[uVar14 + 3].pos.z = 0.0f;
+                g_AsciiManager.otherOtherVms[uVar14].pos.x = local_6c;
+                g_AsciiManager.otherOtherVms[uVar14].pos.y = 472.0;
+                g_AsciiManager.otherOtherVms[uVar14].pos.z = 0.0f;
                 g_AsciiManager.bossDamageTint[enemy->bossId] =
                     enemy->primaryVm.useColor2;
             }

@@ -359,6 +359,8 @@ def handle_compile_result(result: Tuple[int, str]):
     if result[0] != 0:
         sys.exit(1)
 
+if not EXE_PATH.exists() and not args.no_icon:
+    sys.exit("th07.exe should exist when building with icon")
 
 env = os.environ.copy()
 
@@ -454,7 +456,7 @@ match args.command:
         if args.init:
             os.chdir(SCRIPT_DIR)
             _ = subprocess.check_call(
-                ["reccmp-project", "detect", "--search-path", SCRIPT_DIR]
+                ["reccmp-project", "detect", "--search-path", RESOURCE_DIR]
             )
             os.chdir(BUILD_DIR)
             _ = subprocess.check_call(

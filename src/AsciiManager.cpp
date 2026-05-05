@@ -116,13 +116,9 @@ u32 AsciiManager::OnDrawPopups(AsciiManager *arg)
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
-#pragma var_order(idk, vm1, uselessAnmMgr, idk2, uselessAnmMgr2, fadeState)
 // FUNCTION: TH07 0x00401a00
 void AsciiManager::InitializeVms()
 {
-    i32 idk;
-    i32 idk2;
-
     memset(&this->vm1, 0, sizeof(AnmVm));
     memset(&this->vm0, 0, sizeof(AnmVm));
     memset(&this->strings, 0, sizeof(this->strings));
@@ -139,21 +135,14 @@ void AsciiManager::InitializeVms()
     this->scale.x = 1.0f;
     this->scale.y = 1.0f;
     this->vm1.anchor = 3;
-    // TODO: this should probably be using InitializeAndSetActiveSprite, but
-    // for some reason i just cannot get it to fully match
-    AnmVm *vm1 = &this->vm1;
-    AnmManager *uselessAnmMgr = g_AnmManager;
-    vm1->Initialize();
-    uselessAnmMgr->SetActiveSprite(vm1, 0);
-    AnmManager *uselessAnmMgr2 = g_AnmManager;
-    this->vm0.Initialize();
-    uselessAnmMgr2->SetActiveSprite(&this->vm0, 0x20);
+    UselessStack::FourBytes();
+    g_AnmManager->InitializeAndSetActiveSprite(&this->vm1, 0);
+    UselessStack::FourBytes();
+    g_AnmManager->InitializeAndSetActiveSprite(&this->vm0, 0x20);
     this->vm1.pos.z = 0.1f;
     this->isSelected = 0;
     this->fontSpacing = 0xe;
-    i32 fadeState = this->uiFadeState;
-    this->otherVms[0].pendingInterrupt = fadeState;
-    this->uiFadeState = fadeState;
+    this->SetFadeState(this->uiFadeState);
 }
 
 // FUNCTION: TH07 0x00401ba0
