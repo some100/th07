@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdlib.h>
+
 namespace ZunMemory
 {
 inline void Free(void *p)
@@ -7,7 +9,7 @@ inline void Free(void *p)
     free(p);
 }
 
-inline void *Alloc(u32 size)
+inline void *Alloc(size_t size)
 {
     return malloc(size);
 }

@@ -63,12 +63,6 @@ u32 g_NumFramesSinceLastTime;
 // GLOBAL: TH07 0x0135e298
 LARGE_INTEGER g_PerformanceCounter;
 
-// GLOBAL: TH07 0x0135e2a0
-u32 g_LastTime;
-
-// GLOBAL: TH07 0x0135e2a4
-u32 g_LastTimeIsSet;
-
 // FUNCTION: TH07 0x00437903
 void Supervisor::DebugPrint2(const char *fmt, ...)
 {
@@ -77,75 +71,79 @@ void Supervisor::DebugPrint2(const char *fmt, ...)
 // FUNCTION: TH07 0x00437908
 void Supervisor::CheckTiming()
 {
-    f64 dVar1;
-    f64 dVar2;
-    f64 local_14;
+    f64 timeDiff;
+    f64 perfDiff;
 
-    if (this->checkTiming != 0)
+    if (this->checkTiming == 0)
     {
-        QueryPerformanceCounter(&this->curPerfCounter);
-        GetLocalTime(&this->curTime);
-        local_14 = (f64)(this->curTime).wSecond +
-                   (f64)((u32)(this->curTime).wMinute * 60) +
-                   (f64)((u32)(this->curTime).wHour * 0xe10) +
-                   (f64)(this->curTime).wDay * 24.0 * 60.0 * 60.0;
-        dVar1 = (f64)(this->prevTime).wSecond +
-                (f64)((u32)(this->prevTime).wMinute * 60) +
-                (f64)((u32)(this->prevTime).wHour * 0xe10) +
-                (f64)(this->prevTime).wDay * 24.0 * 60.0 * 60.0;
-        if (local_14 < dVar1)
+        return;
+    }
+
+    QueryPerformanceCounter(&this->curPerfCounter);
+    GetLocalTime(&this->curTime);
+
+    timeDiff = (f64)this->curTime.wDay * 24.0 * 60.0 * 60.0 +
+               (f64)(this->curTime.wHour * 60 * 60) +
+               (f64)(this->curTime.wMinute * 60) +
+               (f64)this->curTime.wSecond;
+
+    perfDiff = (f64)this->prevTime.wDay * 24.0 * 60.0 * 60.0 +
+               (f64)(this->prevTime.wHour * 60 * 60) +
+               (f64)(this->prevTime.wMinute * 60) +
+               (f64)this->prevTime.wSecond;
+
+    if (timeDiff < perfDiff)
+    {
+        timeDiff = (f64)(this->prevTime.wDay + 1) * 24.0 * 60.0 * 60.0 +
+                   (f64)(this->curTime.wHour * 60 * 60) +
+                   (f64)(this->curTime.wMinute * 60) +
+                   (f64)this->curTime.wSecond;
+    }
+
+    timeDiff -= perfDiff;
+    timeDiff = (timeDiff * 1000.0 + (f64)this->curTime.wMilliseconds -
+                (f64)this->prevTime.wMilliseconds);
+    timeDiff /= 1000.0;
+
+    perfDiff = (f64)(this->curPerfCounter.LowPart - this->prevPerfCounter.LowPart) /
+               (f64)this->perfFrequency.LowPart;
+
+    if (perfDiff >= 1.0)
+    {
+        if (timeDiff / perfDiff > 2.5)
         {
-            local_14 = (f64)(this->curTime).wSecond +
-                       (f64)((u32)(this->curTime).wMinute * 60) +
-                       (f64)((u32)(this->curTime).wHour * 0xe10) +
-                       (f64)((this->prevTime).wDay + 1) * 24.0 * 60.0 * 60.0;
-        }
-        dVar1 =
-            (((f64)(this->curTime).wMilliseconds + (local_14 - dVar1) * 1000.0) -
-             (f64)(this->prevTime).wMilliseconds) /
-            1000.0f;
-        dVar2 = (f64)((this->curPerfCounter).LowPart -
-                      (this->prevPerfCounter).LowPart) /
-                (f64)(this->perfFrequency).LowPart;
-        if (1.0 <= dVar2)
-        {
-            if (dVar1 / dVar2 <= 2.5)
+            this->timingErrorCount++;
+            if (this->maxTimingError < this->timingErrorCount)
             {
-                if (this->timingErrorCount != 0)
-                {
-                    this->timingErrorCount = this->timingErrorCount - 1;
-                }
+                this->maxTimingError = this->timingErrorCount;
             }
-            else
+            if (this->timingSpikeAccumulator < this->timingErrorCount)
             {
-                this->timingErrorCount = this->timingErrorCount + 1;
-                if (this->maxTimingError < this->timingErrorCount)
-                {
-                    this->maxTimingError = this->timingErrorCount;
-                }
-                if (this->timingSpikeAccumulator < this->timingErrorCount)
-                {
-                    this->timingSpikeAccumulator = this->timingErrorCount;
-                }
-                if (9 < this->timingSpikeAccumulator)
-                {
-                    this->timingBadCount = this->timingBadCount + 1;
-                    this->timingSpikeAccumulator = 0;
-                }
-                // STRING: TH07 0x00497244
-                Supervisor::DebugPrint2("alq チェック %f / %f = %f\r\n", dVar1, dVar2,
-                                        dVar1 / dVar2);
+                this->timingSpikeAccumulator = this->timingErrorCount;
             }
-            this->checkTiming = 0;
+            if (this->timingSpikeAccumulator >= 10)
+            {
+                this->timingBadCount++;
+                this->timingSpikeAccumulator = 0;
+            }
+            // STRING: TH07 0x00497244
+            Supervisor::DebugPrint2("alq チェック %f / %f = %f\r\n", timeDiff, perfDiff,
+                                    timeDiff / perfDiff);
         }
-        if ((this->maxTimingError < 0x28) && (this->timingBadCount < 0x10))
+        else if (this->timingErrorCount != 0)
         {
-            this->flags = this->flags & 0xfffffff7;
+            this->timingErrorCount--;
         }
-        else
-        {
-            this->flags = this->flags | 8;
-        }
+        this->checkTiming = 0;
+    }
+
+    if (this->maxTimingError >= 0x28 || this->timingBadCount >= 0x10)
+    {
+        this->flags |= 8;
+    }
+    else
+    {
+        this->flags &= 0xfffffff7;
     }
 }
 
@@ -158,23 +156,17 @@ void AnmManager::ReleaseVertexBuffer()
 // FUNCTION: TH07 0x00437c70
 u32 Supervisor::OnUpdate(Supervisor *arg)
 {
-    i32 state;
-
-    g_AnmManager->currentVertexShader = 0xff;
-    g_AnmManager->currentSprite = NULL;
-    g_AnmManager->currentTexture = NULL;
-    g_AnmManager->currentColorOp = 0xff;
-    g_AnmManager->currentBlendMode = 0xff;
-    g_AnmManager->currentZWriteDisable = 0xff;
-    g_AnmManager->scriptTicksThisFrame = 0;
-    g_AnmManager->renderStateChangesThisFrame = 0;
-    g_AnmManager->scriptsExecutedThisFrame = 0;
-    g_AnmManager->flushesThisFrame = 0;
-    g_AnmManager->currentCameraMode = 0xff;
-    g_AnmManager->colorMulEnabled = 0;
-    (g_AnmManager->color).color = 0x80808080;
-    (g_AnmManager->offset).y = 0.0f;
-    (g_AnmManager->offset).x = 0.0f;
+    g_AnmManager->SetVertexShader(0xff);
+    g_AnmManager->SetSprite(NULL);
+    g_AnmManager->SetTexture(NULL);
+    g_AnmManager->SetColorOp(0xff);
+    g_AnmManager->SetBlendMode(0xff);
+    g_AnmManager->SetZWriteDisable(0xff);
+    g_AnmManager->ClearFrameState();
+    g_AnmManager->SetCameraMode(0xff);
+    g_AnmManager->SetColor(0x80808080);
+    g_AnmManager->offset.y = 0.0f;
+    g_AnmManager->offset.x = 0.0f;
     g_Supervisor.fogEnabled = 0xff;
     if (g_SoundPlayer.backgroundMusic != NULL)
     {
@@ -187,14 +179,18 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
         g_IsEighthFrameOfHeldInput = 0;
         if (g_LastFrameRawInput == g_CurFrameRawInput)
         {
-            if ((0x1d < g_NumOfFramesInputsWereHeld) &&
-                (g_IsEighthFrameOfHeldInput =
-                     (u16)((u32)g_NumOfFramesInputsWereHeld % 8 == 0),
-                 0x25 < g_NumOfFramesInputsWereHeld))
+            if (g_NumOfFramesInputsWereHeld >= 30)
             {
-                g_NumOfFramesInputsWereHeld = 0x1e;
+                if (g_NumOfFramesInputsWereHeld % 8 == 0)
+                {
+                    g_IsEighthFrameOfHeldInput = 1;
+                }
+                if (g_NumOfFramesInputsWereHeld >= 38)
+                {
+                    g_NumOfFramesInputsWereHeld = 30;
+                }
             }
-            g_NumOfFramesInputsWereHeld = g_NumOfFramesInputsWereHeld + 1;
+            g_NumOfFramesInputsWereHeld++;
         }
         else
         {
@@ -205,230 +201,196 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
     {
         g_CurFrameRawInput |= Controller::GetInput();
     }
-    if (arg->wantedState == arg->curState)
+    if (arg->wantedState != arg->curState)
     {
-        goto LAB_004382b4;
-    }
-    arg->wantedState2 = arg->wantedState;
-    // STRING: TH07 0x00497230
-    Supervisor::DebugPrint2("scene %d -> %d\r\n", arg->wantedState,
-                            arg->curState);
-    state = arg->wantedState;
-    if (state == 0)
-    {
-        goto LAB_00437eac;
-    }
-    if (state == 1)
-    {
-        state = arg->curState;
-        if (state == -1)
+        arg->wantedState2 = arg->wantedState;
+        // STRING: TH07 0x00497230
+        Supervisor::DebugPrint2("scene %d -> %d\r\n", arg->wantedState,
+                                arg->curState);
+        switch (arg->wantedState)
         {
-            return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-        }
-        if (state == 2)
-        {
-            if (GameManager::RegisterChain() != ZUN_SUCCESS)
+        case 0:
+        CASE_0:
+            arg->curState = 1;
+            g_Supervisor.d3dDevice->ResourceManagerDiscardBytes(0);
+            if (MainMenu::RegisterChain(0) != ZUN_SUCCESS)
             {
                 return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
             }
-        }
-        else
-        {
-            if (state == 4)
+            break;
+        case 1:
+            switch (arg->curState)
             {
+            case -1:
+                return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
+            case 2:
+                if (GameManager::RegisterChain() != ZUN_SUCCESS)
+                {
+                    return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
+                }
+                break;
+            case 4:
                 return CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR;
-            }
-            if (state == 5)
-            {
+            case 5:
                 if (ResultScreen::RegisterChain(0) != ZUN_SUCCESS)
                 {
                     return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
                 }
-            }
-            else if (state == 8)
-            {
+                break;
+            case 8:
                 if (MusicRoom::RegisterChain() != ZUN_SUCCESS)
                 {
                     return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
                 }
-            }
-            else if (state == 9)
-            {
+                break;
+            case 9:
                 GameManager::CutChain();
                 if (Ending::RegisterChain() != ZUN_SUCCESS)
                 {
                     return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
                 }
+                break;
             }
-        }
-    }
-    else if (state == 2)
-    {
-        state = arg->curState;
-        if (state < 8)
-        {
-            if (state == 7)
+            break;
+        case 5:
+            switch (arg->curState)
             {
+            case -1:
+                return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
+            case 1:
+                arg->curState = 0;
+                goto CASE_0;
+            }
+            break;
+        case 2:
+            switch (arg->curState)
+            {
+            case -1:
+                return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
+            case 1:
+                GameManager::CutChain();
+                arg->curState = 0;
+                ReplayManager::SaveReplay(NULL, NULL);
+                goto CASE_0;
+                break;
+            case 6:
+                GameManager::CutChain();
+                if (ResultScreen::RegisterChain(1) != ZUN_SUCCESS)
+                {
+                    return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
+                }
+                break;
+            case 10:
+                GameManager::CutChain();
+                if ((g_GameManager.practice == 0) && (g_GameManager.difficulty < 4))
+                {
+                    g_GameManager.currentStage = 0;
+                }
+                else
+                {
+                    g_GameManager.currentStage -= 1;
+                }
+                ReplayManager::SaveReplay(NULL, NULL);
+                if (GameManager::RegisterChain() != ZUN_SUCCESS)
+                {
+                    return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
+                }
+                arg->curState = 2;
+                break;
+            case 11:
+                g_Supervisor.curState = 3;
+                GameManager::CutChain();
+                g_GameManager.currentStage -= 1;
+                if (GameManager::RegisterChain() != ZUN_SUCCESS)
+                {
+                    return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
+                }
+                arg->curState = 2;
+                break;
+            case 12:
+                g_Supervisor.curState = 3;
+                GameManager::CutChain();
+                if (GameManager::RegisterChain() != ZUN_SUCCESS)
+                {
+                    return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
+                }
+                arg->curState = 2;
+                break;
+            case 3:
+                GameManager::CutChain();
+                if (GameManager::RegisterChain() != ZUN_SUCCESS)
+                {
+                    return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
+                }
+                arg->curState = 2;
+                break;
+            case 7:
                 GameManager::CutChain();
                 arg->curState = 0;
                 ReplayManager::SaveReplay(NULL, NULL);
                 arg->curState = 1;
                 g_Supervisor.d3dDevice->ResourceManagerDiscardBytes(0);
-                if (MainMenu::RegisterChain(0) != ZUN_SUCCESS)
+                if (MainMenu::RegisterChain(1) != ZUN_SUCCESS)
                 {
                     return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
                 }
-            }
-            else
-            {
-                if (state == -1)
-                {
-                    return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-                }
-                if (state == 1)
-                {
-                    GameManager::CutChain();
-                    arg->curState = 0;
-                    ReplayManager::SaveReplay(NULL, NULL);
-                    goto LAB_00437eac;
-                }
-                if (state == 3)
-                {
-                    GameManager::CutChain();
-                    if (GameManager::RegisterChain() != ZUN_SUCCESS)
-                    {
-                        return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-                    }
-                    arg->curState = 2;
-                }
-                else if (state == 6)
-                {
-                    GameManager::CutChain();
-                    if (ResultScreen::RegisterChain(1) != ZUN_SUCCESS)
-                    {
-                        return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-                    }
-                }
-            }
-        }
-        else if (state == 9)
-        {
-            g_GameManager.plst.playDataByDifficulty[g_GameManager.difficulty]
-                .noContinueClearCount =
+                break;
+            case 9:
                 g_GameManager.plst.playDataByDifficulty[g_GameManager.difficulty]
-                    .noContinueClearCount +
-                1;
-            GameManager::CutChain();
-            if (Ending::RegisterChain() != ZUN_SUCCESS)
+                    .noContinueClearCount =
+                    g_GameManager.plst.playDataByDifficulty[g_GameManager.difficulty]
+                        .noContinueClearCount +
+                    1;
+                GameManager::CutChain();
+                if (Ending::RegisterChain() != ZUN_SUCCESS)
+                {
+                    return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
+                }
+                break;
+            }
+            break;
+        case 6:
+            switch (arg->curState)
             {
+            case -1:
+                ReplayManager::SaveReplay(NULL, NULL);
                 return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
+            case 1:
+                arg->curState = 0;
+                ReplayManager::SaveReplay(NULL, NULL);
+                goto CASE_0;
             }
-        }
-        else if (state == 10)
-        {
-            GameManager::CutChain();
-            if ((g_GameManager.practice == 0) && (g_GameManager.difficulty < 4))
+            break;
+        case 8:
+            switch (arg->curState)
             {
-                g_GameManager.currentStage = 0;
-            }
-            else
-            {
-                g_GameManager.currentStage -= 1;
-            }
-            ReplayManager::SaveReplay(NULL, NULL);
-            if (GameManager::RegisterChain() != ZUN_SUCCESS)
-            {
+            case -1:
                 return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
+            case 1:
+                arg->curState = 0;
+                goto CASE_0;
             }
-            arg->curState = 2;
-        }
-        else if (state == 0xb)
-        {
-            g_Supervisor.curState = 3;
-            GameManager::CutChain();
-            g_GameManager.currentStage -= 1;
-            if (GameManager::RegisterChain() != ZUN_SUCCESS)
+            break;
+        case 9:
+            switch (arg->curState)
             {
+            case -1:
                 return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
+            case 1:
+                arg->curState = 0;
+                goto CASE_0;
+            case 6:
+                if (ResultScreen::RegisterChain(1) != ZUN_SUCCESS)
+                {
+                    return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
+                }
+                break;
             }
-            arg->curState = 2;
+            break;
         }
-        else if (state == 0xc)
-        {
-            g_Supervisor.curState = 3;
-            GameManager::CutChain();
-            if (GameManager::RegisterChain() != ZUN_SUCCESS)
-            {
-                return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-            }
-            arg->curState = 2;
-        }
+        g_CurFrameRawInput = g_LastFrameRawInput =
+            g_IsEighthFrameOfHeldInput = 0;
     }
-    else if (state == 5)
-    {
-        if (arg->curState == -1)
-        {
-            return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-        }
-        if (arg->curState == 1)
-        {
-            arg->curState = 0;
-        LAB_00437eac:
-            arg->curState = 1;
-            g_Supervisor.d3dDevice->ResourceManagerDiscardBytes(0);
-            if (MainMenu::RegisterChain(1) != ZUN_SUCCESS)
-            {
-                return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-            }
-        }
-    }
-    else if (state == 6)
-    {
-        if (arg->curState == -1)
-        {
-            ReplayManager::SaveReplay(NULL, NULL);
-            return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-        }
-        if (arg->curState == 1)
-        {
-            arg->curState = 0;
-            ReplayManager::SaveReplay(NULL, NULL);
-            goto LAB_00437eac;
-        }
-    }
-    else if (state == 8)
-    {
-        if (arg->curState == -1)
-        {
-            return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-        }
-        if (arg->curState == 1)
-        {
-            arg->curState = 0;
-            goto LAB_00437eac;
-        }
-    }
-    else if (state == 9)
-    {
-        state = arg->curState;
-        if (state == -1)
-        {
-            return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-        }
-        if (state == 1)
-        {
-            arg->curState = 0;
-            goto LAB_00437eac;
-        }
-        if ((state == 6) && ResultScreen::RegisterChain(1) != ZUN_SUCCESS)
-        {
-            return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-        }
-    }
-    g_IsEighthFrameOfHeldInput = 0;
-    g_LastFrameRawInput = 0;
-    g_CurFrameRawInput = 0;
-LAB_004382b4:
     arg->wantedState = arg->curState;
     arg->calcCount = arg->calcCount + 1;
     if ((arg->calcCount % 4000 == 3999) &&
@@ -591,28 +553,33 @@ ZunResult Supervisor::LoadGameData()
     return ZUN_SUCCESS;
 }
 
+#pragma var_order(i, frameCount, timeStart, fpsArray, fpsCount, timeEnd, \
+                  timeDiff, fps, unused, j, fpsSum)
 // FUNCTION: TH07 0x004386f3
 i32 Supervisor::CheckVSync()
 {
-    f32 fVar1;
-    DWORD DVar3;
-    i32 iVar4;
-    f32 local_a8;
-    i32 local_a4;
-    i32 local_90;
-    f32 afStack_8c[31];
-    DWORD local_10;
-    i32 local_c;
-    i32 local_8;
+    f32 fpsSum;
+    i32 j;
+    f32 unused;
+    f32 fps;
+    i32 timeDiff;
+    DWORD timeEnd;
+    i32 fpsCount;
+    f32 fpsArray[29];
+    DWORD timeStart;
+    i32 frameCount;
+    i32 i;
 
-    local_8 = 0;
-    local_c = 0;
-    local_90 = 0;
-    local_10 = 0;
+    i = 0;
+    frameCount = 0;
+    fpsCount = 0;
+    timeStart = 0;
+
     timeBeginPeriod(1);
-    local_10 = timeGetTime();
+    timeStart = timeGetTime();
     timeEndPeriod(1);
-    while (local_8 < 0x708 && (local_90 < 8))
+
+    while (i < 0x708 && fpsCount < 8)
     {
         g_Supervisor.d3dDevice->BeginScene();
         g_AnmManager->CopySurfaceToBackBuffer(0, 0, 0, 0, 0);
@@ -621,65 +588,60 @@ i32 Supervisor::CheckVSync()
         {
             g_Supervisor.d3dDevice->Reset(&g_Supervisor.presentParameters);
         }
-        local_8 = local_8 + 1;
+        i++;
         timeBeginPeriod(1);
-        DVar3 = timeGetTime();
+        timeEnd = timeGetTime();
         timeEndPeriod(1);
-        local_c = local_c + 1;
-        iVar4 = DVar3 - local_10;
-        if (iVar4 < 700)
+        frameCount++;
+        timeDiff = timeEnd - timeStart;
+
+        if (timeDiff >= 700)
         {
-            if (499 < iVar4)
-            {
-                fVar1 = ((f32)local_c * 1000.0f) / (f32)iVar4;
-                if (57.0f <= fVar1)
-                {
-                    afStack_8c[local_90] = fVar1;
-                    local_90 = local_90 + 1;
-                }
-                local_10 = DVar3;
-                local_c = 0;
-            }
+            timeStart = timeEnd;
+            frameCount = 0;
         }
-        else
+        else if (timeDiff >= 500)
         {
-            local_10 = DVar3;
-            local_c = 0;
+            unused = (f32)timeDiff / 1000.0f;
+            fps = frameCount * 1000.0f / (f32)timeDiff;
+            if (fps >= 57.0f)
+            {
+                fpsArray[fpsCount] = fps;
+                fpsCount++;
+            }
+            timeStart = timeEnd;
+            frameCount = 0;
         }
     }
+
     if ((g_Supervisor.cfg.opts >> 0xe & 1) == 0)
     {
-        local_a8 = 0.0f;
-        if (local_90 < 2)
+        fpsSum = 0.0f;
+        if (fpsCount >= 2)
         {
-            local_a8 = 1000.0f;
+            for (j = 0; j < fpsCount; j++)
+            {
+                fpsSum += fpsArray[j];
+            }
+            fpsSum /= (f32)j;
         }
         else
         {
-            for (local_a4 = 0; local_a4 < local_90; local_a4 = local_a4 + 1)
-            {
-                local_a8 = local_a8 + afStack_8c[local_a4];
-            }
-            local_a8 = local_a8 / (f32)local_a4;
+            fpsSum = 1000.0f;
         }
-        if (local_a8 <= 160.0f)
+
+        if (fpsSum > 160.0f)
         {
-            if (65.0f <= local_a8)
-            {
-                // STRING: TH07 0x00497050
-                g_GameErrorContext.Log("垂直同期が取れてないか、リフレッシュレートが高すぎます。\r\n");
-                // STRING: TH07 0x0049708c
-                g_GameErrorContext.Log("強制６０フレームモードで動作します\r\n");
-                g_Supervisor.vsyncEnabled = 1;
-                return -2;
-            }
-        }
-        else
-        {
-            // STRING: TH07 0x004970b4
             g_GameErrorContext.Log("垂直同期が取れてないか、リフレッシュレートが高すぎます\r\n");
             g_GameErrorContext.Log("強制６０フレームモードで動作します\r\n");
             g_Supervisor.vsyncEnabled = 1;
+        }
+        else if (fpsSum >= 65.0f)
+        {
+            g_GameErrorContext.Log("垂直同期が取れてないか、リフレッシュレートが高すぎます。\r\n");
+            g_GameErrorContext.Log("強制６０フレームモードで動作します\r\n");
+            g_Supervisor.vsyncEnabled = 1;
+            return -2;
         }
     }
     return 0;
@@ -882,133 +844,132 @@ ZunResult Supervisor::RegisterChain()
     return ZUN_SUCCESS;
 }
 
+#pragma var_order(fps, elapsedTimeInSecs, curTime, targetFps, local_1c, local_28, local_34)
 // FUNCTION: TH07 0x004390a5
 void Supervisor::DrawFpsCounter(i32 param_1)
 {
-    D3DXVECTOR3 local_34;
-    D3DXVECTOR3 local_28;
-    LARGE_INTEGER local_1c;
+    D3DXVECTOR3 local_30;
+    D3DXVECTOR3 local_24;
+    LARGE_INTEGER local_18;
+    f32 targetFps;
+    DWORD curTime;
     f32 elapsedTimeInSecs;
+    f32 fps;
 
     if (g_GameManager.slowModeSlowActive == 0)
     {
         g_NumFramesSinceLastTime =
             g_NumFramesSinceLastTime + 1 + (u32)g_Supervisor.cfg.frameskipConfig;
+
         if (g_Supervisor.perfFrequency.LowPart == 0)
         {
-            if ((g_LastTimeIsSet & 1) == 0)
-            {
-                g_LastTimeIsSet = g_LastTimeIsSet | 1;
-                g_LastTime = timeGetTime();
-            }
-            DWORD curTime = timeGetTime();
+            static DWORD g_LastTime = timeGetTime();
+
+            curTime = timeGetTime();
             if (curTime < g_LastTime)
             {
-                g_NumFramesSinceLastTime = 0;
                 g_LastTime = curTime;
-            }
-            if (curTime - g_LastTime < 500)
-            {
-                goto LAB_00439350;
-            }
-            elapsedTimeInSecs = (f32)(curTime - g_LastTime) / 1000.0f;
-            g_LastTime = curTime;
-        }
-        else
-        {
-            if (g_PerformanceCounter.LowPart == 0)
-            {
-                QueryPerformanceCounter(&g_PerformanceCounter);
-            }
-            QueryPerformanceCounter(&local_1c);
-            if (local_1c.LowPart < g_PerformanceCounter.LowPart)
-            {
-                g_PerformanceCounter.LowPart = local_1c.LowPart;
-                g_PerformanceCounter.HighPart = local_1c.HighPart;
                 g_NumFramesSinceLastTime = 0;
             }
-            if (local_1c.LowPart < g_PerformanceCounter.LowPart +
-                                       (g_Supervisor.perfFrequency.LowPart >> 1))
+            if (curTime - g_LastTime >= 500)
             {
+                elapsedTimeInSecs = (f32)(curTime - g_LastTime) / 1000.0f;
+                g_LastTime = curTime;
+
+            MERGE:
+                fps = (f32)g_NumFramesSinceLastTime / elapsedTimeInSecs;
+                g_NumFramesSinceLastTime = 0;
+                // STRING: TH07 0x00496fa0
+                sprintf(g_FpsCounterBuffer, "%.02ffps", (f64)fps);
+                if ((g_GameManager.notInMenu != 0) && (param_1 != 0))
+                {
+                    targetFps = 60.0f;
+                    g_Supervisor.fpsAccumulator = g_Supervisor.fpsAccumulator + targetFps;
+                    if (targetFps * 0.9f < fps)
+                    {
+                        g_Supervisor.framerateMultiplier =
+                            g_Supervisor.framerateMultiplier + targetFps;
+                    }
+                    else if (targetFps * 0.7f < fps)
+                    {
+                        g_Supervisor.framerateMultiplier =
+                            g_Supervisor.framerateMultiplier + targetFps * 0.8f;
+                    }
+                    else if (targetFps * 0.5f < fps)
+                    {
+                        g_Supervisor.framerateMultiplier =
+                            g_Supervisor.framerateMultiplier + targetFps * 0.6f;
+                    }
+                    else
+                    {
+                        g_Supervisor.framerateMultiplier =
+                            g_Supervisor.framerateMultiplier + targetFps * 0.5f;
+                    }
+
+                    if (g_GameManager.replay == 0)
+                    {
+                        g_Supervisor.curFps = (fps + 0.5f);
+                    }
+                    else
+                    {
+                        // STRING: TH07 0x00496f9c
+                        sprintf(g_FpsCounterBuffer2, "%2d", (i32)g_Supervisor.curFps);
+                    }
+                }
                 goto LAB_00439350;
             }
+        }
+
+        if (g_PerformanceCounter.LowPart == 0)
+        {
+            QueryPerformanceCounter(&g_PerformanceCounter);
+        }
+        QueryPerformanceCounter(&local_18);
+        if (local_18.LowPart < g_PerformanceCounter.LowPart)
+        {
+            g_PerformanceCounter.LowPart = local_18.LowPart;
+            g_PerformanceCounter.HighPart = local_18.HighPart;
+            g_NumFramesSinceLastTime = 0;
+        }
+        if (local_18.LowPart >= g_PerformanceCounter.LowPart +
+                                    (g_Supervisor.perfFrequency.LowPart >> 1))
+        {
             elapsedTimeInSecs =
-                ((f32)(local_1c.LowPart - g_PerformanceCounter.LowPart) /
+                ((f32)(local_18.LowPart - g_PerformanceCounter.LowPart) /
                  (f32)g_Supervisor.perfFrequency.LowPart);
-            g_PerformanceCounter.LowPart = local_1c.LowPart;
-            g_PerformanceCounter.HighPart = local_1c.HighPart;
+            g_PerformanceCounter.LowPart = local_18.LowPart;
+            g_PerformanceCounter.HighPart = local_18.HighPart;
             g_FpsUpdateCounter = g_FpsUpdateCounter + 1;
             if (g_FpsUpdateCounter % 8 == 0)
             {
                 g_Supervisor.CheckTiming();
             }
-        }
-        f32 fps = (f32)g_NumFramesSinceLastTime / elapsedTimeInSecs;
-        g_NumFramesSinceLastTime = 0;
-        // STRING: TH07 0x00496fa0
-        sprintf(g_FpsCounterBuffer, "%.02ffps", (f64)fps);
-        if ((g_GameManager.notInMenu != 0) && (param_1 != 0))
-        {
-            g_Supervisor.fpsAccumulator = g_Supervisor.fpsAccumulator + 60.0f;
-            if (fps <= 54.0f)
-            {
-                if (fps <= 42.0f)
-                {
-                    if (fps <= 30.0f)
-                    {
-                        g_Supervisor.framerateMultiplier =
-                            g_Supervisor.framerateMultiplier + 30.0f;
-                    }
-                    else
-                    {
-                        g_Supervisor.framerateMultiplier =
-                            g_Supervisor.framerateMultiplier + 36.0f;
-                    }
-                }
-                else
-                {
-                    g_Supervisor.framerateMultiplier =
-                        g_Supervisor.framerateMultiplier + 48.0f;
-                }
-            }
-            else
-            {
-                g_Supervisor.framerateMultiplier =
-                    g_Supervisor.framerateMultiplier + 60.0f;
-            }
-            if (g_GameManager.replay == 0)
-            {
-                g_Supervisor.curFps = (fps + 0.5f);
-            }
-            else
-            {
-                // STRING: TH07 0x00496f9c
-                sprintf(g_FpsCounterBuffer2, "%2d", (i32)g_Supervisor.curFps);
-            }
+            goto MERGE;
         }
     }
+
 LAB_00439350:
     if ((g_Supervisor.isInEnding == 0) && (param_1 != 0))
     {
-        local_28.x = 512.0f;
-        local_28.y = 464.0f;
-        local_28.z = 0.0f;
-        g_AsciiManager.AddString(&local_28, g_FpsCounterBuffer);
+        local_24.x = 512.0f;
+        local_24.y = 464.0f;
+        local_24.z = 0.0f;
+        g_AsciiManager.AddString(&local_24, g_FpsCounterBuffer);
         if ((g_GameManager.replay != 0) &&
             (g_GameManager.notInMenu != 0))
         {
-            local_34.x = 384.0f;
-            local_34.y = 448.0f;
-            local_34.z = 0.0f;
-            if (g_Supervisor.isFpsBad == 0)
-            {
-                g_AsciiManager.color = 0xffffffd0;
-            }
-            else
+            local_30.x = 384.0f;
+            local_30.y = 448.0f;
+            local_30.z = 0.0f;
+            if (g_Supervisor.isFpsBad != 0)
             {
                 g_AsciiManager.color = 0xffff4040;
             }
-            g_AsciiManager.AddString(&local_34, g_FpsCounterBuffer2);
+            else
+            {
+                g_AsciiManager.color = 0xffffffd0;
+            }
+            g_AsciiManager.AddString(&local_30, g_FpsCounterBuffer2);
             g_AsciiManager.color = 0xffffffff;
         }
     }
@@ -1098,6 +1059,9 @@ void Supervisor::TickTimer(i32 *frames, f32 *subframes)
     }
 }
 
+#pragma var_order(local_14, local_18, local_1c, backBuffer, local_24,        \
+                  local_28, local_2c, y, x, bytesPerRow, local_40, local_44, \
+                  hFile)
 // FUNCTION: TH07 0x004395fb
 i32 Supervisor::SnapshotScreen(const char *param_1)
 {
@@ -1119,14 +1083,19 @@ i32 Supervisor::SnapshotScreen(const char *param_1)
     local_18 = NULL;
     backBuffer = NULL;
     this->d3dDevice->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &backBuffer);
-    local_14.bfReserved1 = 0;
-    local_14.bfReserved2 = 0;
-    local_14.bfType = 0x4d42;
-    local_14.bfOffBits = 0x36;
-    local_14.bfSize = 0x36;
-    if ((this->presentParameters).BackBufferFormat == D3DFMT_X8R8G8B8)
+    memset(&local_14, 0, sizeof(BITMAPFILEHEADER));
+
+    // STRING: TH07 0x00496f98
+    local_14.bfType = *(WORD *)&"BM";
+    local_14.bfSize = local_14.bfOffBits = 0x36;
+    switch (this->presentParameters.BackBufferFormat)
     {
-        local_1c = (BITMAPINFO *)malloc(0x2c);
+    case D3DFMT_R5G6B5:
+        // STRING: TH07 0x00496f80
+        g_GameErrorContext.Log("16bit は取り込めない\r\n");
+        break;
+    case D3DFMT_X8R8G8B8:
+        local_1c = (BITMAPINFO *)ZunMemory::Alloc(sizeof(BITMAPINFO));
         if (local_1c == NULL)
         {
             // STRING: TH07 0x00496f60
@@ -1135,8 +1104,8 @@ i32 Supervisor::SnapshotScreen(const char *param_1)
         else
         {
             memset(local_1c, 0, sizeof(BITMAPINFO));
-            local_24 = 0x780;
-            local_18 = malloc(0xe1000);
+            local_24 = 1920;
+            local_18 = malloc(local_24 * 480);
             if (local_18 == NULL)
             {
                 g_GameErrorContext.Log("snapShotScreen : 確保しくり\r\n");
@@ -1152,42 +1121,41 @@ i32 Supervisor::SnapshotScreen(const char *param_1)
                 local_1c->bmiHeader.biCompression = 0;
                 backBuffer->LockRect(&local_40, NULL, 0);
                 bytesPerRow = 0;
-                for (y = 479; -1 < y; y--)
+                for (y = 479; -1 < y; y--, bytesPerRow++)
                 {
                     local_2c = (u8 *)((u8 *)local_18 + local_24 * bytesPerRow);
                     local_28 = (u8 *)((u8 *)local_40.pBits + local_40.Pitch * y);
-                    for (x = 0; x < 640; x += 1)
+                    for (x = 0; x < 640; x++)
                     {
                         *local_2c = *local_28;
-                        local_2c[1] = local_28[1];
-                        local_2c[2] = local_28[2];
-                        local_28 = local_28 + 4;
-                        local_2c = local_2c + 3;
+                        local_28++;
+                        local_2c++;
+                        *local_2c = *local_28;
+                        local_28++;
+                        local_2c++;
+                        *local_2c = *local_28;
+                        local_28 += 2;
+                        local_2c++;
                     }
-                    bytesPerRow += 1;
                 }
                 backBuffer->UnlockRect();
                 hFile = CreateFileA(param_1, GENERIC_WRITE, 0, NULL, 2, 0x80, NULL);
-                if (hFile != INVALID_HANDLE_VALUE)
+                if (hFile == INVALID_HANDLE_VALUE)
                 {
-                    WriteFile(hFile, &local_14, 0xe, &local_44, NULL);
-                    WriteFile(hFile, local_1c, 0x28, &local_44, NULL);
-                    WriteFile(hFile, local_18, local_24 * 0x1e0, &local_44, NULL);
-                    CloseHandle(hFile);
+                    break;
                 }
+
+                WriteFile(hFile, &local_14, 0xe, &local_44, NULL);
+                WriteFile(hFile, local_1c, 0x28, &local_44, NULL);
+                WriteFile(hFile, local_18, local_24 * 0x1e0, &local_44, NULL);
+                CloseHandle(hFile);
             }
         }
-    }
-    else
-    {
-        if ((this->presentParameters).BackBufferFormat != D3DFMT_R5G6B5)
-        {
-            // STRING: TH07 0x00496f48
-            g_GameErrorContext.Log("error ? mother.cpp\r\n");
-            return 1;
-        }
-        // STRING: TH07 0x00496f80
-        g_GameErrorContext.Log("16bit は取り込めない\r\n");
+        break;
+    default:
+        // STRING: TH07 0x00496f48
+        g_GameErrorContext.Log("error ? mother.cpp\r\n");
+        return 1;
     }
     SAFE_RELEASE(backBuffer);
     free(local_1c);
@@ -1531,15 +1499,8 @@ i32 Supervisor::FadeOutMusic(f32 musicFadeFrames)
 // FUNCTION: TH07 0x0043a18d
 i32 Supervisor::CanSaveReplay()
 {
-    if ((g_GameManager.defaultCfg == NULL) ||
-        (g_GameManager.defaultCfg->slowMode == 0))
-    {
-        return 0;
-    }
-    else
-    {
-        return 1;
-    }
+    return g_GameManager.defaultCfg != NULL &&
+           g_GameManager.defaultCfg->slowMode != 0;
 }
 
 // FUNCTION: TH07 0x0043a1bd

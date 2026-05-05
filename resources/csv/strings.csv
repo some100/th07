@@ -122,6 +122,28 @@ address|text|type
 0048ebb4|Sorry, there are legal restrictions on arithmetic coding|string
 0048ebf0|Bogus message code %d|string
 0048ec08|0123456789ABCDEF1.0.5|string
+0048ec5c|IHDR|string
+0048ec64|IDAT|string
+0048ec6c|IEND|string
+0048ec71||string
+0048ec72||string
+0048ec73||string
+0048ec74|PLTE|string
+0048ec79||string
+0048ec7a||string
+0048ec7b||string
+0048ec7c|gAMA|string
+0048ec81||string
+0048ec82||string
+0048ec83||string
+0048ec84|sRGB|string
+0048ec89||string
+0048ec8a||string
+0048ec8b||string
+0048ec8c|tRNS|string
+0048ec91||string
+0048ec92||string
+0048ec93||string
 0048ec94|zlib version error|string
 0048eca8|zlib memory error|string
 0048ecbc|Unknown zlib error|string
@@ -592,6 +614,7 @@ address|text|type
 00496f48|error ? mother.cpp\r\n|string
 00496f60|snapShotScreen : ämï€ÇµÇ≠ÇË\r\n|string
 00496f80|16bit ÇÕéÊÇËçûÇﬂÇ»Ç¢\r\n|string
+00496f98|BM|string
 00496f9c|%2d|string
 00496fa0|%.02ffps|string
 00496fac|thbgm.dat|string
