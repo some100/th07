@@ -9,6 +9,8 @@
 
 struct RetryMenu
 {
+    RetryMenu();
+
     void OnDraw();
     i32 OnUpdate();
 
@@ -21,6 +23,8 @@ C_ASSERT(sizeof(RetryMenu) == 0x194c);
 
 struct PauseMenu
 {
+    PauseMenu();
+
     i32 OnUpdate();
     void OnDraw();
 
@@ -33,7 +37,7 @@ C_ASSERT(sizeof(PauseMenu) == 0x101c);
 
 struct AsciiManagerPopup
 {
-    char digits[8];
+    u8 digits[8];
     D3DXVECTOR3 position;
     D3DCOLOR color;
     ZunTimer timer;
@@ -55,6 +59,8 @@ struct AsciiManagerString
 
 struct AsciiManager
 {
+    AsciiManager();
+
     static ZunResult RegisterChain();
     static void CutChain();
 
@@ -82,7 +88,7 @@ struct AsciiManager
 
     void SetFadeState(i32 fadeState)
     {
-        this->otherVms[0].pendingInterrupt = fadeState;
+        this->cherryGauge.pendingInterrupt = fadeState;
         this->uiFadeState = fadeState;
     }
 
@@ -93,8 +99,10 @@ struct AsciiManager
 
     AnmVm vm0;
     AnmVm vm1;
-    AnmVm otherVms[3];
-    AnmVm otherOtherVms[4];
+    AnmVm cherryGauge;
+    AnmVm cherryDigit;
+    AnmVm cherryBorderActive;
+    AnmVm bossMarkers[4];
     i32 bossDamageTint[4];
     AsciiManagerString strings[256];
     i32 numStrings;

@@ -28,13 +28,25 @@ ChainElem g_AsciiManagerOnDrawPopupsChain;
 // FUNCTION: TH07 0x00401400
 void AsciiManager::UpdateScripts()
 {
-    g_AnmManager->ExecuteScript(&this->otherVms[0]);
-    g_AnmManager->ExecuteScript(&this->otherVms[1]);
-    g_AnmManager->ExecuteScript(&this->otherOtherVms[0]);
-    g_AnmManager->ExecuteScript(&this->otherOtherVms[1]);
-    g_AnmManager->ExecuteScript(&this->otherOtherVms[2]);
-    g_AnmManager->ExecuteScript(&this->otherOtherVms[3]);
-    g_AnmManager->ExecuteScript(&this->otherVms[2]);
+    g_AnmManager->ExecuteScript(&this->cherryGauge);
+    g_AnmManager->ExecuteScript(&this->cherryDigit);
+    g_AnmManager->ExecuteScript(&this->bossMarkers[0]);
+    g_AnmManager->ExecuteScript(&this->bossMarkers[1]);
+    g_AnmManager->ExecuteScript(&this->bossMarkers[2]);
+    g_AnmManager->ExecuteScript(&this->bossMarkers[3]);
+    g_AnmManager->ExecuteScript(&this->cherryBorderActive);
+}
+
+AsciiManager::AsciiManager()
+{
+}
+
+RetryMenu::RetryMenu()
+{
+}
+
+PauseMenu::PauseMenu()
+{
 }
 
 // FUNCTION: TH07 0x004017b0
@@ -148,13 +160,13 @@ void AsciiManager::InitializeVms()
 // FUNCTION: TH07 0x00401ba0
 void AsciiManager::InitializeOtherVms()
 {
-    g_AnmManager->SetAnmIdxAndExecuteScript(&this->otherVms[0], 4);
-    g_AnmManager->SetAnmIdxAndExecuteScript(&this->otherVms[1], 3);
-    g_AnmManager->SetAnmIdxAndExecuteScript(&this->otherVms[2], 5);
-    g_AnmManager->SetAnmIdxAndExecuteScript(&this->otherOtherVms[0], 6);
-    g_AnmManager->SetAnmIdxAndExecuteScript(&this->otherOtherVms[1], 6);
-    g_AnmManager->SetAnmIdxAndExecuteScript(&this->otherOtherVms[2], 6);
-    g_AnmManager->SetAnmIdxAndExecuteScript(&this->otherOtherVms[3], 6);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&this->cherryGauge, 4);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&this->cherryDigit, 3);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&this->cherryBorderActive, 5);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&this->bossMarkers[0], 6);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&this->bossMarkers[1], 6);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&this->bossMarkers[2], 6);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&this->bossMarkers[3], 6);
 }
 
 // FUNCTION: TH07 0x00401d70
@@ -339,34 +351,34 @@ void AsciiManager::DrawStrings()
     }
     for (i = 0; i < 4; i++)
     {
-        if ((this->otherOtherVms[i].pos.x >= 56.0f) &&
-            (this->otherOtherVms[i].pos.x <= 392.0f))
+        if ((this->bossMarkers[i].pos.x >= 56.0f) &&
+            (this->bossMarkers[i].pos.x <= 392.0f))
         {
-            charWidth = fabsf((this->otherOtherVms[i].pos.x - 32.0f) -
+            charWidth = fabsf((this->bossMarkers[i].pos.x - 32.0f) -
                               g_Player.positionCenter.x);
             if (charWidth < 64.0f)
             {
-                this->otherOtherVms[i].color.bytes.a =
+                this->bossMarkers[i].color.bytes.a =
                     ((charWidth * 128.0f) / 64.0f + 48.0f);
             }
             else
             {
-                this->otherOtherVms[i].color.bytes.a = 0xb0;
+                this->bossMarkers[i].color.bytes.a = 0xb0;
             }
             if (this->bossDamageTint[i] != 0)
             {
-                this->otherOtherVms[i].color.bytes.a = 0x80;
-                this->otherOtherVms[i].color.bytes.r = 0x40;
-                this->otherOtherVms[i].color.bytes.g = 0x40;
-                this->otherOtherVms[i].color.bytes.b = 0xff;
+                this->bossMarkers[i].color.bytes.a = 0x80;
+                this->bossMarkers[i].color.bytes.r = 0x40;
+                this->bossMarkers[i].color.bytes.g = 0x40;
+                this->bossMarkers[i].color.bytes.b = 0xff;
             }
             else
             {
-                this->otherOtherVms[i].color.bytes.r = 0xff;
-                this->otherOtherVms[i].color.bytes.g = 0xff;
-                this->otherOtherVms[i].color.bytes.b = 0xff;
+                this->bossMarkers[i].color.bytes.r = 0xff;
+                this->bossMarkers[i].color.bytes.g = 0xff;
+                this->bossMarkers[i].color.bytes.b = 0xff;
             }
-            g_AnmManager->DrawNoRotation(&this->otherOtherVms[i]);
+            g_AnmManager->DrawNoRotation(&this->bossMarkers[i]);
         }
     }
 }
@@ -1013,7 +1025,7 @@ i32 PauseMenu::OnUpdate()
     }
     for (i = 0; i < 5; i++)
     {
-        g_AnmManager->ExecuteScript(this->menuSprites + i);
+        g_AnmManager->ExecuteScript(&this->menuSprites[i]);
     }
     if ((g_Supervisor.flags >> 1 & 1) != 0)
     {
@@ -1056,218 +1068,234 @@ void PauseMenu::OnDraw()
     }
 }
 
+#pragma var_order(popup, alpha, dy, dx, j, i, digits, unused, cherry, \
+                  xInc, hasNonZeroDigit, divisor)
 // FUNCTION: TH07 0x00404690
 void AsciiManager::DrawPopups()
 {
-    f32 fVar1;
-    f32 fVar2;
-    bool bVar3;
-    u32 uVar4;
-    i32 iVar5;
-    i32 local_3c;
-    i32 local_34;
-    i32 local_30;
-    char *local_20;
+    i32 divisor;
+    BOOL hasNonZeroDigit;
+    i32 xInc;
+    i32 cherry;
+    i32 unused[3];
+    u8 *digits;
     i32 i;
-    u32 local_18;
-    u8 local_c;
-    AsciiManagerPopup *local_8;
+    i32 j;
+    f32 dx;
+    f32 dy;
+    i32 alpha;
+    AsciiManagerPopup *popup;
 
-    local_8 = this->popups;
+    popup = this->popups;
     if ((g_Supervisor.cfg.opts >> 10 & 1) == 0)
     {
         g_Supervisor.DisableFog();
     }
     g_Supervisor.SetRenderState(D3DRS_ZFUNC, 8);
-    for (i = 0; i < 0x2d3; i++)
+
+    for (i = 0; i < 0x2d3; i++, popup++)
     {
-        if (local_8->inUse != 0)
+        if (!popup->inUse)
         {
-            this->vm1.pos.x =
-                (local_8->position).x - (f32)((u32)local_8->characterCount << 2);
-            this->vm1.pos.y = (local_8->position).y;
-            this->vm1.color.color = local_8->color;
-            fVar1 = g_Player.positionCenter.x - (local_8->position).x;
-            fVar2 = g_Player.positionCenter.y - (local_8->position).y;
-            uVar4 = fVar2 * fVar2 + fVar1 * fVar1;
-            if ((i32)uVar4 < 0x1001)
-            {
-                if ((i32)uVar4 < 0x401)
-                {
-                    local_c = 0x50;
-                }
-                else
-                {
-                    local_c = (char)((i32)((uVar4 - 0x400) * 0x80) / 0xc00) + 0x50;
-                }
-            }
-            else
-            {
-                local_c = 0xd0;
-            }
-            local_20 = local_8->digits + (local_8->characterCount - 1);
-            for (local_18 = (u32)local_8->characterCount; 0 < (i32)local_18;
-                 local_18 -= 1)
-            {
-                if ((local_8->timer < 0x34) || (*local_20 == 10))
-                {
-                    this->vm1.sprite = g_AnmManager->sprites + (u8)*local_20;
-                    this->vm1.color.bytes.a = local_c;
-                }
-                else if (local_8->timer < 0x38)
-                {
-                    this->vm1.sprite = g_AnmManager->sprites + (u8)*local_20 + 0xb;
-                    this->vm1.color.bytes.a = local_c;
-                }
-                else
-                {
-                    this->vm1.sprite = g_AnmManager->sprites + (u8)*local_20 + 21;
-                    this->vm1.color.bytes.a = local_c;
-                }
-                g_AnmManager->DrawNoRotation(&this->vm1);
-                this->vm1.pos.x = this->vm1.pos.x + 8.0f;
-                local_20 = local_20 - 1;
-            }
+            continue;
         }
-        local_8 = local_8 + 1;
-    }
-    if (this->otherVms[0].visible != 0)
-    {
-        local_3c = 100000;
-        bVar3 = false;
-        local_30 = g_GameManager.cherry - g_GameManager.globals->cherryStart;
-        g_AnmManager->DrawNoRotation(this->otherVms);
-        this->otherVms[1].pos.x = this->otherVms[0].pos.x + 40.0f + 6.0f;
-        this->otherVms[1].pos.y = this->otherVms[0].pos.y + 11.0f;
-        this->otherVms[1].pos.z = this->otherVms[0].pos.z;
-        this->otherVms[1].color.bytes.a = this->otherVms[0].color.bytes.a;
-        if (g_GameManager.cherry < g_GameManager.cherryMax)
+
+        this->vm1.pos.x = popup->position.x - (f32)(popup->characterCount << 2);
+        this->vm1.pos.y = popup->position.y;
+        this->vm1.color.color = popup->color;
+
+        dx = g_Player.positionCenter.x - popup->position.x;
+        dy = g_Player.positionCenter.y - popup->position.y;
+        alpha = (i32)(dx * dx + dy * dy);
+
+        if (alpha > 0x1000)
         {
-            if (local_30 < 50000)
-            {
-                this->otherVms[1].color.bytes.r = 0xff;
-                this->otherVms[1].color.bytes.g = 0xff;
-                this->otherVms[1].color.bytes.b = 0xff;
-            }
-            else
-            {
-                this->otherVms[1].color.bytes.r = 0xff;
-                this->otherVms[1].color.bytes.g = 0xff;
-                this->otherVms[1].color.bytes.b = 0x80;
-            }
+            alpha = 0xd0;
         }
         else
         {
-            this->otherVms[1].color.bytes.r = 0xff;
-            this->otherVms[1].color.bytes.g = 0xd0;
-            this->otherVms[1].color.bytes.b = 0x80;
-        }
-        for (i = 0; i < 6; i++)
-        {
-            iVar5 = local_30 / local_3c;
-            local_30 %= local_3c;
-            if (iVar5 != 0)
+            if (alpha > 0x400)
             {
-                bVar3 = true;
+                alpha = (alpha - 0x400) * 128 / 0xc00 + 0x50;
             }
-            if ((bVar3) || (local_3c == 1))
+            else
             {
-                g_AnmManager->SetActiveSprite(&this->otherVms[1], iVar5 + 0x84);
-                g_AnmManager->DrawNoRotation(&this->otherVms[1]);
+                alpha = 0x50;
             }
-            this->otherVms[1].pos.x += 7.0f;
-            local_3c /= 10;
         }
-        bVar3 = false;
-        local_30 = g_GameManager.cherryMax - g_GameManager.globals->cherryStart;
-        this->otherVms[1].color.bytes.r = 0xf0;
-        this->otherVms[1].color.bytes.g = 0xd0;
-        this->otherVms[1].color.bytes.b = 0xe0;
-        this->otherVms[1].pos.x += 9.0f;
-        if (local_30 < 1000000)
+
+        digits = &popup->digits[popup->characterCount - 1];
+
+        for (j = popup->characterCount; j > 0; j--)
         {
-            local_3c = 100000;
+            if (popup->timer < 0x34 || *digits == 10)
+            {
+                this->vm1.sprite = &g_AnmManager->sprites[*digits];
+                this->vm1.color.bytes.a = alpha;
+            }
+            else if (popup->timer < 0x38)
+            {
+                this->vm1.sprite = &g_AnmManager->sprites[*digits + 11];
+                this->vm1.color.bytes.a = alpha;
+            }
+            else
+            {
+                this->vm1.sprite = &g_AnmManager->sprites[*digits + 21];
+                this->vm1.color.bytes.a = alpha;
+            }
+
+            g_AnmManager->DrawNoRotation(&this->vm1);
+            this->vm1.pos.x += 8.0f;
+            digits--;
+        }
+    }
+
+    if (this->cherryGauge.visible)
+    {
+        divisor = 100000;
+        hasNonZeroDigit = FALSE;
+        cherry = g_GameManager.cherry - g_GameManager.globals->cherryStart;
+
+        g_AnmManager->DrawNoRotation(&this->cherryGauge);
+
+        this->cherryDigit.pos.x = this->cherryGauge.pos.x + 40.0f + 6.0f;
+        this->cherryDigit.pos.y = this->cherryGauge.pos.y + 11.0f;
+        this->cherryDigit.pos.z = this->cherryGauge.pos.z;
+        this->cherryDigit.color.bytes.a = this->cherryGauge.color.bytes.a;
+
+        if (g_GameManager.IsCherryAtMax())
+        {
+            this->cherryDigit.color.bytes.r = 0xff;
+            this->cherryDigit.color.bytes.g = 0xd0;
+            this->cherryDigit.color.bytes.b = 0x80;
+        }
+        else
+        {
+            if (cherry >= 50000)
+            {
+                this->cherryDigit.color.bytes.r = 0xff;
+                this->cherryDigit.color.bytes.g = 0xff;
+                this->cherryDigit.color.bytes.b = 0x80;
+            }
+            else
+            {
+                this->cherryDigit.color.bytes.r = 0xff;
+                this->cherryDigit.color.bytes.g = 0xff;
+                this->cherryDigit.color.bytes.b = 0xff;
+            }
+        }
+
+        for (i = 0; i < 6; i++, divisor /= 10)
+        {
+            j = cherry / divisor;
+            cherry %= divisor;
+            if (j != 0)
+            {
+                hasNonZeroDigit = TRUE;
+            }
+            if (hasNonZeroDigit || divisor == 1)
+            {
+                g_AnmManager->SetActiveSprite(&this->cherryDigit, j + 0x84);
+                g_AnmManager->DrawNoRotation(&this->cherryDigit);
+            }
+            this->cherryDigit.pos.x += 7.0f;
+        }
+
+        hasNonZeroDigit = FALSE;
+        cherry = g_GameManager.cherryMax - g_GameManager.globals->cherryStart;
+
+        this->cherryDigit.color.bytes.r = 0xf0;
+        this->cherryDigit.color.bytes.g = 0xd0;
+        this->cherryDigit.color.bytes.b = 0xe0;
+        this->cherryDigit.pos.x += 9.0f;
+
+        if (cherry < 1000000)
+        {
+            divisor = 100000;
             i = 6;
         }
         else
         {
-            local_3c = 1000000;
+            divisor = 1000000;
             i = 7;
         }
-        while (0 < i)
+
+        for (; i > 0; i--, divisor /= 10)
         {
-            iVar5 = local_30 / local_3c;
-            local_30 %= local_3c;
-            if (iVar5 != 0)
+            j = cherry / divisor;
+            cherry %= divisor;
+            if (j != 0)
             {
-                bVar3 = true;
+                hasNonZeroDigit = TRUE;
             }
-            if ((bVar3) || (local_3c == 1))
+            if (hasNonZeroDigit || divisor == 1)
             {
-                g_AnmManager->SetActiveSprite(&this->otherVms[1], iVar5 + 0x84);
-                g_AnmManager->DrawNoRotation(&this->otherVms[1]);
+                g_AnmManager->SetActiveSprite(&this->cherryDigit, j + 0x84);
+                g_AnmManager->DrawNoRotation(&this->cherryDigit);
             }
-            this->otherVms[1].pos.x += 7.0f;
-            local_3c /= 10;
-            --i;
+            this->cherryDigit.pos.x += 7.0f;
         }
-        this->otherVms[1].scale.x = 1.0f;
-        this->otherVms[1].scale.y = 1.0f;
-        bVar3 = false;
-        this->otherVms[1].pos.x = this->otherVms[0].pos.x + 40.0f + 6.0f + 7.0f;
-        this->otherVms[1].pos.y = this->otherVms[0].pos.y + 2.0f;
-        local_30 = g_GameManager.cherryPlus - g_GameManager.globals->cherryStart;
-        if (g_Player.hasBorder == BORDER_NONE)
+
+        this->cherryDigit.scale.x = 1.0f;
+        this->cherryDigit.scale.y = 1.0f;
+        hasNonZeroDigit = FALSE;
+        this->cherryDigit.pos.x = this->cherryGauge.pos.x + 40.0f + 6.0f + 7.0f;
+        this->cherryDigit.pos.y = this->cherryGauge.pos.y + 2.0f;
+
+        cherry = g_GameManager.cherryPlus - g_GameManager.globals->cherryStart;
+
+        if (g_Player.hasBorder)
         {
-            this->otherVms[1].color.bytes.r = 0xc0;
-            this->otherVms[1].color.bytes.g = 0x80;
-            this->otherVms[1].color.bytes.b = 0xb0;
-            local_34 = 7;
+            this->cherryDigit.color.bytes.r = 0xff;
+            divisor = cherry % 4000;
+            if (divisor >= 2000)
+            {
+                divisor = 4000 - divisor;
+            }
+            this->cherryDigit.color.bytes.g =
+                (cherry * 0xc0) / 50000 + (divisor * 64) / 2000;
+            this->cherryDigit.color.bytes.b =
+                (cherry * 0xc0) / 50000 + (divisor * 64) / 2000;
+            this->cherryDigit.scale.x = 1.41f;
+            this->cherryDigit.scale.y = 1.41f;
+            xInc = 10;
+            this->cherryDigit.pos.x += 2.0f;
+            this->cherryDigit.pos.y -= 2.0f;
         }
         else
         {
-            this->otherVms[1].color.bytes.r = 0xff;
-            local_3c = local_30 % 4000;
-            if (1999 < local_3c)
-            {
-                local_3c = 4000 - local_3c;
-            }
-            this->otherVms[1].color.bytes.g =
-                (char)((local_30 * 0xc0) / 50000) + (char)((local_3c << 6) / 2000);
-            this->otherVms[1].color.bytes.b =
-                (char)((local_30 * 0xc0) / 50000) + (char)((local_3c << 6) / 2000);
-            this->otherVms[1].scale.x = 1.41f;
-            this->otherVms[1].scale.y = 1.41f;
-            local_34 = 10;
-            this->otherVms[1].pos.x += 2.0f;
-            this->otherVms[1].pos.y -= 2.0f;
+            this->cherryDigit.color.bytes.r = 0xc0;
+            this->cherryDigit.color.bytes.g = 0x80;
+            this->cherryDigit.color.bytes.b = 0xb0;
+            xInc = 7;
         }
-        local_3c = 10000;
-        for (i = 0; i < 5; i++)
+
+        for (divisor = 10000, i = 0; i < 5; i++, divisor /= 10)
         {
-            iVar5 = local_30 / local_3c;
-            local_30 %= local_3c;
-            if (iVar5 != 0)
+            j = cherry / divisor;
+            cherry %= divisor;
+            if (j != 0)
             {
-                bVar3 = true;
+                hasNonZeroDigit = TRUE;
             }
-            if ((bVar3) || (local_3c == 1))
+            if (hasNonZeroDigit || divisor == 1)
             {
-                g_AnmManager->SetActiveSprite(&this->otherVms[1], iVar5 + 0x84);
-                g_AnmManager->DrawNoRotation(&this->otherVms[1]);
+                g_AnmManager->SetActiveSprite(&this->cherryDigit, j + 0x84);
+                g_AnmManager->DrawNoRotation(&this->cherryDigit);
             }
-            this->otherVms[1].pos.x += local_34;
-            local_3c /= 10;
+            this->cherryDigit.pos.x += (f32)xInc;
         }
-        this->otherVms[1].scale.x = 1.0f;
-        this->otherVms[1].scale.y = 1.0f;
+
+        this->cherryDigit.scale.x = 1.0f;
+        this->cherryDigit.scale.y = 1.0f;
+
         if (g_Player.hasBorder == BORDER_ACTIVE)
         {
-            this->otherVms[2].pos = this->otherVms[0].pos;
-            this->otherVms[2].pos.x += 24.0f;
-            this->otherVms[2].pos.y += 8.0f;
-            this->otherVms[2].color = this->otherVms[0].color;
-            g_AnmManager->DrawNoRotation(&this->otherVms[2]);
+            this->cherryBorderActive.pos = this->cherryGauge.pos;
+            this->cherryBorderActive.pos.x += 24.0f;
+            this->cherryBorderActive.pos.y += 8.0f;
+            this->cherryBorderActive.color = this->cherryGauge.color;
+            g_AnmManager->DrawNoRotation(&this->cherryBorderActive);
         }
     }
 }

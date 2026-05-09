@@ -153,6 +153,16 @@ struct GameManager
         this->replay = replay;
     }
 
+    void AddScore(i32 score)
+    {
+        this->globals->score += score / 10;
+    }
+
+    i32 IsCherryAtMax()
+    {
+        return this->cherry >= this->cherryMax;
+    }
+
     static ZunResult RegisterChain();
     static void CutChain();
 
@@ -200,7 +210,7 @@ struct GameManager
     struct Pscr pscr[6][6][4];
     struct Plst plst;
     i32 isPaused;
-    u8 powerItemCountForScore;
+    i8 powerItemCountForScore;
     u8 character;
     u8 shotType;
     u8 shotTypeAndCharacter;

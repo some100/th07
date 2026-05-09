@@ -2236,19 +2236,19 @@ void Player::UpdateUI()
         if ((g_AsciiManager.GetFadeState() != 2) &&
             (this->positionCenter.x < 160.0f))
         {
-            g_AsciiManager.otherVms[0].pendingInterrupt = 2;
+            g_AsciiManager.cherryGauge.pendingInterrupt = 2;
             g_AsciiManager.uiFadeState = 2;
         }
         else if ((g_AsciiManager.GetFadeState() == 2) &&
                  (this->positionCenter.x > 160.0f))
         {
-            g_AsciiManager.otherVms[0].pendingInterrupt = 3;
+            g_AsciiManager.cherryGauge.pendingInterrupt = 3;
             g_AsciiManager.uiFadeState = 3;
         }
     }
     else if (g_AsciiManager.GetFadeState() == 2)
     {
-        g_AsciiManager.otherVms[0].pendingInterrupt = 3;
+        g_AsciiManager.cherryGauge.pendingInterrupt = 3;
         g_AsciiManager.uiFadeState = 3;
     }
 }
@@ -2506,12 +2506,12 @@ ZunResult Player::AddedCallback(Player *arg)
     if ((u32)(g_Supervisor.curState != 3 && g_Supervisor.curState != 11 &&
               g_Supervisor.curState != 12))
     {
-        g_AsciiManager.otherVms[0].pendingInterrupt = 1;
+        g_AsciiManager.cherryGauge.pendingInterrupt = 1;
         g_AsciiManager.uiFadeState = 1;
     }
-    g_AsciiManager.otherOtherVms[0].pendingInterrupt = 2;
-    g_AsciiManager.otherOtherVms[1].pendingInterrupt = 2;
-    g_AsciiManager.otherOtherVms[2].pendingInterrupt = 2;
+    g_AsciiManager.bossMarkers[0].pendingInterrupt = 2;
+    g_AsciiManager.bossMarkers[1].pendingInterrupt = 2;
+    g_AsciiManager.bossMarkers[2].pendingInterrupt = 2;
     if (g_GameManager.cherryPlus >= g_GameManager.globals->cherryStart + 50000)
     {
         g_GameManager.cherryPlus = g_GameManager.globals->cherryStart + 50000;
@@ -2527,11 +2527,11 @@ ZunResult Player::DeletedCallback(Player *arg)
               g_Supervisor.curState != 12))
     {
         g_AnmManager->ReleaseAnm(10);
-        g_AsciiManager.otherVms[0].pendingInterrupt = 99;
+        g_AsciiManager.cherryGauge.pendingInterrupt = 99;
         g_AsciiManager.uiFadeState = 99;
-        g_AsciiManager.otherOtherVms[0].pendingInterrupt = 99;
-        g_AsciiManager.otherOtherVms[1].pendingInterrupt = 99;
-        g_AsciiManager.otherOtherVms[2].pendingInterrupt = 99;
+        g_AsciiManager.bossMarkers[0].pendingInterrupt = 99;
+        g_AsciiManager.bossMarkers[1].pendingInterrupt = 99;
+        g_AsciiManager.bossMarkers[2].pendingInterrupt = 99;
     }
     SAFE_FREE(g_Player.shooterData);
     SAFE_FREE(g_Player.shooterData2);

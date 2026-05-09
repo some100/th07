@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AnmVm.hpp"
+#include "Player.hpp"
 
 extern u8 g_ItemDropTable[32];
 
@@ -25,6 +26,22 @@ struct Item
 {
     Item();
 
+    i32 IsBelowPoc()
+    {
+        return this->currentPosition.y < g_Player.shooterData->pocY;
+    }
+
+    i32 OffsetFromPoc()
+    {
+        return this->currentPosition.y - g_Player.shooterData->pocY;
+    }
+
+    i32 ShouldAwardMaxScore()
+    {
+        return this->currentPosition.y < g_Player.shooterData->pocY ||
+               this->autoCollect;
+    }
+
     AnmVm sprite;
     D3DXVECTOR3 currentPosition;
     D3DXVECTOR3 startPosition;
@@ -32,9 +49,9 @@ struct Item
     ZunTimer timer;
     i8 itemType;
     i8 isInUse;
-    u8 isArrowSprite;
+    i8 isArrowSprite;
     i8 state;
-    u8 autoCollect;
+    i8 autoCollect;
     // pad 3
     struct Item *next;
 };
@@ -49,7 +66,7 @@ struct ItemManager
     void OnUpdate();
     void OnDraw();
     void RemoveAllItems();
-    void SpawnItem(D3DXVECTOR3 *heading, i32 itemType, i32 state);
+    Item *SpawnItem(D3DXVECTOR3 *heading, i32 itemType, i32 state);
 
     struct Item items[1101];
     i32 nextIndex;

@@ -4,7 +4,7 @@
 
 A work-in-progress reimplementation/decompilation of 東方妖々夢　～ Perfect Cherry Blossom 1.00b (md5: 0126afce1e805370d36c3482445e98da) by Team Shanghai Alice.
 
-This project is still in early stages. The game is "playable," as in you can load into the game, but there may be a number of bugs since the game isn't matching. Perfect byte accuracy is an eventual goal.
+This project is still in early stages. The game is "playable," as in it is 100% implemented, and you can load into the game and play from start to finish, but there may be a number of bugs since the game isn't matching. Perfect byte accuracy is an eventual goal.
 
 ## Building
 

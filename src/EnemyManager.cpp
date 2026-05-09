@@ -1240,9 +1240,9 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                     local_6c = -999.0f;
                 }
                 uVar14 = enemy->bossId;
-                g_AsciiManager.otherOtherVms[uVar14].pos.x = local_6c;
-                g_AsciiManager.otherOtherVms[uVar14].pos.y = 472.0;
-                g_AsciiManager.otherOtherVms[uVar14].pos.z = 0.0f;
+                g_AsciiManager.bossMarkers[uVar14].pos.x = local_6c;
+                g_AsciiManager.bossMarkers[uVar14].pos.y = 472.0;
+                g_AsciiManager.bossMarkers[uVar14].pos.z = 0.0f;
                 g_AsciiManager.bossDamageTint[enemy->bossId] =
                     enemy->primaryVm.useColor2;
             }
@@ -1549,18 +1549,18 @@ ZunResult EnemyManager::AddedCallback(EnemyManager *arg)
     arg->randomItemSpawnIdx = g_Rng.GetRandomU16InRange(3);
     arg->randomItemTableIdx = g_Rng.GetRandomU16InRange(8);
     arg->spellcardInfo.isActive = 0;
-    g_AsciiManager.otherVms[3].pos.z = -999.0f;
-    g_AsciiManager.otherVms[3].pos.y = -999.0f;
-    g_AsciiManager.otherVms[3].pos.x = -999.0f;
-    g_AsciiManager.otherVms[2].pos.z = -999.0f;
-    g_AsciiManager.otherVms[2].pos.y = -999.0f;
-    g_AsciiManager.otherVms[2].pos.x = -999.0f;
-    g_AsciiManager.otherVms[1].pos.z = -999.0f;
-    g_AsciiManager.otherVms[1].pos.y = -999.0f;
-    g_AsciiManager.otherVms[1].pos.x = -999.0f;
-    g_AsciiManager.otherVms[0].pos.z = -999.0f;
-    g_AsciiManager.otherVms[0].pos.y = -999.0f;
-    g_AsciiManager.otherVms[0].pos.x = -999.0f;
+    g_AsciiManager.bossMarkers[0].pos.z = -999.0f;
+    g_AsciiManager.bossMarkers[0].pos.y = -999.0f;
+    g_AsciiManager.bossMarkers[0].pos.x = -999.0f;
+    g_AsciiManager.cherryBorderActive.pos.z = -999.0f;
+    g_AsciiManager.cherryBorderActive.pos.y = -999.0f;
+    g_AsciiManager.cherryBorderActive.pos.x = -999.0f;
+    g_AsciiManager.cherryDigit.pos.z = -999.0f;
+    g_AsciiManager.cherryDigit.pos.y = -999.0f;
+    g_AsciiManager.cherryDigit.pos.x = -999.0f;
+    g_AsciiManager.cherryGauge.pos.z = -999.0f;
+    g_AsciiManager.cherryGauge.pos.y = -999.0f;
+    g_AsciiManager.cherryGauge.pos.x = -999.0f;
     return ZUN_SUCCESS;
 }
 
@@ -1570,10 +1570,10 @@ ZunResult EnemyManager::DeletedCallback(EnemyManager *arg)
     g_AnmManager->ReleaseAnm(0x10);
     g_AnmManager->ReleaseAnm(0xf);
     D3DXVECTOR3 vec = D3DXVECTOR3(-999.0f, -999.0f, -999.0f);
-    g_AsciiManager.otherOtherVms[0].pos = vec;
-    g_AsciiManager.otherOtherVms[1].pos = vec;
-    g_AsciiManager.otherOtherVms[2].pos = vec;
-    g_AsciiManager.otherOtherVms[3].pos = vec;
+    g_AsciiManager.bossMarkers[0].pos = vec;
+    g_AsciiManager.bossMarkers[1].pos = vec;
+    g_AsciiManager.bossMarkers[2].pos = vec;
+    g_AsciiManager.bossMarkers[3].pos = vec;
     return ZUN_SUCCESS;
 }
 
