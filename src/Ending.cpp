@@ -8,6 +8,7 @@
 #include "GameManager.hpp"
 #include "ScreenEffect.hpp"
 #include "Supervisor.hpp"
+#include "d3dx8.h"
 
 // GLOBAL: TH07 0x0049f628
 const char *g_BadEndingPaths[3] = {
@@ -39,10 +40,10 @@ const char *g_NormalEndingPaths[6] = {
 u32 Ending::OnUpdate(Ending *arg)
 {
     i32 i;
-    i32 local_8;
+    i32 framesSkipPressed;
 
-    local_8 = 0;
-    while (true)
+    framesSkipPressed = 0;
+    for (;;)
     {
         if (arg->ParseEndFile() != ZUN_SUCCESS)
         {
@@ -52,13 +53,15 @@ u32 Ending::OnUpdate(Ending *arg)
         {
             g_AnmManager->ExecuteScript(&arg->sprites[i]);
         }
-        if (((arg->hasSeenEnding == 0) ||
-             IS_PRESSED_RAW(TH_BUTTON_SKIP)) ||
-            (3 < local_8))
+
+        if (arg->hasSeenEnding != 0 && IS_PRESSED_RAW(TH_BUTTON_SKIP) &&
+            framesSkipPressed < 4)
         {
-            break;
+            framesSkipPressed++;
+            continue;
         }
-        local_8 += 1;
+
+        break;
     }
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
@@ -66,13 +69,8 @@ u32 Ending::OnUpdate(Ending *arg)
 // FUNCTION: TH07 0x0041d380
 u32 Ending::OnDraw(Ending *arg)
 {
-    i32 width;
-    i32 height;
-
-    height = 0x1e0;
-    width = 0x280;
     g_AnmManager->DrawEndingRect(0, 0, 0, arg->backgroundPos.x,
-                                 arg->backgroundPos.y, width, height);
+                                 arg->backgroundPos.y, 0x280, 0x1e0);
     for (i32 i = 0; i < 0xf; i++)
     {
         g_AnmManager->Draw(&arg->sprites[i]);
@@ -87,19 +85,21 @@ i32 Ending::ReadEndFileParameter()
     long cur = atol(this->endFileDataPtr);
     while (*this->endFileDataPtr != '\0')
     {
-        this->endFileDataPtr = this->endFileDataPtr + 1;
+        this->endFileDataPtr++;
     }
     while (*this->endFileDataPtr == '\0')
     {
-        this->endFileDataPtr = this->endFileDataPtr + 1;
+        this->endFileDataPtr++;
     }
     return cur;
 }
 
+#pragma var_order(rect, color)
 // FUNCTION: TH07 0x0041d490
 void Ending::FadingEffect()
 {
     ZunRect rect;
+    D3DCOLOR color;
 
     rect.left = 0.0f;
     rect.top = 0.0f;
@@ -107,86 +107,94 @@ void Ending::FadingEffect()
     rect.bottom = 480.0f;
     switch (this->fadeType)
     {
-    case 0:
-        (this->endingFadeRectColor).color = 0;
-        break;
     case 1:
-        if (this->timeFading < this->fadeFrames)
-        {
-            (this->endingFadeRectColor).color =
-                (0xff - (this->timeFading * 0xff) / this->fadeFrames) * 0x1000000;
-            this->timeFading = this->timeFading + 1;
-        }
-        else
+        if (this->timeFading >= this->fadeFrames)
         {
             this->fadeType = 0;
-            (this->endingFadeRectColor).color = 0;
+            this->endingFadeRectColor.color = 0;
+            break;
         }
+
+        color = 0xff - (this->timeFading * 0xff) / this->fadeFrames;
+        this->endingFadeRectColor.color = color * 0x1000000;
+        this->timeFading++;
         break;
     case 2:
-        if (this->timeFading < this->fadeFrames)
+        if (this->timeFading >= this->fadeFrames)
         {
-            (this->endingFadeRectColor).color =
-                (this->timeFading * 0xff) / this->fadeFrames << 0x18;
-            this->timeFading = this->timeFading + 1;
+            this->endingFadeRectColor.color = 0xff000000;
+            break;
         }
-        else
-        {
-            (this->endingFadeRectColor).color = 0xff000000;
-        }
+
+        color = (this->timeFading * 0xff) / this->fadeFrames;
+        this->endingFadeRectColor.color =
+            color << 0x18;
+        this->timeFading++;
         break;
     case 3:
-        if (this->timeFading < this->fadeFrames)
-        {
-            (this->endingFadeRectColor).color =
-                (0xff - (this->timeFading * 0xff) / this->fadeFrames) * 0x1000000 |
-                0xffffff;
-            this->timeFading = this->timeFading + 1;
-        }
-        else
+        if (this->timeFading >= this->fadeFrames)
         {
             this->fadeType = 0;
-            (this->endingFadeRectColor).color = 0;
+            this->endingFadeRectColor.color = 0;
+            break;
         }
+
+        color = 0xff - (this->timeFading * 0xff) / this->fadeFrames;
+        this->endingFadeRectColor.color = color * 0x1000000 | 0xffffff;
+        this->timeFading++;
         break;
     case 4:
-        if (this->timeFading < this->fadeFrames)
+        if (this->timeFading >= this->fadeFrames)
         {
-            (this->endingFadeRectColor).color =
-                (this->timeFading * 0xff) / this->fadeFrames << 0x18 | 0xffffff;
-            this->timeFading = this->timeFading + 1;
+            this->endingFadeRectColor.color = 0xffffffff;
+            break;
         }
-        else
-        {
-            (this->endingFadeRectColor).color = 0xffffffff;
-        }
+
+        color = (this->timeFading * 0xff) / this->fadeFrames;
+        this->endingFadeRectColor.color = color << 0x18 | 0xffffff;
+        this->timeFading++;
+        break;
+    case 0:
+        this->endingFadeRectColor.color = 0;
+        break;
     }
-    if (((this->endingFadeRectColor).color & 0xff000000) != 0)
+    if ((this->endingFadeRectColor.color & 0xff000000) != 0)
     {
-        ScreenEffect::DrawSquare(&rect, (this->endingFadeRectColor).color);
+        ScreenEffect::DrawSquare(&rect, this->endingFadeRectColor.color);
     }
 }
 
+#pragma var_order(lineDisplayed, local_54, local_58, i, anmScriptIdx, vmIdx,   \
+                  anmSpriteIdx, scrollBGDistance, scrollBGDuration, execOuter, \
+                  execInner, j, musicFadeFrames)
 // FUNCTION: TH07 0x0041d700
 ZunResult Ending::ParseEndFile()
 {
-    i32 tmp3;
-    i32 tmp2;
-    D3DCOLOR DVar2;
-    i32 tmp;
+    f32 musicFadeFrames;
     i32 j;
     i32 execInner;
     i32 execOuter;
+    i32 scrollBGDuration;
+    i32 scrollBGDistance;
+    i32 anmSpriteIdx;
+    i32 vmIdx;
+    i32 anmScriptIdx;
     i32 i;
     i32 local_58;
     char local_54[68];
+    i32 lineDisplayed;
 
+    lineDisplayed = 0;
     local_58 = 0;
     memset(local_54, 0, sizeof(local_54));
-    if (0 < this->timer3.current)
+    if (this->timer3 > 0)
     {
         this->timer3--;
-        if (this->minWaitResetFrames == 0)
+        if (this->minWaitResetFrames != 0)
+        {
+            this->minWaitResetFrames--;
+        }
+        else
         {
             if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU) ||
                 (this->hasSeenEnding != 0 &&
@@ -195,236 +203,221 @@ ZunResult Ending::ParseEndFile()
                 this->timer3 = 0;
             }
         }
+        if (this->timer3 <= 0)
+        {
+            for (i = 0; i < 0xf; i++)
+            {
+                this->sprites[i].pendingInterrupt = 2;
+            }
+            this->timesFileParsed = 0;
+        }
         else
         {
-            this->minWaitResetFrames = this->minWaitResetFrames - 1;
+            goto stop;
         }
-        if (0 < this->timer3.current)
-        {
-            goto LAB_0041e331;
-        }
-        for (i = 0; i < 0xf; i++)
-        {
-            this->sprites[i].pendingInterrupt = 2;
-        }
-        this->possiblyTimesFileParsed = 0;
     }
-    if (this->timer2 < 1)
+    if (this->timer2 > 0)
     {
-        while (true)
+        this->timer2--;
+        if (this->minWaitFrames != 0)
         {
+            this->minWaitFrames--;
+        }
+        else
+        {
+            if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU) ||
+                (this->hasSeenEnding != 0 &&
+                 IS_PRESSED_RAW(TH_BUTTON_SKIP)))
+            {
+                this->timer2 = 0;
+            }
+        }
+        goto stop;
+    }
+
+    while (true)
+    {
+        switch (*this->endFileDataPtr)
+        {
+        case '@':
+            this->endFileDataPtr++;
             switch (*this->endFileDataPtr)
             {
-            case '\0':
-            case '\n':
-            case '\r':
-                goto switchD_0041d980_caseD_0;
-            default:
-                local_54[local_58] = *this->endFileDataPtr;
-                local_54[local_58 + 1] = this->endFileDataPtr[1];
-                local_58 += 2;
-                this->endFileDataPtr = this->endFileDataPtr + 2;
-                break;
-            case '@':
-                this->endFileDataPtr = this->endFileDataPtr + 1;
-                switch (*this->endFileDataPtr)
+            case 'b':
+                if (g_AnmManager->LoadSurface(0, this->endFileDataPtr + 1) !=
+                    ZUN_SUCCESS)
                 {
-                case '0':
-                    this->endFileDataPtr = this->endFileDataPtr + 1;
-                    this->fadeType = 1;
-                    this->timeFading = 0;
-                    tmp = ReadEndFileParameter();
-                    this->fadeFrames = tmp;
-                    break;
-                case '1':
-                    this->endFileDataPtr = this->endFileDataPtr + 1;
-                    this->fadeType = 2;
-                    this->timeFading = 0;
-                    tmp = ReadEndFileParameter();
-                    this->fadeFrames = tmp;
-                    break;
-                case '2':
-                    this->endFileDataPtr = this->endFileDataPtr + 1;
-                    this->fadeType = 3;
-                    this->timeFading = 0;
-                    tmp = ReadEndFileParameter();
-                    this->fadeFrames = tmp;
-                    break;
-                case '3':
-                    this->endFileDataPtr = this->endFileDataPtr + 1;
-                    this->fadeType = 4;
-                    this->timeFading = 0;
-                    tmp = ReadEndFileParameter();
-                    this->fadeFrames = tmp;
-                    break;
-                case 'F':
-                    if (LoadEnding(this->endFileDataPtr + 1) != ZUN_SUCCESS)
-                    {
-                        return ZUN_ERROR;
-                    }
-                    local_58 = 0;
-                    for (execOuter = 0; execOuter < 6; execOuter += 1)
-                    {
-                        for (execInner = 0; execInner < 4; execInner += 1)
-                        {
-                            if (g_GameManager.clrd[execOuter]
-                                        .difficultyClearedWithRetries[execInner] == 99 ||
-                                g_GameManager.clrd[execOuter]
-                                        .difficultyClearedWithoutRetries[execInner] == 99)
-                            {
-                                this->hasSeenEnding = 1;
-                                break;
-                            }
-                        }
-                    }
-                case 'R':
-                    for (j = 0; j < 16; j += 1)
-                    {
-                        this->sprites[j].anmFileIdx = 0;
-                    }
-                    break;
-                case 'M':
-                    this->endFileDataPtr = this->endFileDataPtr + 1;
-                    /* musicFadeFrames */
-                    tmp = ReadEndFileParameter();
-                    g_Supervisor.FadeOutMusic((f32)tmp);
-                    break;
-                case 'V':
-                    this->endFileDataPtr = this->endFileDataPtr + 1;
-                    /* scrollBGDistance */
-                    tmp = ReadEndFileParameter();
-                    /* scrollBGDuration */
-                    tmp2 = ReadEndFileParameter();
-                    this->backgroundScrollSpeed = (f32)tmp / (f32)tmp2;
-                    break;
-                case 'a':
-                    this->endFileDataPtr = this->endFileDataPtr + 1;
-                    tmp = ReadEndFileParameter();
-                    /* anmScriptIdx */
-                    tmp2 = ReadEndFileParameter();
-                    /* anmSpriteIdx */
-                    tmp3 = ReadEndFileParameter();
-                    g_AnmManager->ExecuteAnmIdx(this->sprites + tmp, tmp2 + 0x600);
-                    g_AnmManager->SetActiveSprite(this->sprites + tmp, tmp3 + 0x600);
-                    break;
-                case 'b':
-                    if (g_AnmManager->LoadSurface(0, this->endFileDataPtr + 1) !=
-                        ZUN_SUCCESS)
-                    {
-                        return ZUN_ERROR;
-                    }
-                    break;
-                case 'c':
-                    this->endFileDataPtr = this->endFileDataPtr + 1;
-                    DVar2 = ReadEndFileParameter();
-                    (this->textColor).color = DVar2;
-                    break;
-                case 'm':
-                    g_Supervisor.LoadAudio(0, this->endFileDataPtr + 1);
-                    g_Supervisor.PlayLoadedAudio(0);
-                    break;
-                case 'r':
-                    this->endFileDataPtr = this->endFileDataPtr + 1;
-                    tmp = ReadEndFileParameter();
-                    this->timer3 = tmp;
-                    tmp = ReadEndFileParameter();
-                    this->minWaitResetFrames = tmp;
-                    while (*this->endFileDataPtr != '\n' &&
-                           (*this->endFileDataPtr != '\r'))
-                    {
-                        this->endFileDataPtr = this->endFileDataPtr + 1;
-                    }
-                    while (*this->endFileDataPtr == '\n' ||
-                           (*this->endFileDataPtr == '\r'))
-                    {
-                        this->endFileDataPtr = this->endFileDataPtr + 1;
-                    }
-                    goto LAB_0041e331;
-                case 's':
-                    this->endFileDataPtr = this->endFileDataPtr + 1;
-                    tmp = ReadEndFileParameter();
-                    this->line2Delay = tmp;
-                    tmp = ReadEndFileParameter();
-                    this->topLineDelay = tmp;
-                    break;
-                case 'v':
-                    this->endFileDataPtr = this->endFileDataPtr + 1;
-                    tmp = ReadEndFileParameter();
-                    this->backgroundPos.y = (f32)tmp;
-                    break;
-                case 'w':
-                    this->endFileDataPtr = this->endFileDataPtr + 1;
-                    tmp = ReadEndFileParameter();
-                    this->timer2 = tmp;
-                    tmp = ReadEndFileParameter();
-                    this->minWaitFrames = tmp;
-                    while (*this->endFileDataPtr != '\n' &&
-                           (*this->endFileDataPtr != '\r'))
-                    {
-                        this->endFileDataPtr = this->endFileDataPtr + 1;
-                    }
-                    while (*this->endFileDataPtr == '\n' ||
-                           (*this->endFileDataPtr == '\r'))
-                    {
-                        this->endFileDataPtr = this->endFileDataPtr + 1;
-                    }
-                    goto LAB_0041e331;
-                case 'z':
                     return ZUN_ERROR;
                 }
+                break;
+            case 'a':
+                this->endFileDataPtr++;
+                vmIdx = ReadEndFileParameter();
+                anmScriptIdx = ReadEndFileParameter();
+                anmSpriteIdx = ReadEndFileParameter();
+                g_AnmManager->ExecuteAnmIdx(&this->sprites[vmIdx], anmScriptIdx + 0x600);
+                g_AnmManager->SetActiveSprite(&this->sprites[vmIdx], anmSpriteIdx + 0x600);
+                break;
+            case 'V':
+                this->endFileDataPtr++;
+                scrollBGDistance = ReadEndFileParameter();
+                scrollBGDuration = ReadEndFileParameter();
+                this->backgroundScrollSpeed = (f32)scrollBGDistance / scrollBGDuration;
+                break;
+            case 'v':
+                this->endFileDataPtr++;
+                this->backgroundPos.y = (f32)ReadEndFileParameter();
+                break;
+            case 'F':
+                if (LoadEnding(this->endFileDataPtr + 1) != ZUN_SUCCESS)
+                {
+                    return ZUN_ERROR;
+                }
+                local_58 = 0;
+                lineDisplayed = 0;
+                for (execOuter = 0; execOuter < 6; execOuter += 1)
+                {
+                    for (execInner = 0; execInner < 4; execInner += 1)
+                    {
+                        if (g_GameManager.clrd[execOuter]
+                                    .difficultyClearedWithRetries[execInner] == 99 ||
+                            g_GameManager.clrd[execOuter]
+                                    .difficultyClearedWithoutRetries[execInner] == 99)
+                        {
+                            this->hasSeenEnding = 1;
+                            break;
+                        }
+                    }
+                }
+            case 'R':
+                for (j = 0; j < 16; j += 1)
+                {
+                    this->sprites[j].anmFileIdx = 0;
+                }
+                break;
+            case 'm':
+                g_Supervisor.LoadAudio(0, this->endFileDataPtr + 1);
+                g_Supervisor.PlayLoadedAudio(0);
+                break;
+            case 'M':
+                this->endFileDataPtr++;
+                musicFadeFrames = ReadEndFileParameter();
+                g_Supervisor.FadeOutMusic(musicFadeFrames);
+                break;
+            case 's':
+                this->endFileDataPtr++;
+                this->line2Delay = ReadEndFileParameter();
+                this->topLineDelay = ReadEndFileParameter();
+                break;
+            case 'c':
+                this->endFileDataPtr++;
+                this->textColor.color = ReadEndFileParameter();
+                break;
+            case 'r':
+                this->endFileDataPtr++;
+                this->timer3 = ReadEndFileParameter();
+                this->minWaitResetFrames = ReadEndFileParameter();
                 while (*this->endFileDataPtr != '\n' &&
                        (*this->endFileDataPtr != '\r'))
                 {
-                    this->endFileDataPtr = this->endFileDataPtr + 1;
+                    this->endFileDataPtr++;
                 }
                 while (*this->endFileDataPtr == '\n' ||
                        (*this->endFileDataPtr == '\r'))
                 {
-                    this->endFileDataPtr = this->endFileDataPtr + 1;
+                    this->endFileDataPtr++;
                 }
+                goto stop;
+            case 'w':
+                this->endFileDataPtr++;
+                this->timer2 = ReadEndFileParameter();
+                this->minWaitFrames = ReadEndFileParameter();
+                while (*this->endFileDataPtr != '\n' &&
+                       (*this->endFileDataPtr != '\r'))
+                {
+                    this->endFileDataPtr++;
+                }
+                while (*this->endFileDataPtr == '\n' ||
+                       (*this->endFileDataPtr == '\r'))
+                {
+                    this->endFileDataPtr++;
+                }
+                goto stop;
+            case '0':
+                this->endFileDataPtr++;
+                this->fadeType = 1;
+                this->timeFading = 0;
+                this->fadeFrames = ReadEndFileParameter();
+                break;
+            case '1':
+                this->endFileDataPtr++;
+                this->fadeType = 2;
+                this->timeFading = 0;
+                this->fadeFrames = ReadEndFileParameter();
+                break;
+            case '2':
+                this->endFileDataPtr++;
+                this->fadeType = 3;
+                this->timeFading = 0;
+                this->fadeFrames = ReadEndFileParameter();
+                break;
+            case '3':
+                this->endFileDataPtr++;
+                this->fadeType = 4;
+                this->timeFading = 0;
+                this->fadeFrames = ReadEndFileParameter();
+                break;
+            case 'z':
+                return ZUN_ERROR;
             }
+            while (*this->endFileDataPtr != '\n' &&
+                   (*this->endFileDataPtr != '\r'))
+            {
+                this->endFileDataPtr++;
+            }
+            while (*this->endFileDataPtr == '\n' ||
+                   (*this->endFileDataPtr == '\r'))
+            {
+                this->endFileDataPtr++;
+            }
+            break;
+        case '\0':
+        case '\n':
+        case '\r':
+            if (local_58 != 0)
+            {
+                AnmManager::DrawVmTextFmt(g_AnmManager,
+                                          &this->sprites[this->timesFileParsed],
+                                          this->textColor.color, 0xffffffff, local_54);
+                this->sprites[this->timesFileParsed].SetPendingInterrupt(1);
+            }
+            while ((*this->endFileDataPtr == '\n' || (*this->endFileDataPtr == '\0')) ||
+                   (*this->endFileDataPtr == '\r'))
+            {
+                this->endFileDataPtr++;
+            }
+            if (IS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
+            {
+                this->timer2 = this->topLineDelay;
+                this->minWaitFrames = this->topLineDelay;
+            }
+            else
+            {
+                this->timer2 = this->line2Delay;
+                this->minWaitFrames = this->line2Delay;
+            }
+            this->timesFileParsed++;
+            goto stop;
+        default:
+            local_54[local_58] = *this->endFileDataPtr;
+            local_54[local_58 + 1] = this->endFileDataPtr[1];
+            local_58 += 2;
+            this->endFileDataPtr = this->endFileDataPtr + 2;
+            break;
         }
     }
-    this->timer2--;
-    if (this->minWaitFrames == 0)
-    {
-        if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU) ||
-            (this->hasSeenEnding != 0 &&
-             IS_PRESSED_RAW(TH_BUTTON_SKIP)))
-        {
-            this->timer2 = 0;
-        }
-    }
-    else
-    {
-        this->minWaitFrames = this->minWaitFrames - 1;
-    }
-    goto LAB_0041e331;
-switchD_0041d980_caseD_0:
-    if (local_58 != 0)
-    {
-        AnmManager::DrawVmTextFmt(g_AnmManager,
-                                  this->sprites + this->possiblyTimesFileParsed,
-                                  (this->textColor).color, 0xffffffff, local_54);
-        this->sprites[this->possiblyTimesFileParsed].pendingInterrupt = 1;
-    }
-    while ((*this->endFileDataPtr == '\n' || (*this->endFileDataPtr == '\0')) ||
-           (*this->endFileDataPtr == '\r'))
-    {
-        this->endFileDataPtr = this->endFileDataPtr + 1;
-    }
-    if (IS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
-    {
-        this->timer2 = this->topLineDelay;
-        this->minWaitFrames = this->topLineDelay;
-    }
-    else
-    {
-        this->timer2 = this->line2Delay;
-        this->minWaitFrames = this->line2Delay;
-    }
-    this->possiblyTimesFileParsed = this->possiblyTimesFileParsed + 1;
-LAB_0041e331:
+
+stop:
     this->timer1++;
     this->backgroundPos.y -= this->backgroundScrollSpeed;
     if (this->backgroundPos.y <= 0.0f)
@@ -462,21 +455,23 @@ ZunResult Ending::LoadEnding(const char *endFilePath)
     }
 }
 
+#pragma var_order(endingPath, unusedShotType, shotType, i)
 // FUNCTION: TH07 0x0041e590
 ZunResult Ending::AddedCallback(Ending *arg)
 {
-    D3DXVECTOR3 *pDVar1;
-    u32 shotType;
     i32 i;
-    const char *local_8;
+    u32 shotType;
+    u32 unusedShotType;
+    const char *endingPath;
 
+    unusedShotType = g_GameManager.shotTypeAndCharacter;
     g_GameManager.finished = 1;
     g_Supervisor.isInEnding = 1;
     g_AnmManager->LoadAnms(0x31, "data/staff01.anm", 0x600);
-    g_AnmManager->currentTexture = NULL;
-    g_AnmManager->currentSprite = NULL;
-    g_AnmManager->currentBlendMode = 0xff;
-    g_AnmManager->currentVertexShader = 0xff;
+    g_AnmManager->SetTexture(NULL);
+    g_AnmManager->SetSprite(NULL);
+    g_AnmManager->SetBlendMode(0xff);
+    g_AnmManager->SetVertexShader(0xff);
     shotType = g_GameManager.shotTypeAndCharacter;
     arg->hasSeenEnding = 0;
     if (g_GameManager.globals->numRetries == 0)
@@ -499,28 +494,25 @@ ZunResult Ending::AddedCallback(Ending *arg)
         .difficultyClearedWithoutRetries[g_GameManager.difficulty] = 99;
     for (i = 0; i < 0xf; i++)
     {
-        g_AnmManager->ExecuteAnmIdx(arg->sprites + i, i + 0x70f);
-        pDVar1 = &arg->sprites[i].pos;
-        pDVar1->x = 64.0f;
-        pDVar1->y = (f32)i * 16.0f + 392.0f;
-        pDVar1->z = 0.0f;
+        g_AnmManager->ExecuteAnmIdx(&arg->sprites[i], i + 0x70f);
+        arg->sprites[i].pos =
+            D3DXVECTOR3(64.0f, (f32)i * 16.0f + 392.0f, 0.0f);
     }
-    if (g_GameManager.globals->numRetries == 0)
+    if (g_GameManager.globals->numRetries != 0)
     {
-        local_8 = g_NormalEndingPaths[g_GameManager.shotTypeAndCharacter];
+        endingPath = g_BadEndingPaths[g_GameManager.character];
     }
     else
     {
-        local_8 = g_BadEndingPaths[g_GameManager.character];
+        endingPath = g_NormalEndingPaths[g_GameManager.shotTypeAndCharacter];
     }
-    if (arg->LoadEnding(local_8) == ZUN_SUCCESS)
-    {
-        return ZUN_SUCCESS;
-    }
-    else
+
+    if (arg->LoadEnding(endingPath))
     {
         return ZUN_ERROR;
     }
+
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x0041e790

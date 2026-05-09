@@ -43,7 +43,7 @@ struct Ending
     i32 line2Delay;
     i32 topLineDelay;
     i32 unused_2510;
-    i32 possiblyTimesFileParsed;
+    i32 timesFileParsed;
     ZunColor textColor;
     ZunColor endingFadeRectColor;
     i32 timeFading;
