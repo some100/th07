@@ -172,6 +172,12 @@ struct Player
         vm->pos[2] = 0.0f;
     }
 
+    ZunTimer *GetBombTimer()
+    {
+        ZunTimer *timer = &this->bombInfo.bombTimer;
+        return timer;
+    }
+
     AnmVm playerSprite;
     AnmVm orbsSprite[3];
     D3DXVECTOR3 positionCenter;

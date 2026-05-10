@@ -106,6 +106,16 @@ struct ZunTimer
         this->Decrement(1);
     }
 
+    i32 HasTicked()
+    {
+        return this->current != this->previous;
+    }
+
+    i32 HasTickedAndIsEq(i32 value)
+    {
+        return this->current != this->previous && this->current == value;
+    }
+
     void Decrement(i32 value);
     void Increment(i32 value);
     i32 NextTick();
