@@ -2,7 +2,7 @@
 
 Contributions are welcome. Before anything can be done, `reccmp` must be installed from git. This is already done for you if you're using `uv`. 
 
-First, copy the original game binary `th07.exe` into the root of the repository. This is required so that `reccmp` has some kind of base to compare against.
+First, copy the original game binary `th07.exe` into the resources directory of the repository. This is required so that `reccmp` has some kind of base to compare against.
 
 Then, simply run the command:
 ```sh

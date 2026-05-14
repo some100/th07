@@ -173,6 +173,11 @@ struct Bullet
         this->timer2 = 0;
     }
 
+    void ClearCommand(i32 idx)
+    {
+        this->commands[idx].type = 0;
+    }
+
     BulletTypeSprites sprites;
     D3DXVECTOR3 pos;
     D3DXVECTOR3 velocity;

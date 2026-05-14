@@ -359,8 +359,11 @@ def handle_compile_result(result: Tuple[int, str]):
     if result[0] != 0:
         sys.exit(1)
 
-if not EXE_PATH.exists() and not args.no_icon:
-    sys.exit("th07.exe should exist when building with icon")
+if not EXE_PATH.exists():
+    if args.command:
+        sys.exit("th07.exe should exist when using any reccmp tools")
+    elif not args.no_icon:
+        sys.exit("th07.exe should exist when building with icon")
 
 env = os.environ.copy()
 

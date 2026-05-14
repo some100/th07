@@ -107,6 +107,11 @@ struct EclRawInstr
     u8 skipInstrOnDifficulty;
     u16 paramMask;
     AnyArg args[];
+
+    AnyArg GetSecondArg()
+    {
+        return this->args[1];
+    }
 };
 
 struct EclTimelineInstr
