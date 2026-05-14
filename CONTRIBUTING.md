@@ -29,42 +29,44 @@ void EclManager::Unload() {
 }
 ```
 
-This function is still mostly unprocessed Ghidra decompiler output. While it looks reasonable, it may have different output than the original assembly. Call `uv run build.py reccmp 0x0040e4f0` to get a detailed diff.
+This function is still mostly unprocessed Ghidra decompiler output. While it looks reasonable, it may have different output than the original assembly. Call `uv run build.py reccmp 0x0040e4f0` to get a detailed diff. Note that the original executable is the "older" version in the diff, so it'll be marked with `-`.
 
 ```
 ---
 +++
-@@ -0x40e4f0,15 +0x40d490,17 @@
-0x40e4f0 : push ebp 	(EclManager.cpp:66)
+@@ -0x40e4f0,15 +0x40e270,17 @@
+0x40e4f0 : push ebp     (EclManager.cpp:78)
 0x40e4f1 : mov ebp, esp
 0x40e4f3 : -sub esp, 8
 0x40e4f6 : -mov dword ptr [ebp - 8], ecx
 0x40e4f9 : -mov eax, dword ptr [ebp - 8]
          : +push ecx
          : +mov dword ptr [ebp - 4], ecx
-         : +mov eax, dword ptr [ebp - 4] 	(EclManager.cpp:67)
+         : +mov eax, dword ptr [ebp - 4]        (EclManager.cpp:79)
 0x40e4fc : cmp dword ptr [eax], 0
 0x40e4ff : -je 0x14
 0x40e501 : -mov ecx, dword ptr [ebp - 8]
          : +je 0xe
-         : +mov ecx, dword ptr [ebp - 4] 	(EclManager.cpp:68)
+         : +mov ecx, dword ptr [ebp - 4]        (EclManager.cpp:81)
 0x40e504 : mov edx, dword ptr [ecx]
 0x40e506 : -mov dword ptr [ebp - 4], edx
-         : +push edx
-         : +call free (FUNCTION)
-         : +add esp, 4
-0x40e509 : mov eax, dword ptr [ebp - 4] 	(EclManager.cpp:70)
+0x40e509 : -mov eax, dword ptr [ebp - 4]
 0x40e50c : -push eax
-0x40e50d : -call <OFFSET1>
-0x40e512 : -add esp, 4
+         : +push edx
+0x40e50d : call free (FUNCTION)
+0x40e512 : add esp, 4
 0x40e515 : -mov ecx, dword ptr [ebp - 8]
+         : +mov eax, dword ptr [ebp - 4]        (EclManager.cpp:83)
          : +mov dword ptr [eax], 0
-         : +mov esp, ebp 	(EclManager.cpp:71)
+         : +mov esp, ebp        (EclManager.cpp:84)
          : +pop ebp
-         : +ret
+         : +ret 
+
+
+EclManager::Unload is only 37.50% similar to the original, diff above
 ```
 
-Immediately from the assembly diff, you can determine a few things just from this diff:
+Immediately from the assembly diff, you can determine a few things just from this section:
 
 ```
 0x40e4f3 : -sub esp, 8
@@ -75,55 +77,57 @@ Immediately from the assembly diff, you can determine a few things just from thi
          : +mov eax, dword ptr [ebp - 4] 	(EclManager.cpp:67)
 ```
 
-Firstly, PCB was compiled with debug settings, so you can see that the frame pointer here was not omitted. Secondly, it shows that 8 bytes were allocated on the stack, evidenced by `sub esp, 8`, which was not allocated in the recompiled version. However, since this is a member function of EclManager, `this` is located at `ecx`, which is then immediately moved to the end of the stack at `[ebp - 8]` in the original binary, or `[ebp - 4]`. Thus, since `this` already occupies a stack "slot," it means that we are only missing 4 bytes of stack space from our version. Just to make sure, though, we can use a tool that comes with `reccmp`, called `stackcmp`. Call `uv run build.py stackcmp 0x0040e4f0` to get:
+* Firstly, PCB was compiled with debug settings (for most files), so you can see that the frame pointer here was not omitted. This means we can determine the amount of stack "space" we need. In this case, the very first instruction `sub esp, 8` means we should be subtracting 8 bytes from the frame pointer, `esp`. That means we need to have 8 bytes on the stack.
+
+* Secondly, since this is a _member function_ of EclManager, `this` is located at `ecx`, which is then immediately moved to the end of the stack at `[ebp - 8]` in the original binary. Thus, since `this` already occupies a stack "slot," it means that we are only missing 4 bytes of stack space from our version. Just to make sure, though, we can use a tool that comes with `reccmp`, called `stackcmp`. Call `uv run build.py stackcmp 0x0040e4f0` to get:
 
 ```
 [ERROR] Structural mismatch at orig=0x40e506:
 -mov dword ptr [ebp - 4], edx
-+push edx
-+call free (FUNCTION)
-+add esp, 4
-
-[ERROR] Mismatching line structure at orig=0x40e515:
+-mov eax, dword ptr [ebp - 4]
 -push eax
--call <OFFSET1>
--add esp, 4
++push edx
+
+[ERROR] Structural mismatch at orig=0x40e515:
 -mov ecx, dword ptr [ebp - 8]
++mov eax, dword ptr [ebp - 4]   (EclManager.cpp:83)
 +mov dword ptr [eax], 0
-+mov esp, ebp 	(EclManager.cpp:77)
++mov esp, ebp   (EclManager.cpp:84)
 +pop ebp
-+ret
++ret 
 
 
 Ordered by original stack (left=orig, right=recomp):
-&#8644;  ebp - 0x08: ebp - 0x04  this
-&#10003;  ebp - 0x04: ebp - 0x04  this
+⇄  ebp - 0x08: ebp - 0x04  this
 
 Ordered by recomp stack (left=orig, right=recomp):
-&#10007;  ['ebp - 0x08', 'ebp - 0x04']: ebp - 0x04  this
+⇄  ebp - 0x08: ebp - 0x04  this
 
 Legend:
-&#8644; : This stack variable matches 1:1, but the order of variables is not correct.
-&#10007; : This stack variable matches multiple variables in the other binary.
+⇄ : This stack variable matches 1:1, but the order of variables is not correct.
+✗ : This stack variable matches multiple variables in the other binary.
 ? : This stack variable did not appear in the diff. It either matches or only appears in structural mismatches.
+
+WARNING: Original and recomp have at least one structural discrepancy, so the comparison of stack variables might be incomplete. The structural mismatches above need to be checked manually.
 ```
 
-This confirms that we are missing an a variable, and more importantly, we are using `this` in place of where it should be. So we have to see where exactly `[ebp - 4]` is used or assigned to in the _original_ version in the diff, to determine its type and use.
+This confirms that we are missing a variable, and more importantly, we are using `this` in place of where it should be. Also, note that the second structural mismatch isn't really a structural mismatch, it'll resolve itself once the actual structural mismatch is fixed. So we have to see where exactly `[ebp - 4]` is used in the first structural mismatch, to determine its type and use.
 
 ```
 0x40e506 : -mov dword ptr [ebp - 4], edx
+0x40e509 : -mov eax, dword ptr [ebp - 4]
+0x40e50c : -push eax
          : +push edx
-         : +call free (FUNCTION)
-         : +add esp, 4
+0x40e50d : call free (FUNCTION)
 ```
 
-This corresponds to the `free` call in our function. It essentially pushes an argument, which is stored in edx, into the stack, which is then used by the free function afterwards. Recall beforehand in our C++ function that this was
+Looking at the assembly, it's clear what the actual issue here is. Our new version simply pushes edx (which, prior to this part, stored `this` located at the recompiled binary's `[ebp - 4]`) to the `free` function. However, the original binary moves `edx` into `[ebp - 4]` first, before pushing that variable to `free`.
 
 ```c++
 free(this->eclFile);
 ```
 
-Therefore, at this moment in the program, edx is storing `this->eclFile`. In the original version in the diff, we see the call `mov dword ptr [ebp - 4], edx`. The `mov` call essentially moves the right hand operand to the left hand operand, meaning that it assigns `edx`, which is storing `this->eclFile`, into `[ebp - 4]`, which is a variable on the stack. If you can recall, we were missing 4 bytes of stack space. This is the missing variable that was present in the original binary. So simply define the variable as such, to get our new function:
+So, judging from this line from our recompiled binary, we can pretty safely conclude that the variable at `[ebp - 4]` likely stored `this->eclFile`. If you can recall, we were missing 4 bytes of stack space. This is the missing variable that was present in the original binary. So simply define the variable as such, to get our new function:
 
 ```c++
 // FUNCTION: TH07 0x0040e4f0
@@ -141,10 +145,36 @@ Now, rerun the diff command from earlier to get this result:
 ```
 0x40e4f0: EclManager::Unload 100% match.
 
-OK! 
+✨ OK! ✨
 ```
 
-Congrats, you've matched a function!
+Congrats, you've matched a function! 
+
+There's also an alternative way to match this function. For at least this compiler in particular, MSVC 2002, inline functions create compiler temporaries, which can be used for matching. These compiler temporaries are placed _below_ user-defined stack variables on the stack, (so, for example, if I had two stack variables at `[ebp - 4]` and `[ebp - 8]`, and a simple getter inline function, it would move its result to `[ebp - 0xc]`), but _above_ the stack variable for the `this` pointer (if there is any). This is particularly necessary for if stack variables are mismatched, and `stackcmp` indicates that a user-defined variable and temporary variable (the unnamed ones) are swapped.
+
+This means that you can also have this
+
+```c++
+// FUNCTION: TH07 0x0040e4f0
+void EclManager::Unload()
+{
+    if (this->eclFile != NULL)
+    {
+        free(this->GetFile());
+    }
+    this->eclFile = NULL;
+}
+```
+
+Which has basically the same result to reccmp.
+
+```
+0x4547b0: AnmManager::LoadSurface 100% match.
+
+✨ OK! ✨
+```
+
+Ternary operators create their temporaries _below_ the `this` pointer, so if there is more stack space than the offset of the `this` pointer variable indicates, then that usually indicates that the function uses at least one ternary operator.
 
 Let's look at another example, this time `AnmManager::LoadSurface`.
 
@@ -159,7 +189,7 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path) {
   u8 *data = FileSystem::OpenFile(path, 0);
   if (data == NULL) {
     // STRING: TH07 0x00495b30
-    g_GameErrorContext.Fatal("%s���ǂݍ��߂Ȃ��ł��B\r\n", path);
+    g_GameErrorContext.Fatal("%sが読み込めないです。\r\n", path);
     return ZUN_ERROR;
   } else {
     if (g_Supervisor.d3dDevice->CreateImageSurface(
@@ -205,20 +235,20 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path) {
 ```
 ---
 +++
-@@ -0x4547df,56 +0x453cbf,53 @@
+@@ -0x4547df,56 +0x4555ef,53 @@
 0x4547df : mov dword ptr [ebp - 8], eax
-0x4547e2 : cmp dword ptr [ebp - 8], 0 	(AnmManager.cpp:2489)
+0x4547e2 : cmp dword ptr [ebp - 8], 0   (AnmManager.cpp:2472)
 0x4547e6 : jne 0x1e
-0x4547e8 : mov eax, dword ptr [ebp + 0xc] 	(AnmManager.cpp:2491)
+0x4547e8 : mov eax, dword ptr [ebp + 0xc]       (AnmManager.cpp:2475)
 0x4547eb : push eax
 0x4547ec : push "%s\u304c\u8aad\u307f\u8fbc\u3081\u306a\u3044\u3067\u3059\u3002\r\n" (STRING)
 0x4547f1 : push g_GameErrorContext (DATA)
 0x4547f6 : call GameErrorContext::Fatal (FUNCTION)
 0x4547fb : add esp, 0xc
-0x4547fe : or eax, 0xffffffff 	(AnmManager.cpp:2492)
+0x4547fe : or eax, 0xffffffff   (AnmManager.cpp:2476)
 0x454801 : -jmp 0x1fb
          : +jmp 0x1f4
-0x454806 : lea ecx, [ebp - 4] 	(AnmManager.cpp:2496)
+0x454806 : lea ecx, [ebp - 4]   (AnmManager.cpp:2482)
 0x454809 : push ecx
 0x45480a : mov edx, dword ptr [g_Supervisor+232 (OFFSET)]
 0x454810 : push edx
@@ -234,7 +264,7 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path) {
 0x454830 : -or eax, 0xffffffff
 0x454833 : -jmp 0x1c9
          : +jne 0x1c3
-0x454838 : mov eax, dword ptr [ebp + 8] 	(AnmManager.cpp:2518)
+0x454838 : mov eax, dword ptr [ebp + 8]         (AnmManager.cpp:2505)
 0x45483b : imul eax, eax, 0x14
 0x45483e : mov ecx, dword ptr [ebp - 0xc]
 0x454841 : lea edx, [ecx + eax + 0x2e248]
@@ -250,8 +280,7 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path) {
 0x45485b : push 0
 0x45485d : mov edx, dword ptr [ebp - 4]
 0x454860 : push edx
-0x454861 : -call <OFFSET9>
-         : +call _D3DXLoadSurfaceFromFileInMemory@36 (FUNCTION)
+0x454861 : call _D3DXLoadSurfaceFromFileInMemory@36 (FUNCTION)
 0x454866 : test eax, eax
 0x454868 : -je 0x5
 0x45486a : -jmp 0x16a
@@ -269,7 +298,7 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path) {
 
 ---
 +++
-@@ -0x45489b,21 +0x453d76,21 @@
+@@ -0x45489b,21 +0x4556a6,21 @@
 0x45489b : imul ecx, ecx, 0x14
 0x45489e : mov edx, dword ptr [ebp - 0xc]
 0x4548a1 : mov eax, dword ptr [edx + ecx + 0x2e248]
@@ -295,7 +324,7 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path) {
 
 ---
 +++
-@@ -0x4548e7,22 +0x453dc2,21 @@
+@@ -0x4548e7,22 +0x4556f2,21 @@
 0x4548e7 : imul edx, edx, 0x14
 0x4548ea : mov eax, dword ptr [ebp - 0xc]
 0x4548ed : mov ecx, dword ptr [eax + edx + 0x2e248]
@@ -322,7 +351,7 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path) {
 
 ---
 +++
-@@ -0x454939,70 +0x453e13,73 @@
+@@ -0x454939,70 +0x455743,73 @@
 0x454939 : imul eax, eax, 0x14
 0x45493c : mov ecx, dword ptr [ebp - 0xc]
 0x45493f : mov edx, dword ptr [ecx + eax + 0x2e248]
@@ -348,8 +377,7 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path) {
 0x454971 : mov edx, dword ptr [ebp - 0xc]
 0x454974 : mov eax, dword ptr [edx + ecx*4 + 0x2e148]
 0x45497b : push eax
-0x45497c : -call <OFFSET10>
-         : +call _D3DXLoadSurfaceFromSurface@32 (FUNCTION)
+0x45497c : call _D3DXLoadSurfaceFromSurface@32 (FUNCTION)
 0x454981 : test eax, eax
 0x454983 : -je 0x2
 0x454985 : -jmp 0x52
@@ -366,13 +394,12 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path) {
 0x45499a : mov eax, dword ptr [ebp - 0xc]
 0x45499d : mov ecx, dword ptr [eax + edx*4 + 0x2e1c8]
 0x4549a4 : push ecx
-0x4549a5 : -call <OFFSET10>
-         : +call _D3DXLoadSurfaceFromSurface@32 (FUNCTION)
+0x4549a5 : call _D3DXLoadSurfaceFromSurface@32 (FUNCTION)
 0x4549aa : test eax, eax
 0x4549ac : -je 0x2
 0x4549ae : -jmp 0x29
          : +jne 0x29
-0x4549b0 : cmp dword ptr [ebp - 4], 0 	(AnmManager.cpp:2519)
+0x4549b0 : cmp dword ptr [ebp - 4], 0   (AnmManager.cpp:2507)
 0x4549b4 : je 0x13
 0x4549b6 : mov edx, dword ptr [ebp - 4]
 0x4549b9 : mov eax, dword ptr [edx]
@@ -380,15 +407,14 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path) {
 0x4549be : push ecx
 0x4549bf : call dword ptr [eax + 8]
 0x4549c2 : mov dword ptr [ebp - 4], 0
-0x4549c9 : mov edx, dword ptr [ebp - 8] 	(AnmManager.cpp:2520)
+0x4549c9 : mov edx, dword ptr [ebp - 8]         (AnmManager.cpp:2508)
 0x4549cc : push edx
-0x4549cd : -call <OFFSET11>
-         : +call free (FUNCTION)
+0x4549cd : call free (FUNCTION)
 0x4549d2 : add esp, 4
-0x4549d5 : xor eax, eax 	(AnmManager.cpp:2521)
+0x4549d5 : xor eax, eax         (AnmManager.cpp:2509)
 0x4549d7 : -jmp 0x28
          : +jmp 0x2d
-0x4549d9 : cmp dword ptr [ebp - 4], 0 	(AnmManager.cpp:2523)
+0x4549d9 : cmp dword ptr [ebp - 4], 0   (AnmManager.cpp:2513)
 0x4549dd : je 0x13
 0x4549df : mov eax, dword ptr [ebp - 4]
 0x4549e2 : mov ecx, dword ptr [eax]
@@ -396,39 +422,60 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path) {
 0x4549e7 : push edx
 0x4549e8 : call dword ptr [ecx + 8]
 0x4549eb : mov dword ptr [ebp - 4], 0
-0x4549f2 : mov eax, dword ptr [ebp - 8] 	(AnmManager.cpp:2524)
+0x4549f2 : mov eax, dword ptr [ebp - 8]         (AnmManager.cpp:2514)
 0x4549f5 : push eax
-0x4549f6 : -call <OFFSET11>
-         : +call free (FUNCTION)
+0x4549f6 : call free (FUNCTION)
 0x4549fb : add esp, 4
-         : +or eax, 0xffffffff 	(AnmManager.cpp:2525)
+         : +or eax, 0xffffffff  (AnmManager.cpp:2515)
          : +jmp 0x3
-         : +or eax, 0xffffffff 	(AnmManager.cpp:2528)
-         : +mov esp, ebp 	(AnmManager.cpp:2531)
+         : +or eax, 0xffffffff  (AnmManager.cpp:2520)
+         : +mov esp, ebp        (AnmManager.cpp:2523)
          : +pop ebp
          : +ret 8
+
+
+AnmManager::LoadSurface is only 91.91% similar to the original, diff above
 ```
 
-A lot of things going on here, but we only need to care about a few things:
+This is a function that's already very close to matching, and there's a few things going on here. But we only need to care about a few things:
 
 ```
-0x454861 : -call <OFFSET9>
-         : +call _D3DXLoadSurfaceFromFileInMemory@36 (FUNCTION)
-0x454866 : test eax, eax
-0x454868 : -je 0x5
-0x45486a : -jmp 0x16a
-         : +jne 0x163
+0x45481b : mov eax, dword ptr [g_Supervisor+8 (OFFSET)]
+0x454820 : mov ecx, dword ptr [eax]
+0x454822 : mov edx, dword ptr [g_Supervisor+8 (OFFSET)]
+0x454828 : push edx
+0x454829 : call dword ptr [ecx + 0x6c]
+0x45482c : test eax, eax
+0x45482e : -je 0x8
+0x454830 : -or eax, 0xffffffff
+0x454833 : -jmp 0x1c9
+         : +jne 0x1c3
 ```
 
-When seeing something like `test eax, eax` (or alternatively `cmp xyz, a`), followed by a `je` type instruction, that usually indicates an if statement. `je` basically means "if equal, jump relative to the current offset." In these cases, it's emitted to skip over an if-statement is the condition is not true. Afterwards is an unconditional `jmp` call, indicating an early return, which can be either a goto or a return. However, our version instead chooses to do `jne`, which is meant to skip to the else statement. Immediately before the `je` instruction is this:
+Firstly it's important to note that non-void functions usually return their result in `eax`. Secondly, `je` means to skip if the if statement is NOT true, so the condition should be the opposite of the jump conditional following it.
+
+This assembly indicates that we should be calling a member function of `g_Supervisor+8` in `ecx`, checking if `eax` (the result) is zero, and, if it is NOT zero, we OR the result with `0xffffffff` (which is `-1` from unsigned to signed) and `jmp` to the end of the function. So it's doing something similar to this:
+
+```c++
+if (g_Supervisor.something->func() != 0)
+{
+  return -1;
+}
+```
+
+We also see this kind of pattern all around:
 
 ```
-0x454861 : -call <OFFSET9>
-         : +call _D3DXLoadSurfaceFromFileInMemory@36 (FUNCTION)
-0x454866 : test eax, eax
+0x4549a5 : call _D3DXLoadSurfaceFromSurface@32 (FUNCTION)
+0x4549aa : test eax, eax
+0x4549ac : -je 0x2
+0x4549ae : -jmp 0x29
+         : +jne 0x29
 ```
 
-Functions return their result in the `eax` register, and `test eax, eax` simply checks if the result is equal to zero. Therefore, the condition in C++ code should be if the result is NOT zero. So going back to C++:
+This means that instead of comparing a `D3DXLoadSurfaceFromSurface()` to zero, and early returning (or using a goto) if it is NOT zero, we are instead doing a nested if-statement as indicated by the `jne`.
+
+Going back to C++:
 
 ```c++
 if (((D3DXLoadSurfaceFromFileInMemory(
@@ -465,7 +512,7 @@ No real human person writes like this, so it's very likely that there's some kin
 }
 ```
 
-This is probably meant to be a goto label. It's very likely that Ghidra, the decompiler used to dump all this code, decided to merge together if-statements that had the same error path as though they were one if-else statement. Rewrite it to use a goto:
+This is probably meant to be a goto label. It's very likely that Ghidra, the decompiler used to dump all this code, decided to merge together if-statements that had the same error path as though they were one if-else statement. This is supported by the earlier finding that the if-statements should really be using early returns/gotos, not nested if-statements. Rewrite it to use a goto:
 
 ```c++
 if (D3DXLoadSurfaceFromFileInMemory(
@@ -492,7 +539,7 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path) {
   u8 *data = FileSystem::OpenFile(path, 0);
   if (data == NULL) {
     // STRING: TH07 0x00495b30
-    g_GameErrorContext.Fatal("%s���ǂݍ��߂Ȃ��ł��B\r\n", path);
+    g_GameErrorContext.Fatal("%sが読み込めないです。\r\n", path);
     return ZUN_ERROR;
   }
   if (g_Supervisor.d3dDevice->CreateImageSurface(
@@ -547,7 +594,7 @@ Now, after rerunning the diff command:
 ```
 0x4547b0: AnmManager::LoadSurface 100% match.
 
-OK!
+✨ OK! ✨
 ```
 
 This function is now 100% matching.

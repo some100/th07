@@ -78,8 +78,7 @@ void EclManager::Unload()
 {
     if (this->eclFile != NULL)
     {
-        EclRawHeader *file = this->eclFile;
-        free(file);
+        free(this->GetFile());
     }
     this->eclFile = NULL;
 }
