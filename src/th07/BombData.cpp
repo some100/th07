@@ -148,7 +148,7 @@ void BombData::BombReimuACalc(Player *player)
                                 ITEM_POINT_BULLET);
 
         // ZUN landmine: What a strange way to access player->bombStartPos
-        *(D3DXVECTOR3 *)(bombInfo + 1) = player->positionCenter;
+        *(Float3 *)(bombInfo + 1) = player->positionCenter;
         ComputeBombCherryDrain(player, 4000, 0.2f);
     }
     if (bombInfo->bombTimer.HasTicked() &&
@@ -162,7 +162,7 @@ void BombData::BombReimuACalc(Player *player)
         subInfo->speed = 15.0f;
         subInfo->bombRegionPositions = player->positionCenter;
 
-        if ((*(D3DXVECTOR3 *)(bombInfo + 1)).x < 192.0f)
+        if ((*(Float3 *)(bombInfo + 1)).x < 192.0f)
         {
             angle = (f32)i * ZUN_2PI / 8.0f - 1.5707964f;
         }
@@ -311,7 +311,7 @@ void BombData::BombReimuADraw(Player *player)
 void BombData::BombReimuACalcFocus(Player *player)
 {
     i32 j;
-    D3DXVECTOR3 targetPos;
+    Float3 targetPos;
     f32 tmpFloat1;
     AnmVm *vm;
     PlayerBombSubInfo *subInfo;

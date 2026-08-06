@@ -13,7 +13,7 @@
 
 struct VertexDiffuseXyzrhw
 {
-    D3DXVECTOR3 pos;
+    Float3 pos;
     f32 w;
     ZunColor diffuse;
 };
@@ -21,7 +21,7 @@ C_ASSERT(sizeof(VertexDiffuseXyzrhw) == 0x14);
 
 struct VertexTex1DiffuseXyz
 {
-    D3DXVECTOR3 position;
+    Float3 pos;
     ZunColor diffuse;
     Float2 textureUV;
 };
@@ -30,7 +30,7 @@ extern VertexTex1DiffuseXyz g_Quad3DFallback[4];
 
 struct VertexTex1Xyzrhw
 {
-    D3DXVECTOR3 pos;
+    Float3 pos;
     f32 w;
     Float2 textureUV;
 };
@@ -39,8 +39,6 @@ extern VertexTex1Xyzrhw g_QuadTemplate[4];
 
 struct VertexTex1DiffuseXyzrhw
 {
-    VertexTex1DiffuseXyzrhw() {}
-
     Float3 pos;
     f32 w;
     ZunColor color;
@@ -51,7 +49,7 @@ extern VertexTex1DiffuseXyzrhw g_QuadVertices[4];
 
 struct RenderVertexInfo
 {
-    D3DXVECTOR3 position;
+    Float3 pos;
     Float2 textureUV;
 };
 C_ASSERT(sizeof(RenderVertexInfo) == 0x14);
@@ -196,8 +194,8 @@ struct AnmManager
     void ExecuteAnmIdx(AnmVm *vm, i32 anmFileIdx)
     {
         vm->anmFileIdx = anmFileIdx;
-        vm->pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-        vm->offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+        vm->pos = Float3(0.0f, 0.0f, 0.0f);
+        vm->offset = Float3(0.0f, 0.0f, 0.0f);
         vm->fontHeight = 15;
         vm->fontWidth = 15;
         SetAndExecuteScript(vm, this->scripts[anmFileIdx]);

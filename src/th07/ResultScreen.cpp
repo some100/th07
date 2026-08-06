@@ -797,12 +797,12 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
                 if (vmIdx == arg->cursor)
                 {
                     vm->color.color = 0xffffffff;
-                    vm->offset = D3DXVECTOR3(-4.0f, -4.0f, 0.0f);
+                    vm->offset = Float3(-4.0f, -4.0f, 0.0f);
                 }
                 else
                 {
                     vm->color.color = 0xb0ffffff;
-                    vm->offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+                    vm->offset = Float3(0.0f, 0.0f, 0.0f);
                 }
             }
             if (!g_GameManager.HasUnlockedPhantomAndMaxClears())
@@ -836,12 +836,12 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
             if (vmIdx == arg->cursor)
             {
                 vm->color.color = 0xffffffff;
-                vm->offset = D3DXVECTOR3(-4.0f, -4.0f, 0.0f);
+                vm->offset = Float3(-4.0f, -4.0f, 0.0f);
             }
             else
             {
                 vm->color.color = 0xb0ffffff;
-                vm->offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+                vm->offset = Float3(0.0f, 0.0f, 0.0f);
             }
         }
         if (!g_GameManager.HasUnlockedPhantomAndMaxClears())
@@ -1738,7 +1738,7 @@ ZunResult ResultScreen::CheckConfirmButton()
 i32 ResultScreen::DrawStats()
 {
     AnmVm *vm;
-    D3DXVECTOR3 pos;
+    Float3 pos;
 
     switch (this->resultScreenState)
     {
@@ -2025,7 +2025,7 @@ i32 ResultScreen::DrawStats()
 ZunResult ResultScreen::DrawFinalStats()
 {
     AnmVm *vm;
-    D3DXVECTOR3 pos;
+    Float3 pos;
     f32 rankingProbably;
     f32 clearPercent;
     f32 slowdown;
@@ -2178,13 +2178,13 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
     f32 offsetX;
     i32 spellcardIdx;
     f32 oldX;
-    D3DXVECTOR3 pos;
+    Float3 pos;
     i32 j;
     ScoreListNode *node;
     AnmVm *vm;
     char name[9];
     i32 i;
-    D3DXVECTOR3 charPos;
+    Float3 charPos;
 
     vm = arg->vms;
     g_AnmManager->Flush();
@@ -2381,7 +2381,7 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
     }
     if (arg->resultScreenState == 10 || arg->resultScreenState == 14)
     {
-        pos = D3DXVECTOR3(160.0f, 356.0f, 0.0f);
+        pos = Float3(160.0f, 356.0f, 0.0f);
         for (i = 0; i < 6; i++)
         {
             for (j = 0; j < 16; j++)
@@ -2567,8 +2567,8 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
         vm = arg->vms;
         for (i = 0; i < 41; i++, vm++)
         {
-            vm->pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-            vm->offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+            vm->pos = Float3(0.0f, 0.0f, 0.0f);
+            vm->offset = Float3(0.0f, 0.0f, 0.0f);
             g_AnmManager->SetAnmIdxAndExecuteScript(vm, i + 2304);
         }
         UselessStack::FourBytes();
@@ -2578,7 +2578,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
         {
             UselessStack::FourBytes();
             g_AnmManager->InitializeAndSetActiveSprite(vm, i + 1813);
-            vm->pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+            vm->pos = Float3(0.0f, 0.0f, 0.0f);
             vm->anchor = 3;
             vm->fontWidth = 15;
             vm->fontHeight = 15;

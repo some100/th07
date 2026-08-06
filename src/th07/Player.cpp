@@ -219,7 +219,7 @@ i32 ShtData::FireHomingBullet(Player *player, PlayerBullet *bullet,
                        player->sakuyaTargetPosition.x - bullet->pos.x),
                 shtEntry->angle + 1.5707964f);
             speed = shtEntry->speed * 1.5f;
-            AngleToVector((D3DXVECTOR3 *)&bullet->velocity, angle, speed);
+            AngleToVector((Float3 *)&bullet->velocity, angle, speed);
             bullet->angle = angle;
         }
         return 1;
@@ -242,7 +242,7 @@ i32 ShtData::FireRotatingOrbBullet(Player *player, PlayerBullet *bullet,
         angle = utils::AddNormalizeAngle(player->optionAngle,
                                          shtEntry->angle + 1.5707964f);
         speed = shtEntry->speed;
-        AngleToVector((D3DXVECTOR3 *)&bullet->velocity, angle, speed);
+        AngleToVector((Float3 *)&bullet->velocity, angle, speed);
         bullet->angle = angle;
 
         return 1;
@@ -492,7 +492,7 @@ i32 ShtData::DrawBulletWithTrail(Player *player, PlayerBullet *bullet)
 
 // FUNCTION: TH07 0x0043cde0
 i32 ShtData::OnMissileHit(Player *player, PlayerBullet *bullet,
-                          D3DXVECTOR3 *pos)
+                          Float3 *pos)
 {
     f32 angle;
 
@@ -518,42 +518,42 @@ i32 ShtData::OnMissileHit(Player *player, PlayerBullet *bullet,
         case 1089:
             bullet->hitboxSize.x = 32.0f;
             bullet->hitboxSize.y = 32.0f;
-            AngleToVector((D3DXVECTOR3 *)&bullet->velocity, angle, 4.0f);
+            AngleToVector((Float3 *)&bullet->velocity, angle, 4.0f);
             break;
         case 1090:
             bullet->hitboxSize.x = 42.0;
             bullet->hitboxSize.y = 42.0;
-            AngleToVector((D3DXVECTOR3 *)&bullet->velocity, angle, 4.0f);
+            AngleToVector((Float3 *)&bullet->velocity, angle, 4.0f);
             break;
         case 1091:
             bullet->hitboxSize.x = 48.0f;
             bullet->hitboxSize.y = 48.0f;
-            AngleToVector((D3DXVECTOR3 *)&bullet->velocity, angle, 4.0f);
+            AngleToVector((Float3 *)&bullet->velocity, angle, 4.0f);
             break;
         case 1092:
             bullet->hitboxSize.x = 56.0f;
             bullet->hitboxSize.y = 56.0f;
-            AngleToVector((D3DXVECTOR3 *)&bullet->velocity, angle, 4.0f);
+            AngleToVector((Float3 *)&bullet->velocity, angle, 4.0f);
             break;
         case 1093:
             bullet->hitboxSize.x = 48.0f;
             bullet->hitboxSize.y = 48.0f;
-            AngleToVector((D3DXVECTOR3 *)&bullet->velocity, angle, 6.0f);
+            AngleToVector((Float3 *)&bullet->velocity, angle, 6.0f);
             break;
         case 1094:
             bullet->hitboxSize.x = 64.0f;
             bullet->hitboxSize.y = 64.0f;
-            AngleToVector((D3DXVECTOR3 *)&bullet->velocity, angle, 6.0f);
+            AngleToVector((Float3 *)&bullet->velocity, angle, 6.0f);
             break;
         case 1095:
             bullet->hitboxSize.x = 80.0f;
             bullet->hitboxSize.y = 80.0f;
-            AngleToVector((D3DXVECTOR3 *)&bullet->velocity, angle, 6.0f);
+            AngleToVector((Float3 *)&bullet->velocity, angle, 6.0f);
             break;
         case 1096:
             bullet->hitboxSize.x = 96.0f;
             bullet->hitboxSize.y = 96.0f;
-            AngleToVector((D3DXVECTOR3 *)&bullet->velocity, angle, 6.0f);
+            AngleToVector((Float3 *)&bullet->velocity, angle, 6.0f);
         }
     }
     if (bullet->timer.GetCurrent() % 6 == 0)
@@ -565,9 +565,9 @@ i32 ShtData::OnMissileHit(Player *player, PlayerBullet *bullet,
 
 // FUNCTION: TH07 0x0043d0e0
 i32 ShtData::SpawnHitParticles(Player *player, PlayerBullet *bullet,
-                               D3DXVECTOR3 *pos)
+                               Float3 *pos)
 {
-    D3DXVECTOR3 particlePos;
+    Float3 particlePos;
 
     player->bombParticleTime++;
     if (player->bombParticleTime % 8 == 0)
@@ -822,14 +822,14 @@ void Player::StartFireBulletTimer()
 
 #pragma var_order(bullet, i, enemyBottomRight, bulletBottomRight, enemyTopLeft, damage, bulletTopLeft)
 // FUNCTION: TH07 0x0043d9e0
-i32 Player::CalcDamageToEnemy(D3DXVECTOR3 *center, D3DXVECTOR3 *size,
+i32 Player::CalcDamageToEnemy(Float3 *center, Float3 *size,
                               i32 *param_3)
 {
-    D3DXVECTOR3 bulletTopLeft;
+    Float3 bulletTopLeft;
     i32 damage;
-    D3DXVECTOR3 enemyTopLeft;
-    D3DXVECTOR3 bulletBottomRight;
-    D3DXVECTOR3 enemyBottomRight;
+    Float3 enemyTopLeft;
+    Float3 bulletBottomRight;
+    Float3 enemyBottomRight;
     i32 i;
     PlayerBullet *bullet;
 
@@ -946,14 +946,14 @@ i32 Player::CalcDamageToEnemy(D3DXVECTOR3 *center, D3DXVECTOR3 *size,
 
 #pragma var_order(bombTopLeft, bombY, bombX, i, bulletBottomRight, bulletTopLeft, bombProjectile, bombBottomRight)
 // FUNCTION: TH07 0x0043e0a0
-i32 Player::CheckBombGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
+i32 Player::CheckBombGraze(Float3 *center, Float3 *size)
 {
     BombClearBox *bombProjectile;
     i32 i;
-    D3DXVECTOR3 bulletBottomRight;
-    D3DXVECTOR3 bulletTopLeft;
-    D3DXVECTOR3 bombBottomRight;
-    D3DXVECTOR3 bombTopLeft;
+    Float3 bulletBottomRight;
+    Float3 bulletTopLeft;
+    Float3 bombBottomRight;
+    Float3 bombTopLeft;
     f32 bombY;
     f32 bombX;
 
@@ -1000,10 +1000,10 @@ i32 Player::CheckBombGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
 
 #pragma var_order(killboxBottomRight, killboxTopLeft)
 // FUNCTION: TH07 0x0043e260
-i32 Player::CalcKillboxCollision(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
+i32 Player::CalcKillboxCollision(Float3 *center, Float3 *size)
 {
-    D3DXVECTOR3 killboxBottomRight;
-    D3DXVECTOR3 killboxTopLeft;
+    Float3 killboxBottomRight;
+    Float3 killboxTopLeft;
 
     this->itemType = ITEM_POINT_BULLET;
     if (CheckBombGraze(center, size))
@@ -1041,10 +1041,10 @@ i32 Player::CalcKillboxCollision(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
 
 #pragma var_order(bulletBottomRight, bulletTopLeft)
 // FUNCTION: TH07 0x0043e3b0
-i32 Player::CheckGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
+i32 Player::CheckGraze(Float3 *center, Float3 *size)
 {
-    D3DXVECTOR3 bulletBottomRight;
-    D3DXVECTOR3 bulletTopLeft;
+    Float3 bulletBottomRight;
+    Float3 bulletTopLeft;
 
     this->itemType = ITEM_POINT_BULLET;
 
@@ -1076,10 +1076,10 @@ i32 Player::CheckGraze(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
 
 #pragma var_order(itemBottomRight, itemTopLeft)
 // FUNCTION: TH07 0x0043e4e0
-i32 Player::CalcItemBoxCollision(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
+i32 Player::CalcItemBoxCollision(Float3 *center, Float3 *size)
 {
-    D3DXVECTOR3 itemBottomRight;
-    D3DXVECTOR3 itemTopLeft;
+    Float3 itemBottomRight;
+    Float3 itemTopLeft;
 
     if (this->playerState != PLAYER_STATE_ALIVE &&
         this->playerState != PLAYER_STATE_INVULNERABLE &&
@@ -1088,8 +1088,8 @@ i32 Player::CalcItemBoxCollision(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
         return 0;
     }
 
-    memcpy(&itemTopLeft, &(*center - *size / 2.0f), sizeof(D3DXVECTOR3));
-    memcpy(&itemBottomRight, &(*center + *size / 2.0f), sizeof(D3DXVECTOR3));
+    memcpy(&itemTopLeft, &(*center - *size / 2.0f), sizeof(Float3));
+    memcpy(&itemBottomRight, &(*center + *size / 2.0f), sizeof(Float3));
 
     if (this->grabItemTopLeft.x > itemBottomRight.x ||
         this->grabItemBottomRight.x < itemTopLeft.x ||
@@ -1104,13 +1104,13 @@ i32 Player::CalcItemBoxCollision(D3DXVECTOR3 *center, D3DXVECTOR3 *size)
 
 #pragma var_order(playerRelativeTopLeft, laserBottomRight, laserTopLeft, playerRelativeBottomRight)
 // FUNCTION: TH07 0x0043e6b0
-i32 Player::CalcLaserHitbox(D3DXVECTOR3 *center, D3DXVECTOR3 *size,
-                            D3DXVECTOR3 *origin, f32 rotation, i32 canGraze)
+i32 Player::CalcLaserHitbox(Float3 *center, Float3 *size,
+                            Float3 *origin, f32 rotation, i32 canGraze)
 {
-    D3DXVECTOR3 playerRelativeTopLeft;
-    D3DXVECTOR3 playerRelativeBottomRight;
-    D3DXVECTOR3 laserTopLeft;
-    D3DXVECTOR3 laserBottomRight;
+    Float3 playerRelativeTopLeft;
+    Float3 playerRelativeBottomRight;
+    Float3 laserTopLeft;
+    Float3 laserBottomRight;
 
     laserTopLeft = this->positionCenter - *origin;
     utils::Rotate(&laserBottomRight, &laserTopLeft, rotation);
@@ -1174,9 +1174,9 @@ LASER_COLLISION:
 }
 
 // FUNCTION: TH07 0x0043eb90
-void Player::ScoreGraze(D3DXVECTOR3 *param_1)
+void Player::ScoreGraze(Float3 *param_1)
 {
-    D3DXVECTOR3 grazePos;
+    Float3 grazePos;
 
     if (!g_Player.bombInfo.isInUse)
     {
@@ -2035,7 +2035,7 @@ void Player::BreakBorderNaturally()
 
 #pragma var_order(i, bomb)
 // FUNCTION: TH07 0x00441800
-BombClearBox *Player::SpawnBombProjectile(D3DXVECTOR3 *centerPosition,
+BombClearBox *Player::SpawnBombProjectile(Float3 *centerPosition,
                                             f32 posZ, f32 size, i32 itemType)
 {
     BombClearBox *bomb;
@@ -2060,7 +2060,7 @@ BombClearBox *Player::SpawnBombProjectile(D3DXVECTOR3 *centerPosition,
 
 #pragma var_order(i, bomb)
 // FUNCTION: TH07 0x004418b0
-BombClearBox *Player::SpawnBombEffect(D3DXVECTOR3 *pos, f32 sizeY, f32 sizeZ,
+BombClearBox *Player::SpawnBombEffect(Float3 *pos, f32 sizeY, f32 sizeZ,
                                         i32 lifetime, i32 itemType)
 {
     BombClearBox *bomb;
@@ -2196,8 +2196,8 @@ void Player::BreakBorder(u32 unused)
 // FUNCTION: TH07 0x00441e80
 void Player::UpdateUI()
 {
-    this->positionOfLastEnemyHit = D3DXVECTOR3(-999.0f, -999.0f, 0.0f);
-    this->sakuyaTargetPosition = D3DXVECTOR3(-999.0f, -999.0f, 0.0f);
+    this->positionOfLastEnemyHit = Float3(-999.0f, -999.0f, 0.0f);
+    this->sakuyaTargetPosition = Float3(-999.0f, -999.0f, 0.0f);
     this->targetingEnemy = 0;
     if (this->positionCenter.y >= 400.0f)
     {
@@ -2353,7 +2353,7 @@ u32 Player::OnDrawLowPrio(Player *arg)
 
 #pragma var_order(y, x)
 // FUNCTION: TH07 0x00442370
-f32 Player::AngleToPlayer(D3DXVECTOR3 *pos)
+f32 Player::AngleToPlayer(Float3 *pos)
 {
     f32 y;
     f32 x;

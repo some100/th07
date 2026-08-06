@@ -841,8 +841,8 @@ ZunResult Supervisor::RegisterChain()
 // FUNCTION: TH07 0x004390a5
 void Supervisor::DrawFpsCounter(i32 param_1)
 {
-    D3DXVECTOR3 local_30;
-    D3DXVECTOR3 local_24;
+    Float3 local_30;
+    Float3 local_24;
     LARGE_INTEGER local_18;
     f32 targetFps;
     DWORD curTime;

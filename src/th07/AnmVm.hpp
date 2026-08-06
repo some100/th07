@@ -126,8 +126,8 @@ struct AnmRawInstr
 
 struct AnmVmBase
 {
-    D3DXVECTOR3 rotation;
-    D3DXVECTOR3 angleVel;
+    Float3 rotation;
+    Float3 angleVel;
     Float2 scale;
     Float2 scaleGrowth;
     Float2 uvScrollPos;
@@ -210,7 +210,7 @@ struct AnmVm : AnmVmBase
     };
     i16 autoRotate;
     i16 pendingInterrupt;
-    D3DXVECTOR3 pos;
+    Float3 pos;
     i16 activeSpriteIdx;
     i16 baseSpriteIdx;
     i16 anmFileIdx;
@@ -218,15 +218,15 @@ struct AnmVm : AnmVmBase
     AnmRawInstr *beginningOfScript;
     AnmRawInstr *currentInstruction;
     AnmLoadedSprite *sprite;
-    D3DXVECTOR3 posInterpInitial;
-    D3DXVECTOR3 posInterpFinal;
-    D3DXVECTOR3 rotateInterpInitial;
-    D3DXVECTOR3 rotateInterpFinal;
+    Float3 posInterpInitial;
+    Float3 posInterpFinal;
+    Float3 rotateInterpInitial;
+    Float3 rotateInterpFinal;
     Float2 scaleInterpInitial;
     Float2 scaleInterpFinal;
     ZunColor colorInterpInitialColor;
     ZunColor colorInterpFinalColor;
-    D3DXVECTOR3 offset;
+    Float3 offset;
     i32 timeOfLastSpriteSet;
     u8 fontWidth;
     u8 fontHeight;

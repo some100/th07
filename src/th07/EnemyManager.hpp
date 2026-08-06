@@ -10,8 +10,8 @@ extern u32 g_SpellcardScore[141];
 
 struct EnemyHistory
 {
-    D3DXVECTOR3 position;
-    D3DXVECTOR3 axisSpeed;
+    Float3 pos;
+    Float3 axisSpeed;
     f32 angle;
 };
 
@@ -48,8 +48,8 @@ struct Enemy
 {
     Enemy();
 
-    void CheckBulletPlayerCollision(D3DXVECTOR3 *bulletCenter,
-                                    D3DXVECTOR3 *bulletSize);
+    void CheckBulletPlayerCollision(Float3 *bulletCenter,
+                                    Float3 *bulletSize);
     void ClampPos();
     void Despawn();
     i32 HandleLifeCallback();
@@ -102,12 +102,12 @@ struct Enemy
     i32 deathCallbackSub;
     i32 interrupts[32];
     i32 runInterrupt;
-    D3DXVECTOR3 position;
-    D3DXVECTOR3 axisSpeed;
-    D3DXVECTOR3 prevPos;
-    D3DXVECTOR3 deltaPos;
-    D3DXVECTOR3 hitboxSize;
-    D3DXVECTOR3 grazeSize;
+    Float3 pos;
+    Float3 axisSpeed;
+    Float3 prevPos;
+    Float3 deltaPos;
+    Float3 hitboxSize;
+    Float3 grazeSize;
     f32 angle;
     f32 angularVelocity;
     f32 moveAngle;
@@ -116,9 +116,9 @@ struct Enemy
     f32 moveAcceleration;
     f32 moveRadius;
     f32 moveRadialVelocity;
-    D3DXVECTOR3 shootOffset;
-    D3DXVECTOR3 moveInterp;
-    D3DXVECTOR3 moveInterpStartPos;
+    Float3 shootOffset;
+    Float3 moveInterp;
+    Float3 moveInterpStartPos;
     ZunTimer moveInterpTimer;
     i32 moveInterpStartTime;
     f32 bulletRankSpeedLow;
@@ -260,9 +260,9 @@ struct EnemyManager
     i32 HasActiveBoss();
     i32 RemoveAllEnemies(i32 scoreMax, i32 scoreMin);
     static void RunEclTimeline(EclTimeline *timeline);
-    Enemy *SpawnEnemy(i32 eclSubId, D3DXVECTOR3 *pos, i32 life, i32 itemDrop,
+    Enemy *SpawnEnemy(i32 eclSubId, Float3 *pos, i32 life, i32 itemDrop,
                       i32 score, u8 param_6);
-    Enemy *SpawnEnemyEx(i32 eclSubId, D3DXVECTOR3 *pos, i32 life, i32 itemDrop,
+    Enemy *SpawnEnemyEx(i32 eclSubId, Float3 *pos, i32 life, i32 itemDrop,
                         i32 score, EclContextArgs *args);
 
     const char *stgEnmAnmFilename;

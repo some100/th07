@@ -2395,7 +2395,7 @@ i32 MainMenu::DrawReplayMenu()
 // FUNCTION: TH07 0x0045b9ad
 i32 MainMenu::DrawPracticeMenu()
 {
-    D3DXVECTOR3 local_1c;
+    Float3 local_1c;
     i32 local_10;
     i32 i;
     AnmVm *vm;
@@ -2523,7 +2523,7 @@ i32 MainMenu::MoveCursorHorizontal(i32 max)
 // FUNCTION: TH07 0x0045bd6c
 u32 MainMenu::OnDraw(MainMenu *arg)
 {
-    D3DXVECTOR3 savedPos;
+    Float3 savedPos;
     AnmVm *local_c;
     i32 i;
 

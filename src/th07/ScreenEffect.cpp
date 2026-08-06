@@ -66,10 +66,10 @@ void ScreenEffect::DrawSquare(ZunRect *rect, D3DCOLOR color)
 
     VertexDiffuseXyzrhw vertices[4];
 
-    vertices[0].pos = D3DXVECTOR3(rect->left, rect->top, 0.0f);
-    vertices[1].pos = D3DXVECTOR3(rect->right, rect->top, 0.0f);
-    vertices[2].pos = D3DXVECTOR3(rect->left, rect->bottom, 0.0f);
-    vertices[3].pos = D3DXVECTOR3(rect->right, rect->bottom, 0.0f);
+    vertices[0].pos = Float3(rect->left, rect->top, 0.0f);
+    vertices[1].pos = Float3(rect->right, rect->top, 0.0f);
+    vertices[2].pos = Float3(rect->left, rect->bottom, 0.0f);
+    vertices[3].pos = Float3(rect->right, rect->bottom, 0.0f);
     vertices[0].w = vertices[1].w = vertices[2].w = vertices[3].w = 1.0f;
     vertices[0].diffuse.color =
         vertices[1].diffuse.color =
@@ -114,10 +114,10 @@ void ScreenEffect::DrawColoredQuad(ZunRect *rect, D3DCOLOR param_2,
 
     VertexDiffuseXyzrhw vertices[4];
 
-    vertices[0].pos = D3DXVECTOR3(rect->left, rect->top, 0.0f);
-    vertices[1].pos = D3DXVECTOR3(rect->right, rect->top, 0.0f);
-    vertices[2].pos = D3DXVECTOR3(rect->left, rect->bottom, 0.0f);
-    vertices[3].pos = D3DXVECTOR3(rect->right, rect->bottom, 0.0f);
+    vertices[0].pos = Float3(rect->left, rect->top, 0.0f);
+    vertices[1].pos = Float3(rect->right, rect->top, 0.0f);
+    vertices[2].pos = Float3(rect->left, rect->bottom, 0.0f);
+    vertices[3].pos = Float3(rect->right, rect->bottom, 0.0f);
     vertices[0].w = vertices[1].w = vertices[2].w = vertices[3].w = 1.0f;
     vertices[0].diffuse.color = param_2;
     vertices[1].diffuse.color = param_3;

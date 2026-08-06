@@ -187,7 +187,7 @@ recheck:
 // FUNCTION: TH07 0x0043ac4c
 u32 MusicRoom::OnDraw(MusicRoom *arg)
 {
-    D3DXVECTOR3 local_18;
+    Float3 local_18;
     char local_c[4];
     i32 i;
 

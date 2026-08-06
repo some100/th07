@@ -86,18 +86,18 @@ void AnmManager::SetupVertexBuffer()
 {
     RenderVertexInfo *vertexData;
 
-    this->vertexBufferContents[2].position.x = -128.0f;
-    this->vertexBufferContents[0].position.x = -128.0f;
-    this->vertexBufferContents[3].position.x = 128.0f;
-    this->vertexBufferContents[1].position.x = 128.0f;
-    this->vertexBufferContents[1].position.y = -128.0f;
-    this->vertexBufferContents[0].position.y = -128.0f;
-    this->vertexBufferContents[3].position.y = 128.0f;
-    this->vertexBufferContents[2].position.y = 128.0f;
-    this->vertexBufferContents[3].position.z = 0.0f;
-    this->vertexBufferContents[2].position.z = 0.0f;
-    this->vertexBufferContents[1].position.z = 0.0f;
-    this->vertexBufferContents[0].position.z = 0.0f;
+    this->vertexBufferContents[2].pos.x = -128.0f;
+    this->vertexBufferContents[0].pos.x = -128.0f;
+    this->vertexBufferContents[3].pos.x = 128.0f;
+    this->vertexBufferContents[1].pos.x = 128.0f;
+    this->vertexBufferContents[1].pos.y = -128.0f;
+    this->vertexBufferContents[0].pos.y = -128.0f;
+    this->vertexBufferContents[3].pos.y = 128.0f;
+    this->vertexBufferContents[2].pos.y = 128.0f;
+    this->vertexBufferContents[3].pos.z = 0.0f;
+    this->vertexBufferContents[2].pos.z = 0.0f;
+    this->vertexBufferContents[1].pos.z = 0.0f;
+    this->vertexBufferContents[0].pos.z = 0.0f;
     this->vertexBufferContents[2].textureUV.x = 0.0f;
     this->vertexBufferContents[0].textureUV.x = 0.0f;
     this->vertexBufferContents[3].textureUV.x = 1.0f;
@@ -106,14 +106,14 @@ void AnmManager::SetupVertexBuffer()
     this->vertexBufferContents[0].textureUV.y = 0.0f;
     this->vertexBufferContents[3].textureUV.y = 1.0f;
     this->vertexBufferContents[2].textureUV.y = 1.0f;
-    g_Quad3DFallback[0].position =
-        this->vertexBufferContents[0].position;
-    g_Quad3DFallback[1].position =
-        this->vertexBufferContents[1].position;
-    g_Quad3DFallback[2].position =
-        this->vertexBufferContents[2].position;
-    g_Quad3DFallback[3].position =
-        this->vertexBufferContents[3].position;
+    g_Quad3DFallback[0].pos =
+        this->vertexBufferContents[0].pos;
+    g_Quad3DFallback[1].pos =
+        this->vertexBufferContents[1].pos;
+    g_Quad3DFallback[2].pos =
+        this->vertexBufferContents[2].pos;
+    g_Quad3DFallback[3].pos =
+        this->vertexBufferContents[3].pos;
     g_Quad3DFallback[0].textureUV.x =
         this->vertexBufferContents[0].textureUV.x;
     g_Quad3DFallback[0].textureUV.y =
@@ -1194,21 +1194,21 @@ ZunResult AnmManager::CalcBillboardTransform(AnmVm *vm)
     f32 sinZ;
     D3DXMATRIX matrix;
     f32 z = vm->rotation.z;
-    D3DXVECTOR3 projectRight;
-    D3DXVECTOR3 projectCenter;
-    D3DXVECTOR3 projectRightOffset;
+    Float3 projectRight;
+    Float3 projectCenter;
+    Float3 projectRightOffset;
     f32 cosZ;
 
     sincosf_macro(sinZ, cosZ, z);
 
-    D3DXVECTOR3 origin(0.0f, 0.0f, 0.0f);
+    Float3 origin(0.0f, 0.0f, 0.0f);
 
     D3DXMatrixIdentity(&matrix);
     matrix.m[3][0] = vm->pos.x;
     matrix.m[3][1] = vm->pos.y;
     matrix.m[3][2] = vm->pos.z;
 
-    D3DXVec3Project(&projectCenter, &origin, &g_Supervisor.viewport,
+    D3DXVec3Project(projectCenter.asD3DX(), origin.asD3DX(), &g_Supervisor.viewport,
                     &g_Supervisor.projectionMatrix, &g_Supervisor.viewMatrix,
                     &matrix);
 
@@ -1217,13 +1217,13 @@ ZunResult AnmManager::CalcBillboardTransform(AnmVm *vm)
         return ZUN_ERROR;
     }
 
-    D3DXVec3Project(&projectRight, &g_Stage.cam.right, &g_Supervisor.viewport,
+    D3DXVec3Project(projectRight.asD3DX(), g_Stage.cam.right.asD3DX(), &g_Supervisor.viewport,
                     &g_Supervisor.projectionMatrix, &g_Supervisor.viewMatrix,
                     &matrix);
 
     projectRightOffset = projectRight - projectCenter;
 
-    halfLength = D3DXVec3Length(&projectRightOffset) * 0.5f;
+    halfLength = D3DXVec3Length(projectRightOffset.asD3DX()) * 0.5f;
     halfWidth = halfLength * vm->sprite->widthPx * vm->scale.x;
     halfHeight = halfLength * vm->sprite->heightPx * vm->scale.y;
 
@@ -1343,19 +1343,19 @@ void AnmManager::CalcProjectedTransform(AnmVm *vm)
     world.m[3][2] = vm->pos.z;
 
     D3DXVec3Project((D3DXVECTOR3 *)&g_QuadVertices[0].pos,
-                    &this->vertexBufferContents[0].position,
+                    this->vertexBufferContents[0].pos.asD3DX(),
                     &g_Supervisor.viewport, &g_Supervisor.projectionMatrix,
                     &g_Supervisor.viewMatrix, &world);
     D3DXVec3Project((D3DXVECTOR3 *)&g_QuadVertices[1].pos,
-                    &this->vertexBufferContents[1].position,
+                    this->vertexBufferContents[1].pos.asD3DX(),
                     &g_Supervisor.viewport, &g_Supervisor.projectionMatrix,
                     &g_Supervisor.viewMatrix, &world);
     D3DXVec3Project((D3DXVECTOR3 *)&g_QuadVertices[2].pos,
-                    &this->vertexBufferContents[2].position,
+                    this->vertexBufferContents[2].pos.asD3DX(),
                     &g_Supervisor.viewport, &g_Supervisor.projectionMatrix,
                     &g_Supervisor.viewMatrix, &world);
     D3DXVec3Project((D3DXVECTOR3 *)&g_QuadVertices[3].pos,
-                    &this->vertexBufferContents[3].position,
+                    this->vertexBufferContents[3].pos.asD3DX(),
                     &g_Supervisor.viewport, &g_Supervisor.projectionMatrix,
                     &g_Supervisor.viewMatrix, &world);
 
@@ -1752,12 +1752,12 @@ WHY_NOT_JUST_CONTINUE:
             if (!vm->useOffset)
             {
                 vm->pos =
-                    D3DXVECTOR3(GET_FLOAT_VALUE(0), GET_FLOAT_VALUE(1), GET_FLOAT_VALUE(2));
+                    Float3(GET_FLOAT_VALUE(0), GET_FLOAT_VALUE(1), GET_FLOAT_VALUE(2));
             }
             else
             {
                 vm->offset =
-                    D3DXVECTOR3(GET_FLOAT_VALUE(0), GET_FLOAT_VALUE(1), GET_FLOAT_VALUE(2));
+                    Float3(GET_FLOAT_VALUE(0), GET_FLOAT_VALUE(1), GET_FLOAT_VALUE(2));
             }
             break;
         case ANM_POS_TIME_ACCEL:
@@ -1778,7 +1778,7 @@ WHY_NOT_JUST_CONTINUE:
                 vm->posInterpInitial = vm->offset;
             }
             vm->posInterpFinal =
-                D3DXVECTOR3(GET_FLOAT_VALUE(0), GET_FLOAT_VALUE(1), GET_FLOAT_VALUE(2));
+                Float3(GET_FLOAT_VALUE(0), GET_FLOAT_VALUE(1), GET_FLOAT_VALUE(2));
             vm->interpEndTimes[0] = GET_INT_VALUE(3);
             vm->interpStartTimes[0] = 0;
             break;

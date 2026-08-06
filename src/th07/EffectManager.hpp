@@ -8,13 +8,13 @@ typedef i32 (*EffectCallback)(struct Effect *);
 struct Effect
 {
     AnmVm vm;
-    D3DXVECTOR3 pos1;
-    D3DXVECTOR3 custom;
-    D3DXVECTOR3 velocity;
-    D3DXVECTOR3 acceleration;
-    D3DXVECTOR3 basePosition;
-    D3DXVECTOR3 emitterPosition;
-    D3DXVECTOR3 direction;
+    Float3 pos1;
+    Float3 custom;
+    Float3 velocity;
+    Float3 acceleration;
+    Float3 basePosition;
+    Float3 emitterPosition;
+    Float3 direction;
     D3DXQUATERNION rotationQuat;
     f32 radius;
     f32 angularVelocity;
@@ -72,16 +72,16 @@ struct EffectManager
     static i32 InitWeatherSlow(Effect *effect);
     static i32 InitWeatherFalling(Effect *effect);
 
-    static void DoSomethingWithEffects(D3DXVECTOR3 *param_1);
+    static void DoSomethingWithEffects(Float3 *param_1);
     static void ModifyEffect1eAcceleration();
     static i32 UpdateNoOp(Effect *effect);
 
-    Effect *SpawnParticles(i32 effectId, D3DXVECTOR3 *pos, i32 numParticles,
+    Effect *SpawnParticles(i32 effectId, Float3 *pos, i32 numParticles,
                            D3DCOLOR color);
-    Effect *SpawnEffect(i32 effectId, D3DXVECTOR3 *pos, i32 param_3, i32 param_4,
+    Effect *SpawnEffect(i32 effectId, Float3 *pos, i32 param_3, i32 param_4,
                         D3DCOLOR color);
-    Effect *SpawnMovingParticles(i32 effectId, D3DXVECTOR3 *pos,
-                                 D3DXVECTOR3 *velocity, i32 numParticles,
+    Effect *SpawnMovingParticles(i32 effectId, Float3 *pos,
+                                 Float3 *velocity, i32 numParticles,
                                  D3DCOLOR color);
     i32 UpdateSpecialEffect();
 

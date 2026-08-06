@@ -76,7 +76,7 @@ struct MsgRawHeader
 
 struct GuiImplChildB
 {
-    D3DXVECTOR3 pos;
+    Float3 pos;
     i32 fmtArg;
     i32 isShown;
     ZunTimer timer;

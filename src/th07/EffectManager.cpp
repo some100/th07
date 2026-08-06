@@ -133,13 +133,13 @@ i32 EffectManager::Init2dEffect(Effect *effect)
 i32 EffectManager::UpdateOrbitEffect(Effect *effect)
 {
     f32 fadeOutRatio;
-    D3DXVECTOR3 local_64;
+    Float3 local_64;
     f32 cosAngle;
     D3DXMATRIX local_50;
     f32 sinAngle;
-    D3DXVECTOR3 local_10;
+    Float3 local_10;
 
-    D3DXVec3Normalize(&local_64, &effect->direction);
+    D3DXVec3Normalize(local_64.asD3DX(), effect->direction.asD3DX());
     sinAngle = sinf(effect->angularVelocity);
     cosAngle = cosf(effect->angularVelocity);
 
@@ -154,17 +154,17 @@ i32 EffectManager::UpdateOrbitEffect(Effect *effect)
     local_10.y = local_64.z * 0.0f - local_64.x * 1.0f;
     local_10.z = local_64.x * 0.0f - local_64.y * 0.0f;
 
-    if (D3DXVec3LengthSq(&local_10) < 0.00001f)
+    if (D3DXVec3LengthSq(local_10.asD3DX()) < 0.00001f)
     {
-        local_64 = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+        local_64 = Float3(1.0f, 0.0f, 0.0f);
     }
     else
     {
-        D3DXVec3Normalize(&local_10, &local_10);
+        D3DXVec3Normalize(local_10.asD3DX(), local_10.asD3DX());
     }
 
     local_10 *= effect->radius;
-    D3DXVec3TransformCoord(&local_10, &local_10, &local_50);
+    D3DXVec3TransformCoord(local_10.asD3DX(), local_10.asD3DX(), &local_50);
     local_10.z *= 6.0f;
 
     effect->pos1 = local_10 + effect->emitterPosition;
@@ -238,7 +238,7 @@ i32 EffectManager::UpdateBurst30Frames(Effect *effect)
 
 #pragma var_order(effect, i)
 // FUNCTION: TH07 0x0041adf0
-void EffectManager::DoSomethingWithEffects(D3DXVECTOR3 *param_1)
+void EffectManager::DoSomethingWithEffects(Float3 *param_1)
 {
     i32 i;
     Effect *effect;
@@ -248,7 +248,7 @@ void EffectManager::DoSomethingWithEffects(D3DXVECTOR3 *param_1)
     {
         if (effect->effectId == 20 || effect->effectId == 31)
         {
-            effect->basePosition += *param_1;
+            effect->basePosition += *(Float3 *)param_1;
         }
     }
 }
@@ -274,15 +274,15 @@ void EffectManager::ModifyEffect1eAcceleration()
 // FUNCTION: TH07 0x0041aef0
 i32 EffectManager::UpdateWeatherPhysics(Effect *effect)
 {
-    D3DXVECTOR3 local_10;
+    Float3 local_10;
 
     effect->velocity += effect->acceleration;
     effect->basePosition += effect->velocity;
     effect->pos1 = effect->basePosition;
 
     local_10 = effect->pos1 - g_Stage.cam.pos;
-    D3DXVec3Normalize(&local_10, &local_10);
-    f32 dot = D3DXVec3Dot(&g_Stage.cam.lookAtDir, &local_10);
+    D3DXVec3Normalize(local_10.asD3DX(), local_10.asD3DX());
+    f32 dot = D3DXVec3Dot(g_Stage.cam.lookAtDir.asD3DX(), local_10.asD3DX());
     if (dot < 0.94f)
     {
         return 0;
@@ -305,7 +305,7 @@ i32 EffectManager::UpdateWeatherPhysics(Effect *effect)
 i32 EffectManager::InitWeatherForward(Effect *effect)
 {
     i32 chance;
-    D3DXVECTOR3 camLookAtInv;
+    Float3 camLookAtInv;
 
     camLookAtInv = -g_Stage.cam.lookAt;
 
@@ -503,7 +503,7 @@ i32 EffectManager::UpdateNoOp(Effect *effect)
 
 #pragma var_order(effect, i)
 // FUNCTION: TH07 0x0041c1c0
-Effect *EffectManager::SpawnParticles(i32 effectId, D3DXVECTOR3 *pos,
+Effect *EffectManager::SpawnParticles(i32 effectId, Float3 *pos,
                                       i32 numParticles, D3DCOLOR color)
 {
     i32 i;
@@ -541,7 +541,7 @@ Effect *EffectManager::SpawnParticles(i32 effectId, D3DXVECTOR3 *pos,
         effect->timer = 0;
         effect->isFadingOut = 0;
         effect->fadeOutTime = 0;
-        effect->custom = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+        effect->custom = Float3(0.0f, 0.0f, 0.0f);
         if (g_EffectMapping[effectId].initCallback &&
             g_EffectMapping[effectId].initCallback(effect))
         {
@@ -567,8 +567,8 @@ Effect *EffectManager::SpawnParticles(i32 effectId, D3DXVECTOR3 *pos,
 
 #pragma var_order(effect, i)
 // FUNCTION: TH07 0x0041c400
-Effect *EffectManager::SpawnMovingParticles(i32 effectId, D3DXVECTOR3 *pos,
-                                            D3DXVECTOR3 *velocity,
+Effect *EffectManager::SpawnMovingParticles(i32 effectId, Float3 *pos,
+                                            Float3 *velocity,
                                             i32 numParticles, D3DCOLOR color)
 {
     i32 i;
@@ -631,7 +631,7 @@ Effect *EffectManager::SpawnMovingParticles(i32 effectId, D3DXVECTOR3 *pos,
 }
 
 // FUNCTION: TH07 0x0041c610
-Effect *EffectManager::SpawnEffect(i32 effectId, D3DXVECTOR3 *pos, i32 param_3,
+Effect *EffectManager::SpawnEffect(i32 effectId, Float3 *pos, i32 param_3,
                                    i32 param_4, D3DCOLOR color)
 {
     Effect *effect;
@@ -648,7 +648,7 @@ Effect *EffectManager::SpawnEffect(i32 effectId, D3DXVECTOR3 *pos, i32 param_3,
     effect->timer = 0;
     effect->isFadingOut = 0;
     effect->fadeOutTime = 0;
-    effect->custom = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+    effect->custom = Float3(0.0f, 0.0f, 0.0f);
     if (g_EffectMapping[effectId].initCallback)
     {
         if (g_EffectMapping[effectId].initCallback(effect))

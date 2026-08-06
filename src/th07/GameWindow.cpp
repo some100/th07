@@ -325,9 +325,9 @@ i32 GameWindow::CreateGameWindow(HINSTANCE hInstance)
 // FUNCTION: TH07 0x00434bd0
 i32 GameWindow::InitD3dRendering()
 {
-    D3DXVECTOR3 pEye;
-    D3DXVECTOR3 pAt;
-    D3DXVECTOR3 pUp;
+    Float3 pEye;
+    Float3 pAt;
+    Float3 pUp;
     char capsBuffer[8192];
     f32 fov;
     f32 aspectRatio;
@@ -505,7 +505,7 @@ i32 GameWindow::InitD3dRendering()
     pEye.x = halfWidth;
     pEye.y = -halfHeight;
     pEye.z = -halfCameraDistance;
-    D3DXMatrixLookAtLH(&g_Supervisor.viewMatrix, &pEye, &pAt, &pUp);
+    D3DXMatrixLookAtLH(&g_Supervisor.viewMatrix, pEye.asD3DX(), pAt.asD3DX(), pUp.asD3DX());
     D3DXMatrixPerspectiveFovLH(&g_Supervisor.projectionMatrix, fov,
                                aspectRatio, 100.0f, 10000.0f);
 

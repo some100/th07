@@ -1,7 +1,6 @@
 #pragma once
 
-#include <d3dx8math.h>
-
+#include "ZunMath.hpp"
 #include "inttypes.hpp"
 
 union AnyArg {
@@ -17,7 +16,7 @@ union AnyArg {
 namespace utils
 {
 f32 AddNormalizeAngle(f32 a, f32 b);
-void Rotate(D3DXVECTOR3 *out, D3DXVECTOR3 *point, f32 angle);
+void Rotate(Float3 *out, Float3 *point, f32 angle);
 
 inline f32 NormalizeAngle(f32 a)
 {

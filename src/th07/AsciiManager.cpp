@@ -76,7 +76,7 @@ u32 AsciiManager::OnUpdate(AsciiManager *arg)
                 continue;
             }
 
-            curPopup->position.y -= 0.5f * g_Supervisor.effectiveFramerateMultiplier;
+            curPopup->pos.y -= 0.5f * g_Supervisor.effectiveFramerateMultiplier;
             curPopup->timer++;
             if (curPopup->timer > 60)
             {
@@ -238,7 +238,7 @@ void AsciiManager::CutChain()
 }
 
 // FUNCTION: TH07 0x00401f40
-void AsciiManager::AddString(D3DXVECTOR3 *position, const char *text)
+void AsciiManager::AddString(Float3 *pos, const char *text)
 {
     if (this->numStrings >= 256)
     {
@@ -252,7 +252,7 @@ void AsciiManager::AddString(D3DXVECTOR3 *position, const char *text)
     // the only reason this doesn't cause a problem is because nothing more
     // than 64 chars is passed through this function
     strcpy(curString->text, text);
-    *(D3DXVECTOR3 *)&curString->position = *position;
+    *(Float3 *)&curString->pos = *pos;
     curString->color = this->color;
     curString->scale.x = this->scale.x;
     curString->scale.y = this->scale.y;
@@ -269,7 +269,7 @@ void AsciiManager::AddString(D3DXVECTOR3 *position, const char *text)
 }
 
 // FUNCTION: TH07 0x00402060
-void AsciiManager::AddFormatText(AsciiManager *manager, D3DXVECTOR3 *position,
+void AsciiManager::AddFormatText(AsciiManager *manager, Float3 *pos,
                                  const char *fmt, ...)
 {
     char str[508];
@@ -277,7 +277,7 @@ void AsciiManager::AddFormatText(AsciiManager *manager, D3DXVECTOR3 *position,
 
     va_start(args, fmt);
     vsprintf(str, fmt, args);
-    manager->AddString(position, str);
+    manager->AddString(pos, str);
 
     va_end(args);
 }
@@ -299,7 +299,7 @@ void AsciiManager::DrawStrings()
     this->vm0.anchor = 3;
     for (i = 0; i < this->numStrings; i++, string++)
     {
-        this->vm0.pos = *(D3DXVECTOR3 *)&string->position;
+        this->vm0.pos = *(Float3 *)&string->pos;
         text = string->text;
         this->vm0.scale.x = string->scale.x;
         this->vm0.scale.y = string->scale.y;
@@ -330,7 +330,7 @@ void AsciiManager::DrawStrings()
             if (*(u8 *)text == '\n')
             {
                 this->vm0.pos.y += 16.0f * string->scale.y;
-                this->vm0.pos.x = string->position.x;
+                this->vm0.pos.x = string->pos.x;
             }
             else if (*(u8 *)text == ' ')
             {
@@ -389,7 +389,7 @@ void AsciiManager::DrawStrings()
 }
 
 // FUNCTION: TH07 0x004024f0
-void AsciiManager::CreatePopup1(D3DXVECTOR3 *position, i32 value,
+void AsciiManager::CreatePopup1(Float3 *pos, i32 value,
                                 D3DCOLOR color)
 {
     i32 characterCount;
@@ -421,14 +421,14 @@ void AsciiManager::CreatePopup1(D3DXVECTOR3 *position, i32 value,
     popup->characterCount = (u8)characterCount;
     popup->color = color;
     popup->timer = 0;
-    *(D3DXVECTOR3 *)&popup->position = *position;
-    popup->position.x += g_GameManager.arcadeRegionTopLeftPos.x;
-    popup->position.y += g_GameManager.arcadeRegionTopLeftPos.y;
+    *(Float3 *)&popup->pos = *pos;
+    popup->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
+    popup->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
     this->nextPopupIndex1++;
 }
 
 // FUNCTION: TH07 0x00402630
-void AsciiManager::CreatePopup2(D3DXVECTOR3 *position, i32 value,
+void AsciiManager::CreatePopup2(Float3 *pos, i32 value,
                                 D3DCOLOR color)
 {
     i32 characterCount;
@@ -460,9 +460,9 @@ void AsciiManager::CreatePopup2(D3DXVECTOR3 *position, i32 value,
     popup->characterCount = (u8)characterCount;
     popup->color = color;
     popup->timer = 0;
-    *(D3DXVECTOR3 *)&popup->position = *position;
-    popup->position.x += g_GameManager.arcadeRegionTopLeftPos.x;
-    popup->position.y += g_GameManager.arcadeRegionTopLeftPos.y;
+    *(Float3 *)&popup->pos = *pos;
+    popup->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
+    popup->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
     this->nextPopupIndex2++;
 }
 
@@ -560,8 +560,8 @@ i32 PauseMenu::OnUpdate()
         this->menuSprites[1].color.color = 0xffffffff;
         this->menuSprites[3].color.color = 0x80303030;
         this->menuSprites[2].color.color = 0x80303030;
-        this->menuSprites[1].offset = D3DXVECTOR3(-4.0f, -4.0f, 0.0f);
-        this->menuSprites[3].offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+        this->menuSprites[1].offset = Float3(-4.0f, -4.0f, 0.0f);
+        this->menuSprites[3].offset = Float3(0.0f, 0.0f, 0.0f);
         this->menuSprites[2].offset = this->menuSprites[3].offset;
         if (this->numFrames >= 4)
         {
@@ -600,9 +600,9 @@ i32 PauseMenu::OnUpdate()
         this->menuSprites[3].color.color = 0x80303030;
         this->menuSprites[1].color.color = 0x80303030;
         this->menuSprites[2].color.color = 0xffffffff;
-        this->menuSprites[3].offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+        this->menuSprites[3].offset = Float3(0.0f, 0.0f, 0.0f);
         this->menuSprites[1].offset = this->menuSprites[3].offset;
-        this->menuSprites[2].offset = D3DXVECTOR3(-4.0f, -4.0f, 0.0f);
+        this->menuSprites[2].offset = Float3(-4.0f, -4.0f, 0.0f);
         if (this->numFrames >= 4)
         {
             if (WAS_PRESSED_RAW(TH_BUTTON_UP))
@@ -646,9 +646,9 @@ i32 PauseMenu::OnUpdate()
         this->menuSprites[2].color.color = 0x80303030;
         this->menuSprites[1].color.color = 0x80303030;
         this->menuSprites[3].color.color = 0xffffffff;
-        this->menuSprites[2].offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+        this->menuSprites[2].offset = Float3(0.0f, 0.0f, 0.0f);
         this->menuSprites[1].offset = this->menuSprites[2].offset;
-        this->menuSprites[3].offset = D3DXVECTOR3(-4.0f, -4.0f, 0.0f);
+        this->menuSprites[3].offset = Float3(-4.0f, -4.0f, 0.0f);
         if (this->numFrames >= 4)
         {
             if (WAS_PRESSED_RAW(TH_BUTTON_UP))
@@ -698,8 +698,8 @@ i32 PauseMenu::OnUpdate()
     case 7:
         this->menuSprites[5].color.color = 0xffff8080;
         this->menuSprites[6].color.color = 0x80808080;
-        this->menuSprites[5].offset = D3DXVECTOR3(-4.0f, -4.0f, 0.0f);
-        this->menuSprites[6].offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+        this->menuSprites[5].offset = Float3(-4.0f, -4.0f, 0.0f);
+        this->menuSprites[6].offset = Float3(0.0f, 0.0f, 0.0f);
         if (this->numFrames >= 4)
         {
             if (WAS_PRESSED_RAW(TH_BUTTON_UP) || WAS_PRESSED_RAW(TH_BUTTON_DOWN))
@@ -737,8 +737,8 @@ i32 PauseMenu::OnUpdate()
     case 8:
         this->menuSprites[5].color.color = 0x80808080;
         this->menuSprites[6].color.color = 0xffff8080;
-        this->menuSprites[5].offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-        this->menuSprites[6].offset = D3DXVECTOR3(-4.0f, -4.0f, 0.0f);
+        this->menuSprites[5].offset = Float3(0.0f, 0.0f, 0.0f);
+        this->menuSprites[6].offset = Float3(-4.0f, -4.0f, 0.0f);
         if (this->numFrames >= 4)
         {
             if (WAS_PRESSED_RAW(TH_BUTTON_UP) || WAS_PRESSED_RAW(TH_BUTTON_DOWN))
@@ -911,8 +911,8 @@ i32 RetryMenu::OnUpdate()
     case 1:
         this->menuSprites[2].color.color = 0xffff8080;
         this->menuSprites[3].color.color = 0x80808080;
-        this->menuSprites[2].offset = D3DXVECTOR3(-4.0f, -4.0f, 0.0f);
-        this->menuSprites[3].offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+        this->menuSprites[2].offset = Float3(-4.0f, -4.0f, 0.0f);
+        this->menuSprites[3].offset = Float3(0.0f, 0.0f, 0.0f);
         if (this->numFrames >= 4)
         {
             if (WAS_PRESSED_RAW(TH_BUTTON_UP) || WAS_PRESSED_RAW(TH_BUTTON_DOWN))
@@ -936,8 +936,8 @@ i32 RetryMenu::OnUpdate()
     case 2:
         this->menuSprites[3].color.color = 0xffff8080;
         this->menuSprites[2].color.color = 0x80808080;
-        this->menuSprites[3].offset = D3DXVECTOR3(-4.0f, -4.0f, 0.0f);
-        this->menuSprites[2].offset = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+        this->menuSprites[3].offset = Float3(-4.0f, -4.0f, 0.0f);
+        this->menuSprites[2].offset = Float3(0.0f, 0.0f, 0.0f);
         if (this->numFrames >= 30)
         {
             if (WAS_PRESSED_RAW(TH_BUTTON_UP) || WAS_PRESSED_RAW(TH_BUTTON_DOWN))
@@ -1104,12 +1104,12 @@ void AsciiManager::DrawPopups()
             continue;
         }
 
-        this->vm1.pos.x = popup->position.x - (f32)(popup->characterCount << 2);
-        this->vm1.pos.y = popup->position.y;
+        this->vm1.pos.x = popup->pos.x - (f32)(popup->characterCount << 2);
+        this->vm1.pos.y = popup->pos.y;
         this->vm1.color.color = popup->color;
 
-        dx = g_Player.positionCenter.x - popup->position.x;
-        dy = g_Player.positionCenter.y - popup->position.y;
+        dx = g_Player.positionCenter.x - popup->pos.x;
+        dy = g_Player.positionCenter.y - popup->pos.y;
         alpha = (i32)(dx * dx + dy * dy);
 
         if (alpha > 4096)

@@ -195,11 +195,11 @@ i32 EclManager::GetVarValue(Enemy *enemy, i32 eclVar)
     case VAR_GLOBAL_FLOAT_4:
         return g_GlobalEclVars.floatVars[3];
     case VAR_POS_X:
-        return enemy->position.x;
+        return enemy->pos.x;
     case VAR_POS_Y:
-        return enemy->position.y;
+        return enemy->pos.y;
     case VAR_POS_Z:
-        return enemy->position.z;
+        return enemy->pos.z;
     case VAR_PLAYER_POS_X:
         return g_Player.positionCenter.x;
     case VAR_PLAYER_POS_Y:
@@ -255,9 +255,9 @@ i32 EclManager::GetVarValue(Enemy *enemy, i32 eclVar)
     case VAR_SCORE:
         return enemy->score;
     case VAR_ANGLE_TO_PLAYER:
-        return g_Player.AngleToPlayer(&enemy->position);
+        return g_Player.AngleToPlayer(&enemy->pos);
     case VAR_DISTANCE_FROM_PLAYER:
-        return D3DXVec3Length(&(g_Player.positionCenter - enemy->position));
+        return D3DXVec3Length((g_Player.positionCenter - enemy->pos).asD3DX());
     default:
         return eclVar;
     }
@@ -406,11 +406,11 @@ f32 EclManager::GetFloatVarValue(Enemy *enemy, f32 eclVar)
     case VAR_LOCAL_FLOAT3_4:
         return enemy->currentContext.eclContextArgs.globalVars.floatVars[3];
     case VAR_POS_X:
-        return enemy->position.x;
+        return enemy->pos.x;
     case VAR_POS_Y:
-        return enemy->position.y;
+        return enemy->pos.y;
     case VAR_POS_Z:
-        return enemy->position.z;
+        return enemy->pos.z;
     case VAR_PLAYER_POS_X:
         return g_Player.positionCenter.x;
     case VAR_PLAYER_POS_Y:
@@ -448,7 +448,7 @@ f32 EclManager::GetFloatVarValue(Enemy *enemy, f32 eclVar)
     case VAR_BOSS_LIFE_THRESHOLD4:
         return (f32)enemy->lifeCallbackThreshold[3];
     case VAR_ANGLE_TO_PLAYER:
-        return g_Player.AngleToPlayer(&enemy->position);
+        return g_Player.AngleToPlayer(&enemy->pos);
     case VAR_ANGLE:
         return enemy->angle;
     case VAR_ANGULAR_VELOCITY:
@@ -475,7 +475,7 @@ f32 EclManager::GetFloatVarValue(Enemy *enemy, f32 eclVar)
     case VAR_LAST_DAMAGE:
         return (f32)enemy->lastDamage;
     case VAR_DISTANCE_FROM_PLAYER:
-        return D3DXVec3Length(&(g_Player.positionCenter - enemy->position));
+        return D3DXVec3Length((g_Player.positionCenter - enemy->pos).asD3DX());
     default:
         return eclVar;
     }
@@ -517,11 +517,11 @@ f32 *EclManager::GetFloatVar(Enemy *enemy, f32 *eclVar, u16 paramMask,
     case VAR_LOCAL_FLOAT3_4:
         return &enemy->currentContext.eclContextArgs.globalVars.floatVars[3];
     case VAR_POS_X:
-        return &enemy->position.x;
+        return &enemy->pos.x;
     case VAR_POS_Y:
-        return &enemy->position.y;
+        return &enemy->pos.y;
     case VAR_POS_Z:
-        return &enemy->position.z;
+        return &enemy->pos.z;
     case VAR_PLAYER_POS_X:
         return &g_Player.positionCenter.x;
     case VAR_PLAYER_POS_Y:
@@ -582,7 +582,7 @@ void EclManager::MoveDirTime(Enemy *enemy, EclRawInstr *instr)
     enemy->moveInterp.y = sinf(fVar2) * GET_FLOAT_VALUE(enemy, 3) *
                           (f32)GET_INT_VALUE(enemy, 0);
     enemy->moveInterp.z = 0.0f;
-    enemy->moveInterpStartPos = enemy->position;
+    enemy->moveInterpStartPos = enemy->pos;
     enemy->moveInterpTimer = enemy->moveInterpStartTime =
         GET_INT_VALUE(enemy, 0);
     enemy->interpEasing = (u8)GET_INT_VALUE(enemy, 1);
@@ -596,17 +596,17 @@ void EclManager::MoveDirTime(Enemy *enemy, EclRawInstr *instr)
 // FUNCTION: TH07 0x0040f8f0
 void EclManager::MovePosTime(Enemy *enemy, EclRawInstr *instr)
 {
-    D3DXVECTOR3 newPos;
+    Float3 newPos;
     newPos.x = GET_FLOAT_VALUE(enemy, 2);
     newPos.y = GET_FLOAT_VALUE(enemy, 3);
     newPos.z = GET_FLOAT_VALUE(enemy, 4);
 
-    enemy->moveInterp = newPos - enemy->position;
-    enemy->moveInterpStartPos = enemy->position;
+    enemy->moveInterp = newPos - enemy->pos;
+    enemy->moveInterpStartPos = enemy->pos;
     enemy->moveInterpTimer = enemy->moveInterpStartTime = GET_INT_VALUE(enemy, 0);
     enemy->interpEasing = (u8)GET_INT_VALUE(enemy, 1);
     enemy->moveMode = 2;
-    enemy->axisSpeed = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+    enemy->axisSpeed = Float3(0.0f, 0.0f, 0.0f);
     if (enemy->mirror)
     {
         enemy->moveInterp.x = -enemy->moveInterp.x;
@@ -695,14 +695,14 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
     enemy->bulletRankAmount2Low = 0;
     enemy->bulletRankAmount2High = 0;
     enemy->specialEffect =
-        g_EffectManager.SpawnEffect(25, &enemy->position, 1, 1, 0xffffffff);
+        g_EffectManager.SpawnEffect(25, &enemy->pos, 1, 1, 0xffffffff);
     enemy->specialEffect->vm.interpStartTimes[4] = 0;
     enemy->specialEffect->vm.interpEndTimes[4] = enemy->timerCallbackThreshold;
     enemy->specialEffect->vm.interpModes[4] = 0;
     enemy->specialEffect->vm.scaleInterpInitial = enemy->specialEffect->vm.scale;
     enemy->specialEffect->vm.scaleInterpFinal.x = 0.125;
     enemy->specialEffect->vm.scaleInterpFinal.y = 0.125;
-    enemy->specialEffect->pos1 = enemy->position;
+    enemy->specialEffect->pos1 = enemy->pos;
     enemy->customSpecialEffectPos = 0;
     if (!g_GameManager.replay)
     {
@@ -863,21 +863,21 @@ ZunResult EclManager::RunEcl(Enemy *enemy)
     i32 interpIdx2;
     u32 anmDirection;
     f32 t1;
-    D3DXVECTOR3 unused_e4;
-    D3DXVECTOR3 local_d8;
-    D3DXVECTOR3 relEnemySpawnPos;
+    Float3 unused_e4;
+    Float3 local_d8;
+    Float3 relEnemySpawnPos;
     AnyArg relSpawnInstrArgs[7];
     Enemy *unusedEnemyRel;
-    D3DXVECTOR3 absEnemySpawnPos;
+    Float3 absEnemySpawnPos;
     AnyArg absSpawnInstrArgs[7];
     Enemy *unusedEnemyAbs;
-    D3DXVECTOR3 pointItemPos;
+    Float3 pointItemPos;
     i32 pointItemIdx;
     i32 numPointItems;
-    D3DXVECTOR3 itemDropPos;
+    Float3 itemDropPos;
     i32 itemDropIdx;
     i32 numDrops;
-    D3DXVECTOR3 particleVel;
+    Float3 particleVel;
     i32 bossIdx;
     i32 healthIdx;
     f32 exitAngle;
@@ -1213,9 +1213,9 @@ restart:
                 }
                 break;
             case 46:
-                enemy->position.x = GET_FLOAT_VALUE(enemy, 0);
-                enemy->position.y = GET_FLOAT_VALUE(enemy, 1);
-                enemy->position.z = GET_FLOAT_VALUE(enemy, 2);
+                enemy->pos.x = GET_FLOAT_VALUE(enemy, 0);
+                enemy->pos.y = GET_FLOAT_VALUE(enemy, 1);
+                enemy->pos.z = GET_FLOAT_VALUE(enemy, 2);
                 enemy->ClampPos();
                 break;
             case 47:
@@ -1230,7 +1230,7 @@ restart:
                 enemy->moveMode = 1;
                 break;
             case 53:
-                enemy->angle = g_Player.AngleToPlayer(&enemy->position) +
+                enemy->angle = g_Player.AngleToPlayer(&enemy->pos) +
                                GET_FLOAT_VALUE(enemy, 0);
                 enemy->moveSpeed = GET_FLOAT_VALUE(enemy, 1);
                 enemy->moveMode = 1;
@@ -1280,7 +1280,7 @@ restart:
                 bulletProps->aimMode = instr->id - 64;
                 bulletProps->count1 = GET_INT_VALUE_D(enemy, bulletInstrArgs, 1, 2);
                 bulletProps->count2 = GET_INT_VALUE_D(enemy, bulletInstrArgs, 2, 3);
-                bulletProps->position = enemy->position + enemy->shootOffset;
+                bulletProps->pos = enemy->pos + enemy->shootOffset;
                 bulletProps->angle1 = GET_FLOAT_VALUE_D(enemy, bulletInstrArgs, 5, 6);
                 bulletProps->speed1 = GET_FLOAT_VALUE_D(enemy, bulletInstrArgs, 3, 4);
                 bulletProps->angle2 = GET_FLOAT_VALUE_D(enemy, bulletInstrArgs, 6, 7);
@@ -1363,7 +1363,7 @@ restart:
                 enemy->disableBullets = 0;
                 break;
             case 77:
-                enemy->bulletProps.position = enemy->position + enemy->shootOffset;
+                enemy->bulletProps.pos = enemy->pos + enemy->shootOffset;
                 g_BulletManager.SpawnBulletPattern(&enemy->bulletProps);
                 break;
             case 78:
@@ -1375,7 +1375,7 @@ restart:
             case 83:
                 laserInstrArgs = instr->args;
                 laserProps = &enemy->laserProps;
-                laserProps->position = enemy->position + enemy->shootOffset;
+                laserProps->pos = enemy->pos + enemy->shootOffset;
                 laserProps->sprite = laserInstrArgs->s[0];
                 laserProps->spriteOffset = (instr->paramMask & 2) != 0
                                                ? GetVarValue(enemy, laserInstrArgs->s[1])
@@ -1436,11 +1436,11 @@ restart:
                 if (enemy->lasers[local_8])
                 {
                     enemy->lasers[local_8]->pos.x =
-                        GET_FLOAT_VALUE(enemy, 1) + enemy->position.x;
+                        GET_FLOAT_VALUE(enemy, 1) + enemy->pos.x;
                     enemy->lasers[local_8]->pos.y =
-                        GET_FLOAT_VALUE(enemy, 2) + enemy->position.y;
+                        GET_FLOAT_VALUE(enemy, 2) + enemy->pos.y;
                     enemy->lasers[local_8]->pos.z =
-                        GET_FLOAT_VALUE(enemy, 3) + enemy->position.z;
+                        GET_FLOAT_VALUE(enemy, 3) + enemy->pos.z;
                 }
                 break;
             case 156:
@@ -1527,8 +1527,8 @@ restart:
             case 100:
                 effectInstrArgs = instr->args;
                 enemy->effects[enemy->effectsNum] = g_EffectManager.SpawnParticles(
-                    13, &enemy->position, 1, g_BulletColor[effectInstrArgs->i]);
-                enemy->effects[enemy->effectsNum]->direction = *(D3DXVECTOR3 *)&effectInstrArgs[1];
+                    13, &enemy->pos, 1, g_BulletColor[effectInstrArgs->i]);
+                enemy->effects[enemy->effectsNum]->direction = *(Float3 *)&effectInstrArgs[1];
                 enemy->effectDistance = effectInstrArgs[4].f;
                 enemy->effectsNum++;
                 break;
@@ -1588,7 +1588,7 @@ restart:
                     GET_FLOAT_VALUE(enemy, 1);
                 break;
             case 52:
-                if (g_Player.positionCenter.x < enemy->position.x)
+                if (g_Player.positionCenter.x < enemy->pos.x)
                 {
                     exitAngle = utils::AddNormalizeAngle(
                         g_Rng.GetRandomFloatInRange(1.5707964f) + 2.3561945f, 0.0f);
@@ -1597,7 +1597,7 @@ restart:
                 {
                     exitAngle = g_Rng.GetRandomFloatInRange(1.5707964f) - 0.7853982f;
                 }
-                if (enemy->position.x < enemy->lowerMoveLimit.x + 96.0f)
+                if (enemy->pos.x < enemy->lowerMoveLimit.x + 96.0f)
                 {
                     if (exitAngle > 1.5707964f)
                     {
@@ -1608,7 +1608,7 @@ restart:
                         exitAngle = -3.1415927f - exitAngle;
                     }
                 }
-                if (enemy->upperMoveLimit.x - 96.0f < enemy->position.x)
+                if (enemy->upperMoveLimit.x - 96.0f < enemy->pos.x)
                 {
                     if (exitAngle < 1.5707964f && exitAngle >= 0.0f)
                     {
@@ -1619,12 +1619,12 @@ restart:
                         exitAngle = -3.1415927f - exitAngle;
                     }
                 }
-                if (enemy->lowerMoveLimit.y + 48.0f > enemy->position.y &&
+                if (enemy->lowerMoveLimit.y + 48.0f > enemy->pos.y &&
                     exitAngle < 0.0f)
                 {
                     exitAngle = -exitAngle;
                 }
-                if (enemy->upperMoveLimit.y - 48.0f < enemy->position.y &&
+                if (enemy->upperMoveLimit.y - 48.0f < enemy->pos.y &&
                     exitAngle > 0.0f)
                 {
                     exitAngle = -exitAngle;
@@ -1747,7 +1747,7 @@ restart:
             case 117:
                 g_EffectManager.SpawnParticles(
                     GET_INT_VALUE(enemy, 0),
-                    &enemy->position,
+                    &enemy->pos,
                     GET_INT_VALUE(enemy, 1),
                     *(D3DCOLOR *)GET_INT_PTR(enemy, 2));
                 break;
@@ -1757,7 +1757,7 @@ restart:
                 particleVel.z = GET_FLOAT_VALUE(enemy, 5);
                 g_EffectManager.SpawnMovingParticles(
                     GET_INT_VALUE(enemy, 0),
-                    &enemy->position,
+                    &enemy->pos,
                     &particleVel,
                     GET_INT_VALUE(enemy, 1),
                     *(D3DCOLOR *)GET_INT_PTR(enemy, 2));
@@ -1766,7 +1766,7 @@ restart:
                 numDrops = GET_INT_VALUE(enemy, 0);
                 for (itemDropIdx = 0; itemDropIdx < numDrops; itemDropIdx++)
                 {
-                    itemDropPos = enemy->position;
+                    itemDropPos = enemy->pos;
                     itemDropPos[0] += g_Rng.GetRandomFloatInRange(128.0f) - 64.0f;
                     itemDropPos[1] += g_Rng.GetRandomFloatInRange(128.0f) - 64.0f;
                     if ((i32)g_GameManager.globals->currentPower < 128)
@@ -1784,7 +1784,7 @@ restart:
                 numPointItems = GET_INT_VALUE(enemy, 0);
                 for (pointItemIdx = 0; pointItemIdx < numPointItems; pointItemIdx++)
                 {
-                    pointItemPos = enemy->position;
+                    pointItemPos = enemy->pos;
                     pointItemPos[0] += g_Rng.GetRandomFloatInRange(128.0f) - 64.0f;
                     pointItemPos[1] += g_Rng.GetRandomFloatInRange(128.0f) - 64.0f;
                     g_ItemManager.SpawnItem(&pointItemPos, ITEM_POINT, 0);
@@ -1812,7 +1812,7 @@ restart:
                 enemy->currentContext.time += GET_INT_VALUE(enemy, 0);
                 break;
             case 124:
-                g_ItemManager.SpawnItem(&enemy->position,
+                g_ItemManager.SpawnItem(&enemy->pos,
                                         GET_INT_VALUE(enemy, 0), 0);
                 break;
             case 125:
@@ -1843,7 +1843,7 @@ restart:
                     relEnemySpawnPos.x = GET_FLOAT_VALUE_D(enemy, relSpawnInstrArgs, 1, 1);
                     relEnemySpawnPos.y = GET_FLOAT_VALUE_D(enemy, relSpawnInstrArgs, 2, 2);
                     relEnemySpawnPos.z = GET_FLOAT_VALUE_D(enemy, relSpawnInstrArgs, 3, 3);
-                    relEnemySpawnPos += enemy->position;
+                    relEnemySpawnPos += enemy->pos;
                     unusedEnemyRel = g_EnemyManager.SpawnEnemyEx(relSpawnInstrArgs[0].i, &relEnemySpawnPos,
                                                                  GET_INT_VALUE(enemy, 4),
                                                                  GET_INT_VALUE(enemy, 5),
@@ -1929,7 +1929,7 @@ restart:
                 enemy->invincibilityTimer = GET_INT_VALUE(enemy, 0);
                 break;
             case 143:
-                g_BulletManager.RemoveBulletsInRadius(&enemy->position,
+                g_BulletManager.RemoveBulletsInRadius(&enemy->pos,
                                                       GET_FLOAT_VALUE(enemy, 0));
                 break;
             case 145:
@@ -1960,9 +1960,9 @@ restart:
                     cosf(GET_FLOAT_VALUE(enemy, 2)) * GET_FLOAT_VALUE(enemy, 3);
                 break;
             case 155:
-                if ((g_Player.positionCenter.x < enemy->position.x &&
-                     enemy->position.x > 96.0f) ||
-                    enemy->position.x > 288.0f)
+                if ((g_Player.positionCenter.x < enemy->pos.x &&
+                     enemy->pos.x > 96.0f) ||
+                    enemy->pos.x > 288.0f)
                 {
                     *GET_FLOAT_PTR(enemy, 0) =
                         utils::AddNormalizeAngle(
@@ -2001,9 +2001,9 @@ restart:
                                     enemy->moveRadius;
                 AngleToVector(&local_d8, enemy->moveAngle, enemy->moveRadius);
                 enemy->axisSpeed.x =
-                    local_d8.x + enemy->moveInterpStartPos.x - enemy->position.x;
+                    local_d8.x + enemy->moveInterpStartPos.x - enemy->pos.x;
                 enemy->axisSpeed.y =
-                    local_d8.y + enemy->moveInterpStartPos.y - enemy->position.y;
+                    local_d8.y + enemy->moveInterpStartPos.y - enemy->pos.y;
                 enemy->angle = atan2f(enemy->axisSpeed.y, enemy->axisSpeed.x);
                 if (enemy->moveInterpStartTime > 0)
                 {
@@ -2075,7 +2075,7 @@ restart:
                 }
                 enemy->axisSpeed =
                     t1 * enemy->moveInterp + enemy->moveInterpStartPos -
-                    enemy->position;
+                    enemy->pos;
                 if (enemy->mirror)
                 {
                     enemy->axisSpeed.x = -enemy->axisSpeed.x;
@@ -2084,8 +2084,8 @@ restart:
                 if (enemy->moveInterpTimer <= 0)
                 {
                     enemy->moveMode = 0;
-                    enemy->position = enemy->moveInterpStartPos + enemy->moveInterp;
-                    enemy->axisSpeed = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+                    enemy->pos = enemy->moveInterpStartPos + enemy->moveInterp;
+                    enemy->axisSpeed = Float3(0.0f, 0.0f, 0.0f);
                 }
                 break;
             }
@@ -2096,7 +2096,7 @@ restart:
                     enemy->shootIntervalTimer++;
                     if (enemy->shootIntervalTimer >= enemy->shootInterval)
                     {
-                        enemy->bulletProps.position = enemy->position + enemy->shootOffset;
+                        enemy->bulletProps.pos = enemy->pos + enemy->shootOffset;
                         g_BulletManager.SpawnBulletPattern(&enemy->bulletProps);
                         enemy->shootIntervalTimer = 0;
                     }
@@ -2170,7 +2170,7 @@ restart:
                 }
                 local_f8 = false;
                 interp2 = enemy->currentContext.interps;
-                D3DXVECTOR3 local_104 = enemy->position;
+                Float3 local_104 = enemy->pos;
                 for (interpIdx2 = 0; interpIdx2 < 8; interpIdx2++, interp2++)
                 {
                     if (interp2->fn)
@@ -2230,10 +2230,10 @@ restart:
                 }
                 if (local_f8)
                 {
-                    enemy->axisSpeed.x = enemy->position.x - local_104.x;
-                    enemy->axisSpeed.y = enemy->position.y - local_104.y;
+                    enemy->axisSpeed.x = enemy->pos.x - local_104.x;
+                    enemy->axisSpeed.y = enemy->pos.y - local_104.y;
                     enemy->angle = atan2f(enemy->axisSpeed.y, enemy->axisSpeed.x);
-                    enemy->position = local_104;
+                    enemy->pos = local_104;
                 }
             }
             enemy->currentContext.curInstr = instr;

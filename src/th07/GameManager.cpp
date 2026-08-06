@@ -374,7 +374,7 @@ u32 GameManager::OnDraw(GameManager *arg)
 void GameManager::DrawLoadingSprite()
 {
     i32 unused[3];
-    D3DXVECTOR3 spritePos;
+    Float3 spritePos;
     AnmVm spriteVm;
     ZunRect rect;
 
@@ -386,7 +386,7 @@ void GameManager::DrawLoadingSprite()
     spritePos.x = 528.0f;
     spritePos.y = 448.0f;
     spritePos.z = 0.0f;
-    memcpy(&spriteVm.pos, spritePos, sizeof(D3DXVECTOR3));
+    memcpy(&spriteVm.pos, spritePos, sizeof(Float3));
     g_Supervisor.d3dDevice->BeginScene();
 
     // ZUN bloat: This is doing the exact same thing twice

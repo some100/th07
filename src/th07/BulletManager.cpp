@@ -207,7 +207,7 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x,
     bullet->timer2 = 0;
     bullet->speed = bulletSpeed;
     bullet->angle = utils::AddNormalizeAngle(bulletAngle, 0.0f);
-    bullet->pos = bulletProps->position;
+    bullet->pos = bulletProps->pos;
     bullet->pos.z = 0.1f;
     AngleToVector(&bullet->velocity, bulletAngle,
                   bulletSpeed * g_Supervisor.effectiveFramerateMultiplier);
@@ -424,7 +424,7 @@ void BulletManager::RemoveAllBullets(i32 param_1)
     Bullet *bullet;
     f32 local_18;
     i32 i;
-    D3DXVECTOR3 local_10;
+    Float3 local_10;
 
     bullet = g_BulletManager.bullets;
     for (i = 0; i < 1024; i++, bullet++)
@@ -501,7 +501,7 @@ i32 BulletManager::DespawnBullets(i32 param_1, i32 turnIntoItem)
     f32 local_34;
     f32 local_30;
     Laser *laser;
-    D3DXVECTOR3 local_28;
+    Float3 local_28;
     Bullet *bullet;
     f32 local_18;
     i32 i;
@@ -569,9 +569,9 @@ i32 BulletManager::DespawnBullets(i32 param_1, i32 turnIntoItem)
 
 #pragma var_order(diff, i, bullet)
 // FUNCTION: TH07 0x00424c00
-void BulletManager::RemoveBulletsInRadius(D3DXVECTOR3 *centerPos, f32 radius)
+void BulletManager::RemoveBulletsInRadius(Float3 *centerPos, f32 radius)
 {
-    D3DXVECTOR3 diff;
+    Float3 diff;
     Bullet *bullet;
     i32 i;
 
@@ -586,7 +586,7 @@ void BulletManager::RemoveBulletsInRadius(D3DXVECTOR3 *centerPos, f32 radius)
 
         diff = bullet->pos - *centerPos;
 
-        if (D3DXVec3LengthSq(&diff) > radius)
+        if (D3DXVec3LengthSq(diff.asD3DX()) > radius)
         {
             continue;
         }
@@ -610,7 +610,7 @@ i32 BulletManager::SpawnBulletPattern(EnemyBulletShooter *bulletProps)
     }
 
     bulletProps->sprites = this->bulletTypeTemplates + bulletProps->sprite;
-    angle = g_Player.AngleToPlayer(&bulletProps->position);
+    angle = g_Player.AngleToPlayer(&bulletProps->pos);
     for (x = 0; x < bulletProps->count2; x++)
     {
         for (y = 0; y < bulletProps->count1; y++)
@@ -656,14 +656,14 @@ Laser *BulletManager::SpawnLaserPattern(EnemyLaserShooter *laserShooter)
                                           (i32)laserShooter->spriteOffset);
         g_AnmManager->InitializeAndSetActiveSprite(&laser->vm1, g_BulletSpriteOffset16Px[laserShooter->spriteOffset] + 658);
         laser->vm1.blendMode = 1;
-        laser->pos = laserShooter->position;
+        laser->pos = laserShooter->pos;
         laser->color = laserShooter->spriteOffset;
         laser->inUse = 1;
         laser->angle = laserShooter->angle1;
         if (laserShooter->type == 0)
         {
             laser->angle =
-                g_Player.AngleToPlayer(&laserShooter->position) + laser->angle;
+                g_Player.AngleToPlayer(&laserShooter->pos) + laser->angle;
         }
         laser->flags = laserShooter->flags;
         laser->timer = 0;
@@ -882,11 +882,11 @@ void Bullet::UpdateBulletBounce()
 // FUNCTION: TH07 0x00425a50
 u32 BulletManager::OnUpdate(BulletManager *arg)
 {
-    D3DXVECTOR3 laserCenter;
+    Float3 laserCenter;
     Laser *laser;
     i32 alpha;
     Bullet *bullet;
-    D3DXVECTOR3 laserHitbox;
+    Float3 laserHitbox;
     i32 blockIdx;
     f32 width;
     i32 i;
@@ -1500,8 +1500,8 @@ void BulletManager::StopBulletMovement()
             continue;
         }
 
-        bullet->velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-        bullet->unused_ba4 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+        bullet->velocity = Float3(0.0f, 0.0f, 0.0f);
+        bullet->unused_ba4 = Float3(0.0f, 0.0f, 0.0f);
         bullet->angularVelocity = 0.0f;
         bullet->acceleration = 0.0f;
         bullet->speed = 0.0f;

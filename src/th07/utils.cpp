@@ -29,7 +29,7 @@ f32 utils::AddNormalizeAngle(f32 param_1, f32 param_2)
 }
 
 // FUNCTION: TH07 0x004319b0
-void utils::Rotate(D3DXVECTOR3 *out, D3DXVECTOR3 *point, f32 angle)
+void utils::Rotate(Float3 *out, Float3 *point, f32 angle)
 {
     f32 sinAngle;
     f32 cosAngle;

@@ -38,7 +38,7 @@ C_ASSERT(sizeof(RetryMenu) == 0x101c);
 struct AsciiManagerPopup
 {
     u8 digits[8];
-    Float3 position;
+    Float3 pos;
     D3DCOLOR color;
     ZunTimer timer;
     u8 inUse;
@@ -50,7 +50,7 @@ C_ASSERT(sizeof(AsciiManagerPopup) == 0x28);
 struct AsciiManagerString
 {
     char text[64];
-    Float3 position;
+    Float3 pos;
     D3DCOLOR color;
     Float2 scale;
     i32 isSelected;
@@ -70,11 +70,11 @@ struct AsciiManager
     static u32 OnDrawMenus(AsciiManager *arg);
     static u32 OnDrawPopups(AsciiManager *arg);
 
-    static void AddFormatText(AsciiManager *manager, D3DXVECTOR3 *position,
+    static void AddFormatText(AsciiManager *manager, Float3 *pos,
                               const char *fmt, ...);
-    void AddString(D3DXVECTOR3 *position, const char *text);
-    void CreatePopup1(D3DXVECTOR3 *position, i32 value, D3DCOLOR color);
-    void CreatePopup2(D3DXVECTOR3 *position, i32 value, D3DCOLOR color);
+    void AddString(Float3 *pos, const char *text);
+    void CreatePopup1(Float3 *pos, i32 value, D3DCOLOR color);
+    void CreatePopup2(Float3 *pos, i32 value, D3DCOLOR color);
     void DrawPopups();
     void DrawStrings();
     void InitializeVms();
@@ -102,7 +102,7 @@ struct AsciiManager
         return &this->bossMarkers[idx];
     }
 
-    void SetBossMarkerPos(i32 idx, D3DXVECTOR3 *pos)
+    void SetBossMarkerPos(i32 idx, Float3 *pos)
     {
         this->bossMarkers[idx].pos = *pos;
     }

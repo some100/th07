@@ -494,7 +494,7 @@ ZunResult Ending::AddedCallback(Ending *arg)
     {
         g_AnmManager->ExecuteAnmIdx(&arg->sprites[i], i + 1807);
         arg->sprites[i].pos =
-            D3DXVECTOR3(64.0f, (f32)i * 16.0f + 392.0f, 0.0f);
+            Float3(64.0f, (f32)i * 16.0f + 392.0f, 0.0f);
     }
     if (g_GameManager.globals->numRetries != 0)
     {

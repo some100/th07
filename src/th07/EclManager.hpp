@@ -125,9 +125,9 @@ struct EclTimelineInstrArgs
 {
     AnyArg args[6];
 
-    D3DXVECTOR3 *AsVec()
+    Float3 *AsVec()
     {
-        return (D3DXVECTOR3 *)&this->args;
+        return (Float3 *)&this->args;
     }
 };
 

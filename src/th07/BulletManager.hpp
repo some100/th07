@@ -41,7 +41,7 @@ struct BulletTypeSprites
     AnmVm spriteSpawnEffectNormal;
     AnmVm spriteSpawnEffectSlow;
     AnmVm spriteSpawnEffectDonut;
-    D3DXVECTOR3 grazeSize;
+    Float3 grazeSize;
     u8 unused_b88;
     u8 bulletHeight;
     u8 collisionType;
@@ -64,7 +64,7 @@ struct BulletCommandState
     ZunTimer timer;
     f32 speed;
     f32 angle;
-    D3DXVECTOR3 vec3;
+    Float3 vec3;
     i32 duration;
     i32 maxTimes;
     i32 minTimes;
@@ -89,7 +89,7 @@ struct EnemyBulletShooter
 
     i16 sprite;
     i16 spriteOffset;
-    D3DXVECTOR3 position;
+    Float3 pos;
     f32 angle1;
     f32 angle2;
     f32 speed1;
@@ -117,7 +117,7 @@ struct EnemyLaserShooter
 
     i16 sprite;
     i16 spriteOffset;
-    D3DXVECTOR3 position;
+    Float3 pos;
     f32 angle1;
     f32 angle2;
     f32 speed1;
@@ -152,7 +152,7 @@ struct Laser
 
     struct AnmVm vm0;
     struct AnmVm vm1;
-    D3DXVECTOR3 pos;
+    Float3 pos;
     f32 angle;
     f32 startOffset;
     f32 endOffset;
@@ -208,9 +208,9 @@ struct Bullet
     }
 
     BulletTypeSprites sprites;
-    D3DXVECTOR3 pos;
-    D3DXVECTOR3 velocity;
-    D3DXVECTOR3 unused_ba4;
+    Float3 pos;
+    Float3 velocity;
+    Float3 unused_ba4;
     f32 speed;
     f32 acceleration;
     f32 angularVelocity;
@@ -255,7 +255,7 @@ struct BulletManager
 
     i32 DespawnBullets(i32 param_1, i32 turnIntoItem);
     void RemoveAllBullets(i32 param_1);
-    void RemoveBulletsInRadius(D3DXVECTOR3 *centerPos, f32 radius);
+    void RemoveBulletsInRadius(Float3 *centerPos, f32 radius);
     static void SetActiveSpriteByResolution(AnmVm *sprite,
                                             AnmVm *bulletTypeTemplate,
                                             Bullet *bullet, i32 spriteOffset);

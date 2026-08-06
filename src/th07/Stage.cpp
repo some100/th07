@@ -74,9 +74,9 @@ ChainElem g_StageCalcChain;
 Stage::Stage()
 {
     memset(this, NULL, sizeof(Stage));
-    this->cam.pos = D3DXVECTOR3(0.0f, 0.0f, 1000.0f);
-    this->cam.lookAt = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-    this->cam.up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+    this->cam.pos = Float3(0.0f, 0.0f, 1000.0f);
+    this->cam.lookAt = Float3(0.0f, 0.0f, 0.0f);
+    this->cam.up = Float3(0.0f, 1.0f, 0.0f);
     this->cam.fov = ZUN_PI / 6.0f;
     this->camEnd = this->cam;
     this->camStart = this->cam;
@@ -96,9 +96,9 @@ f32 InterpCubic(f32 p0, f32 p1, f32 p2, f32 p3, f32 t)
 
 // FUNCTION: TH07 0x00405370
 void Stage::UpdateScriptAndCamera(Stage *stage, i32 param_2,
-                                  D3DXVECTOR3 *param_3, D3DXVECTOR3 *param_4,
-                                  D3DXVECTOR3 *param_5, D3DXVECTOR3 *param_6,
-                                  D3DXVECTOR3 *param_7)
+                                  Float3 *param_3, Float3 *param_4,
+                                  Float3 *param_5, Float3 *param_6,
+                                  Float3 *param_7)
 {
     f32 t;
 
@@ -156,7 +156,7 @@ void Stage::UpdateScriptAndCamera(Stage *stage, i32 param_2,
 // FUNCTION: TH07 0x00405690
 u32 Stage::OnUpdate(Stage *arg)
 {
-    D3DXVECTOR3 pos;
+    Float3 pos;
     StdRawInstr *curInstr;
 
     if (!arg->stdData)
@@ -192,16 +192,16 @@ loop_begin:
             if (curInstr->frame == -1)
             {
                 arg->positionInterpInitial = *curInstr->args.AsVec();
-                arg->position.x = arg->positionInterpInitial.x;
-                arg->position.y = arg->positionInterpInitial.y;
-                arg->position.z = arg->positionInterpInitial.z;
+                arg->pos.x = arg->positionInterpInitial.x;
+                arg->pos.y = arg->positionInterpInitial.y;
+                arg->pos.z = arg->positionInterpInitial.z;
             }
             else
             {
                 pos = *curInstr->args.AsVec();
-                arg->position.x = pos.x;
-                arg->position.y = pos.y;
-                arg->position.z = pos.z;
+                arg->pos.x = pos.x;
+                arg->pos.y = pos.y;
+                arg->pos.z = pos.z;
                 arg->positionInterpInitial = pos;
                 arg->positionInterpStartTime = curInstr->frame;
                 curInstr++;
@@ -227,8 +227,8 @@ loop_begin:
         case 5:
             if (arg->cameraTeleported)
             {
-                D3DXVECTOR3 diff = *curInstr->args.AsVec() - arg->camEnd.pos;
-                EffectManager::DoSomethingWithEffects(&diff);
+                Float3 diff = *curInstr->args.AsVec() - arg->camEnd.pos;
+                EffectManager::DoSomethingWithEffects((Float3 *)&diff);
                 arg->cameraTeleported = 0;
             }
             arg->camStart.pos = arg->camEnd.pos;
@@ -442,7 +442,7 @@ LAB_004061aa: {
         arg->cam.fov = fovDiff * t + arg->camStart.fov;
     }
 }
-    D3DXVec3Normalize(&arg->cam.lookAtDir, &arg->cam.lookAt);
+    D3DXVec3Normalize(arg->cam.lookAtDir.asD3DX(), arg->cam.lookAt.asD3DX());
     if (arg->skyFogInterpDuration != 0)
     {
         arg->skyFogInterpTimer++;
@@ -697,9 +697,9 @@ ZunResult Stage::AddedCallback(Stage *arg)
 
     arg->scriptTime = 0;
     arg->instructionIndex = 0;
-    arg->position.x = 0.0f;
-    arg->position.y = 0.0f;
-    arg->position.z = 0.0f;
+    arg->pos.x = 0.0f;
+    arg->pos.y = 0.0f;
+    arg->pos.z = 0.0f;
     arg->spellCardState = 0;
     arg->skyFogInterpDuration = 0;
     switch (g_GameManager.currentStage)
@@ -781,9 +781,9 @@ ZunResult Stage::AddedCallback(Stage *arg)
     arg->skyFog.color.color = 0xff000000;
     arg->skyFog.nearPlane = 200.0f;
     arg->skyFog.farPlane = 500.0f;
-    arg->cam.pos = D3DXVECTOR3(0.0f, 0.0f, 1000.0f);
-    arg->cam.lookAt = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-    arg->cam.up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+    arg->cam.pos = Float3(0.0f, 0.0f, 1000.0f);
+    arg->cam.lookAt = Float3(0.0f, 0.0f, 0.0f);
+    arg->cam.up = Float3(0.0f, 1.0f, 0.0f);
     arg->cam.fov = ZUN_PI / 6.0f;
     arg->camEnd = arg->cam;
     arg->camStart = arg->cam;
@@ -950,13 +950,13 @@ i32 Stage::RenderObjects(i32 zLevel)
 {
     ZunColor origColor;
     f32 var_98;
-    D3DXVECTOR3 projectSrc;
+    Float3 projectSrc;
     f32 radius;
     i32 didDraw;
     StdRawQuadBasic *curQuad;
-    D3DXVECTOR3 diffPos;
-    D3DXVECTOR3 quadPos;
-    D3DXVECTOR3 viewDir;
+    Float3 diffPos;
+    Float3 quadPos;
+    Float3 viewDir;
     f32 dotProd;
     StdRawObject *obj;
     D3DXMATRIX worldMatrix;
@@ -986,20 +986,20 @@ i32 Stage::RenderObjects(i32 zLevel)
         {
             curQuad = &obj->firstQuad;
 
-            quadPos.x = obj->pos.x + instance->pos.x - this->position.x + obj->size.x / 2.0f;
-            quadPos.y = obj->pos.y + instance->pos.y - this->position.y + obj->size.y / 2.0f;
-            quadPos.z = obj->pos.z + instance->pos.z - this->position.z + obj->size.z / 2.0f;
+            quadPos.x = obj->pos.x + instance->pos.x - this->pos.x + obj->size.x / 2.0f;
+            quadPos.y = obj->pos.y + instance->pos.y - this->pos.y + obj->size.y / 2.0f;
+            quadPos.z = obj->pos.z + instance->pos.z - this->pos.z + obj->size.z / 2.0f;
 
             quadPos = quadPos - this->cam.pos;
 
-            if (D3DXVec3LengthSq(&quadPos) > 1690000.0f)
+            if (D3DXVec3LengthSq(quadPos.asD3DX()) > 1690000.0f)
             {
                 // empty branch
             }
             else
             {
-                dotProd = D3DXVec3Dot(&quadPos, &this->cam.lookAtDir);
-                radius = D3DXVec3Length(&obj->size) / 2.0f + 880.0f;
+                dotProd = D3DXVec3Dot(quadPos.asD3DX(), this->cam.lookAtDir.asD3DX());
+                radius = D3DXVec3Length(obj->size.asD3DX()) / 2.0f + 880.0f;
 
                 if (dotProd > radius || dotProd < 60.0f)
                 {
@@ -1016,9 +1016,9 @@ i32 Stage::RenderObjects(i32 zLevel)
                         switch (curQuad->type)
                         {
                         case 0:
-                            curQuadVm->pos.x = curQuadVm->offset.x + curQuad->pos.x + instance->pos.x - this->position.x;
-                            curQuadVm->pos.y = curQuadVm->offset.y + curQuad->pos.y + instance->pos.y - this->position.y;
-                            curQuadVm->pos.z = curQuadVm->offset.z + curQuad->pos.z + instance->pos.z - this->position.z;
+                            curQuadVm->pos.x = curQuadVm->offset.x + curQuad->pos.x + instance->pos.x - this->pos.x;
+                            curQuadVm->pos.y = curQuadVm->offset.y + curQuad->pos.y + instance->pos.y - this->pos.y;
+                            curQuadVm->pos.z = curQuadVm->offset.z + curQuad->pos.z + instance->pos.z - this->pos.z;
 
                             if (curQuad->size.x != 0.0f)
                             {
@@ -1035,12 +1035,12 @@ i32 Stage::RenderObjects(i32 zLevel)
                                 worldMatrix.m[3][1] = curQuadVm->pos.y;
                                 worldMatrix.m[3][2] = curQuadVm->pos.z;
 
-                                D3DXVec3Project(&quadPos, &projectSrc, &g_Supervisor.viewport, &g_Supervisor.projectionMatrix, &g_Supervisor.viewMatrix, &worldMatrix);
+                                D3DXVec3Project(quadPos.asD3DX(), projectSrc.asD3DX(), &g_Supervisor.viewport, &g_Supervisor.projectionMatrix, &g_Supervisor.viewMatrix, &worldMatrix);
 
                                 viewDir.x = g_Supervisor.viewMatrix.m[0][0];
                                 viewDir.y = g_Supervisor.viewMatrix.m[0][1];
                                 viewDir.z = g_Supervisor.viewMatrix.m[0][2];
-                                D3DXVec3Normalize(&viewDir, &viewDir);
+                                D3DXVec3Normalize(viewDir.asD3DX(), viewDir.asD3DX());
 
                                 if (curQuad->size.x != 0.0f)
                                 {
@@ -1055,16 +1055,16 @@ i32 Stage::RenderObjects(i32 zLevel)
                                 worldMatrix.m[3][1] += viewDir.y * var_98 * curQuadVm->scale.x;
                                 worldMatrix.m[3][2] += viewDir.z * var_98 * curQuadVm->scale.x;
 
-                                D3DXVec3Project(&viewDir, &projectSrc, &g_Supervisor.viewport, &g_Supervisor.projectionMatrix, &g_Supervisor.viewMatrix, &worldMatrix);
+                                D3DXVec3Project(viewDir.asD3DX(), projectSrc.asD3DX(), &g_Supervisor.viewport, &g_Supervisor.projectionMatrix, &g_Supervisor.viewMatrix, &worldMatrix);
 
                                 diffPos = viewDir - quadPos;
 
-                                curQuadVm->scale.x = D3DXVec3Length(&diffPos) / var_98;
+                                curQuadVm->scale.x = D3DXVec3Length(diffPos.asD3DX()) / var_98;
                                 curQuadVm->scale.y = curQuadVm->scale.x;
 
-                                diffPos = curQuadVm->pos - this->cam.pos;
+                                diffPos = *(Float3 *)&curQuadVm->pos - this->cam.pos;
 
-                                var_98 = D3DXVec3Length(&diffPos);
+                                var_98 = D3DXVec3Length(diffPos.asD3DX());
                                 origColor = curQuadVm->color;
 
                                 if (this->skyFog.nearPlane < var_98)
@@ -1081,7 +1081,7 @@ i32 Stage::RenderObjects(i32 zLevel)
                                     curQuadVm->color.bytes.a = (u8)(curQuadVm->color.bytes.a * (1.0f - var_98));
                                 }
 
-                                curQuadVm->pos = quadPos;
+                                curQuadVm->pos = *(Float3 *)&quadPos;
 
                                 if (curQuadVm->pos.z < 0.0f || curQuadVm->pos.z > 1.0f)
                                 {
@@ -1131,9 +1131,9 @@ i32 Stage::RenderObjects(i32 zLevel)
 // FUNCTION: TH07 0x00408180
 void Stage::SetupCameraStageBackground()
 {
-    D3DXVECTOR3 eyeVec;
-    D3DXVECTOR3 atVec;
-    D3DXVECTOR3 upVec;
+    Float3 eyeVec;
+    Float3 atVec;
+    Float3 upVec;
     f32 fov;
     f32 aspectRatio;
     f32 centerX;
@@ -1158,7 +1158,7 @@ void Stage::SetupCameraStageBackground()
     eyeVec.y = centerY;
     eyeVec.z = eyeZ;
 
-    D3DXMatrixLookAtLH(&g_Supervisor.viewMatrix, &eyeVec, &atVec, &upVec);
+    D3DXMatrixLookAtLH(&g_Supervisor.viewMatrix, eyeVec.asD3DX(), atVec.asD3DX(), upVec.asD3DX());
     D3DXMatrixPerspectiveFovLH(
         &g_Supervisor.projectionMatrix, fov,
         aspectRatio,
@@ -1171,8 +1171,8 @@ void Stage::SetupCameraStageBackground()
 // FUNCTION: TH07 0x004082b0
 void Stage::UpdateCamera()
 {
-    D3DXMatrixLookAtLH(&g_Supervisor.viewMatrix, &this->cam.pos,
-                       &(this->cam.lookAt + this->cam.pos), &this->cam.up);
+    D3DXMatrixLookAtLH(&g_Supervisor.viewMatrix, this->cam.pos.asD3DX(),
+                       (this->cam.lookAt + this->cam.pos).asD3DX(), this->cam.up.asD3DX());
     D3DXMatrixPerspectiveFovLH(&g_Supervisor.projectionMatrix, this->cam.fov,
                                (f32)g_Supervisor.viewport.Width /
                                    (f32)g_Supervisor.viewport.Height,
@@ -1180,6 +1180,6 @@ void Stage::UpdateCamera()
     g_Supervisor.d3dDevice->SetTransform(D3DTS_VIEW, &g_Supervisor.viewMatrix);
     g_Supervisor.d3dDevice->SetTransform(D3DTS_PROJECTION,
                                          &g_Supervisor.projectionMatrix);
-    D3DXVec3Cross(&this->cam.right, &this->cam.lookAt, &this->cam.up);
-    D3DXVec3Normalize(&this->cam.right, &this->cam.right);
+    D3DXVec3Cross(this->cam.right.asD3DX(), this->cam.lookAt.asD3DX(), this->cam.up.asD3DX());
+    D3DXVec3Normalize(this->cam.right.asD3DX(), this->cam.right.asD3DX());
 }
