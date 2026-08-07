@@ -30,18 +30,18 @@ u8 g_ItemDropTable[32] = {0, 0, 1, 0, 1, 0, 0, 7, 1, 1, 0, 0, 7, 1, 1, 0, 1, 0,
 ItemManager g_ItemManager;
 
 // FUNCTION: TH07 0x004325c0
-void AngleToVector(Float3 *vec, f32 angle, f32 speed)
+void Float3::FromAngleMagnitude(f32 angle, f32 magnitude)
 {
-    /* vec->x = cosf(angle) * speed;
-     * vec->y = sinf(angle) * speed;
+    /* this->x = cosf(angle) * magnitude;
+     * this->y = sinf(angle) * magnitude;
      */
     __asm {
-        mov eax, vec
+        mov eax, this
         fld [angle]
         fsincos
-        fmul [speed]
+        fmul [magnitude]
         fstp float ptr [eax]
-        fmul [speed]
+        fmul [magnitude]
         fstp float ptr [eax + 4]
     }
 }
@@ -160,7 +160,7 @@ void ItemManager::OnUpdate()
 
     item = this->items;
     Float3 local_20(g_Player.shooterData->itemCollectRadius,
-                         g_Player.shooterData->itemCollectRadius, 16.0f);
+                    g_Player.shooterData->itemCollectRadius, 16.0f);
     itemAcquired = 0;
     this->activeItemCount = 0;
     this->listTail = &this->listHead;
@@ -197,7 +197,7 @@ void ItemManager::OnUpdate()
                 if (g_Player.playerState != 1)
                 {
                     playerAngle = g_Player.AngleToPlayer(&item->currentPosition);
-                    AngleToVector(&item->startPosition, playerAngle, g_Player.shooterData->itemCollectSpeed);
+                    item->startPosition.FromAngleMagnitude(playerAngle, g_Player.shooterData->itemCollectSpeed);
                     item->state = 1;
                     if (g_Player.hasBorder == 1)
                     {

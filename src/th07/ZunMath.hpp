@@ -31,6 +31,13 @@ inline void sincosf(f32 *outSin, f32 *outCos, f32 angle)
     }
 }
 
+struct PodFloat3
+{
+    f32 x;
+    f32 y;
+    f32 z;
+};
+
 struct Float3
 {
     Float3()
@@ -43,6 +50,8 @@ struct Float3
         this->y = y;
         this->z = z;
     }
+
+    void FromAngleMagnitude(f32 angle, f32 magnitude);
 
     operator f32 *()
     {

@@ -5,8 +5,6 @@
 
 extern u8 g_ItemDropTable[32];
 
-void AngleToVector(Float3 *out, f32 angle, f32 speed);
-
 typedef enum ItemType
 {
     ITEM_POWER_SMALL = 0,

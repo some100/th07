@@ -261,7 +261,7 @@ void Enemy::UpdateEffects()
         }
 
         effect->vm.active = !this->hasNoCollision;
-        effect->emitterPosition = *(Float3 *)&this->pos;
+        effect->emitterPosition = this->pos;
         if (effect->radius < this->effectDistance)
         {
             effect->radius = effect->radius + 0.3f;

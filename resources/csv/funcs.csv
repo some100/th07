@@ -325,7 +325,7 @@ address|name|type
 0043225b|TextHelper::CreateTextBuffer|function
 0043227e|TextHelper::ReleaseTextBuffer|function
 004322a3|TextHelper::RenderTextToTextureBold|function
-004325c0|ItemManager::AngleToVector|function
+004325c0|Float3::FromAngleMagnitude|function
 004325e0|GameManager::AddCurrentPower|function
 00432630|ItemManager::ItemManager|function
 00432690|Item::Item|function

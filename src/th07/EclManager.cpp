@@ -1999,7 +1999,7 @@ restart:
                 enemy->moveRadius = g_Supervisor.effectiveFramerateMultiplier *
                                         enemy->moveRadialVelocity +
                                     enemy->moveRadius;
-                AngleToVector(&local_d8, enemy->moveAngle, enemy->moveRadius);
+                local_d8.FromAngleMagnitude(enemy->moveAngle, enemy->moveRadius);
                 enemy->axisSpeed.x =
                     local_d8.x + enemy->moveInterpStartPos.x - enemy->pos.x;
                 enemy->axisSpeed.y =
@@ -2021,7 +2021,7 @@ restart:
                 enemy->moveSpeed = g_Supervisor.effectiveFramerateMultiplier *
                                        enemy->moveAcceleration +
                                    enemy->moveSpeed;
-                AngleToVector(&enemy->axisSpeed, enemy->angle, enemy->moveSpeed);
+                enemy->axisSpeed.FromAngleMagnitude(enemy->angle, enemy->moveSpeed);
                 enemy->axisSpeed.z = 0.0f;
                 if (enemy->moveInterpStartTime > 0)
                 {

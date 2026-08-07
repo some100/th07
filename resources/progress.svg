@@ -37,7 +37,7 @@
         <clipPath
    id="progBarCutoff">
           <rect
-   width="126.2954778745081"
+   width="126.39862202367817"
    height="8.6508904"
    x="21.118132"
    y="134.05507"
@@ -85,7 +85,7 @@
            style="font-size:4.23333px;fill:#ffffff;fill-opacity:1;stroke-width:1.05833"
            x="76.884926"
            y="139.89182"
-           id="tspan2150">99.30%</tspan></text><rect
+           id="tspan2150">99.38%</tspan></text><rect
          style="display:inline;fill:#ffffff;stroke:none;stroke-width:2.6764"
          id="rect1169"
          width="127.18422"
@@ -103,7 +103,7 @@
            style="font-size:4.23333px;fill:#000000;fill-opacity:1;stroke-width:1.05833"
            x="76.884926"
            y="139.89182"
-           id="tspan16">99.30%</tspan></text></g><text
+           id="tspan16">99.38%</tspan></text></g><text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:monospace;-inkscape-font-specification:mono;text-align:start;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.83441208;stroke-dasharray:none;stroke-opacity:1;opacity:1;stroke-linejoin:miter;stroke-linecap:butt;paint-order:stroke fill markers"
        x="46.947659"
@@ -116,4 +116,4 @@
          style="font-size:4.23333px;stroke-width:0.83441208;stroke:#000000;stroke-opacity:1;stroke-dasharray:none;stroke-linejoin:miter;stroke-linecap:butt;paint-order:stroke fill markers"
          x="46.947659"
          y="134.96613"
-         id="tspan1262">Accuracy:    99.30%</tspan></text></g></svg>
+         id="tspan1262">Accuracy:    99.38%</tspan></text></g></svg>

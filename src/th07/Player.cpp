@@ -219,7 +219,7 @@ i32 ShtData::FireHomingBullet(Player *player, PlayerBullet *bullet,
                        player->sakuyaTargetPosition.x - bullet->pos.x),
                 shtEntry->angle + 1.5707964f);
             speed = shtEntry->speed * 1.5f;
-            AngleToVector((Float3 *)&bullet->velocity, angle, speed);
+            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, speed);
             bullet->angle = angle;
         }
         return 1;
@@ -242,7 +242,7 @@ i32 ShtData::FireRotatingOrbBullet(Player *player, PlayerBullet *bullet,
         angle = utils::AddNormalizeAngle(player->optionAngle,
                                          shtEntry->angle + 1.5707964f);
         speed = shtEntry->speed;
-        AngleToVector((Float3 *)&bullet->velocity, angle, speed);
+        (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, speed);
         bullet->angle = angle;
 
         return 1;
@@ -518,42 +518,42 @@ i32 ShtData::OnMissileHit(Player *player, PlayerBullet *bullet,
         case 1089:
             bullet->hitboxSize.x = 32.0f;
             bullet->hitboxSize.y = 32.0f;
-            AngleToVector((Float3 *)&bullet->velocity, angle, 4.0f);
+            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 4.0f);
             break;
         case 1090:
             bullet->hitboxSize.x = 42.0;
             bullet->hitboxSize.y = 42.0;
-            AngleToVector((Float3 *)&bullet->velocity, angle, 4.0f);
+            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 4.0f);
             break;
         case 1091:
             bullet->hitboxSize.x = 48.0f;
             bullet->hitboxSize.y = 48.0f;
-            AngleToVector((Float3 *)&bullet->velocity, angle, 4.0f);
+            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 4.0f);
             break;
         case 1092:
             bullet->hitboxSize.x = 56.0f;
             bullet->hitboxSize.y = 56.0f;
-            AngleToVector((Float3 *)&bullet->velocity, angle, 4.0f);
+            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 4.0f);
             break;
         case 1093:
             bullet->hitboxSize.x = 48.0f;
             bullet->hitboxSize.y = 48.0f;
-            AngleToVector((Float3 *)&bullet->velocity, angle, 6.0f);
+            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 6.0f);
             break;
         case 1094:
             bullet->hitboxSize.x = 64.0f;
             bullet->hitboxSize.y = 64.0f;
-            AngleToVector((Float3 *)&bullet->velocity, angle, 6.0f);
+            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 6.0f);
             break;
         case 1095:
             bullet->hitboxSize.x = 80.0f;
             bullet->hitboxSize.y = 80.0f;
-            AngleToVector((Float3 *)&bullet->velocity, angle, 6.0f);
+            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 6.0f);
             break;
         case 1096:
             bullet->hitboxSize.x = 96.0f;
             bullet->hitboxSize.y = 96.0f;
-            AngleToVector((Float3 *)&bullet->velocity, angle, 6.0f);
+            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 6.0f);
         }
     }
     if (bullet->timer.GetCurrent() % 6 == 0)
@@ -2036,7 +2036,7 @@ void Player::BreakBorderNaturally()
 #pragma var_order(i, bomb)
 // FUNCTION: TH07 0x00441800
 BombClearBox *Player::SpawnBombProjectile(Float3 *centerPosition,
-                                            f32 posZ, f32 size, i32 itemType)
+                                          f32 posZ, f32 size, i32 itemType)
 {
     BombClearBox *bomb;
     i32 i;
@@ -2061,7 +2061,7 @@ BombClearBox *Player::SpawnBombProjectile(Float3 *centerPosition,
 #pragma var_order(i, bomb)
 // FUNCTION: TH07 0x004418b0
 BombClearBox *Player::SpawnBombEffect(Float3 *pos, f32 sizeY, f32 sizeZ,
-                                        i32 lifetime, i32 itemType)
+                                      i32 lifetime, i32 itemType)
 {
     BombClearBox *bomb;
     i32 i;

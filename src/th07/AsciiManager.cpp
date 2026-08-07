@@ -252,7 +252,7 @@ void AsciiManager::AddString(Float3 *pos, const char *text)
     // the only reason this doesn't cause a problem is because nothing more
     // than 64 chars is passed through this function
     strcpy(curString->text, text);
-    *(Float3 *)&curString->pos = *pos;
+    curString->pos = *(PodFloat3 *)pos;
     curString->color = this->color;
     curString->scale.x = this->scale.x;
     curString->scale.y = this->scale.y;
@@ -421,7 +421,7 @@ void AsciiManager::CreatePopup1(Float3 *pos, i32 value,
     popup->characterCount = (u8)characterCount;
     popup->color = color;
     popup->timer = 0;
-    *(Float3 *)&popup->pos = *pos;
+    popup->pos = *pos;
     popup->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
     popup->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
     this->nextPopupIndex1++;
@@ -460,7 +460,7 @@ void AsciiManager::CreatePopup2(Float3 *pos, i32 value,
     popup->characterCount = (u8)characterCount;
     popup->color = color;
     popup->timer = 0;
-    *(Float3 *)&popup->pos = *pos;
+    popup->pos = *pos;
     popup->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
     popup->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
     this->nextPopupIndex2++;

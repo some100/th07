@@ -228,7 +228,7 @@ loop_begin:
             if (arg->cameraTeleported)
             {
                 Float3 diff = *curInstr->args.AsVec() - arg->camEnd.pos;
-                EffectManager::DoSomethingWithEffects((Float3 *)&diff);
+                EffectManager::DoSomethingWithEffects(&diff);
                 arg->cameraTeleported = 0;
             }
             arg->camStart.pos = arg->camEnd.pos;
@@ -1062,7 +1062,7 @@ i32 Stage::RenderObjects(i32 zLevel)
                                 curQuadVm->scale.x = D3DXVec3Length(diffPos.asD3DX()) / var_98;
                                 curQuadVm->scale.y = curQuadVm->scale.x;
 
-                                diffPos = *(Float3 *)&curQuadVm->pos - this->cam.pos;
+                                diffPos = curQuadVm->pos - this->cam.pos;
 
                                 var_98 = D3DXVec3Length(diffPos.asD3DX());
                                 origColor = curQuadVm->color;
@@ -1081,7 +1081,7 @@ i32 Stage::RenderObjects(i32 zLevel)
                                     curQuadVm->color.bytes.a = (u8)(curQuadVm->color.bytes.a * (1.0f - var_98));
                                 }
 
-                                curQuadVm->pos = *(Float3 *)&quadPos;
+                                curQuadVm->pos = quadPos;
 
                                 if (curQuadVm->pos.z < 0.0f || curQuadVm->pos.z > 1.0f)
                                 {

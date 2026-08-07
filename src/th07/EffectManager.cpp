@@ -248,7 +248,7 @@ void EffectManager::DoSomethingWithEffects(Float3 *param_1)
     {
         if (effect->effectId == 20 || effect->effectId == 31)
         {
-            effect->basePosition += *(Float3 *)param_1;
+            effect->basePosition += *param_1;
         }
     }
 }

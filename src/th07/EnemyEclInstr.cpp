@@ -432,9 +432,9 @@ void EnemyEclInstr::ExInsReflectBulletsFromLasers(Enemy *enemy,
                             bullet->angle =
                                 utils::AddNormalizeAngle(laser->angle, -1.5707964f);
                         }
-                        AngleToVector(&bullet->velocity, bullet->angle,
-                                      g_Supervisor.effectiveFramerateMultiplier *
-                                          bullet->speed);
+                        bullet->velocity.FromAngleMagnitude(bullet->angle,
+                                                        g_Supervisor.effectiveFramerateMultiplier *
+                                                            bullet->speed);
                         bullet->state2 = 10;
                         bullet->sprites = g_BulletManager.bulletTypeTemplates[5];
                         g_AnmManager->SetActiveSprite(
@@ -530,7 +530,7 @@ void EnemyEclInstr::ExInsShootBulletsAlongLaser(Enemy *enemy,
                         bullet->sprites.spriteBullet.activeSpriteIdx +
                             bullet->spriteOffset);
                     bullet->angle = atan2f(bullet->velocity.y, bullet->velocity.x);
-                    AngleToVector(&bullet->velocity, bullet->angle, bullet->speed);
+                    bullet->velocity.FromAngleMagnitude(bullet->angle, bullet->speed);
                     if (g_GameManager.difficulty < 2)
                     {
                         bullet->state2 = -1;

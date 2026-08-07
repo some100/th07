@@ -63,8 +63,8 @@ C_ASSERT(sizeof(BombProjectile) == 0x20);
 
 struct BombClearBox
 {
-    Float3 pos;
-    Float3 size;
+    PodFloat3 pos;
+    PodFloat3 size;
     i32 lifetime;
     union {
         i32 itemType;

@@ -50,7 +50,13 @@ C_ASSERT(sizeof(AsciiManagerPopup) == 0x28);
 struct AsciiManagerString
 {
     char text[64];
-    Float3 pos;
+
+    // This should seriously just be a normal Float3, but for some reason if
+    // a Float3 is used here instead the AsciiManager constructor opts to
+    // construct popups with a vector constructor iterator rather than just
+    // doing it in a loop, which ruins the matching percentage even more than
+    // it already is.
+    PodFloat3 pos;
     D3DCOLOR color;
     Float2 scale;
     i32 isSelected;
