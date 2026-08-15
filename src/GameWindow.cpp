@@ -162,7 +162,7 @@ ZunResult GameWindow::InitInterface()
         g_Supervisor.gfxDevice = gfxInit();
         if (g_Supervisor.gfxDevice)
         {
-            g_Supervisor.flags |= 2;
+            g_Supervisor.hasLockableBackbuffer = 1;
             g_Supervisor.lockableBackBuffer = 1;
             return ZUN_SUCCESS;
         }

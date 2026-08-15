@@ -547,7 +547,7 @@ i32 PauseMenu::OnUpdate()
         }
         this->curState++;
         this->numFrames = 0;
-        if ((g_Supervisor.flags >> 1 & 1) != 0)
+        if (g_Supervisor.hasLockableBackbuffer)
         {
             g_AnmManager->SetAnmIdxAndExecuteScript(&this->menuBackground, ANM_OFFSET_MENU_BG);
             if (g_AnmManager->CreateScreenshotTexture(
@@ -813,7 +813,7 @@ i32 PauseMenu::OnUpdate()
     {
         g_AnmManager->ExecuteScript(&this->menuSprites[i]);
     }
-    if ((g_Supervisor.flags >> 1 & 1) != 0)
+    if (g_Supervisor.hasLockableBackbuffer)
     {
         g_AnmManager->ExecuteScript(&this->menuBackground);
     }
@@ -833,7 +833,7 @@ void PauseMenu::OnDraw()
         g_Supervisor.viewport.width = (u32)g_GameManager.arcadeRegionSize.x;
         g_Supervisor.viewport.height = (u32)g_GameManager.arcadeRegionSize.y;
         g_Supervisor.gfxDevice->SetViewport(g_Supervisor.viewport);
-        if ((g_Supervisor.flags >> 1 & 1) != 0 && this->curState != 0)
+        if (g_Supervisor.hasLockableBackbuffer && this->curState != 0)
         {
             AnmVm local_25c = this->menuBackground;
             local_25c.zWriteDisable = 1;
@@ -893,7 +893,7 @@ i32 RetryMenu::OnUpdate()
                                           g_GameManager.maxRetries + 262 -
                                               (u32)g_GameManager.globals->numRetries);
             this->menuSprites[4].pendingInterrupt = 1;
-            if ((g_Supervisor.flags >> 1 & 1) != 0)
+            if (g_Supervisor.hasLockableBackbuffer)
             {
                 g_AnmManager->SetAnmIdxAndExecuteScript(&this->menuBackground, ANM_OFFSET_MENU_BG);
                 if (g_AnmManager->CreateScreenshotTexture(
@@ -1038,7 +1038,7 @@ i32 RetryMenu::OnUpdate()
     {
         g_AnmManager->ExecuteScript(&this->menuSprites[i]);
     }
-    if ((g_Supervisor.flags >> 1 & 1) != 0)
+    if (g_Supervisor.hasLockableBackbuffer)
     {
         g_AnmManager->ExecuteScript(&this->menuBackground);
     }
@@ -1058,7 +1058,7 @@ void RetryMenu::OnDraw()
         g_Supervisor.viewport.width = g_GameManager.arcadeRegionSize.x;
         g_Supervisor.viewport.height = g_GameManager.arcadeRegionSize.y;
         g_Supervisor.gfxDevice->SetViewport(g_Supervisor.viewport);
-        if ((g_Supervisor.flags >> 1 & 1) != 0 && (this->curState != 0 || 2 < this->numFrames))
+        if (g_Supervisor.hasLockableBackbuffer && (this->curState != 0 || 2 < this->numFrames))
         {
             g_AnmManager->DrawNoRotation(&this->menuBackground);
         }

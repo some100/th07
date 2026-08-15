@@ -44,7 +44,7 @@ u32 ReplayManager::OnUpdate(ReplayManager *arg)
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
-    if ((g_Supervisor.flags >> 3 & 1) != 0)
+    if (g_Supervisor.timingBad)
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
     }

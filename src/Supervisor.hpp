@@ -162,7 +162,18 @@ struct Supervisor
     f32 fpsAccumulator;
     i16 curFps;
     i16 unused_18a;
-    u32 flags;
+    union {
+        u32 flags;
+        struct
+        {
+            u32 usingTnLHal : 1;
+            u32 hasLockableBackbuffer : 1;
+            u32 supports32BitTex : 1;
+            u32 timingBad : 1;
+            u32 deviceNotReset : 1;
+            u32 forceIntegerTimer : 1;
+        };
+    };
     u64 lastTotalPlayTimeUpdate;
     u64 currentTime;
     u64 perfFrequency;

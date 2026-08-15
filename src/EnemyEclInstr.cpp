@@ -146,9 +146,8 @@ void EnemyEclInstr::ExInsTurnBulletsIntoOtherBullets(Enemy *enemy, EclRawInstr *
 
         if (bullet->sprites.spriteBullet.sprite && bullet->spriteOffset == 2)
         {
-            distance =
-                sqrtf((enemy->pos.x - bullet->pos.x) * (enemy->pos.x - bullet->pos.x) +
-                      (enemy->pos.y - bullet->pos.y) * (enemy->pos.y - bullet->pos.y));
+            distance = sqrtf((enemy->pos.x - bullet->pos.x) * (enemy->pos.x - bullet->pos.x) +
+                             (enemy->pos.y - bullet->pos.y) * (enemy->pos.y - bullet->pos.y));
             if (distance < local_e4)
             {
                 bulletProps.pos = bullet->pos;
@@ -397,8 +396,9 @@ void EnemyEclInstr::ExInsReflectBulletsFromLasers(Enemy *enemy, EclRawInstr *ins
                         {
                             bullet->angle = utils::AddNormalizeAngle(laser->angle, -1.5707964f);
                         }
-                        AngleToVector(&bullet->velocity, bullet->angle,
-                                      g_Supervisor.effectiveFramerateMultiplier * bullet->speed);
+                        bullet->velocity.FromAngleMagnitude(
+                            bullet->angle,
+                            g_Supervisor.effectiveFramerateMultiplier * bullet->speed);
                         bullet->state2 = 10;
                         bullet->sprites = g_BulletManager.bulletTypeTemplates[5];
                         g_AnmManager->SetActiveSprite(
@@ -567,7 +567,7 @@ void EnemyEclInstr::ExInsYoumuRestoreGameSpeed(Enemy *enemy, EclRawInstr *instr)
     g_Supervisor.effectiveFramerateMultiplier = 1.0f / (f32)instr->args[1].i;
     if (g_Supervisor.effectiveFramerateMultiplier < 1.0f)
     {
-        g_Supervisor.flags |= 0x20;
+        g_Supervisor.forceIntegerTimer = 1;
     }
     g_Supervisor.effectiveFramerateMultiplier = 1.0f;
     g_Stage.spellcardVms[0].pendingInterrupt = 1;
@@ -597,12 +597,10 @@ void EnemyEclInstr::ExInsBurstLargeBullets(Enemy *enemy, EclRawInstr *instr)
 
         if ((g_GameManager.difficulty < DIFF_HARD &&
              bullet->sprites.spriteBullet.sprite->heightPx > 48.0f &&
-             bullet->pos.y > enemy->pos.y - 64.0f &&
-             bullet->pos.y < enemy->pos.y + 64.0f) ||
+             bullet->pos.y > enemy->pos.y - 64.0f && bullet->pos.y < enemy->pos.y + 64.0f) ||
             (g_GameManager.difficulty >= DIFF_HARD &&
              bullet->sprites.spriteBullet.sprite->heightPx > 48.0f &&
-             bullet->pos.y > enemy->pos.y - 48.0f &&
-             bullet->pos.y < enemy->pos.y + 48.0f))
+             bullet->pos.y > enemy->pos.y - 48.0f && bullet->pos.y < enemy->pos.y + 48.0f))
         {
             for (j = 0; j < numBullets; j++)
             {

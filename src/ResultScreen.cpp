@@ -1081,7 +1081,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
     AnmVm *vm;
     i32 vmIdx;
 
-    if (g_Supervisor.IsSlowMode() || (g_Supervisor.flags >> 3 & 1) != 0)
+    if (g_Supervisor.IsSlowMode() || g_Supervisor.timingBad)
     {
         this->resultScreenState = 16;
         this->frameTimer = 0;
@@ -1282,7 +1282,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
     case 11:
         if (this->frameTimer == 60)
         {
-            if (g_Supervisor.IsSlowMode() || (g_Supervisor.flags >> 3 & 1) != 0)
+            if (g_Supervisor.IsSlowMode() || g_Supervisor.timingBad)
             {
                 interrupt = 19;
             }
