@@ -18,29 +18,29 @@ static_assert(sizeof(AnyArg) == 4);
 
 namespace utils
 {
-inline f32 AddNormalizeAngle(f32 param_1, f32 param_2)
+inline f32 AddNormalizeAngle(f32 a, f32 b)
 {
-    i32 local_8;
+    i32 i;
 
-    local_8 = 0;
-    param_1 += param_2;
-    while (param_1 > ZUN_PI)
+    i = 0;
+    a += b;
+    while (a > ZUN_PI)
     {
-        param_1 -= ZUN_2PI;
-        if (local_8++ > 16)
+        a -= ZUN_2PI;
+        if (i++ > 16)
         {
             break;
         }
     }
-    while (param_1 < -ZUN_PI)
+    while (a < -ZUN_PI)
     {
-        param_1 += ZUN_2PI;
-        if (local_8++ > 16)
+        a += ZUN_2PI;
+        if (i++ > 16)
         {
             break;
         }
     }
-    return param_1;
+    return a;
 }
 
 inline f32 Lerp(f32 a, f32 b, f32 t)

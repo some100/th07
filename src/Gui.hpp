@@ -152,8 +152,8 @@ struct GuiImpl
         enemySpellcardName.UpdatePrev();
         bombSpellcardNameBg.UpdatePrev();
         enemySpellcardNameBg.UpdatePrev();
-        stageClearTextVm.UpdatePrev();
-        stageClearBonusTextVm.UpdatePrev();
+        stageClearBg.UpdatePrev();
+        loadingSprite.UpdatePrev();
         stageTransitionSnapshotVm.UpdatePrev();
         captureBonusVm.UpdatePrev();
         spellcardBonusIndicator.UpdatePrev();
@@ -178,8 +178,8 @@ struct GuiImpl
     AnmVm enemySpellcardName;
     AnmVm bombSpellcardNameBg;
     AnmVm enemySpellcardNameBg;
-    AnmVm stageClearTextVm;
-    AnmVm stageClearBonusTextVm;
+    AnmVm stageClearBg;
+    AnmVm loadingSprite;
     AnmVm stageTransitionSnapshotVm;
     AnmVm captureBonusVm;
     AnmVm spellcardBonusIndicator;
@@ -218,8 +218,8 @@ struct Gui
     i32 HasCurrentMsgIdx();
     i32 IsDialogueSkippable();
     i32 IsStageFinished();
-    ZunResult LoadMsg(const char *param_1);
-    void MsgRead(i32 param_1);
+    ZunResult LoadMsg(const char *filename);
+    void MsgRead(i32 msgIdx);
     i32 MsgWait();
 
     void EndEnemySpellcard();

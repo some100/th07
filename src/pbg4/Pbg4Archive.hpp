@@ -34,11 +34,11 @@ struct Pbg4Archive
 {
     Pbg4Archive();
     ~Pbg4Archive();
-    Pbg4Entry *AllocEntries(void *param_1, i32 count, u32 dataOffset);
+    Pbg4Entry *AllocEntries(void *data, i32 count, u32 dataOffset);
     char *CopyFileName(const char *filename);
     Pbg4Entry *FindEntry(const char *filename);
-    u32 GetEntrySize(const char *param_1);
-    bool Load(const char *param_1);
+    u32 GetEntrySize(const char *filename);
+    bool Load(const char *filename);
     bool OpenArchive(const char *path);
     u8 *ReadDecompressEntry(const char *filename, u8 *buf);
     void Release();

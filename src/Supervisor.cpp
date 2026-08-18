@@ -644,9 +644,9 @@ ZunResult Supervisor::RegisterChain()
 
 void Supervisor::DrawFpsCounter(i32 param_1)
 {
-    ZunVec3 local_30;
-    ZunVec3 local_24;
-    u64 local_18;
+    ZunVec3 replayFpsCounterPos;
+    ZunVec3 fpsCounterPos;
+    u64 curPerfCounter;
     f32 targetFps;
     u64 curTime;
     f32 elapsedTimeInSecs;
@@ -717,17 +717,17 @@ void Supervisor::DrawFpsCounter(i32 param_1)
         {
             g_PerformanceCounter = SDL_GetPerformanceCounter();
         }
-        local_18 = SDL_GetPerformanceCounter();
-        if (local_18 < g_PerformanceCounter)
+        curPerfCounter = SDL_GetPerformanceCounter();
+        if (curPerfCounter < g_PerformanceCounter)
         {
-            g_PerformanceCounter = local_18;
+            g_PerformanceCounter = curPerfCounter;
             g_NumFramesSinceLastTime = 0;
         }
-        if (local_18 - g_PerformanceCounter >= g_Supervisor.perfFrequency / 2)
+        if (curPerfCounter - g_PerformanceCounter >= g_Supervisor.perfFrequency / 2)
         {
             elapsedTimeInSecs =
-                (f32)(local_18 - g_PerformanceCounter) / (f32)g_Supervisor.perfFrequency;
-            g_PerformanceCounter = local_18;
+                (f32)(curPerfCounter - g_PerformanceCounter) / (f32)g_Supervisor.perfFrequency;
+            g_PerformanceCounter = curPerfCounter;
             g_FpsUpdateCounter++;
             if (g_FpsUpdateCounter % 8 == 0)
             {
@@ -740,15 +740,15 @@ void Supervisor::DrawFpsCounter(i32 param_1)
 LAB_00439350:
     if (!g_Supervisor.isInEnding && param_1 != 0)
     {
-        local_24.x = 512.0f;
-        local_24.y = 464.0f;
-        local_24.z = 0.0f;
-        g_AsciiManager.AddString(&local_24, g_FpsCounterBuffer);
+        fpsCounterPos.x = 512.0f;
+        fpsCounterPos.y = 464.0f;
+        fpsCounterPos.z = 0.0f;
+        g_AsciiManager.AddString(&fpsCounterPos, g_FpsCounterBuffer);
         if (g_GameManager.replay && g_GameManager.notInMenu)
         {
-            local_30.x = 384.0f;
-            local_30.y = 448.0f;
-            local_30.z = 0.0f;
+            replayFpsCounterPos.x = 384.0f;
+            replayFpsCounterPos.y = 448.0f;
+            replayFpsCounterPos.z = 0.0f;
             if (g_Supervisor.isFpsBad)
             {
                 g_AsciiManager.color = 0xffff4040;
@@ -757,7 +757,7 @@ LAB_00439350:
             {
                 g_AsciiManager.color = 0xffffffd0;
             }
-            g_AsciiManager.AddString(&local_30, g_ReplayFpsBuffer);
+            g_AsciiManager.AddString(&replayFpsCounterPos, g_ReplayFpsBuffer);
             g_AsciiManager.color = 0xffffffff;
         }
     }
@@ -1063,8 +1063,8 @@ ZunResult Supervisor::PlayLoadedAudio(i32 idx)
 
 ZunResult Supervisor::PlayAudio(const char *path)
 {
-    char local_10c[256];
-    char *local_8;
+    char pathBuf[256];
+    char *pathExt;
 
     if (g_Supervisor.cfg.musicMode == MUSIC_MIDI)
     {
@@ -1077,17 +1077,17 @@ ZunResult Supervisor::PlayAudio(const char *path)
     {
         if (g_Supervisor.cfg.musicMode == MUSIC_WAV)
         {
-            strcpy(local_10c, path);
-            local_8 = strrchr(local_10c, '.');
-            if (!local_8)
+            strcpy(pathBuf, path);
+            pathExt = strrchr(pathExt, '.');
+            if (!pathExt)
             {
                 return ZUN_ERROR;
             }
 
-            local_8[1] = 'w';
-            local_8[2] = 'a';
-            local_8[3] = 'v';
-            g_SoundPlayer.PushCommand(AUDIO_START, -1, local_10c);
+            pathExt[1] = 'w';
+            pathExt[2] = 'a';
+            pathExt[3] = 'v';
+            g_SoundPlayer.PushCommand(AUDIO_START, -1, pathBuf);
         }
         else
         {
@@ -1129,7 +1129,7 @@ ZunResult Supervisor::StopAudio()
 
 i32 Supervisor::FadeOutMusic(f32 musicFadeFrames)
 {
-    f32 local_8;
+    f32 effectiveFadeFrames;
 
     if (g_Supervisor.cfg.musicMode == MUSIC_MIDI)
     {
@@ -1144,17 +1144,17 @@ i32 Supervisor::FadeOutMusic(f32 musicFadeFrames)
         {
             if (this->effectiveFramerateMultiplier == 0.0f)
             {
-                local_8 = musicFadeFrames;
+                effectiveFadeFrames = musicFadeFrames;
             }
             else if (this->effectiveFramerateMultiplier > 1.0f)
             {
-                local_8 = musicFadeFrames;
+                effectiveFadeFrames = musicFadeFrames;
             }
             else
             {
-                local_8 = musicFadeFrames / this->effectiveFramerateMultiplier;
+                effectiveFadeFrames = musicFadeFrames / this->effectiveFramerateMultiplier;
             }
-            g_SoundPlayer.PushCommand(AUDIO_FADEOUT, local_8, "");
+            g_SoundPlayer.PushCommand(AUDIO_FADEOUT, effectiveFadeFrames, "");
         }
         else
         {

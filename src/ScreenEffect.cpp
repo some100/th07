@@ -297,8 +297,8 @@ ZunResult BombEffects::DeletedCallback(BombEffects *arg)
 
 BombEffects *BombEffects::RegisterChain(i32 type, i32 duration, u32 arg1, u32 arg2, u32 arg3)
 {
-    ChainElem *local_8 = NULL;
-    ChainElem *local_c = NULL;
+    ChainElem *calcChain = NULL;
+    ChainElem *drawChain = NULL;
 
     BombEffects *bombEffects = new BombEffects;
     if (!bombEffects)
@@ -310,43 +310,43 @@ BombEffects *BombEffects::RegisterChain(i32 type, i32 duration, u32 arg1, u32 ar
     switch (type)
     {
     case 0:
-        local_8 = g_Chain.CreateElem((ChainCallback)OnUpdateFadeOut);
-        local_c = g_Chain.CreateElem((ChainCallback)OnDrawFullScreenColor);
+        calcChain = g_Chain.CreateElem((ChainCallback)OnUpdateFadeOut);
+        drawChain = g_Chain.CreateElem((ChainCallback)OnDrawFullScreenColor);
         break;
     case 1:
-        local_8 = g_Chain.CreateElem((ChainCallback)OnUpdateScreenShake);
+        calcChain = g_Chain.CreateElem((ChainCallback)OnUpdateScreenShake);
         break;
     case 2:
-        local_8 = g_Chain.CreateElem((ChainCallback)OnUpdateFadeIn);
-        local_c = g_Chain.CreateElem((ChainCallback)OnDrawPlayAreaColor);
+        calcChain = g_Chain.CreateElem((ChainCallback)OnUpdateFadeIn);
+        drawChain = g_Chain.CreateElem((ChainCallback)OnDrawPlayAreaColor);
         break;
     case 4:
-        local_8 = g_Chain.CreateElem((ChainCallback)OnUpdateFadeIn);
-        local_c = g_Chain.CreateElem((ChainCallback)OnDrawFullScreenColor);
+        calcChain = g_Chain.CreateElem((ChainCallback)OnUpdateFadeIn);
+        drawChain = g_Chain.CreateElem((ChainCallback)OnDrawFullScreenColor);
         break;
     case 3:
-        local_8 = g_Chain.CreateElem((ChainCallback)OnUpdatePulse);
-        local_c = g_Chain.CreateElem((ChainCallback)OnDrawPlayAreaPulseColor);
+        calcChain = g_Chain.CreateElem((ChainCallback)OnUpdatePulse);
+        drawChain = g_Chain.CreateElem((ChainCallback)OnDrawPlayAreaPulseColor);
     }
-    local_8->addedCallback = (ChainLifecycleCallback)AddedCallback;
-    local_8->deletedCallback = (ChainLifecycleCallback)DeletedCallback;
-    local_8->arg = bombEffects;
+    calcChain->addedCallback = (ChainLifecycleCallback)AddedCallback;
+    calcChain->deletedCallback = (ChainLifecycleCallback)DeletedCallback;
+    calcChain->arg = bombEffects;
     bombEffects->type = type;
     bombEffects->duration = duration;
     bombEffects->args[0] = arg1;
     bombEffects->args[1] = arg2;
     bombEffects->args[2] = arg3;
-    if (g_Chain.AddToCalcChain(local_8, 15))
+    if (g_Chain.AddToCalcChain(calcChain, 15))
     {
         return NULL;
     }
 
-    if (local_c)
+    if (drawChain)
     {
-        local_c->arg = bombEffects;
-        g_Chain.AddToDrawChain(local_c, 17);
+        drawChain->arg = bombEffects;
+        g_Chain.AddToDrawChain(drawChain, 17);
     }
-    bombEffects->calcChain = local_8;
-    bombEffects->drawChain = local_c;
+    bombEffects->calcChain = calcChain;
+    bombEffects->drawChain = drawChain;
     return bombEffects;
 }

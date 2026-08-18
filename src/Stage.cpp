@@ -203,7 +203,7 @@ loop_begin:
             if (arg->cameraTeleported)
             {
                 ZunVec3 diff = *curInstr->args.AsVec() - arg->camEnd.pos;
-                EffectManager::DoSomethingWithEffects(&diff);
+                EffectManager::ShiftEffectsAfterCameraTeleport(&diff);
                 arg->cameraTeleported = 0;
             }
             arg->camStart.pos = arg->camEnd.pos;
@@ -599,7 +599,7 @@ u32 Stage::OnDrawHighPrio(Stage *arg)
 u32 Stage::OnDrawLowPrio(Stage *arg)
 {
     i32 i;
-    ZunRect local_1c;
+    ZunRect rect;
     i32 alpha;
 
     if (arg->spellCardState <= 1)
@@ -615,10 +615,10 @@ u32 Stage::OnDrawLowPrio(Stage *arg)
             g_EffectManager.UpdateSpecialEffect();
             if (arg->spellCardState == 1)
             {
-                local_1c.left = 32.0f;
-                local_1c.top = 16.0f;
-                local_1c.right = 416.0f;
-                local_1c.bottom = 464.0f;
+                rect.left = 32.0f;
+                rect.top = 16.0f;
+                rect.right = 416.0f;
+                rect.bottom = 464.0f;
                 alpha = arg->ticksSinceSpellcardStarted * 255 / 60;
                 g_AnmManager->Flush();
                 g_Supervisor.gfxDevice->SetDepthFunc(DEPTH_FUNC_ALWAYS);
@@ -626,7 +626,7 @@ u32 Stage::OnDrawLowPrio(Stage *arg)
                 {
                     g_Supervisor.gfxDevice->Disable(CAPS_FOG);
                 }
-                ScreenEffect::DrawSquare(&local_1c, alpha << 24);
+                ScreenEffect::DrawSquare(&rect, alpha << 24);
             }
         }
     }
@@ -885,8 +885,6 @@ ZunResult Stage::UpdateObjects()
                 switch (quad->type)
                 {
                 case 0:
-                    g_AnmManager->ExecuteScript(vm);
-                    break;
                 case 1:
                     g_AnmManager->ExecuteScript(vm);
                     break;

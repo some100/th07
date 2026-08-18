@@ -205,7 +205,7 @@ i32 EffectManager::UpdateBurst30Frames(Effect *effect)
     return 1;
 }
 
-void EffectManager::DoSomethingWithEffects(ZunVec3 *param_1)
+void EffectManager::ShiftEffectsAfterCameraTeleport(ZunVec3 *shift)
 {
     i32 i;
     Effect *effect;
@@ -215,7 +215,7 @@ void EffectManager::DoSomethingWithEffects(ZunVec3 *param_1)
     {
         if (effect->effectId == 20 || effect->effectId == 31)
         {
-            effect->basePosition += *param_1;
+            effect->basePosition += *shift;
         }
     }
 }
@@ -401,21 +401,21 @@ i32 EffectManager::InitWeatherFalling(Effect *effect)
 
 i32 EffectManager::InitRandomDirWithSpeed(Effect *effect)
 {
-    f32 local_8;
+    f32 angle;
 
     // double intentionally used here, strangely
     if (effect->custom.x > -990.0)
     {
-        local_8 = utils::AddNormalizeAngle(effect->custom.x, 0.0f);
+        angle = utils::AddNormalizeAngle(effect->custom.x, 0.0f);
     }
     else
     {
-        local_8 = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
+        angle = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
     }
     effect->emitterPosition = effect->pos1;
     effect->emitterPosition.z = 0.0f;
-    effect->direction.x = cosf(local_8);
-    effect->direction.y = sinf(local_8);
+    effect->direction.x = cosf(angle);
+    effect->direction.y = sinf(angle);
     effect->direction.z = 0.0f;
     effect->direction *= g_Rng.GetRandomFloatInRange(1.5f) + 1.0f;
     return 0;
