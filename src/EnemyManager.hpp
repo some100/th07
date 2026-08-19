@@ -6,7 +6,7 @@
 #include "EffectManager.hpp"
 #include "inttypes.hpp"
 
-extern u32 g_SpellcardScore[141];
+extern u32 g_SpellcardScore[SPELLCARD_COUNT];
 
 struct EnemyHistory
 {
@@ -42,6 +42,8 @@ struct SpellcardInfo
     i32 spellcardIdx;
     u32 usedBomb;
 };
+
+#define ENEMY_STACK_SIZE 15
 
 struct Enemy
 {
@@ -105,7 +107,7 @@ struct Enemy
     AnmVm primaryVm;
     AnmVm vms[2];
     EnemyEclContext currentContext;
-    EnemyEclContext savedContextStack[16];
+    EnemyEclContext savedContextStack[ENEMY_STACK_SIZE + 1];
     i32 stackDepth;
     i32 unused_2a80;
     i32 deathCallbackSub;
@@ -250,6 +252,8 @@ struct Enemy
     Enemy *next;
 };
 
+#define MAX_ENEMIES 480
+
 struct EnemyManager
 {
     EnemyManager();
@@ -276,7 +280,7 @@ struct EnemyManager
     const char *stgEnmAnmFilename;
     const char *stgEnm2AnmFilename;
     Enemy enemyTemplate;
-    Enemy enemies[481];
+    Enemy enemies[MAX_ENEMIES + 1];
     Enemy *bosses[8];
     u16 randomItemSpawnIdx;
     u16 randomItemTableIdx;

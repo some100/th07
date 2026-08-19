@@ -37,7 +37,7 @@ u32 Ending::OnUpdate(Ending *arg)
         {
             return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
         }
-        for (i = 0; i < 15; i++)
+        for (i = 0; i < MAX_ENDING_SPRITES; i++)
         {
             g_AnmManager->ExecuteScript(&arg->sprites[i]);
         }
@@ -114,7 +114,7 @@ u32 Ending::OnDraw(Ending *arg)
     f32 drawY = utils::Lerp(arg->prevBackgroundPos.y, arg->backgroundPos.y, g_RenderAlpha);
 
     g_AnmManager->DrawEndingRect(0, 0, 0, drawX, drawY, 640, 480);
-    for (i32 i = 0; i < 15; i++)
+    for (i32 i = 0; i < MAX_ENDING_SPRITES; i++)
     {
         g_AnmManager->DrawInterp(&arg->sprites[i]);
     }
@@ -187,7 +187,7 @@ ZunResult Ending::ParseEndFile()
         }
         if (this->timer3 <= 0)
         {
-            for (i = 0; i < 15; i++)
+            for (i = 0; i < MAX_ENDING_SPRITES; i++)
             {
                 this->sprites[i].pendingInterrupt = 2;
             }
@@ -255,7 +255,7 @@ ZunResult Ending::ParseEndFile()
                     return ZUN_ERROR;
                 }
                 local_58 = 0;
-                for (execOuter = 0; execOuter < 6; execOuter++)
+                for (execOuter = 0; execOuter < ARRAY_SIZE_SIGNED(g_GameManager.clrd); execOuter++)
                 {
                     for (execInner = 0; execInner < 4; execInner++)
                     {
@@ -270,7 +270,7 @@ ZunResult Ending::ParseEndFile()
                     }
                 }
             case 'R':
-                for (j = 0; j < 16; j++)
+                for (j = 0; j < ARRAY_SIZE_SIGNED(this->sprites); j++)
                 {
                     this->sprites[j].anmFileIdx = 0;
                 }
@@ -455,7 +455,7 @@ ZunResult Ending::AddedCallback(Ending *arg)
         arg->hasSeenEnding = 1;
     }
     g_GameManager.clrd[shotType].difficultyClearedWithoutRetries[g_GameManager.difficulty] = 99;
-    for (i = 0; i < 15; i++)
+    for (i = 0; i < MAX_ENDING_SPRITES; i++)
     {
         g_AnmManager->ExecuteAnmIdx(&arg->sprites[i], i + 1807);
         arg->sprites[i].pos = ZunVec3(64.0f, (f32)i * 16.0f + 392.0f, 0.0f);

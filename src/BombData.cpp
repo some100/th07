@@ -63,7 +63,8 @@ void BombData::SpawnBombInvulnEffect(Player *player)
         player->effect->inUseFlag = 0;
     }
 
-    Effect *effect = g_EffectManager.SpawnEffect(25, &player->positionCenter, 0, 1, 0xffffffff);
+    Effect *effect = g_EffectManager.SpawnSpecialEffect(25, &player->positionCenter, 0,
+                                                        1, 0xffffffff);
     effect->vm.interpStartTimes[4] = 0;
     effect->vm.interpEndTimes[4] = player->invulnerabilityTimer;
     effect->vm.easeModes[4] = 0;
@@ -133,8 +134,10 @@ void BombData::BombReimuACalc(Player *player)
             bombInfo->subInfo[i].state = 0;
         }
         g_ItemManager.RemoveAllItems();
-        g_EffectManager.SpawnParticles(12, &player->positionCenter, 1, 0xff4040ff);
-        player->SpawnBombEffect(&player->positionCenter, 32.0f, 8.0f, 16, ITEM_POINT_BULLET);
+        g_EffectManager.SpawnEffect(12, &player->positionCenter, 1,
+                                    0xff4040ff);
+        player->SpawnBombEffect(&player->positionCenter, 32.0f, 8.0f, 16,
+                                ITEM_POINT_BULLET);
 
         player->bombStartPos = player->positionCenter;
         ComputeBombCherryDrain(player, 4000, 0.2f);
@@ -176,12 +179,16 @@ void BombData::BombReimuACalc(Player *player)
 
         if (subInfo->state == 1)
         {
-            subInfo->speed -= 0.4f * g_Supervisor.effectiveFramerateMultiplier;
-            AngleToVector(&subInfo->bombRegionVelocities, subInfo->angle, subInfo->speed);
+            subInfo->speed -=
+                0.4f * g_Supervisor.effectiveFramerateMultiplier;
+            subInfo->bombRegionVelocities.FromAngleMagnitude(subInfo->angle,
+                                                             subInfo->speed);
             if (subInfo->speed < -10.0f)
             {
-                g_EffectManager.SpawnParticles(6, &subInfo->bombRegionPositions, 8, 0xffffffff);
-                g_EffectManager.SpawnParticles(12, &subInfo->bombRegionPositions, 1, 0xff4040ff);
+                g_EffectManager.SpawnEffect(6, &subInfo->bombRegionPositions, 8,
+                                            0xffffffff);
+                g_EffectManager.SpawnEffect(12, &subInfo->bombRegionPositions,
+                                            1, 0xff4040ff);
                 subInfo->state = 2;
                 subInfo->vms[0].pendingInterrupt = 1;
                 subInfo->vms[1].pendingInterrupt = 1;
@@ -311,8 +318,10 @@ void BombData::BombReimuACalcFocus(Player *player)
             bombInfo->subInfo[i].state = 0;
         }
         g_ItemManager.RemoveAllItems();
-        g_EffectManager.SpawnParticles(12, &player->positionCenter, 1, 0xff4040ff);
-        player->SpawnBombEffect(&player->positionCenter, 32.0f, 8.0f, 16, ITEM_POINT_BULLET);
+        g_EffectManager.SpawnEffect(12, &player->positionCenter, 1,
+                                    0xff4040ff);
+        player->SpawnBombEffect(&player->positionCenter, 32.0f, 8.0f, 16,
+                                ITEM_POINT_BULLET);
         ComputeBombCherryDrain(player, 5000, 0.22f);
         player->verticalMovementSpeedMultiplierDuringBomb = 0.6f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 0.6f;
@@ -332,7 +341,8 @@ void BombData::BombReimuACalcFocus(Player *player)
                     player->positionCenter;
 
                 tmpFloat2 = g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI;
-                AngleToVector(&subInfo->bombRegionVelocities, tmpFloat2, subInfo->accel);
+                subInfo->bombRegionVelocities.FromAngleMagnitude(tmpFloat2,
+                                                                 subInfo->accel);
 
                 player->bombDamageBoxes[i].damage = 0;
                 vm = subInfo->vms;
@@ -395,9 +405,10 @@ void BombData::BombReimuACalcFocus(Player *player)
                 if (player->bombDamageBoxes[i].damage >= 100 ||
                     bombInfo->bombTimer >= bombInfo->bombDuration - 30)
                 {
-                    g_EffectManager.SpawnParticles(6, &subInfo->bombRegionPositions, 8, 0xffffffff);
-                    g_EffectManager.SpawnParticles(12, &subInfo->bombRegionPositions, 1,
-                                                   0xff4040ff);
+                    g_EffectManager.SpawnEffect(6, &subInfo->bombRegionPositions,
+                                                8, 0xffffffff);
+                    g_EffectManager.SpawnEffect(
+                        12, &subInfo->bombRegionPositions, 1, 0xff4040ff);
                     subInfo->state = 2;
                     subInfo->vms[0].pendingInterrupt = 1;
                     subInfo->vms[1].pendingInterrupt = 1;
@@ -1135,8 +1146,8 @@ void BombData::BombSakuyaACalc(Player *player)
             subInfo->state = 0;
         }
         ComputeBombCherryDrain(player, 6000, 0.28f);
-        player->bombInfo.subInfo[0].effect =
-            g_EffectManager.SpawnParticles(21, &player->positionCenter, 1, 0xffffffff);
+        player->bombInfo.subInfo[0].effect = g_EffectManager.SpawnEffect(
+            21, &player->positionCenter, 1, 0xffffffff);
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_SAKUYA_A, 0);
     }
     if (player->bombInfo.bombTimer >= 60)
@@ -1261,8 +1272,8 @@ void BombData::BombSakuyaACalcFocus(Player *player)
         ComputeBombCherryDrain(player, 6500, 0.29f);
         player->verticalMovementSpeedMultiplierDuringBomb = 0.3f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 0.3f;
-        player->bombInfo.subInfo[0].effect =
-            g_EffectManager.SpawnParticles(21, &player->positionCenter, 1, 0xffffffff);
+        player->bombInfo.subInfo[0].effect = g_EffectManager.SpawnEffect(
+            21, &player->positionCenter, 1, 0xffffffff);
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_SAKUYA_A, 0);
     }
     if (player->bombInfo.bombTimer >= 0 && player->bombInfo.bombTimer <= 60)
@@ -1346,8 +1357,9 @@ void BombData::BombSakuyaACalcFocus(Player *player)
         {
             g_AnmManager->ExecuteAnmIdx(subInfo->vms, 1120);
             player->bombDamageBoxes[i].damage = 999;
-            g_EffectManager.SpawnParticles(0, &player->bombInfo.subInfo[i].bombRegionPositions, 1,
-                                           0xffff80ff);
+            g_EffectManager.SpawnEffect(
+                0, &player->bombInfo.subInfo[i].bombRegionPositions, 1,
+                0xffff80ff);
         }
         g_AnmManager->ExecuteScript(subInfo->vms);
         subInfo->timer++;

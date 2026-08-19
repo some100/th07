@@ -27,6 +27,8 @@ struct PauseMenu
     AnmVm menuBackground;
 };
 
+#define RETRY_MENU_SPRITES 5
+
 struct RetryMenu
 {
     RetryMenu();
@@ -45,7 +47,7 @@ struct RetryMenu
 
     i32 curState;
     i32 numFrames;
-    AnmVm menuSprites[6];
+    AnmVm menuSprites[RETRY_MENU_SPRITES + 1];
     AnmVm menuBackground;
 };
 

@@ -63,7 +63,7 @@ void EnemyEclInstr::ExInsAliceCurveBullets(Enemy *enemy, EclRawInstr *instr)
     bullet = g_BulletManager.bullets;
     BombEffects::RegisterChain(1, 30, 12, 0, 0);
     BombEffects::RegisterChain(3, 4, 3, 0x80ffcfcf, 0);
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE || bullet->state == BULLET_DESPAWN)
         {
@@ -137,7 +137,7 @@ void EnemyEclInstr::ExInsTurnBulletsIntoOtherBullets(Enemy *enemy, EclRawInstr *
     case 3:
         local_e4 = 999.0;
     }
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE || bullet->state == BULLET_DESPAWN)
         {
@@ -184,7 +184,7 @@ void EnemyEclInstr::ExInsDespawnLargeBulletAndSavePos(Enemy *enemy, EclRawInstr 
     EnemyBulletShooter bulletProps;
 
     enemy->currentContext.eclContextArgs.floatVars1[0] = -999.0f;
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE || bullet->state == BULLET_DESPAWN)
         {
@@ -195,7 +195,7 @@ void EnemyEclInstr::ExInsDespawnLargeBulletAndSavePos(Enemy *enemy, EclRawInstr 
         {
             enemy->currentContext.eclContextArgs.floatVars1[0] = bullet->pos.x;
             enemy->currentContext.eclContextArgs.floatVars1[1] = bullet->pos.y;
-            g_EffectManager.SpawnParticles(2, &bullet->pos, 1, 0xffffffff);
+            g_EffectManager.SpawnEffect(2, &bullet->pos, 1, 0xffffffff);
             bullet->Initialize();
             break;
         }
@@ -220,7 +220,7 @@ void EnemyEclInstr::ExInsSplitBulletsOrShootBackwards(Enemy *enemy, EclRawInstr 
     i32 i;
     EnemyBulletShooter bulletProps;
 
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE || bullet->state == BULLET_DESPAWN)
         {
@@ -345,7 +345,7 @@ void EnemyEclInstr::ExInsReflectBulletsFromLasers(Enemy *enemy, EclRawInstr *ins
     i32 j;
 
     laser = g_BulletManager.lasers;
-    for (i = 0; i < 64; i++, laser++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(g_BulletManager.lasers); i++, laser++)
     {
         if (!laser->inUse)
         {
@@ -366,7 +366,7 @@ void EnemyEclInstr::ExInsReflectBulletsFromLasers(Enemy *enemy, EclRawInstr *ins
             center.y = laser->pos.y;
             sincosf(&sine, &cosine, laser->angle);
             bullet = g_BulletManager.bullets;
-            for (j = 0; j < 1024; j++, bullet++)
+            for (j = 0; j < MAX_BULLETS; j++, bullet++)
             {
                 if (bullet->state == BULLET_INACTIVE || bullet->state == BULLET_DESPAWN)
                 {
@@ -429,7 +429,7 @@ void EnemyEclInstr::ExInsShootBulletsAlongLaser(Enemy *enemy, EclRawInstr *instr
     f32 dirY;
 
     laser = g_BulletManager.lasers;
-    for (i = 0; i < 64; i++, laser++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(g_BulletManager.lasers); i++, laser++)
     {
         if (!laser->inUse)
         {
@@ -452,7 +452,7 @@ void EnemyEclInstr::ExInsShootBulletsAlongLaser(Enemy *enemy, EclRawInstr *instr
             dirX = -sine;
             dirY = cosine;
             bullet = g_BulletManager.bullets;
-            for (j = 0; j < 1024; j++, bullet++)
+            for (j = 0; j < MAX_BULLETS; j++, bullet++)
             {
                 if (bullet->state == BULLET_INACTIVE || bullet->state == BULLET_DESPAWN)
                 {
@@ -522,7 +522,7 @@ void EnemyEclInstr::ExInsYoumuSetGameSpeed(Enemy *enemy, EclRawInstr *instr)
     g_Stage.spellcardVms[0].pendingInterrupt = 2;
     g_Stage.spellcardVms[1].pendingInterrupt = 2;
     bullet = g_BulletManager.bullets;
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE)
         {
@@ -549,7 +549,7 @@ void EnemyEclInstr::ExInsYoumuRestoreGameSpeed(Enemy *enemy, EclRawInstr *instr)
 
     bullet = g_BulletManager.bullets;
     fps = 1.0f / g_Supervisor.effectiveFramerateMultiplier;
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE)
         {
@@ -588,7 +588,7 @@ void EnemyEclInstr::ExInsBurstLargeBullets(Enemy *enemy, EclRawInstr *instr)
                  : g_GameManager.difficulty == DIFF_NORMAL ? 18
                  : g_GameManager.difficulty == DIFF_HARD   ? 22
                                                            : 25;
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE)
         {
@@ -654,7 +654,7 @@ void EnemyEclInstr::ExInsYoumuCurveBulletsBelow(Enemy *enemy, EclRawInstr *instr
     i32 i;
 
     bullet = g_BulletManager.bullets;
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE)
         {
@@ -681,7 +681,7 @@ void EnemyEclInstr::ExInsYoumuRedirectBulletsToPlayer(Enemy *enemy, EclRawInstr 
 
     bullet = g_BulletManager.bullets;
     BombEffects::RegisterChain(3, 16, 1, 0x50cfcfff, 0);
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE)
         {
@@ -713,7 +713,7 @@ void EnemyEclInstr::ExInsYuyukoTransformButterflyBullets(Enemy *enemy, EclRawIns
     EnemyBulletShooter bulletProps;
     i32 i;
 
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE)
         {
@@ -750,7 +750,7 @@ void EnemyEclInstr::ExInsYuyukoButterflySpawnEnemy(Enemy *enemy, EclRawInstr *in
     args = enemy->currentContext.eclContextArgs;
     angleOffset = -ZUN_PI;
     BombEffects::RegisterChain(3, 12, 1, 0x80cfcfff, 0);
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE)
         {
@@ -783,7 +783,7 @@ void EnemyEclInstr::ExInsYuyukoCountButterflyBullets(Enemy *enemy, EclRawInstr *
 
     bullet = g_BulletManager.bullets;
     enemy->currentContext.eclContextArgs.intVars1[0] = 0;
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE)
         {
@@ -806,7 +806,7 @@ void EnemyEclInstr::ExInsBurstLargeBullets2(Enemy *enemy, EclRawInstr *instr)
 
     triggerHeight = g_GameManager.difficulty == DIFF_HARD ? 128.0f : 180.0f;
     BombEffects::RegisterChain(3, 8, 1, 0x50cfcfff, 0);
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE)
         {
@@ -895,7 +895,7 @@ void EnemyEclInstr::ExInsSpawnBulletsWithDirChange(Enemy *enemy, EclRawInstr *in
     }
 
     timerMod2 = enemy->timer.current % 2;
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE)
         {
@@ -962,7 +962,7 @@ void EnemyEclInstr::ExInsSpawnBulletsWithDirChange2(Enemy *enemy, EclRawInstr *i
     }
 
     timerMod3 = enemy->timer.current % 3;
-    for (i = 0; i < 1024; i++, bullet++)
+    for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
         if (bullet->state == BULLET_INACTIVE)
         {

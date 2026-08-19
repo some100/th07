@@ -556,7 +556,7 @@ void ItemManager::DespawnAllItems(i32 param_1)
                 item->startPosition.y = -0.5f;
                 item->startPosition.z = 0.0f;
             }
-            g_EffectManager.SpawnParticles(0, &item->currentPosition, 1, 0xffffffff);
+            g_EffectManager.SpawnEffect(0, &item->currentPosition, 1, 0xffffffff);
             item->itemType = 7;
             g_AnmManager->SetAnmIdxAndExecuteScript(&item->sprite, 715);
         }

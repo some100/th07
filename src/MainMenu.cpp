@@ -215,7 +215,7 @@ u32 MainMenu::OnUpdatePreInput()
             this->cursorVm->SetInterrupt(2);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
-        for (i = 0; (u32)i < 8; i++)
+        for (i = 0; i < ARRAY_SIZE(g_MainMenuStrings); i++)
         {
             g_AnmManager->DrawStringFormat2(&this->vms[i], 0xfff0e0, 0x300000,
                                             g_MainMenuStrings[i]);
@@ -451,7 +451,7 @@ u32 MainMenu::OnUpdateOptionsMenu()
             this->selected = -1;
         }
         this->menuSubState = 1;
-        for (i = 0; (u32)i < 9; i++)
+        for (i = 0; i < ARRAY_SIZE(g_OptionsStrings); i++)
         {
             g_AnmManager->DrawStringFormat2(&this->vms[i], 0xfff0e0, 0x300000, g_OptionsStrings[i]);
         }
@@ -837,7 +837,7 @@ u32 MainMenu::OnUpdateKeyConfig()
             this->selected = -1;
         }
         this->menuSubState = 1;
-        for (i = 0; (u32)i < 12; i++)
+        for (i = 0; i < ARRAY_SIZE(g_KeyConfigStrings); i++)
         {
             g_AnmManager->DrawStringFormat2(&this->vms[i], 0xfff0e0, 0x300000,
                                             g_KeyConfigStrings[i]);
@@ -2052,7 +2052,8 @@ u32 MainMenu::OnUpdateSelectReplay()
             g_GameManager.shotTypeAndCharacter = this->currentReplay->data.shotType;
             ReplayManager::FreeReplay(this->currentReplay);
             this->currentReplay = NULL;
-            g_GameManager.currentStage = g_GameManager.difficulty >= 5 ? 7 : this->selectedStage;
+            g_GameManager.currentStage =
+                g_GameManager.difficulty >= DIFF_PHANTASM ? 7 : this->selectedStage;
             g_Supervisor.curState = 2;
             g_GameManager.replayStage = (u8)this->cursor;
             g_Supervisor.StopAudio();

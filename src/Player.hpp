@@ -412,8 +412,8 @@ struct ShtData
     static i32 OnMissileHit(Player *player, PlayerBullet *bullet, ZunVec3 *pos);
     static i32 SpawnHitParticles(Player *player, PlayerBullet *bullet, ZunVec3 *pos);
 
-    i16 numLevels;
-    u16 entryCount;
+    i16 unused;
+    u16 numLevels;
     f32 initialBombs;
     i32 initialRespawnTimer;
     f32 hitboxRadius;

@@ -6,23 +6,6 @@
 #include "ZunResult.hpp"
 #include "inttypes.hpp"
 
-typedef enum Character
-{
-    CHAR_REIMU = 0,
-    CHAR_MARISA = 1,
-    CHAR_SAKUYA = 2
-} Character;
-
-typedef enum ShotType
-{
-    SHOT_REIMU_A = 0,
-    SHOT_REIMU_B = 1,
-    SHOT_MARISA_A = 2,
-    SHOT_MARISA_B = 3,
-    SHOT_SAKUYA_A = 4,
-    SHOT_SAKUYA_B = 5
-} ShotType;
-
 struct ZunGlobals
 {
     u32 guiScore;
@@ -193,8 +176,8 @@ struct GameManager
     // pad 2
     i32 difficulty;
     u32 difficultyMask;
-    struct Catk catk[141];
-    struct Catk catkAgain[141];
+    struct Catk catk[SPELLCARD_COUNT];
+    struct Catk catkAgain[SPELLCARD_COUNT];
     struct Clrd clrd[6];
     struct Pscr pscr[6][6][4];
     struct Plst plst;

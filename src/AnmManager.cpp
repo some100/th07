@@ -30,7 +30,7 @@ AnmManager::AnmManager()
 {
     memset((void *)this, 0, sizeof(AnmManager));
 
-    for (i32 i = 0; i < 2560; i++)
+    for (i32 i = 0; i < ARRAY_SIZE_SIGNED(this->sprites); i++)
     {
         this->sprites[i].sourceFileIndex = -1;
     }
@@ -345,7 +345,7 @@ i32 AnmManager::LoadAnm(i32 textureIdx, AnmRawEntry *rawEntry, i32 spriteIdxOffs
         g_GameErrorContext.Fatal("アニメが読み込めません。データが失われてるか壊れています\n");
         return ZUN_ERROR;
     }
-    if (textureIdx >= 50)
+    if (textureIdx >= ARRAY_SIZE_SIGNED(this->anmFiles))
     {
         g_GameErrorContext.Fatal("テクスチャ格納先が足りません\n");
         return ZUN_ERROR;
@@ -423,7 +423,7 @@ i32 AnmManager::LoadAnm(i32 textureIdx, AnmRawEntry *rawEntry, i32 spriteIdxOffs
         {
             id = rawSprite->id;
         }
-        if (rawSprite->id + spriteIdxOffset >= 2560)
+        if (rawSprite->id + spriteIdxOffset >= ARRAY_SIZE_SIGNED(this->sprites))
         {
             g_GameErrorContext.Fatal("スプライトが格納できません。テーブルが不足しています\n");
             return ZUN_ERROR;
@@ -432,7 +432,7 @@ i32 AnmManager::LoadAnm(i32 textureIdx, AnmRawEntry *rawEntry, i32 spriteIdxOffs
     }
     for (i = 0; i < data->numScripts; i++, curSprite += 2)
     {
-        if (*curSprite + spriteIdxOffset >= 2560)
+        if (*curSprite + spriteIdxOffset >= ARRAY_SIZE_SIGNED(this->sprites))
         {
             g_GameErrorContext.Fatal("アニメが格納できません。テーブルが不足しています\n");
             return ZUN_ERROR;
@@ -458,7 +458,7 @@ void AnmManager::ReleaseAnm(i32 anmIdx)
     i32 spriteIdxOffset;
     i32 *spriteIdx;
 
-    if (anmIdx < 0 || (u32)anmIdx >= 50)
+    if (anmIdx < 0 || (u32)anmIdx >= ARRAY_SIZE_SIGNED(this->anmFiles))
     {
         return;
     }
@@ -1934,7 +1934,7 @@ stop:
             vm->rotation.z, g_Supervisor.effectiveFramerateMultiplier * vm->angleVel.z);
         vm->updateRotation = 1;
     }
-    for (i = 0; i < 5; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(vm->interpStartTimes); i++)
     {
         if (vm->interpEndTimes[i] > 0)
         {

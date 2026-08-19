@@ -39,6 +39,10 @@ struct EffectTypeInfo
     EffectCallback initCallback;
 };
 
+#define MAX_NORMAL_EFFECTS 400
+#define MAX_SPECIAL_EFFECTS 8
+#define MAX_EFFECTS (MAX_NORMAL_EFFECTS + MAX_SPECIAL_EFFECTS)
+
 struct EffectManager
 {
     EffectManager();
@@ -77,20 +81,20 @@ struct EffectManager
     static void ModifyEffect1eAcceleration();
     static i32 UpdateNoOp(Effect *effect);
 
-    Effect *SpawnParticles(i32 effectId, ZunVec3 *pos, i32 numParticles, u32 color);
-    Effect *SpawnEffect(i32 effectId, ZunVec3 *pos, i32 param_3, i32 param_4, u32 color);
+    Effect *SpawnEffect(i32 effectId, ZunVec3 *pos, i32 numParticles, u32 color);
+    Effect *SpawnSpecialEffect(i32 effectId, ZunVec3 *pos, i32 effectIdx, i32 param_4, u32 color);
     Effect *SpawnMovingParticles(i32 effectId, ZunVec3 *pos, ZunVec3 *velocity, i32 numParticles,
                                  u32 color);
-    i32 UpdateSpecialEffect();
+    i32 DrawLayer1Effects();
 
     i32 nextIndex;
+    i32 unused;
     i32 activeEffects;
-    i32 activeEffectsCount;
     f32 globalColorMultiplierR;
     f32 globalColorMultiplierG;
     f32 globalColorMultiplierB;
     f32 globalColorMultiplierA;
-    Effect effects[409];
+    Effect effects[MAX_EFFECTS + 1];
     Effect layer0;
     Effect layer1;
     Effect layer2;

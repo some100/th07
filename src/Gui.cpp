@@ -432,18 +432,22 @@ ZunResult Gui::ActualAddedCallback()
             this->impl->stageTransitionSnapshotVm.sprite->widthPx,
             this->impl->stageTransitionSnapshotVm.sprite->heightPx);
         g_AnmManager->TakeScreenshotIfRequested();
-        for (i = 0; i < 14; i++)
+        for (i = 0; i < TRANSITION_QUAD_ROWS; i++)
         {
-            for (j = 0; j < 12; j++)
+            for (j = 0; j < TRANSITION_QUAD_COLS; j++)
             {
-                g_AnmManager->SetAnmIdxAndExecuteScript(&this->impl->transitionQuads[i * 12 + j],
-                                                        ((i + j) & 1) + 1830);
-                this->impl->transitionQuads[i * 12 + j].intVars2[0] = i + j * 2;
-                this->impl->transitionQuads[i * 12 + j].pos.x = (f32)j * 32.0f + 16.0f;
-                this->impl->transitionQuads[i * 12 + j].pos.y = (f32)i * 32.0f + 16.0f;
-                this->impl->transitionQuads[i * 12 + j].pos.z = 0.0f;
-                this->impl->transitionQuads[i * 12 + j].uvScrollPos.x = (f32)j * 32.0f / 512.0f;
-                this->impl->transitionQuads[i * 12 + j].uvScrollPos.y = (f32)i * 32.0f / 512.0f;
+                g_AnmManager->SetAnmIdxAndExecuteScript(
+                    &this->impl->transitionQuads[i * TRANSITION_QUAD_COLS + j], (i + j & 1) + 1830);
+                this->impl->transitionQuads[i * TRANSITION_QUAD_COLS + j].intVars2[0] = i + j * 2;
+                this->impl->transitionQuads[i * TRANSITION_QUAD_COLS + j].pos.x =
+                    (f32)j * 32.0f - 0.5f + 16.0f;
+                this->impl->transitionQuads[i * TRANSITION_QUAD_COLS + j].pos.y =
+                    (f32)i * 32.0f - 0.5f + 16.0f;
+                this->impl->transitionQuads[i * TRANSITION_QUAD_COLS + j].pos.z = 0.0f;
+                this->impl->transitionQuads[i * TRANSITION_QUAD_COLS + j].uvScrollPos.x =
+                    (f32)j * 32.0f / 512.0f;
+                this->impl->transitionQuads[i * TRANSITION_QUAD_COLS + j].uvScrollPos.y =
+                    (f32)i * 32.0f / 512.0f;
             }
         }
         this->impl->activeTransitionQuads = 168;
@@ -593,7 +597,7 @@ ZunResult Gui::ActualAddedCallback()
             ? 0
             : 1)
     {
-        for (k = 0; k < 33; k++)
+        for (k = 0; k < ARRAY_SIZE_SIGNED(this->impl->vms0); k++)
         {
             g_AnmManager->SetAnmIdxAndExecuteScript(&this->impl->vms0[k], k + 1536);
         }

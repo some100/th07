@@ -28,7 +28,8 @@ typedef enum Difficulty
     DIFF_HARD = 2,
     DIFF_LUNATIC = 3,
     DIFF_EXTRA = 4,
-    DIFF_PHANTASM = 5
+    DIFF_PHANTASM = 5,
+    DIFF_COUNT = 6,
 } Difficulty;
 
 typedef enum EffectQuality
