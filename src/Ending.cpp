@@ -28,12 +28,11 @@ u32 Ending::OnUpdate(Ending *arg)
     i32 framesSkipPressed;
     u32 color;
 
-    arg->UpdatePrev();
-    arg->prevEndingFadeRectColor = arg->endingFadeRectColor;
-
     framesSkipPressed = 0;
     for (;;)
     {
+        arg->prevEndingFadeRectColor = arg->endingFadeRectColor;
+
         if (arg->ParseEndFile() != ZUN_SUCCESS)
         {
             return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
@@ -51,6 +50,9 @@ u32 Ending::OnUpdate(Ending *arg)
 
         break;
     }
+
+    arg->UpdatePrev();
+
     switch (arg->fadeType)
     {
     case 1:
