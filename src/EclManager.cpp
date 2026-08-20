@@ -2,6 +2,7 @@
 
 #include <cstdio>
 
+#include "AnmIdx.hpp"
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
 #include "EnemyEclInstr.hpp"
@@ -650,7 +651,8 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
     for (i = 0; i < g_Stage.numSpellcardVms; i++)
     {
         g_AnmManager->SetAnmIdxAndExecuteScript(&g_Stage.spellcardVms[i],
-                                                i + g_Stage.spellcardVmsIdx + 732);
+                                                i + g_Stage.spellcardVmsIdx +
+                                                    ANM_SCRIPT_EFFECTS_SPELLCARD_ARRAY);
     }
     g_EnemyManager.spellcardInfo.isActive = 1;
     g_EnemyManager.spellcardInfo.isCapturing = 1;
@@ -682,7 +684,7 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
         nameCsum = 0;
         strcpy(catk->name, spellcardName);
         j = (i32)strlen(catk->name);
-        while (0 < j)
+        while (j > 0)
         {
             j--;
             nameCsum += catk->name[j];
@@ -754,7 +756,7 @@ void EclManager::EndSpellcard()
                 {
                     nameCsum = 0;
                     i = strlen(catk->name);
-                    while (0 < i)
+                    while (i > 0)
                     {
                         i--;
                         nameCsum += catk->name[i];
@@ -1004,7 +1006,8 @@ restart:
                 break;
             case ECL_INIT_INTERP:
                 interp = enemy->currentContext.interps;
-                for (interpIdx = 0; interpIdx < 8; interpIdx++, interp++)
+                for (interpIdx = 0; interpIdx < ARRAY_SIZE_SIGNED(enemy->currentContext.interps);
+                     interpIdx++, interp++)
                 {
                     if (interp->fn && interp->args[7].f != instr->args[0].f)
                     {
@@ -1127,18 +1130,19 @@ restart:
                 enemy->currentContext = enemy->savedContextStack[enemy->stackDepth];
                 goto restart;
             case ECL_SET_ANM:
-                g_AnmManager->SetAnmIdxAndExecuteScript(&enemy->primaryVm,
-                                                        GET_INT_VALUE(enemy, 0) + 2304);
+                g_AnmManager->SetAnmIdxAndExecuteScript(
+                    &enemy->primaryVm, GET_INT_VALUE(enemy, 0) + ANM_SCRIPT_ENEMY_ARRAY);
                 break;
             case ECL_SET_SUB_ANM:
-                if (GET_INT_VALUE(enemy, 0) >= 2)
+                if (GET_INT_VALUE(enemy, 0) >= ARRAY_SIZE_SIGNED(enemy->vms))
                 {
                     Supervisor::DebugPrint("error : sub anim overflow\n");
                 }
                 if (GET_INT_VALUE(enemy, 1) >= 0)
                 {
                     g_AnmManager->SetAnmIdxAndExecuteScript(&enemy->vms[GET_INT_VALUE(enemy, 0)],
-                                                            GET_INT_VALUE(enemy, 1) + 2304);
+                                                            GET_INT_VALUE(enemy, 1) +
+                                                                ANM_SCRIPT_ENEMY_ARRAY);
                 }
                 else
                 {
@@ -1390,7 +1394,7 @@ restart:
                 }
                 break;
             case ECL_CLEAR_LASERS:
-                for (laserIdx = 0; laserIdx < 32; laserIdx++)
+                for (laserIdx = 0; laserIdx < ARRAY_SIZE_SIGNED(enemy->lasers); laserIdx++)
                 {
                     enemy->lasers[laserIdx] = NULL;
                 }
@@ -1594,7 +1598,8 @@ restart:
                 enemy->life = enemy->maxLife = GET_INT_VALUE(enemy, 0);
                 if (enemy->bossId == 0 && enemy->isBoss)
                 {
-                    for (healthIdx = 0; healthIdx < 8; healthIdx++)
+                    for (healthIdx = 0; healthIdx < ARRAY_SIZE_SIGNED(g_Gui.bossHealth);
+                         healthIdx++)
                     {
                         g_Gui.bossHealthEased[healthIdx] = 0.0f;
                         g_Gui.bossHealth[healthIdx] = 0.0f;
@@ -2008,27 +2013,30 @@ restart:
                         case 0:
                             if (enemy->anmExFlags == 255)
                             {
-                                g_AnmManager->SetAnmIdxAndExecuteScript(
-                                    &enemy->primaryVm, enemy->anmExDefaults + 2304);
+                                g_AnmManager->SetAnmIdxAndExecuteScript(&enemy->primaryVm,
+                                                                        enemy->anmExDefaults +
+                                                                            ANM_SCRIPT_ENEMY_ARRAY);
                             }
                             else if (enemy->anmExFlags == 1)
                             {
                                 g_AnmManager->SetAnmIdxAndExecuteScript(&enemy->primaryVm,
-                                                                        enemy->anmExFarLeft + 2304);
+                                                                        enemy->anmExFarLeft +
+                                                                            ANM_SCRIPT_ENEMY_ARRAY);
                             }
                             else
                             {
-                                g_AnmManager->SetAnmIdxAndExecuteScript(
-                                    &enemy->primaryVm, enemy->anmExFarRight + 2304);
+                                g_AnmManager->SetAnmIdxAndExecuteScript(&enemy->primaryVm,
+                                                                        enemy->anmExFarRight +
+                                                                            ANM_SCRIPT_ENEMY_ARRAY);
                             }
                             break;
                         case 1:
-                            g_AnmManager->SetAnmIdxAndExecuteScript(&enemy->primaryVm,
-                                                                    enemy->anmExLeft + 2304);
+                            g_AnmManager->SetAnmIdxAndExecuteScript(
+                                &enemy->primaryVm, enemy->anmExLeft + ANM_SCRIPT_ENEMY_ARRAY);
                             break;
                         case 2:
-                            g_AnmManager->SetAnmIdxAndExecuteScript(&enemy->primaryVm,
-                                                                    enemy->anmExRight + 2304);
+                            g_AnmManager->SetAnmIdxAndExecuteScript(
+                                &enemy->primaryVm, enemy->anmExRight + ANM_SCRIPT_ENEMY_ARRAY);
                             break;
                         }
                         enemy->anmExFlags = anmDirection;

@@ -356,6 +356,8 @@ struct ScoreDat
     u8 *decodedData;
 };
 
+#define MAX_SPELLCARD_LIST_ENTRIES 14
+
 struct ResultScreen
 {
     ResultScreen()
@@ -438,7 +440,7 @@ struct ResultScreen
     u8 lastTotalSeconds;
     u8 pad[3];
     AnmVm vms[41];
-    AnmVm spellcardListVms[15];
+    AnmVm spellcardListVms[MAX_SPELLCARD_LIST_ENTRIES + 1];
     AnmVm unused_8110;
     AnmVm spellcardBarVm;
     ScoreListNode scoreLists[6][6];

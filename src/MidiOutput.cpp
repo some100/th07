@@ -5,6 +5,7 @@
 #include "Supervisor.hpp"
 #include "ZunResult.hpp"
 #include "inttypes.hpp"
+#include "utils.hpp"
 
 //LARGE_INTEGER g_PerfCounter;
 
@@ -189,11 +190,11 @@ MidiOutput::MidiOutput()
     this->unused_2d8 = 0;
     this->fadeOutState = 0;
     this->fadeOutFlag = 0;
-    for (local_14 = 0; local_14 < 32; local_14 = local_14 + 1)
+    for (local_14 = 0; local_14 < ARRAY_SIZE_SIGNED(this->midiFileData); local_14 = local_14 + 1)
     {
         this->midiFileData[local_14] = NULL;
     }
-    for (local_18 = 0; local_18 < 32; local_18 = local_18 + 1)
+    for (local_18 = 0; local_18 < ARRAY_SIZE_SIGNED(this->midiHeaders); local_18 = local_18 + 1)
     {
         this->midiHeaders[local_18] = NULL;
     }
@@ -205,7 +206,7 @@ MidiOutput::~MidiOutput()
 {
     /*StopPlayback();
     ClearTracks();
-    for (i32 i = 0; i < 32; i++)
+    for (i32 i = 0; i < ARRAY_SIZE_SIGNED(this->midiFileData); i++)
     {
         ReleaseFileData(i);
     }*/
@@ -361,7 +362,7 @@ ZunResult MidiOutput::StopPlayback()
         return ZUN_ERROR;
     }
 
-    for (i32 i = 0; i < 32; i++)
+    for (i32 i = 0; i < ARRAY_SIZE_SIGNED(this->midiHeaders); i++)
     {
         if (this->midiHeaders[this->midiHeadersCursor])
         {
@@ -391,7 +392,7 @@ ZunResult MidiOutput::UnprepareHeader(void *pmh) // LPMIDIHDR pmh
         Supervisor::DebugPrint("error :\r\n");
     }
 
-    for (i = 0; i < 32; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->midiHeaders); i++)
     {
         if (this->midiHeaders[i] == pmh)
         {
@@ -533,7 +534,8 @@ void MidiOutput::ProcessMsg(MidiTrack *track)
                 this->midiHeaders[this->midiHeadersCursor] = NULL;
             }
             this->midiHeadersCursor++;
-            this->midiHeadersCursor = this->midiHeadersCursor % 32;
+            this->midiHeadersCursor = this->midiHeadersCursor %
+                                      ARRAY_SIZE_SIGNED(this->midiHeaders);
         }
         else if (opcode == OPCODE_SYSTEM_RESET)
         {
@@ -669,7 +671,7 @@ void MidiOutput::FadeOutSetVolume(i32 vol)
     }
 
     arg1 = 7;
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->channels); i++)
     {
         midiStatus = (u8)(i + 0xb0);
         volumeClamped =

@@ -290,7 +290,7 @@ i32 EffectManager::InitWeatherForward(Effect *effect)
 
     if ((u32)chance >= g_Rng.GetRandomU32InRange(100))
     {
-        g_AnmManager->SetActiveSprite(&effect->vm, 728);
+        g_AnmManager->SetActiveSprite(&effect->vm, ANM_SPRITE_BULLETS_CHERRY_PETAL);
         effect->vm.color.bytes.r = 255;
         effect->vm.color.bytes.g = 255;
         effect->vm.color.bytes.b = 255;
@@ -319,7 +319,7 @@ i32 EffectManager::InitWeatherVortex(Effect *effect)
 
     if ((u32)chance >= g_Rng.GetRandomU32InRange(100))
     {
-        g_AnmManager->SetActiveSprite(&effect->vm, 728);
+        g_AnmManager->SetActiveSprite(&effect->vm, ANM_SPRITE_BULLETS_CHERRY_PETAL);
         effect->vm.color.bytes.r = 255;
         effect->vm.color.bytes.g = 255;
         effect->vm.color.bytes.b = 255;
@@ -343,7 +343,7 @@ i32 EffectManager::InitWeatherBackward(Effect *effect)
     effect->is2D = 1;
     effect->vm.rotation.z = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
     effect->vm.rotation.x = g_Rng.GetRandomFloatInRange(0.06283186f) - 0.03141593f;
-    g_AnmManager->SetActiveSprite(&effect->vm, 728);
+    g_AnmManager->SetActiveSprite(&effect->vm, ANM_SPRITE_BULLETS_CHERRY_PETAL);
     effect->vm.color.bytes.r = 255;
     effect->vm.color.bytes.g = 255;
     effect->vm.color.bytes.b = 255;
@@ -365,7 +365,7 @@ i32 EffectManager::InitWeatherSlow(Effect *effect)
     effect->is2D = 1;
     effect->vm.rotation.z = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
     effect->vm.rotation.x = g_Rng.GetRandomFloatInRange(0.06283186f) - 0.03141593f;
-    g_AnmManager->SetActiveSprite(&effect->vm, 728);
+    g_AnmManager->SetActiveSprite(&effect->vm, ANM_SPRITE_BULLETS_CHERRY_PETAL);
     effect->vm.color.bytes.r = 255;
     effect->vm.color.bytes.g = 255;
     effect->vm.color.bytes.b = 255;
@@ -388,7 +388,7 @@ i32 EffectManager::InitWeatherFalling(Effect *effect)
     effect->is2D = 1;
     effect->vm.rotation.z = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
     effect->vm.rotation.x = g_Rng.GetRandomFloatInRange(0.06283186f) - 0.03141593f;
-    g_AnmManager->SetActiveSprite(&effect->vm, 728);
+    g_AnmManager->SetActiveSprite(&effect->vm, ANM_SPRITE_BULLETS_CHERRY_PETAL);
     effect->vm.angleVel.z *= 2;
     effect->vm.color.bytes.r = 255;
     effect->vm.color.bytes.g = 255;

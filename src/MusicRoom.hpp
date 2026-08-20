@@ -5,6 +5,8 @@
 #include "AnmVm.hpp"
 #include "Chain.hpp"
 
+#define MAX_TRACK_DESCRIPTORS 32
+
 struct TrackDescriptor
 {
     TrackDescriptor()

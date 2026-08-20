@@ -302,11 +302,11 @@ struct EnemyManager
         memset(this, 0, sizeof(EnemyManager));
         enemy = &this->enemyTemplate;
         memset(enemy, 0, sizeof(Enemy));
-        for (i = 0; i < 2; i++)
+        for (i = 0; i < ARRAY_SIZE_SIGNED(enemy->vms); i++)
         {
             enemy->vms[i].anmFileIdx = -1;
         }
-        for (i = 0; i < 96; i++)
+        for (i = 0; i < ARRAY_SIZE_SIGNED(enemy->enemyHistory); i++)
         {
             enemy->enemyHistory[i].pos.x = -999.0f;
         }
@@ -346,7 +346,7 @@ struct EnemyManager
         enemy->hasMovementBounds = 0;
         enemy->effectsNum = 0;
         enemy->runInterrupt = -1;
-        for (i = 0; i < 4; i++)
+        for (i = 0; i < ARRAY_SIZE_SIGNED(enemy->lifeCallbackThreshold); i++)
         {
             enemy->lifeCallbackThreshold[i] = -1;
         }

@@ -167,7 +167,7 @@ i32 ShtData::FireOrbBulletFocused(Player *player, PlayerBullet *bullet, i32 fire
     bullet->offset.y = shtEntry->offset.y;
     bullet->trailLength = shtEntry->fireInterval;
     DefaultFireBulletCallback(player, bullet, shtEntry);
-    for (i32 i = 15; i >= 0; i--)
+    for (i32 i = ARRAY_SIZE_SIGNED(bullet->posHistory) - 1; i >= 0; i--)
     {
         bullet->posHistory[i].x = -999.0f;
     }
@@ -374,7 +374,7 @@ i32 ShtData::UpdatePlayerLaser(Player *player, PlayerBullet *bullet)
         bullet->vm.pendingInterrupt = 1;
     }
     if ((g_Gui.HasCurrentMsgIdx() || player->bombInfo.isInUse) &&
-        20 < player->timers[bullet->timerIdx].timer.GetCurrent())
+        player->timers[bullet->timerIdx].timer.GetCurrent() > 20)
     {
         player->timers[bullet->timerIdx].timer = 20;
     }
@@ -399,7 +399,7 @@ i32 ShtData::UpdatePlayerLaser(Player *player, PlayerBullet *bullet)
             player->bombDamageBoxes[i + 96].size = bullet->hitboxSize;
         }
     }
-    for (i = 15; 0 < i; i--)
+    for (i = ARRAY_SIZE_SIGNED(bullet->posHistory) - 1; i > 0; i--)
     {
         bullet->posHistory[i] = bullet->posHistory[i - 1];
     }
@@ -562,7 +562,7 @@ void Player::SpawnBullets(Player *player, u32 timer)
 
     entry = level->entry;
     bullet = player->bullets;
-    for (i = 0; i < 96; i++, bullet++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(player->bullets); i++, bullet++)
     {
         if (bullet->bulletState != 0)
         {
@@ -625,7 +625,7 @@ void Player::UpdateShots()
     }
     if (this->playerState == PLAYER_STATE_DEAD)
     {
-        for (i = 0; i < 3; i++)
+        for (i = 0; i < ARRAY_SIZE_SIGNED(this->timers); i++)
         {
             if (this->timers[i].bullet)
             {
@@ -634,7 +634,7 @@ void Player::UpdateShots()
             }
         }
     }
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->timers); i++)
     {
         if (!this->timers[i].bullet)
         {
@@ -654,7 +654,7 @@ void Player::UpdateShots()
         }
     }
     bullet = this->bullets;
-    for (i = 0; i < 96; i++, bullet++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bullets); i++, bullet++)
     {
         if (bullet->bulletState == 0)
         {
@@ -692,7 +692,7 @@ void Player::DrawBullets()
     i32 i;
 
     bullet = this->bullets;
-    for (i = 0; i < 96; i++, bullet++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bullets); i++, bullet++)
     {
         if (bullet->bulletState != 1)
         {
@@ -726,7 +726,7 @@ void Player::DrawBulletExplosions()
     i32 i;
 
     bullet = this->bullets;
-    for (i = 0; i < 96; i++, bullet++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bullets); i++, bullet++)
     {
         if (bullet->bulletState != 2)
         {
@@ -804,7 +804,7 @@ i32 Player::CalcDamageToEnemy(ZunVec3 *center, ZunVec3 *size, i32 *param_3)
     {
         *param_3 = 0;
     }
-    for (i = 0; i < 96; i++, bullet++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bullets); i++, bullet++)
     {
         if (bullet->bulletState == 0 || (bullet->bulletState != 1 && bullet->bulletState2 != 3))
         {
@@ -855,7 +855,7 @@ i32 Player::CalcDamageToEnemy(ZunVec3 *center, ZunVec3 *size, i32 *param_3)
             }
         }
     }
-    for (i = 0; i < 112; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombDamageBoxes); i++)
     {
         if (this->bombDamageBoxes[i].size.x <= 0.0f)
         {
@@ -876,7 +876,7 @@ i32 Player::CalcDamageToEnemy(ZunVec3 *center, ZunVec3 *size, i32 *param_3)
         this->bombParticleTime++;
         if (this->bombParticleTime % 4 == 0)
         {
-            if (i < 96)
+            if (i < ARRAY_SIZE_SIGNED(this->bombClearBoxes))
             {
                 g_EffectManager.SpawnEffect(3, center, 1, 0xffffffff);
             }
@@ -898,7 +898,7 @@ void Player::RebuildBombBoxCache()
     this->numActiveBombClearBoxes = 0;
     this->dirtyBombBoxes = false;
 
-    for (i32 i = 0; i < 96; i++)
+    for (i32 i = 0; i < ARRAY_SIZE_SIGNED(this->bombClearBoxes); i++)
     {
         BombClearBox *bomb = &this->bombClearBoxes[i];
         if (bomb->pos.z != 0.0f)
@@ -1772,12 +1772,12 @@ void Player::UpdateBombProjectiles()
     BombClearBox *bomb;
     i32 i;
 
-    for (i = 0; i < 112; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombDamageBoxes); i++)
     {
         this->bombDamageBoxes[i].size.x = 0.0f;
     }
     bomb = this->bombClearBoxes;
-    for (i = 0; i < 96; i++, bomb++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombClearBoxes); i++, bomb++)
     {
         if (bomb->lifetime <= 0)
         {
@@ -1831,7 +1831,7 @@ void Player::UpdateBorderAndBombState()
         else
         {
             if (!g_GameManager.CheckGameIntegrity() && !g_Gui.HasCurrentMsgIdx() &&
-                this->respawnTimer != 0 && 0 < (i32)g_GameManager.globals->bombsRemaining &&
+                this->respawnTimer != 0 && (i32)g_GameManager.globals->bombsRemaining > 0 &&
                 this->borderInvulnerabilityTime == 0 && IS_PRESSED_GAME(TH_BUTTON_BOMB))
             {
                 if (this->playerState == PLAYER_STATE_DEAD)
@@ -2141,7 +2141,7 @@ BombClearBox *Player::SpawnBombProjectile(ZunVec3 *centerPosition, f32 posZ, f32
     i32 i;
 
     bomb = this->bombClearBoxes;
-    for (i = 0; i < 95; i++, bomb++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombClearBoxes) - 1; i++, bomb++)
     {
         if (bomb->pos.z == 0.0f && bomb->size.y == 0.0f)
         {
@@ -2165,7 +2165,7 @@ BombClearBox *Player::SpawnBombEffect(ZunVec3 *pos, f32 sizeY, f32 sizeZ, i32 li
     i32 i;
 
     bomb = this->bombClearBoxes;
-    for (i = 0; i < 95; i++, bomb++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombClearBoxes) - 1; i++, bomb++)
     {
         if (bomb->pos.z == 0.0f && bomb->size.y == 0.0f)
         {
@@ -2509,7 +2509,7 @@ ZunResult Player::AddedCallback(Player *arg)
     g_AnmManager->SetAnmIdxAndExecuteScript(&arg->optionsSprite[0], ANM_SCRIPT_PLAYER_OPTION_LEFT);
     g_AnmManager->SetAnmIdxAndExecuteScript(&arg->optionsSprite[1], ANM_SCRIPT_PLAYER_OPTION_RIGHT);
     bullet = arg->bullets;
-    for (i = 0; i < 96; i++, bullet++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(arg->bullets); i++, bullet++)
     {
         bullet->bulletState = 0;
     }

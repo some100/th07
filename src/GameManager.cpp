@@ -225,14 +225,14 @@ u32 GameManager::OnUpdate(GameManager *arg)
     g_GameManager.globals->curCsum = g_GameManager.globals->rng1[2];
     csum = arg->ComputeGameIntegrityCsum();
     g_GameManager.csumFloat = (f32)csum + (f32)g_GameManager.globals->rng2[3];
-    for (i = 0; i < 7; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(g_GameManager.globals->rng1); i++)
     {
         if (arg->globals->rng1[i] < 6543 || arg->globals->rng1[i] > 106543)
         {
             g_GameManager.csumFloat = -9999.0f;
         }
     }
-    for (i = 0; i < 2; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(g_GameManager.globals->rngFloat2); i++)
     {
         if (arg->globals->rngFloat2[i] < 6543.0f || arg->globals->rngFloat2[i] > 106543.0f)
         {
@@ -240,14 +240,14 @@ u32 GameManager::OnUpdate(GameManager *arg)
         }
     }
     arg->notInMenu = !arg->isInRetryMenu && !arg->isInPauseMenu;
-    for (i = 0; i < 2; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(g_GameManager.globals->rngFloat1); i++)
     {
         if (arg->globals->rngFloat1[i] < 6543.0f || arg->globals->rngFloat1[i] > 106543.0f)
         {
             g_GameManager.csumFloat = -9999.0f;
         }
     }
-    for (i = 0; i < 8; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(g_GameManager.globals->rng2); i++)
     {
         if (arg->globals->rng2[i] < 6543 || arg->globals->rng2[i] > 106543)
         {
@@ -301,21 +301,21 @@ u32 GameManager::OnUpdate(GameManager *arg)
             arg->globals->highScoreNumContinues = arg->globals->numRetries;
         }
     }
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(arg->globals->rngFloat3); i++)
     {
         if (arg->globals->rngFloat3[i] < 6543.0f || arg->globals->rngFloat3[i] > 106543.0f)
         {
             g_GameManager.csumFloat = -9999.0f;
         }
     }
-    for (i = 0; i < 2; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(arg->globals->rngFloat4); i++)
     {
         if (arg->globals->rngFloat4[i] < 6543.0f || arg->globals->rngFloat4[i] > 106543.0f)
         {
             g_GameManager.csumFloat = -9999.0f;
         }
     }
-    for (i = 0; i < 5; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(arg->globals->csumData); i++)
     {
         if (arg->globals->csumData[i] < 6543 || arg->globals->csumData[i] > 106543)
         {
@@ -387,31 +387,31 @@ void GameManager::InitializeRngAndCsum()
     u32 i;
 
     g_GameManager.globals->cherryStart = g_Rng.GetRandomU32InRange(100000) + 6543;
-    for (i = 0; i < 7; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(g_GameManager.globals->rng1); i++)
     {
         g_GameManager.globals->rng1[i] = g_Rng.GetRandomU32InRange(100000) + 6543;
     }
-    for (i = 0; i < 8; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(g_GameManager.globals->rng2); i++)
     {
         g_GameManager.globals->rng2[i] = g_Rng.GetRandomU32InRange(100000) + 6543;
     }
-    for (i = 0; i < 2; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(g_GameManager.globals->rngFloat1); i++)
     {
         g_GameManager.globals->rngFloat1[i] = g_Rng.GetRandomFloatInRange(100000.0f) + 6543.0f;
     }
-    for (i = 0; i < 2; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(g_GameManager.globals->rngFloat2); i++)
     {
         g_GameManager.globals->rngFloat2[i] = g_Rng.GetRandomFloatInRange(100000.0f) + 6543.0f;
     }
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(g_GameManager.globals->rngFloat3); i++)
     {
         g_GameManager.globals->rngFloat3[i] = g_Rng.GetRandomFloatInRange(100000.0f) + 6543.0f;
     }
-    for (i = 0; i < 2; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(g_GameManager.globals->rngFloat4); i++)
     {
         g_GameManager.globals->rngFloat4[i] = g_Rng.GetRandomFloatInRange(100000.0f) + 6543.0f;
     }
-    for (i = 0; i < 5; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(g_GameManager.globals->csumData); i++)
     {
         g_GameManager.globals->csumData[i] = g_Rng.GetRandomU32InRange(100000) + 6543;
     }
@@ -438,7 +438,7 @@ ZunResult ResultScreen::ParseScores()
         catk->base.th7kLen = sizeof(Catk);
         catk->base.version = 1;
         catk->idx = (i16)i;
-        for (j = 0; j < 7; j++)
+        for (j = 0; j < ARRAY_SIZE_SIGNED(catk->numAttemptsPerShot); j++)
         {
             catk->numAttemptsPerShot[j] = 0;
             catk->numSuccessesPerShot[j] = 0;
@@ -946,10 +946,10 @@ void GameManager::IncreaseCherryMax(i32 amount)
 
 i32 GameManager::HasReachedMaxClears(i32 shotType)
 {
-    return this->clrd[shotType].difficultyClearedWithRetries[0] != 99 &&
-                   this->clrd[shotType].difficultyClearedWithRetries[1] != 99 &&
-                   this->clrd[shotType].difficultyClearedWithRetries[2] != 99 &&
-                   this->clrd[shotType].difficultyClearedWithRetries[3] != 99
+    return this->clrd[shotType].difficultyClearedWithRetries[DIFF_EASY] != 99 &&
+                   this->clrd[shotType].difficultyClearedWithRetries[DIFF_NORMAL] != 99 &&
+                   this->clrd[shotType].difficultyClearedWithRetries[DIFF_HARD] != 99 &&
+                   this->clrd[shotType].difficultyClearedWithRetries[DIFF_LUNATIC] != 99
                ? 0
                : 1;
 }
@@ -959,23 +959,27 @@ i32 GameManager::HasUnlockedPhantom(i32 shotType)
     i32 numSuccesses = 0;
     for (i32 i = 0; i < SPELLCARD_COUNT; i++)
     {
-        if (this->catk[i].numSuccessesPerShot[6] > 0)
+        if (this->catk[i].numSuccessesPerShot[SHOT_COUNT] > 0)
         {
             numSuccesses++;
         }
     }
-    if (numSuccesses >= 60 && this->clrd[shotType].difficultyClearedWithRetries[4] == 99)
+    if (numSuccesses >= 60 &&
+        this->clrd[shotType].difficultyClearedWithRetries[DIFF_EXTRA] == 99)
     {
-        this->clrd[shotType].difficultyClearedWithRetries[5] = 99;
+        this->clrd[shotType].difficultyClearedWithRetries[DIFF_PHANTASM] = 99;
     }
-    return this->clrd[shotType].difficultyClearedWithRetries[5] == 99;
+    return this->clrd[shotType].difficultyClearedWithRetries[DIFF_PHANTASM] == 99;
 }
 
 i32 GameManager::HasReachedMaxClearsAllShotTypes()
 {
-    return HasReachedMaxClears(0) == 0 && HasReachedMaxClears(1) == 0 &&
-                   HasReachedMaxClears(2) == 0 && HasReachedMaxClears(3) == 0 &&
-                   HasReachedMaxClears(4) == 0 && HasReachedMaxClears(5) == 0
+    return !HasReachedMaxClears(SHOT_REIMU_A) &&
+                   !HasReachedMaxClears(SHOT_REIMU_B) &&
+                   !HasReachedMaxClears(SHOT_MARISA_A) &&
+                   !HasReachedMaxClears(SHOT_MARISA_B) &&
+                   !HasReachedMaxClears(SHOT_SAKUYA_A) &&
+                   !HasReachedMaxClears(SHOT_SAKUYA_B)
                ? 0
                : 1;
 }
@@ -989,14 +993,14 @@ i32 GameManager::HasUnlockedPhantomAndMaxClears()
     spellCardsCaptured = 0;
     for (i = 0; i < SPELLCARD_COUNT; i++)
     {
-        if (this->catk[i].numSuccessesPerShot[6] > 0)
+        if (this->catk[i].numSuccessesPerShot[SHOT_COUNT] > 0)
         {
             spellCardsCaptured++;
         }
     }
     if (spellCardsCaptured >= 60)
     {
-        for (j = 0; j < 6; j++)
+        for (j = 0; j < SHOT_COUNT; j++)
         {
             if (this->clrd[j].difficultyClearedWithRetries[4] == 99)
             {
@@ -1005,15 +1009,15 @@ i32 GameManager::HasUnlockedPhantomAndMaxClears()
         }
     }
 
-    if (this->clrd[0].difficultyClearedWithRetries[5] == 99)
+    if (this->clrd[SHOT_REIMU_A].difficultyClearedWithRetries[5] == 99)
     {
         spellCardsCaptured = 60;
     }
 
-    return this->clrd[0].difficultyClearedWithRetries[5] == 99 ||
-           this->clrd[1].difficultyClearedWithRetries[5] == 99 ||
-           this->clrd[2].difficultyClearedWithRetries[5] == 99 ||
-           this->clrd[3].difficultyClearedWithRetries[5] == 99 ||
-           this->clrd[4].difficultyClearedWithRetries[5] == 99 ||
-           this->clrd[5].difficultyClearedWithRetries[5] == 99;
+    return this->clrd[SHOT_REIMU_A].difficultyClearedWithRetries[5] == 99 ||
+           this->clrd[SHOT_REIMU_B].difficultyClearedWithRetries[5] == 99 ||
+           this->clrd[SHOT_MARISA_A].difficultyClearedWithRetries[5] == 99 ||
+           this->clrd[SHOT_MARISA_B].difficultyClearedWithRetries[5] == 99 ||
+           this->clrd[SHOT_SAKUYA_A].difficultyClearedWithRetries[5] == 99 ||
+           this->clrd[SHOT_SAKUYA_B].difficultyClearedWithRetries[5] == 99;
 }
