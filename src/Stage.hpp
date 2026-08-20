@@ -6,7 +6,7 @@
 #include "ZunTimer.hpp"
 #include "utils.hpp"
 
-typedef enum StageEaseMode
+enum StageEaseMode
 {
     STAGE_EASE_OUT_QUAD = 1,
     STAGE_EASE_OUT_CUBIC = 2,
@@ -15,7 +15,14 @@ typedef enum StageEaseMode
     STAGE_EASE_IN_CUBIC = 5,
     STAGE_EASE_IN_QUART = 6,
     STAGE_EASE_CUBIC_INTERP = 7, // this is not actually an easing mode
-} StageEaseMode;
+};
+
+enum SpellcardState
+{
+    SPELLCARD_STATE_INACTIVE,
+    SPELLCARD_STATE_STARTING,
+    SPELLCARD_STATE_ACTIVE,
+};
 
 struct StageAnms
 {

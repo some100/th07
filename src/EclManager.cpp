@@ -571,7 +571,7 @@ void EclManager::MoveDirTime(Enemy *enemy, EclRawInstr *instr)
     enemy->moveInterpStartPos = enemy->pos;
     enemy->moveInterpTimer = enemy->moveInterpStartTime = GET_INT_VALUE(enemy, 0);
     enemy->interpEasing = (u8)GET_INT_VALUE(enemy, 1);
-    enemy->moveMode = 2;
+    enemy->moveMode = ENEMY_MOVE_INTERP;
     if (enemy->mirror)
     {
         enemy->moveInterp.x = -enemy->moveInterp.x;
@@ -589,7 +589,7 @@ void EclManager::MovePosTime(Enemy *enemy, EclRawInstr *instr)
     enemy->moveInterpStartPos = enemy->pos;
     enemy->moveInterpTimer = enemy->moveInterpStartTime = GET_INT_VALUE(enemy, 0);
     enemy->interpEasing = (u8)GET_INT_VALUE(enemy, 1);
-    enemy->moveMode = 2;
+    enemy->moveMode = ENEMY_MOVE_INTERP;
     enemy->axisSpeed = ZunVec3(0.0f, 0.0f, 0.0f);
     if (enemy->mirror)
     {
@@ -645,7 +645,7 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
     }
     g_Gui.ShowSpellcard(instr->args[0].s[0], spellcardName);
     g_BulletManager.RemoveAllBullets(1);
-    g_Stage.spellCardState = 1;
+    g_Stage.spellCardState = SPELLCARD_STATE_STARTING;
     g_Stage.ticksSinceSpellcardStarted = 0;
     for (i = 0; i < g_Stage.numSpellcardVms; i++)
     {
@@ -814,7 +814,7 @@ void EclManager::EndSpellcard()
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_ENEMY_SPELLCARD_END, 0);
     }
-    g_Stage.spellCardState = 0;
+    g_Stage.spellCardState = SPELLCARD_STATE_INACTIVE;
 }
 
 ZunResult EclManager::RunEcl(Enemy *enemy)
@@ -1156,35 +1156,35 @@ restart:
                 enemy->axisSpeed.y = GET_FLOAT_VALUE(enemy, 1);
                 enemy->axisSpeed.z = GET_FLOAT_VALUE(enemy, 2);
                 enemy->angle = atan2f(enemy->axisSpeed.y, enemy->axisSpeed.x);
-                enemy->moveMode = 0;
+                enemy->moveMode = ENEMY_MOVE_AXIS;
                 break;
             case ECL_SET_ANGULAR_VEL:
                 enemy->angularVelocity = GET_FLOAT_VALUE(enemy, 0);
-                enemy->moveMode = 1;
+                enemy->moveMode = ENEMY_MOVE_POLAR;
                 break;
             case ECL_MOVE_AT_PLAYER:
                 enemy->angle = g_Player.AngleToPlayer(&enemy->pos) + GET_FLOAT_VALUE(enemy, 0);
                 enemy->moveSpeed = GET_FLOAT_VALUE(enemy, 1);
-                enemy->moveMode = 1;
+                enemy->moveMode = ENEMY_MOVE_POLAR;
                 break;
             case ECL_SET_MOVE_SPEED:
                 enemy->moveSpeed = GET_FLOAT_VALUE(enemy, 0);
-                enemy->moveMode = 1;
+                enemy->moveMode = ENEMY_MOVE_POLAR;
                 break;
             case ECL_SET_MOVE_ACCEL:
                 enemy->moveAcceleration = GET_FLOAT_VALUE(enemy, 0);
-                enemy->moveMode = 1;
+                enemy->moveMode = ENEMY_MOVE_POLAR;
                 break;
             case ECL_SET_MOVE_INTERP_TIMER_POLAR:
-                enemy->moveMode = 1;
+                enemy->moveMode = ENEMY_MOVE_POLAR;
                 enemy->moveInterpTimer = enemy->moveInterpStartTime = GET_INT_VALUE(enemy, 0);
                 break;
             case ECL_SET_MOVE_INTERP_TIMER_RADIAL:
-                enemy->moveMode = 3;
+                enemy->moveMode = ENEMY_MOVE_ORBIT;
                 enemy->moveInterpTimer = enemy->moveInterpStartTime = GET_INT_VALUE(enemy, 0);
                 break;
             case ECL_SET_MOVE_INTERP_TIMER_INTERP:
-                enemy->moveMode = 2;
+                enemy->moveMode = ENEMY_MOVE_INTERP;
                 enemy->moveInterpTimer = enemy->moveInterpStartTime = GET_INT_VALUE(enemy, 0);
                 break;
             case ECL_SPAWN_BULLET_PATTERN_SPREAD_AIMED:
@@ -1448,7 +1448,7 @@ restart:
                 {
                     enemy->angle = utils::AddNormalizeAngle(GET_FLOAT_VALUE(enemy, 2), 0.0f);
                     enemy->moveSpeed = GET_FLOAT_VALUE(enemy, 3);
-                    enemy->moveMode = 1;
+                    enemy->moveMode = ENEMY_MOVE_POLAR;
                     enemy->moveInterpTimer = enemy->moveInterpStartTime = GET_INT_VALUE(enemy, 0);
                 }
                 else
@@ -1468,7 +1468,7 @@ restart:
                 enemy->moveAngularVelocity = GET_FLOAT_VALUE(enemy, 5);
                 enemy->moveRadius = GET_FLOAT_VALUE(enemy, 6);
                 enemy->moveRadialVelocity = GET_FLOAT_VALUE(enemy, 7);
-                enemy->moveMode = 3;
+                enemy->moveMode = ENEMY_MOVE_ORBIT;
                 break;
             case ECL_SET_ORBIT_RADIUS:
                 enemy->moveRadius = GET_FLOAT_VALUE(enemy, 0);
@@ -1872,7 +1872,7 @@ restart:
         exit:
             switch (enemy->moveMode)
             {
-            case 3:
+            case ENEMY_MOVE_ORBIT:
                 enemy->moveAngle = utils::AddNormalizeAngle(
                     enemy->moveAngle,
                     g_Supervisor.effectiveFramerateMultiplier * enemy->moveAngularVelocity);
@@ -1888,29 +1888,29 @@ restart:
                     enemy->moveInterpTimer--;
                     if (enemy->moveInterpTimer <= 0)
                     {
-                        enemy->moveMode = 0;
+                        enemy->moveMode = ENEMY_MOVE_AXIS;
                     }
                 }
                 break;
-            case 1:
+            case ENEMY_MOVE_POLAR:
                 enemy->angle = utils::AddNormalizeAngle(enemy->angle,
                                                         g_Supervisor.effectiveFramerateMultiplier *
                                                             enemy->angularVelocity);
                 enemy->moveSpeed =
                     g_Supervisor.effectiveFramerateMultiplier * enemy->moveAcceleration +
                     enemy->moveSpeed;
-                AngleToVector(&enemy->axisSpeed, enemy->angle, enemy->moveSpeed);
+                enemy->axisSpeed.FromAngleMagnitude(enemy->angle, enemy->moveSpeed);
                 enemy->axisSpeed.z = 0.0f;
                 if (enemy->moveInterpStartTime > 0)
                 {
                     enemy->moveInterpTimer--;
                     if (enemy->moveInterpTimer <= 0)
                     {
-                        enemy->moveMode = 0;
+                        enemy->moveMode = ENEMY_MOVE_AXIS;
                     }
                 }
                 break;
-            case 2:
+            case ENEMY_MOVE_INTERP:
                 enemy->moveInterpTimer--;
                 t1 = 1.0f - enemy->moveInterpTimer.AsFloat() / (f32)enemy->moveInterpStartTime;
                 if (t1 < 0.0f)
@@ -1958,7 +1958,7 @@ restart:
                 enemy->angle = atan2f(enemy->axisSpeed.y, enemy->axisSpeed.x);
                 if (enemy->moveInterpTimer <= 0)
                 {
-                    enemy->moveMode = 0;
+                    enemy->moveMode = ENEMY_MOVE_AXIS;
                     enemy->pos = enemy->moveInterpStartPos + enemy->moveInterp;
                     enemy->axisSpeed = ZunVec3(0.0f, 0.0f, 0.0f);
                 }

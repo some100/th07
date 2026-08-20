@@ -54,74 +54,6 @@ void Enemy::Move()
     this->pos.z += g_Supervisor.effectiveFramerateMultiplier * this->axisSpeed.z;
 }
 
-void EnemyManager::Initialize()
-{
-    Enemy *enemy;
-    i32 i;
-
-    enemy = &this->enemies[0];
-    memset(this, 0, sizeof(EnemyManager));
-    enemy = &this->enemyTemplate;
-    memset(enemy, 0, sizeof(Enemy));
-    for (i = 0; i < 2; i++)
-    {
-        enemy->vms[i].anmFileIdx = -1;
-    }
-    for (i = 0; i < 96; i++)
-    {
-        enemy->enemyHistory[i].pos.x = -999.0f;
-    }
-    enemy->active = 1;
-    enemy->timer = 0;
-    enemy->isInBounds = 0;
-    enemy->hitboxSize = ZunVec3(12.0f, 12.0f, 12.0f);
-    enemy->axisSpeed = ZunVec3(0.0f, 0.0f, 0.0f);
-    enemy->angularVelocity = 0.0f;
-    enemy->angle = 0.0f;
-    enemy->moveAcceleration = 0.0f;
-    enemy->moveSpeed = 0.0f;
-    enemy->moveMode = 0;
-    enemy->disableBullets = 0;
-    enemy->mirror = 0;
-    enemy->isBoss = 0;
-    enemy->stackDepth = 0;
-    enemy->life = 1;
-    enemy->score = 100;
-    enemy->deathAnm1 = 0;
-    enemy->deathAnm2 = 0;
-    enemy->deathAnm3 = 0;
-    enemy->shootInterval = 0;
-    enemy->shootIntervalTimer = 0;
-    enemy->shootOffset = ZunVec3(0.0f, 0.0f, 0.0f);
-    enemy->anmExLeft = -1;
-    enemy->anmExRight = -1;
-    enemy->anmExDefaults = -1;
-    enemy->canDie = 1;
-    enemy->hasContactHitbox = 1;
-    enemy->canBeDamaged = 1;
-    enemy->hasNoCollision = 0;
-    enemy->isHittable = 1;
-    enemy->isProjectile = 0;
-    enemy->deathType = 0;
-    enemy->deathCallbackSub = -1;
-    enemy->hasMovementBounds = 0;
-    enemy->effectsNum = 0;
-    enemy->runInterrupt = -1;
-    for (i = 0; i < 4; i++)
-    {
-        enemy->lifeCallbackThreshold[i] = -1;
-    }
-    enemy->timerCallbackThreshold = -1;
-    enemy->periodicCallbackSub = -1;
-    enemy->laserIdx = 0;
-    enemy->damageTintTimer = 0;
-    enemy->primaryVmAutoRotate = 0;
-    enemy->bulletRankSpeedLow = -0.15f;
-    enemy->bulletRankSpeedHigh = 0.15f;
-    enemy->bulletProps.soundIdx = SOUND_BOMB_MARISA_A_FOCUS;
-    enemy->bulletProps.soundOverride = SOUND_25;
-}
-
 EnemyManager::EnemyManager()
 {
     Initialize();
@@ -589,7 +521,7 @@ i32 Enemy::HandleTimerCallback()
 
 void Enemy::Despawn()
 {
-    if (this->deathType == 0)
+    if (this->deathType == ENEMY_DEATH_DESPAWN)
     {
         this->active = 0;
     }
@@ -987,10 +919,10 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
 
             switch (enemy->deathType)
             {
-            case 3:
+            case ENEMY_DEATH_BOSS:
                 enemy->life = 1;
                 enemy->canBeDamaged = 0;
-                enemy->deathType = 0;
+                enemy->deathType = ENEMY_DEATH_DESPAWN;
                 g_Gui.bossPresent = 0;
                 g_ReplayManager->replayEventFlags |= 0x20;
                 if (enemy->deathAnm1 >= 0)
@@ -1000,11 +932,11 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                     g_EffectManager.SpawnEffect(enemy->deathAnm1, &enemy->pos, 1, 0xffffffff);
                 }
                 break;
-            case 1:
+            case ENEMY_DEATH_SCORE_ONLY:
                 g_GameManager.AddScore(enemy->score);
                 enemy->canDie = 0;
                 goto END_BOSS;
-            case 0:
+            case ENEMY_DEATH_DESPAWN:
                 g_GameManager.AddScore(enemy->score);
                 enemy->active = 0;
                 goto END_BOSS;
@@ -1014,7 +946,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                     g_Gui.bossPresent = 0;
                     enemy->ResetEffectArray();
                 }
-            case 2:
+            case ENEMY_DEATH_DROP_ITEMS:
                 if (enemy->itemDrop >= 0)
                 {
                     g_EffectManager.SpawnEffect(enemy->deathAnm2 + 4, &enemy->pos, 3, 0xffffffff);

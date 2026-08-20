@@ -8,13 +8,13 @@
 
 extern u64 g_LastPerfCounter;
 
-typedef enum RenderResult
+enum RenderResult
 {
     RENDER_RESULT_EXIT_SUCCESS_2 = -1,
     RENDER_RESULT_KEEP_RUNNING = 0,
     RENDER_RESULT_EXIT_SUCCESS = 1,
     RENDER_RESULT_EXIT_ERROR = 2
-} RenderResult;
+};
 
 struct GameWindow
 {

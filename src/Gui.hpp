@@ -6,7 +6,7 @@
 #define TRANSITION_QUAD_ROWS 14
 #define TRANSITION_QUAD_COLS 12
 
-typedef enum GuiDisplayArg
+enum GuiDisplayArg
 {
     GUI_DISPLAY_HIDDEN = 0,
     GUI_DISPLAY_SHOWN = 1,
@@ -14,27 +14,27 @@ typedef enum GuiDisplayArg
     GUI_DISPLAY_BORDER = 2,
     GUI_DISPLAY_CHERRY_MAX = 3,
     GUI_DISPLAY_BORDER_BONUS = 4,
-} GuiDisplayArg;
+};
 
 // values from https://pytouhou.linkmauve.fr/doc/06/msg.xml
-typedef enum MsgOpcode
+enum MsgOpcode
 {
-    MSG_DELETE = 0,
-    MSG_SHOW_PORTRAIT = 1,
-    MSG_CHANGE_FACE = 2,
-    MSG_DIALOGUE = 3,
-    MSG_PAUSE = 4,
-    MSG_SWITCH = 5,
-    MSG_APPEAR_ENEMY = 6,
-    MSG_MUSIC = 7,
-    MSG_TEXT_INTRODUCE = 8,
-    MSG_STAGERESULTS = 9,
-    MSG_FREEZE = 10,
-    MSG_NEXT_LEVEL = 11,
-    MSG_FADEOUT_MUSIC = 12,
-    MSG_ALLOW_SKIP = 13,
-    MSG_FADE_IN_EFFECT = 14
-} MsgOpcode;
+    MSG_DELETE,
+    MSG_SHOW_PORTRAIT,
+    MSG_CHANGE_FACE,
+    MSG_DIALOGUE,
+    MSG_PAUSE,
+    MSG_SWITCH,
+    MSG_APPEAR_ENEMY,
+    MSG_MUSIC,
+    MSG_TEXT_INTRODUCE,
+    MSG_STAGERESULTS,
+    MSG_FREEZE,
+    MSG_NEXT_LEVEL,
+    MSG_FADEOUT_MUSIC,
+    MSG_ALLOW_SKIP,
+    MSG_FADE_IN_EFFECT,
+};
 
 struct MsgRawInstrArgPortrait
 {

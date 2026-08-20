@@ -11,43 +11,43 @@ extern const char *g_ShooterTableFocus[6];
 
 typedef void (*BombCallback)(struct Player *);
 
-typedef enum PlayerState
+enum PlayerState
 {
-    PLAYER_STATE_ALIVE = 0,
-    PLAYER_STATE_SPAWNING = 1,
-    PLAYER_STATE_DEAD = 2,
-    PLAYER_STATE_INVULNERABLE = 3,
-    PLAYER_STATE_BORDER = 4
-} PlayerState;
+    PLAYER_STATE_ALIVE,
+    PLAYER_STATE_SPAWNING,
+    PLAYER_STATE_DEAD,
+    PLAYER_STATE_INVULNERABLE,
+    PLAYER_STATE_BORDER,
+};
 
-typedef enum PlayerDirection
+enum PlayerDirection
 {
-    MOVEMENT_NONE = 0,
-    MOVEMENT_UP = 1,
-    MOVEMENT_DOWN = 2,
-    MOVEMENT_LEFT = 3,
-    MOVEMENT_RIGHT = 4,
-    MOVEMENT_UP_LEFT = 5,
-    MOVEMENT_UP_RIGHT = 6,
-    MOVEMENT_DOWN_LEFT = 7,
-    MOVEMENT_DOWN_RIGHT = 8
-} PlayerDirection;
+    MOVEMENT_NONE,
+    MOVEMENT_UP,
+    MOVEMENT_DOWN,
+    MOVEMENT_LEFT,
+    MOVEMENT_RIGHT,
+    MOVEMENT_UP_LEFT,
+    MOVEMENT_UP_RIGHT,
+    MOVEMENT_DOWN_LEFT,
+    MOVEMENT_DOWN_RIGHT
+};
 
-typedef enum OptionState
+enum OptionState
 {
-    OPTION_HIDDEN = 0,
-    OPTION_UNFOCUSED = 1,
-    OPTION_FOCUSING = 2,
-    OPTION_FOCUSED = 3,
-    OPTION_UNFOCUSING = 4
-} OptionState;
+    OPTION_HIDDEN,
+    OPTION_UNFOCUSED,
+    OPTION_FOCUSING,
+    OPTION_FOCUSED,
+    OPTION_UNFOCUSING,
+};
 
-typedef enum BorderState
+enum BorderState
 {
-    BORDER_NONE = 0,
-    BORDER_ACTIVE = 1,
-    BORDER_READY = 2
-} BorderState;
+    BORDER_NONE,
+    BORDER_ACTIVE,
+    BORDER_READY,
+};
 
 struct BombProjectile
 {

@@ -480,7 +480,7 @@ ZunResult Ending::AddedCallback(Ending *arg)
 ZunResult Ending::DeletedCallback(Ending *arg)
 {
     g_AnmManager->ReleaseAnm(49);
-    g_Supervisor.curState = 6;
+    g_Supervisor.curState = SUPERVISOR_STATE_RESULTSCREEN_FROM_GAME;
     g_AnmManager->ReleaseSurface(0);
     free(arg->endFileData);
     g_Chain.Cut(arg->drawChain);

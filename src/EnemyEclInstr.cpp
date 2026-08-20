@@ -487,7 +487,7 @@ void EnemyEclInstr::ExInsShootBulletsAlongLaser(Enemy *enemy, EclRawInstr *instr
                                                   bullet->sprites.spriteBullet.activeSpriteIdx +
                                                       bullet->spriteOffset);
                     bullet->angle = atan2f(bullet->velocity.y, bullet->velocity.x);
-                    AngleToVector(&bullet->velocity, bullet->angle, bullet->speed);
+                    bullet->velocity.FromAngleMagnitude(bullet->angle, bullet->speed);
                     if (g_GameManager.difficulty < 2)
                     {
                         bullet->state2 = -1;

@@ -5,7 +5,7 @@
 #include "inttypes.hpp"
 #include "miniaudio.h"
 
-typedef enum AudioOpcode
+enum AudioOpcode
 {
     AUDIO_PRELOAD = 1,
     AUDIO_START = 2,
@@ -14,9 +14,9 @@ typedef enum AudioOpcode
     AUDIO_FADEOUT = 5,
     AUDIO_PAUSE = 6,
     AUDIO_UNPAUSE = 7
-} AudioOpcode;
+};
 
-typedef enum SoundIdx
+enum SoundIdx
 {
     SOUND_0 = 0,
     SOUND_PICHUN = 4,
@@ -41,7 +41,7 @@ typedef enum SoundIdx
     SOUND_BORDER_BREAK = 33,
     SOUND_BORDER_ACTIVATE2 = 36,
     SOUND_37 = 37
-} SoundIdx;
+};
 
 struct ThWaveFormat
 {

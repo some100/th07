@@ -14,30 +14,48 @@ extern u16 g_LastFrameGameInput;
 extern u16 g_IsEighthFrameOfHeldInput;
 extern u16 g_NumOfFramesInputsWereHeld;
 
-typedef enum MusicMode
+enum MusicMode
 {
-    MUSIC_OFF = 0,
-    MUSIC_WAV = 1,
-    MUSIC_MIDI = 2
-} MusicMode;
+    MUSIC_OFF,
+    MUSIC_WAV,
+    MUSIC_MIDI,
+};
 
-typedef enum Difficulty
+enum Difficulty
 {
-    DIFF_EASY = 0,
-    DIFF_NORMAL = 1,
-    DIFF_HARD = 2,
-    DIFF_LUNATIC = 3,
-    DIFF_EXTRA = 4,
-    DIFF_PHANTASM = 5,
-    DIFF_COUNT = 6,
-} Difficulty;
+    DIFF_EASY,
+    DIFF_NORMAL,
+    DIFF_HARD,
+    DIFF_LUNATIC,
+    DIFF_EXTRA,
+    DIFF_PHANTASM,
+    DIFF_COUNT,
+};
 
-typedef enum EffectQuality
+enum EffectQuality
 {
-    QUALITY_WORST = 0,
-    QUALITY_MEDIUM = 1,
-    QUALITY_BEAUTIFUL = 2
-} EffectQuality;
+    QUALITY_WORST,
+    QUALITY_MEDIUM,
+    QUALITY_BEAUTIFUL,
+};
+
+enum SupervisorState
+{
+    SUPERVISOR_STATE_EXIT = -1,
+    SUPERVISOR_STATE_INIT,
+    SUPERVISOR_STATE_MAINMENU,
+    SUPERVISOR_STATE_GAMEMANAGER,
+    SUPERVISOR_STATE_NEXT_STAGE,
+    SUPERVISOR_STATE_EXIT_ERROR,
+    SUPERVISOR_STATE_RESULTSCREEN,
+    SUPERVISOR_STATE_RESULTSCREEN_FROM_GAME,
+    SUPERVISOR_STATE_REPLAY_END,
+    SUPERVISOR_STATE_MUSICROOM,
+    SUPERVISOR_STATE_ENDING,
+    SUPERVISOR_STATE_RESTART_FROM_BEGINNING,
+    SUPERVISOR_STATE_RESTART_STAGE,
+    SUPERVISOR_STATE_NEXT_STAGE_USELESS,
+};
 
 struct ControllerMapping
 {

@@ -35,7 +35,7 @@ struct MidiTimer
     i32 fileIdx;
 };
 
-typedef enum MidiOpcode
+enum MidiOpcode
 {
     OPCODE_CHANNEL_1 = 1,
     OPCODE_CHANNEL_2 = 2,
@@ -75,7 +75,7 @@ typedef enum MidiOpcode
     OPCODE_RESERVED_FD = 253,
     OPCODE_ACTIVE_SENSING = 254,
     OPCODE_SYSTEM_RESET = 255
-} MidiOpcode;
+};
 
 struct MidiTrack
 {

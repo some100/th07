@@ -118,7 +118,7 @@ u32 Gui::OnUpdate(Gui *arg)
 
     if (arg->impl->transitionToScoreScreen)
     {
-        g_Supervisor.curState = 3;
+        g_Supervisor.curState = SUPERVISOR_STATE_NEXT_STAGE;
         arg->impl->transitionToScoreScreen = 0;
     }
     arg->UpdateGui();
@@ -369,7 +369,9 @@ ZunResult Gui::ActualAddedCallback()
     i32 i;
 
     this->frameCounter = 0;
-    if (g_Supervisor.curState == 3 || g_Supervisor.curState == 11 || g_Supervisor.curState == 12
+    if (g_Supervisor.curState == SUPERVISOR_STATE_NEXT_STAGE ||
+                g_Supervisor.curState == SUPERVISOR_STATE_RESTART_STAGE ||
+                g_Supervisor.curState == SUPERVISOR_STATE_NEXT_STAGE_USELESS
             ? 0
             : 1)
     {
@@ -593,7 +595,9 @@ ZunResult Gui::ActualAddedCallback()
     default:
         return ZUN_ERROR;
     }
-    if (g_Supervisor.curState == 3 || g_Supervisor.curState == 11 || g_Supervisor.curState == 12
+    if (g_Supervisor.curState == SUPERVISOR_STATE_NEXT_STAGE ||
+                g_Supervisor.curState == SUPERVISOR_STATE_RESTART_STAGE ||
+                g_Supervisor.curState == SUPERVISOR_STATE_NEXT_STAGE_USELESS
             ? 0
             : 1)
     {
@@ -917,7 +921,7 @@ ZunResult GuiImpl::RunMsg()
             if (g_GameManager.practice)
             {
                 g_GameManager.globals->guiScore = g_GameManager.globals->score;
-                g_Supervisor.curState = 6;
+                g_Supervisor.curState = SUPERVISOR_STATE_RESULTSCREEN_FROM_GAME;
                 goto SKIP_TIME_INCREMENT;
             }
 
@@ -926,7 +930,7 @@ ZunResult GuiImpl::RunMsg()
                 if (g_GameManager.replay &&
                     !g_ReplayManager->StageReplayExists(g_GameManager.currentStage))
                 {
-                    g_Supervisor.curState = 7;
+                    g_Supervisor.curState = SUPERVISOR_STATE_REPLAY_END;
                     goto SKIP_TIME_INCREMENT;
                 }
 
@@ -951,14 +955,14 @@ ZunResult GuiImpl::RunMsg()
                                                 1;
                     g_GameManager.finished = 1;
                     g_GameManager.globals->guiScore = g_GameManager.globals->score;
-                    g_Supervisor.curState = 6;
+                    g_Supervisor.curState = SUPERVISOR_STATE_RESULTSCREEN_FROM_GAME;
                     goto SKIP_TIME_INCREMENT;
                 }
                 else
                 {
                     g_GameManager.finished = 1;
                     g_GameManager.globals->guiScore = g_GameManager.globals->score;
-                    g_Supervisor.curState = 9;
+                    g_Supervisor.curState = SUPERVISOR_STATE_ENDING;
                     goto SKIP_TIME_INCREMENT;
                 }
             }
@@ -969,7 +973,7 @@ ZunResult GuiImpl::RunMsg()
                 {
                     ReplayManager::SaveReplay2(g_GameManager.replayFilename);
                 }
-                g_Supervisor.curState = 7;
+                g_Supervisor.curState = SUPERVISOR_STATE_REPLAY_END;
             }
             goto SKIP_TIME_INCREMENT;
         case MSG_ALLOW_SKIP:
@@ -1760,8 +1764,9 @@ ZunResult Gui::DeletedCallback(Gui *arg)
     g_AnmManager->ReleaseAnm(30);
     g_AnmManager->ReleaseAnm(31);
     arg->FreeMsgFile();
-    if ((u32)(g_Supervisor.curState != 3 && g_Supervisor.curState != 11 &&
-              g_Supervisor.curState != 12))
+    if ((u32)(g_Supervisor.curState != SUPERVISOR_STATE_NEXT_STAGE &&
+              g_Supervisor.curState != SUPERVISOR_STATE_RESTART_STAGE &&
+              g_Supervisor.curState != SUPERVISOR_STATE_NEXT_STAGE_USELESS))
     {
         g_AnmManager->ReleaseAnm(21);
         g_AnmManager->ReleaseAnm(23);
@@ -1779,8 +1784,9 @@ ZunResult Gui::RegisterChain()
 {
     Gui *mgr = &g_Gui;
 
-    if ((u32)(g_Supervisor.curState != 3 && g_Supervisor.curState != 11 &&
-              g_Supervisor.curState != 12) != 0)
+    if ((u32)(g_Supervisor.curState != SUPERVISOR_STATE_NEXT_STAGE &&
+              g_Supervisor.curState != SUPERVISOR_STATE_RESTART_STAGE &&
+              g_Supervisor.curState != SUPERVISOR_STATE_NEXT_STAGE_USELESS) != 0)
     {
         memset(mgr, 0, sizeof(Gui));
         mgr->impl = new GuiImpl;

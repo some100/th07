@@ -125,7 +125,7 @@ i32 MusicRoom::ProcessInput()
     }
     if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
     {
-        g_Supervisor.curState = 1;
+        g_Supervisor.curState = SUPERVISOR_STATE_MAINMENU;
         return 1;
     }
 

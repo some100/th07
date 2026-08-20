@@ -178,7 +178,7 @@ struct GameManager
     u32 difficultyMask;
     struct Catk catk[SPELLCARD_COUNT];
     struct Catk catkAgain[SPELLCARD_COUNT];
-    struct Clrd clrd[6];
+    struct Clrd clrd[SHOT_COUNT];
     struct Pscr pscr[6][6][4];
     struct Plst plst;
     i32 isPaused;

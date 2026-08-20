@@ -181,8 +181,8 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x, i32
     bullet->prevAngle = bullet->angle = utils::AddNormalizeAngle(bulletAngle, 0.0f);
     bullet->pos = bulletProps->pos;
     bullet->pos.z = 0.1f;
-    AngleToVector(&bullet->velocity, bulletAngle,
-                  bulletSpeed * g_Supervisor.effectiveFramerateMultiplier);
+    bullet->velocity.FromAngleMagnitude(bulletAngle,
+                                        bulletSpeed * g_Supervisor.effectiveFramerateMultiplier);
     bullet->exFlags = (i16)bulletProps->flags;
     bullet->spriteOffset = bulletProps->spriteOffset;
     bullet->state2 = 0;
@@ -327,8 +327,9 @@ void Bullet::RunCommands()
             this->commandStates[1].angle = cmd->angle > -990.0f ? cmd->angle : this->angle;
             this->commandStates[1].timer = 0;
             this->commandStates[1].duration = cmd->duration;
-            AngleToVector(&this->commandStates[1].vec3, this->commandStates[1].angle,
-                          g_Supervisor.effectiveFramerateMultiplier * this->commandStates[1].speed);
+            this->commandStates[1].vec3.FromAngleMagnitude(this->commandStates[1].angle,
+                                                           g_Supervisor.effectiveFramerateMultiplier *
+                                                               this->commandStates[1].speed);
             if (this->curCmdIdx != 0 && this->soundIdx >= 0)
             {
                 g_SoundPlayer.PlaySoundByIdx(this->soundIdx, 0);
@@ -648,8 +649,8 @@ void Bullet::UpdateBulletBurstSpeed()
     if (this->commandStates[0].timer <= 16)
     {
         f32 local_8 = 5.0f - this->commandStates[0].timer.AsFloat() * 5.0f / 16.0f;
-        AngleToVector(&this->velocity, this->angle,
-                      (local_8 + this->speed) * g_Supervisor.effectiveFramerateMultiplier);
+        this->velocity.FromAngleMagnitude(this->angle,
+                                          (local_8 + this->speed) * g_Supervisor.effectiveFramerateMultiplier);
     }
     else
     {
@@ -684,10 +685,12 @@ void Bullet::UpdateBulletTargetAngle()
     else
     {
         this->angle = utils::AddNormalizeAngle(
-            this->angle, this->commandStates[2].angle * g_Supervisor.effectiveFramerateMultiplier);
-        this->speed += this->commandStates[2].speed * g_Supervisor.effectiveFramerateMultiplier;
-        AngleToVector(&this->velocity, this->angle,
-                      this->speed * g_Supervisor.effectiveFramerateMultiplier);
+            this->angle, this->commandStates[2].angle *
+                             g_Supervisor.effectiveFramerateMultiplier);
+        this->speed += this->commandStates[2].speed *
+                       g_Supervisor.effectiveFramerateMultiplier;
+        this->velocity.FromAngleMagnitude(this->angle,
+                                          this->speed * g_Supervisor.effectiveFramerateMultiplier);
     }
     this->commandStates[2].timer++;
 }
@@ -717,8 +720,8 @@ void Bullet::UpdateBulletDirChangeAndResume()
         local_8 = this->speed - this->commandStates[3].timer.AsFloat() * this->speed /
                                     (f32)this->commandStates[3].duration;
     }
-    AngleToVector(&this->velocity, this->angle,
-                  local_8 * g_Supervisor.effectiveFramerateMultiplier);
+    this->velocity.FromAngleMagnitude(this->angle,
+                                      local_8 * g_Supervisor.effectiveFramerateMultiplier);
     this->commandStates[3].timer++;
 }
 
@@ -747,8 +750,8 @@ void Bullet::UpdateBulletDirChangeAbsoluteAndResume()
         local_8 = this->speed - this->commandStates[3].timer.AsFloat() * this->speed /
                                     (f32)this->commandStates[3].duration;
     }
-    AngleToVector(&this->velocity, this->angle,
-                  local_8 * g_Supervisor.effectiveFramerateMultiplier);
+    this->velocity.FromAngleMagnitude(this->angle,
+                                      local_8 * g_Supervisor.effectiveFramerateMultiplier);
     this->commandStates[3].timer++;
 }
 
@@ -778,8 +781,8 @@ void Bullet::UpdateBulletDirChangeAimAtPlayer()
         local_8 = this->speed - this->commandStates[3].timer.AsFloat() * this->speed /
                                     (f32)this->commandStates[3].duration;
     }
-    AngleToVector(&this->velocity, this->angle,
-                  local_8 * g_Supervisor.effectiveFramerateMultiplier);
+    this->velocity.FromAngleMagnitude(this->angle,
+                                      local_8 * g_Supervisor.effectiveFramerateMultiplier);
     this->commandStates[3].timer++;
 }
 
@@ -806,8 +809,8 @@ void Bullet::UpdateBulletBounce()
         }
         this->speed = this->commandStates[4].speed;
         speed = this->speed;
-        AngleToVector(&this->velocity, this->angle,
-                      speed * g_Supervisor.effectiveFramerateMultiplier);
+        this->velocity.FromAngleMagnitude(this->angle,
+                                          speed * g_Supervisor.effectiveFramerateMultiplier);
         this->commandStates[4].duration++;
         if (this->commandStates[4].duration >= this->commandStates[4].maxTimes)
         {
@@ -1350,8 +1353,9 @@ ZunResult BulletManager::AddedCallback(BulletManager *arg)
 {
     u32 i;
 
-    if ((u32)(g_Supervisor.curState != 3 && g_Supervisor.curState != 11 &&
-              g_Supervisor.curState != 12))
+    if ((u32)(g_Supervisor.curState != SUPERVISOR_STATE_NEXT_STAGE &&
+              g_Supervisor.curState != SUPERVISOR_STATE_RESTART_STAGE &&
+              g_Supervisor.curState != SUPERVISOR_STATE_NEXT_STAGE_USELESS))
     {
         if (g_AnmManager->LoadAnms(ANM_FILE_BULLETS, "data/etama.anm", ANM_OFFSET_BULLETS) !=
             ZUN_SUCCESS)
@@ -1453,10 +1457,9 @@ ZunResult BulletManager::AddedCallback(BulletManager *arg)
 
 ZunResult BulletManager::DeletedCallback(BulletManager *arg)
 {
-    (void)arg;
-
-    if ((u32)(g_Supervisor.curState != 3 && g_Supervisor.curState != 11 &&
-              g_Supervisor.curState != 12))
+    if ((u32)(g_Supervisor.curState != SUPERVISOR_STATE_NEXT_STAGE &&
+              g_Supervisor.curState != SUPERVISOR_STATE_RESTART_STAGE &&
+              g_Supervisor.curState != SUPERVISOR_STATE_NEXT_STAGE_USELESS))
     {
         g_AnmManager->ReleaseAnm(11);
         g_AnmManager->ReleaseAnm(12);

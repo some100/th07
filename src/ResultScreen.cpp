@@ -719,17 +719,17 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
 
     switch (arg->resultScreenState)
     {
-    case 18:
-        g_Supervisor.curState = 1;
+    case RESULT_STATE_PRACTICE_END:
+        g_Supervisor.curState = SUPERVISOR_STATE_MAINMENU;
         return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
-    case 19:
+    case RESULT_STATE_INIT_PARSE_ONLY:
         return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
-    case 0:
-    switchD_00445ddb_caseD_0:
+    case RESULT_STATE_INIT:
+    CASE_RESULT_STATE_INIT:
         if (arg->frameTimer == 0)
         {
             vm = arg->vms;
-            for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+            for (vmIdx = 0; vmIdx < ARRAY_SIZE_SIGNED(arg->vms); vmIdx++, vm++)
             {
                 vm->pendingInterrupt = 1;
                 vm->flag6 = 1;
@@ -767,7 +767,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         }
         arg->resultScreenState++;
         arg->frameTimer = 0;
-    case 1:
+    case RESULT_STATE_DIFFICULTY_SELECT:
         vmIdx = MoveCursor(arg, 9);
         if (arg->cursor == 5 && !g_GameManager.HasUnlockedPhantomAndMaxClears())
         {
@@ -815,7 +815,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
             case 3:
             case 4:
             case 5:
-                for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+                for (vmIdx = 0; vmIdx < ARRAY_SIZE_SIGNED(arg->vms); vmIdx++, vm++)
                 {
                     vm->pendingInterrupt = arg->cursor + 3;
                 }
@@ -828,12 +828,12 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
                 arg->lastSpellcardSelected = -1;
                 break;
             case 6:
-                for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+                for (vmIdx = 0; vmIdx < ARRAY_SIZE_SIGNED(arg->vms); vmIdx++, vm++)
                 {
                     vm->pendingInterrupt = 10;
                 }
                 arg->diffPlayed = arg->cursor;
-                arg->resultScreenState = 9;
+                arg->resultScreenState = RESULT_STATE_SPELLCARD_LIST;
                 arg->stateStep = arg->resultScreenState;
                 arg->frameTimer = 0;
                 arg->charUsed = -1;
@@ -841,37 +841,37 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
                 arg->lastSpellcardSelected = -1;
                 break;
             case 7:
-                for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+                for (vmIdx = 0; vmIdx < ARRAY_SIZE_SIGNED(arg->vms); vmIdx++, vm++)
                 {
                     vm->pendingInterrupt = 9;
                 }
                 arg->diffPlayed = arg->cursor;
-                arg->resultScreenState = 20;
+                arg->resultScreenState = RESULT_STATE_OVERALL_STATS_INIT;
                 arg->stateStep = arg->resultScreenState;
                 arg->frameTimer = 0;
                 arg->charUsed = -1;
                 break;
             GO_BACK:
             case 8:
-                for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+                for (vmIdx = 0; vmIdx < ARRAY_SIZE_SIGNED(arg->vms); vmIdx++, vm++)
                 {
                     vm->pendingInterrupt = 2;
                 }
-                arg->resultScreenState = 2;
+                arg->resultScreenState = RESULT_STATE_EXITING;
                 g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
                 arg->frameTimer = 0;
                 break;
             }
         }
         break;
-    case 2:
+    case RESULT_STATE_EXITING:
         if (arg->frameTimer < 60)
         {
             break;
         }
-        g_Supervisor.curState = 1;
+        g_Supervisor.curState = SUPERVISOR_STATE_MAINMENU;
         return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
-    case 5:
+    case RESULT_STATE_SCORE_HARD:
         if (IS_PRESSED_RAW(TH_BUTTON_FOCUS) || IS_PRESSED_RAW(TH_BUTTON_SKIP))
         {
             if (arg->cheatCodeStep < 3)
@@ -920,9 +920,9 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
             }
             else
             {
-                for (i = 0; i < 6; i++)
+                for (i = 0; i < SHOT_COUNT; i++)
                 {
-                    for (j = 0; j < 6; j++)
+                    for (j = 0; j < DIFF_COUNT; j++)
                     {
                         g_GameManager.clrd[i].difficultyClearedWithRetries[j] = 99;
                         g_GameManager.clrd[i].difficultyClearedWithoutRetries[j] = 99;
@@ -936,11 +936,11 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         {
             arg->cheatCodeStep = 0;
         }
-    case 3:
-    case 4:
-    case 6:
-    case 7:
-    case 8:
+    case RESULT_STATE_SCORE_EASY:
+    case RESULT_STATE_SCORE_NORMAL:
+    case RESULT_STATE_SCORE_LUNATIC:
+    case RESULT_STATE_SCORE_EXTRA:
+    case RESULT_STATE_SCORE_PHANTASM:
         if (arg->charUsed != arg->cursor && arg->frameTimer == 20)
         {
             arg->charUsed = arg->cursor;
@@ -956,7 +956,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         {
             arg->frameTimer = 0;
             vm = arg->vms;
-            for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+            for (vmIdx = 0; vmIdx < ARRAY_SIZE_SIGNED(arg->vms); vmIdx++, vm++)
             {
                 vm->pendingInterrupt = arg->diffPlayed + 3;
             }
@@ -964,19 +964,19 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            arg->resultScreenState = 0;
+            arg->resultScreenState = RESULT_STATE_INIT;
             arg->frameTimer = 0;
             vm = arg->vms;
-            for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+            for (vmIdx = 0; vmIdx < ARRAY_SIZE_SIGNED(arg->vms); vmIdx++, vm++)
             {
                 vm->pendingInterrupt = 1;
             }
             arg->prevCursor = arg->cursor;
             arg->cursor = arg->diffPlayed;
-            goto switchD_00445ddb_caseD_0;
+            goto CASE_RESULT_STATE_INIT;
         }
         break;
-    case 9:
+    case RESULT_STATE_SPELLCARD_LIST:
         if ((arg->lastSpellcardSelected != arg->cursor ||
              arg->prevSpellcardListPage != arg->spellcardListPage) &&
             arg->frameTimer == 20)
@@ -990,7 +990,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
                 {
                     break;
                 }
-                if (g_GameManager.catk[vmIdx].numAttemptsPerShot[6] == 0)
+                if (g_GameManager.catk[vmIdx].numAttemptsPerShot[SHOT_COUNT] == 0)
                 {
                     AnmManager::DrawVmTextFmt(g_AnmManager, arg->spellcardListVms + vmIdx % 10,
                                               0xffffff, 0, "？？？？？");
@@ -1016,7 +1016,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         {
             arg->frameTimer = 0;
             vm = arg->vms;
-            for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+            for (vmIdx = 0; vmIdx < ARRAY_SIZE_SIGNED(arg->vms); vmIdx++, vm++)
             {
                 vm->pendingInterrupt = 10;
             }
@@ -1029,43 +1029,43 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
         if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            arg->resultScreenState = 0;
+            arg->resultScreenState = RESULT_STATE_INIT;
             arg->frameTimer = 0;
             vm = arg->vms;
-            for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+            for (vmIdx = 0; vmIdx < ARRAY_SIZE_SIGNED(arg->vms); vmIdx++, vm++)
             {
                 vm->pendingInterrupt = 1;
             }
             arg->savedCursor = arg->cursor;
             arg->cursor = arg->diffPlayed;
-            goto switchD_00445ddb_caseD_0;
+            goto CASE_RESULT_STATE_INIT;
         }
         break;
-    case 10:
+    case RESULT_STATE_ENTER_NAME:
         arg->HandleResultKeyboard();
         break;
-    case 11:
-    case 12:
-    case 13:
-    case 14:
-    case 15:
+    case RESULT_STATE_REPLAY_SAVE_PROMPT:
+    case RESULT_STATE_REPLAY_CANNOT_SAVE:
+    case RESULT_STATE_REPLAY_SELECT_SAVE_SLOT:
+    case RESULT_STATE_REPLAY_SAVING:
+    case RESULT_STATE_REPLAY_OVERWRITE:
         arg->HandleReplaySaveKeyboard();
         break;
-    case 16:
-    case 17:
+    case RESULT_STATE_FINAL_STATS_SHOW:
+    case RESULT_STATE_FINAL_STATS_WAIT:
         arg->CheckConfirmButton();
         break;
-    case 20:
-    case 21:
-    case 22:
+    case RESULT_STATE_OVERALL_STATS_INIT:
+    case RESULT_STATE_OVERALL_STATS_INPUT:
+    case RESULT_STATE_OVERALL_STATS_EXIT:
         if (arg->DrawStats() != ZUN_SUCCESS)
         {
-            goto switchD_00445ddb_caseD_0;
+            goto CASE_RESULT_STATE_INIT;
         }
         break;
     }
     vm = arg->vms;
-    for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+    for (vmIdx = 0; vmIdx < ARRAY_SIZE_SIGNED(arg->vms); vmIdx++, vm++)
     {
         g_AnmManager->ExecuteScript(vm);
     }
@@ -1083,7 +1083,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
 
     if (g_Supervisor.IsSlowMode() || g_Supervisor.timingBad)
     {
-        this->resultScreenState = 16;
+        this->resultScreenState = RESULT_STATE_FINAL_STATS_SHOW;
         this->frameTimer = 0;
         memcpy(g_GameManager.catk, g_GameManager.catkAgain, 0x4218);
         return ZUN_SUCCESS;
@@ -1093,7 +1093,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
         this->charUsed = (u32)g_GameManager.character * 2 + (u32)g_GameManager.shotType;
         this->diffPlayed = g_GameManager.difficulty;
         vm = this->vms;
-        for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+        for (vmIdx = 0; vmIdx < ARRAY_SIZE_SIGNED(this->vms); vmIdx++, vm++)
         {
             vm->pendingInterrupt = this->diffPlayed + 3;
         }
@@ -1245,10 +1245,10 @@ ZunResult ResultScreen::HandleResultKeyboard()
     LAB_004470db:
         g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
     LAB_004470e9:
-        this->resultScreenState = 16;
+        this->resultScreenState = RESULT_STATE_FINAL_STATS_SHOW;
         this->frameTimer = 0;
         vm = this->vms;
-        for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+        for (vmIdx = 0; vmIdx < ARRAY_SIZE_SIGNED(this->vms); vmIdx++, vm++)
         {
             vm->pendingInterrupt = 2;
         }
@@ -1273,13 +1273,13 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
     i32 cursor2;
     i32 cursor;
     ReplayFile *replayFile;
-    i32 vmIdx;
+    i32 i;
     i32 interrupt;
     AnmVm *vm;
 
     switch (this->resultScreenState)
     {
-    case 11:
+    case RESULT_STATE_REPLAY_SAVE_PROMPT:
         if (this->frameTimer == 60)
         {
             if (g_Supervisor.IsSlowMode() || g_Supervisor.timingBad)
@@ -1297,13 +1297,13 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                 interrupt = 11;
             }
             vm = this->vms;
-            for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+            for (i = 0; i < ARRAY_SIZE_SIGNED(this->vms); i++, vm++)
             {
                 vm->pendingInterrupt = (i16)interrupt;
             }
             if (interrupt != 11)
             {
-                this->resultScreenState = 12;
+                this->resultScreenState = RESULT_STATE_REPLAY_CANNOT_SAVE;
             }
             this->cursor = 0;
         }
@@ -1333,28 +1333,28 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
             {
             LAB_004473e3:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                this->resultScreenState = 13;
+                this->resultScreenState = RESULT_STATE_REPLAY_SELECT_SAVE_SLOT;
                 vm = this->vms;
-                for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+                for (i = 0; i < ARRAY_SIZE_SIGNED(this->vms); i++, vm++)
                 {
                     vm->pendingInterrupt = 12;
                 }
                 this->frameTimer = 0;
-                goto LAB_0044756a;
+                goto CASE_RESULT_STATE_REPLAY_SELECT_SAVE_SLOT;
             }
 
         SOUND_BACK_AND_RETURN:
             this->frameTimer = 0;
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            this->resultScreenState = 2;
+            this->resultScreenState = RESULT_STATE_EXITING;
             vm = this->vms;
-            for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+            for (i = 0; i < ARRAY_SIZE_SIGNED(this->vms); i++, vm++)
             {
                 vm->pendingInterrupt = 2;
             }
         }
         break;
-    case 12:
+    case RESULT_STATE_REPLAY_CANNOT_SAVE:
         if (this->frameTimer < 20)
         {
             return ZUN_SUCCESS;
@@ -1363,24 +1363,24 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
         {
             this->frameTimer = 0;
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            this->resultScreenState = 2;
+            this->resultScreenState = RESULT_STATE_EXITING;
             vm = this->vms;
-            for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+            for (i = 0; i < ARRAY_SIZE_SIGNED(this->vms); i++, vm++)
             {
                 vm->pendingInterrupt = 2;
             }
         }
         break;
-    LAB_0044756a:
-    case 13:
+    CASE_RESULT_STATE_REPLAY_SELECT_SAVE_SLOT:
+    case RESULT_STATE_REPLAY_SELECT_SAVE_SLOT:
         if (this->frameTimer == 0)
         {
             std::filesystem::create_directory(FileSystem::GetPrefPath("replay"));
 
-            for (vmIdx = 0; vmIdx < 15; vmIdx++)
+            for (i = 0; i < ARRAY_SIZE_SIGNED(this->replays); i++)
             {
                 char filename[32];
-                snprintf(filename, sizeof(filename), "th7_%.2d.rpy", vmIdx + 1);
+                snprintf(filename, sizeof(filename), "th7_%.2d.rpy", i + 1);
                 std::string replayPath = fs::path(FileSystem::GetPrefPath("replay")) / filename;
                 replayFile = (ReplayFile *)FileSystem::OpenFile(replayPath.c_str(), 1);
                 if (!replayFile)
@@ -1391,7 +1391,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                 replayFile = ReplayManager::ValidateReplayData(replayFile, g_LastFileSize);
                 if (replayFile)
                 {
-                    this->replays[vmIdx] = *replayFile;
+                    this->replays[i] = *replayFile;
                     free(replayFile);
                 }
             }
@@ -1414,24 +1414,24 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                 (this->replays[this->cursor].head.version & 0xfff) != 256)
             {
                 vm = this->vms;
-                for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+                for (i = 0; i < ARRAY_SIZE_SIGNED(this->vms); i++, vm++)
                 {
                     vm->pendingInterrupt = 17;
                 }
                 vm = &this->vms[this->chosenReplayIdx + 25];
                 vm->pendingInterrupt = 16;
-                this->resultScreenState = 14;
+                this->resultScreenState = RESULT_STATE_REPLAY_SAVING;
             }
             else
             {
                 vm = this->vms;
-                for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+                for (i = 0; i < ARRAY_SIZE_SIGNED(this->vms); i++, vm++)
                 {
                     vm->pendingInterrupt = 13;
                 }
                 vm = &this->vms[this->chosenReplayIdx + 25];
                 vm->pendingInterrupt = 16;
-                this->resultScreenState = 15;
+                this->resultScreenState = RESULT_STATE_REPLAY_OVERWRITE;
             }
             this->cursor = 0;
             this->selectedChar = 0;
@@ -1443,16 +1443,16 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
         if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            this->resultScreenState = 11;
+            this->resultScreenState = RESULT_STATE_REPLAY_SAVE_PROMPT;
             vm = this->vms;
-            for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+            for (i = 0; i < ARRAY_SIZE_SIGNED(this->vms); i++, vm++)
             {
                 vm->pendingInterrupt = 2;
             }
             this->frameTimer = 0;
         }
         break;
-    case 14:
+    case RESULT_STATE_REPLAY_SAVING:
         if (this->frameTimer < 30)
         {
             return ZUN_SUCCESS;
@@ -1535,9 +1535,9 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                 std::string replayPath = fs::path(FileSystem::GetPrefPath("replay")) / filename;
                 ReplayManager::SaveReplay(replayPath.c_str(), this->replayName);
                 this->frameTimer = 0;
-                this->resultScreenState = 2;
+                this->resultScreenState = RESULT_STATE_EXITING;
                 vm = this->vms;
-                for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+                for (i = 0; i < ARRAY_SIZE_SIGNED(this->vms); i++, vm++)
                 {
                     vm->pendingInterrupt = 2;
                 }
@@ -1569,7 +1569,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
             goto LAB_004473e3;
         }
         break;
-    case 15:
+    case RESULT_STATE_REPLAY_OVERWRITE:
         vm = this->vms + 19;
         if (this->cursor == 0)
         {
@@ -1596,13 +1596,13 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
             if (this->cursor == 0)
             {
                 vm = this->vms;
-                for (vmIdx = 0; vmIdx < 41; vmIdx++, vm++)
+                for (i = 0; i < ARRAY_SIZE_SIGNED(this->vms); i++, vm++)
                 {
                     vm->pendingInterrupt = 17;
                 }
                 vm = &this->vms[chosenReplayIdx + 25];
                 vm->pendingInterrupt = 16;
-                this->resultScreenState = 14;
+                this->resultScreenState = RESULT_STATE_REPLAY_SAVING;
             }
             else
             {
@@ -1621,7 +1621,7 @@ ZunResult ResultScreen::CheckConfirmButton()
 
     switch (this->resultScreenState)
     {
-    case 16:
+    case RESULT_STATE_FINAL_STATS_SHOW:
         if (this->frameTimer <= 30)
         {
             viewport = &this->vms[40];
@@ -1632,14 +1632,14 @@ ZunResult ResultScreen::CheckConfirmButton()
             viewport = &this->vms[40];
             viewport->pendingInterrupt = 2;
             this->frameTimer = 0;
-            this->resultScreenState = 17;
+            this->resultScreenState = RESULT_STATE_FINAL_STATS_WAIT;
         }
         break;
-    case 17:
+    case RESULT_STATE_FINAL_STATS_WAIT:
         if (this->frameTimer >= 30)
         {
             this->frameTimer = 59;
-            this->resultScreenState = 11;
+            this->resultScreenState = RESULT_STATE_REPLAY_SAVE_PROMPT;
         }
         break;
     }
@@ -1653,7 +1653,7 @@ i32 ResultScreen::DrawStats()
 
     switch (this->resultScreenState)
     {
-    case 20:
+    case RESULT_STATE_OVERALL_STATS_INIT:
         if (this->frameTimer == 1)
         {
             pos.x = 56.0f;
@@ -1692,7 +1692,7 @@ i32 ResultScreen::DrawStats()
                     "プレイ回数　　　 　Easy 　Norm 　Hard 　Luna  Extra  Total");
             }
 
-            for (i32 i = 0; i < 6; i++)
+            for (i32 i = 0; i < ARRAY_SIZE_SIGNED(g_CharacterList); i++)
             {
                 vm++;
                 pos.y += 17.0f;
@@ -1878,11 +1878,11 @@ i32 ResultScreen::DrawStats()
         }
         else
         {
-            this->resultScreenState = 21;
+            this->resultScreenState = RESULT_STATE_OVERALL_STATS_INPUT;
         }
         break;
 
-    case 21:
+    case RESULT_STATE_OVERALL_STATS_INPUT:
         if (this->frameTimer % 60 == 0 &&
             (g_Supervisor.UpdateStartupTime(),
              g_GameManager.plst.totalSeconds != this->lastTotalSeconds))
@@ -1896,12 +1896,12 @@ i32 ResultScreen::DrawStats()
         }
         if (WAS_PRESSED_RAW(TH_BUTTON_SHOOT | TH_BUTTON_BOMB | TH_BUTTON_MENU | TH_BUTTON_ENTER))
         {
-            this->resultScreenState = 22;
+            this->resultScreenState = RESULT_STATE_OVERALL_STATS_EXIT;
             this->frameTimer = 0;
         }
         break;
 
-    case 22:
+    case RESULT_STATE_OVERALL_STATS_EXIT:
         if (this->frameTimer < 20)
         {
             vm = this->spellcardListVms;
@@ -1911,7 +1911,7 @@ i32 ResultScreen::DrawStats()
             }
             break;
         }
-        this->resultScreenState = 0;
+        this->resultScreenState = RESULT_STATE_INIT;
         this->frameTimer = 0;
         return 1;
     }
@@ -1930,8 +1930,8 @@ ZunResult ResultScreen::DrawFinalStats()
 
     switch (this->resultScreenState)
     {
-    case 16:
-    case 17:
+    case RESULT_STATE_FINAL_STATS_SHOW:
+    case RESULT_STATE_FINAL_STATS_WAIT:
         vm = &this->vms[40];
         color = vm->color.color;
         g_AsciiManager.color = color;
@@ -2087,7 +2087,7 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
     g_Supervisor.viewport.height = 480;
     g_Supervisor.gfxDevice->SetViewport(g_Supervisor.viewport);
     g_AnmManager->CopySurfaceToBackBuffer(0, 0, 0, 0, 0);
-    for (i = 0; i < 41; i++, vm++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(arg->vms); i++, vm++)
     {
         pos = vm->pos;
         ZunVec3 drawPos = vm->prevPos.Lerp(vm->pos, g_RenderAlpha);
@@ -2113,7 +2113,7 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
             node = arg->scoreLists[arg->diffPlayed][arg->charUsed].next;
             for (i = 0; i < 10; i++)
             {
-                if (arg->resultScreenState == 10)
+                if (arg->resultScreenState == RESULT_STATE_ENTER_NAME)
                 {
                     if (node->data->base.isPlayerScore)
                     {
@@ -2130,7 +2130,8 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
                 }
                 AsciiManager::AddFormatText(&g_AsciiManager, &pos, "%2d", i + 1);
                 pos.x += 48.0f;
-                if (arg->resultScreenState == 10 && node->data->base.isPlayerScore)
+                if (arg->resultScreenState == RESULT_STATE_ENTER_NAME &&
+                    node->data->base.isPlayerScore)
                 {
                     memset(name, ' ', 8);
                     name[8] = '\0';
@@ -2261,7 +2262,8 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
             }
         }
     }
-    if (arg->resultScreenState == 10 || arg->resultScreenState == 14)
+    if (arg->resultScreenState == RESULT_STATE_ENTER_NAME ||
+        arg->resultScreenState == RESULT_STATE_REPLAY_SAVING)
     {
         pos = ZunVec3(160.0f, 356.0f, 0.0f);
         for (i = 0; i < 6; i++)
@@ -2317,7 +2319,8 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
     }
     g_AsciiManager.scale.x = 1.0f;
     g_AsciiManager.scale.y = 1.0f;
-    if (arg->resultScreenState >= 11 && arg->resultScreenState <= 15)
+    if (arg->resultScreenState >= RESULT_STATE_REPLAY_SAVE_PROMPT &&
+        arg->resultScreenState <= RESULT_STATE_REPLAY_OVERWRITE)
     {
         vm = &arg->vms[18];
         for (i = 0; i < 6; i++, vm++)
@@ -2340,7 +2343,7 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
             {
                 g_AsciiManager.color = 0xff808080;
             }
-            if (arg->resultScreenState == 14)
+            if (arg->resultScreenState == RESULT_STATE_REPLAY_SAVING)
             {
                 AsciiManager::AddFormatText(
                     &g_AsciiManager, &pos, "No.%.2d %8s %5s  %7s %9d0", i + 1, arg->replayName,
@@ -2372,11 +2375,12 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
     }
     g_AsciiManager.color = 0xffffffff;
     arg->DrawFinalStats();
-    if (arg->resultScreenState == 20 || arg->resultScreenState == 21 ||
-        arg->resultScreenState == 22)
+    if (arg->resultScreenState == RESULT_STATE_OVERALL_STATS_INIT ||
+        arg->resultScreenState == RESULT_STATE_OVERALL_STATS_INPUT ||
+        arg->resultScreenState == RESULT_STATE_OVERALL_STATS_EXIT)
     {
         vm = arg->spellcardListVms;
-        for (i = 0; i < 14; i++, vm++)
+        for (i = 0; i < ARRAY_SIZE_SIGNED(arg->spellcardListVms) - 1; i++, vm++)
         {
             g_AnmManager->DrawNoRotation(vm);
         }
@@ -2415,7 +2419,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
             }
         }
     }
-    if (arg->resultScreenState != 19)
+    if (arg->resultScreenState != RESULT_STATE_INIT_PARSE_ONLY)
     {
         if (g_AnmManager->LoadSurface(0, "data/result/result.jpg") != ZUN_SUCCESS)
         {
@@ -2459,14 +2463,15 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
     arg->lsnmHeader.base.th7kLen = sizeof(Lsnm);
     strcpy(arg->lsnmHeader.name, "        ");
     arg->isClearingReplayName = ParseLsnm(arg->scoreDat, &arg->lsnmHeader);
-    if (arg->resultScreenState != 10 && arg->resultScreenState != 18)
+    if (arg->resultScreenState != RESULT_STATE_ENTER_NAME &&
+        arg->resultScreenState != RESULT_STATE_PRACTICE_END)
     {
         ParseCatk(arg->scoreDat, g_GameManager.catk);
         ParseClrd(arg->scoreDat, g_GameManager.clrd);
         g_GameManager.HasUnlockedPhantomAndMaxClears();
         ParsePscr(arg->scoreDat, &g_GameManager.pscr[0][0][0]);
     }
-    if (arg->resultScreenState == 18)
+    if (arg->resultScreenState == RESULT_STATE_PRACTICE_END)
     {
         if ((u32)g_GameManager
                 .pscr[g_GameManager.character * 2 + g_GameManager.shotType]
@@ -2478,7 +2483,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
                      [g_GameManager.currentStage - 1][g_GameManager.difficulty]
                 .score = g_GameManager.globals->score;
         }
-        arg->resultScreenState = 11;
+        arg->resultScreenState = RESULT_STATE_REPLAY_SAVE_PROMPT;
         strcpy(arg->replayName, arg->lsnmHeader.name);
     }
     for (i = 0; i < SHOT_COUNT + 1; i++)
@@ -2501,7 +2506,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
     arg->prevSpellcardListPage = 6;
     arg->listScrollAnimState = 0;
     arg->leftArrowVm.activeSpriteIdx = -1;
-    if (arg->resultScreenState == 19)
+    if (arg->resultScreenState == RESULT_STATE_INIT_PARSE_ONLY)
     {
         DeletedCallback(arg);
         return ZUN_ERROR;
@@ -2550,16 +2555,16 @@ ZunResult ResultScreen::RegisterChain(u32 type)
     {
         if (!g_GameManager.practice)
         {
-            resultScreen->resultScreenState = 10;
+            resultScreen->resultScreenState = RESULT_STATE_ENTER_NAME;
         }
         else
         {
-            resultScreen->resultScreenState = 18;
+            resultScreen->resultScreenState = RESULT_STATE_PRACTICE_END;
         }
     }
     else if (type == 2)
     {
-        resultScreen->resultScreenState = 19;
+        resultScreen->resultScreenState = RESULT_STATE_INIT_PARSE_ONLY;
         AddedCallback(resultScreen);
         return ZUN_SUCCESS;
     }

@@ -686,7 +686,7 @@ void BombData::BombMarisaACalc(Player *player)
             player->bombInfo.subInfo[i].bombRegionPositions = player->positionCenter;
 
             angle = (f32)i * ZUN_2PI / 8.0f;
-            AngleToVector(&player->bombInfo.subInfo[i].bombRegionVelocities, angle, 2.0f);
+            player->bombInfo.subInfo[i].bombRegionVelocities.FromAngleMagnitude(angle, 2.0f);
             player->bombInfo.subInfo[i].bombRegionVelocities.z = 0.0f;
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_REIMARI, 0);
@@ -809,10 +809,10 @@ void BombData::BombMarisaACalcFocus(Player *player)
             }
             player->bombInfo.subInfo[i].state = 1;
             angle = g_Rng.GetRandomFloatInRange(0.3926991f) - 0.19634955f - 1.5707964f;
-            AngleToVector(&player->bombInfo.subInfo[i].bombRegionVelocities, angle, -5.0f);
+            player->bombInfo.subInfo[i].bombRegionVelocities.FromAngleMagnitude(angle, -5.0f);
             player->bombInfo.subInfo[i].bombRegionVelocities.z = 0.0f;
             angle = g_Rng.GetRandomFloatInRange(0.3926991f) - 0.19634955f - 1.5707964f;
-            AngleToVector(&player->bombInfo.subInfo[i].bombRegionAcceleration, angle, 0.24f);
+            player->bombInfo.subInfo[i].bombRegionAcceleration.FromAngleMagnitude(angle, 0.24f);
             player->bombInfo.subInfo[i].bombRegionAcceleration.z = 0.0f;
             g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_MARISA_A_FOCUS, 0);
             BombEffects::RegisterChain(1, 120, 4, 1, 0);

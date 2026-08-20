@@ -9,7 +9,7 @@ extern const char *g_EclPaths[10];
 
 // values from
 // https://en.touhouwiki.net/wiki/User:Mddass/Touhou_File_Format_Specification/ECL
-typedef enum EclVarId
+enum EclVarId
 {
     ECL_VAR_LOCAL_INT1_1 = 10000,
     ECL_VAR_LOCAL_INT1_2 = 10001,
@@ -85,9 +85,9 @@ typedef enum EclVarId
     ECL_VAR_SCORE = 10071,
     ECL_VAR_LOCAL_FLOAT2_1 = 10072,
     ECL_VAR_LOCAL_FLOAT2_2 = 10073
-} EclVarId;
+};
 
-typedef enum EclOpcode
+enum EclOpcode
 {
     // just returns ZUN_ERROR for RunEcl
     ECL_UNIMP = 1,
@@ -268,7 +268,7 @@ typedef enum EclOpcode
     // sets if an enemy's ecl script shouldn't be running while the player's
     // bomb is in use
     ECL_FREEZE_ECL_DURING_BOMB = 161,
-} EclOpcode;
+};
 
 typedef void (*EclExInstr)(struct Enemy *, struct EclRawInstr *);
 typedef void (*EclInterpFn)(struct Enemy *, struct EclInterp *, f32 t);

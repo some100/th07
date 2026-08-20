@@ -164,40 +164,40 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
         Supervisor::DebugPrint("scene %d -> %d\n", arg->wantedState, arg->curState);
         switch (arg->wantedState)
         {
-        case 0:
-        CASE_0:
-            arg->curState = 1;
+        case SUPERVISOR_STATE_INIT:
+        CASE_SUPERVISOR_STATE_INIT:
+            arg->curState = SUPERVISOR_STATE_MAINMENU;
             if (MainMenu::RegisterChain() != ZUN_SUCCESS)
             {
                 return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
             }
             break;
-        case 1:
+        case SUPERVISOR_STATE_MAINMENU:
             switch (arg->curState)
             {
-            case -1:
+            case SUPERVISOR_STATE_EXIT:
                 return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-            case 2:
+            case SUPERVISOR_STATE_GAMEMANAGER:
                 if (GameManager::RegisterChain() != ZUN_SUCCESS)
                 {
                     return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
                 }
                 break;
-            case 4:
+            case SUPERVISOR_STATE_EXIT_ERROR:
                 return CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR;
-            case 5:
+            case SUPERVISOR_STATE_RESULTSCREEN:
                 if (ResultScreen::RegisterChain(0) != ZUN_SUCCESS)
                 {
                     return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
                 }
                 break;
-            case 8:
+            case SUPERVISOR_STATE_MUSICROOM:
                 if (MusicRoom::RegisterChain() != ZUN_SUCCESS)
                 {
                     return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
                 }
                 break;
-            case 9:
+            case SUPERVISOR_STATE_ENDING:
                 GameManager::CutChain();
                 if (Ending::RegisterChain() != ZUN_SUCCESS)
                 {
@@ -206,35 +206,35 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
                 break;
             }
             break;
-        case 5:
+        case SUPERVISOR_STATE_RESULTSCREEN:
             switch (arg->curState)
             {
-            case -1:
+            case SUPERVISOR_STATE_EXIT:
                 return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-            case 1:
+            case SUPERVISOR_STATE_MAINMENU:
                 arg->curState = 0;
-                goto CASE_0;
+                goto CASE_SUPERVISOR_STATE_INIT;
             }
             break;
-        case 2:
+        case SUPERVISOR_STATE_GAMEMANAGER:
             switch (arg->curState)
             {
-            case -1:
+            case SUPERVISOR_STATE_EXIT:
                 return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-            case 1:
+            case SUPERVISOR_STATE_MAINMENU:
                 GameManager::CutChain();
-                arg->curState = 0;
+                arg->curState = SUPERVISOR_STATE_INIT;
                 ReplayManager::SaveReplay(NULL, NULL);
-                goto CASE_0;
+                goto CASE_SUPERVISOR_STATE_INIT;
                 break;
-            case 6:
+            case SUPERVISOR_STATE_RESULTSCREEN_FROM_GAME:
                 GameManager::CutChain();
                 if (ResultScreen::RegisterChain(1) != ZUN_SUCCESS)
                 {
                     return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
                 }
                 break;
-            case 10:
+            case SUPERVISOR_STATE_RESTART_FROM_BEGINNING:
                 GameManager::CutChain();
                 if (!g_GameManager.practice && g_GameManager.difficulty < 4)
                 {
@@ -249,46 +249,50 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
                 {
                     return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
                 }
-                arg->curState = 2;
+                arg->curState = SUPERVISOR_STATE_GAMEMANAGER;
                 break;
-            case 11:
-                g_Supervisor.curState = 3;
+            case SUPERVISOR_STATE_RESTART_STAGE:
+                g_Supervisor.curState = SUPERVISOR_STATE_NEXT_STAGE;
                 GameManager::CutChain();
                 g_GameManager.currentStage--;
                 if (GameManager::RegisterChain() != ZUN_SUCCESS)
                 {
                     return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
                 }
-                arg->curState = 2;
+                arg->curState = SUPERVISOR_STATE_GAMEMANAGER;
                 break;
-            case 12:
-                g_Supervisor.curState = 3;
+            case SUPERVISOR_STATE_NEXT_STAGE_USELESS:
+                // ZUN bloat: The idea was likely to start the next stage
+                // with all stats reset to initial values, but the curState
+                // assignment literally right after makes it the exact same as
+                // SUPERVISOR_STATE_NEXT_STAGE for all intents and purposes.
+                g_Supervisor.curState = SUPERVISOR_STATE_NEXT_STAGE;
                 GameManager::CutChain();
                 if (GameManager::RegisterChain() != ZUN_SUCCESS)
                 {
                     return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
                 }
-                arg->curState = 2;
+                arg->curState = SUPERVISOR_STATE_GAMEMANAGER;
                 break;
-            case 3:
+            case SUPERVISOR_STATE_NEXT_STAGE:
                 GameManager::CutChain();
                 if (GameManager::RegisterChain() != ZUN_SUCCESS)
                 {
                     return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
                 }
-                arg->curState = 2;
+                arg->curState = SUPERVISOR_STATE_GAMEMANAGER;
                 break;
-            case 7:
+            case SUPERVISOR_STATE_REPLAY_END:
                 GameManager::CutChain();
-                arg->curState = 0;
+                arg->curState = SUPERVISOR_STATE_INIT;
                 ReplayManager::SaveReplay(NULL, NULL);
-                arg->curState = 1;
+                arg->curState = SUPERVISOR_STATE_MAINMENU;
                 if (MainMenu::RegisterChain() != ZUN_SUCCESS)
                 {
                     return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
                 }
                 break;
-            case 9:
+            case SUPERVISOR_STATE_ENDING:
                 g_GameManager.plst.playDataByDifficulty[g_GameManager.difficulty]
                     .noContinueClearCount =
                     g_GameManager.plst.playDataByDifficulty[g_GameManager.difficulty]
@@ -302,37 +306,37 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
                 break;
             }
             break;
-        case 6:
+        case SUPERVISOR_STATE_RESULTSCREEN_FROM_GAME:
             switch (arg->curState)
             {
-            case -1:
+            case SUPERVISOR_STATE_EXIT:
                 ReplayManager::SaveReplay(NULL, NULL);
                 return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-            case 1:
-                arg->curState = 0;
+            case SUPERVISOR_STATE_MAINMENU:
+                arg->curState = SUPERVISOR_STATE_INIT;
                 ReplayManager::SaveReplay(NULL, NULL);
-                goto CASE_0;
+                goto CASE_SUPERVISOR_STATE_INIT;
             }
             break;
-        case 8:
+        case SUPERVISOR_STATE_MUSICROOM:
             switch (arg->curState)
             {
-            case -1:
+            case SUPERVISOR_STATE_EXIT:
                 return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-            case 1:
-                arg->curState = 0;
-                goto CASE_0;
+            case SUPERVISOR_STATE_MAINMENU:
+                arg->curState = SUPERVISOR_STATE_INIT;
+                goto CASE_SUPERVISOR_STATE_INIT;
             }
             break;
-        case 9:
+        case SUPERVISOR_STATE_ENDING:
             switch (arg->curState)
             {
-            case -1:
+            case SUPERVISOR_STATE_EXIT:
                 return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
-            case 1:
-                arg->curState = 0;
-                goto CASE_0;
-            case 6:
+            case SUPERVISOR_STATE_MAINMENU:
+                arg->curState = SUPERVISOR_STATE_INIT;
+                goto CASE_SUPERVISOR_STATE_INIT;
+            case SUPERVISOR_STATE_RESULTSCREEN_FROM_GAME:
                 if (ResultScreen::RegisterChain(1) != ZUN_SUCCESS)
                 {
                     return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
@@ -623,8 +627,8 @@ ZunResult Supervisor::RegisterChain()
     ZunResult res;
 
     Supervisor *mgr = &g_Supervisor;
-    mgr->wantedState = 0;
-    mgr->curState = -1;
+    mgr->wantedState = SUPERVISOR_STATE_INIT;
+    mgr->curState = SUPERVISOR_STATE_EXIT;
     mgr->calcCount = 0;
     ChainElem *chain = g_Chain.CreateElem((ChainCallback)OnUpdate);
     chain->arg = mgr;
