@@ -548,11 +548,11 @@ u32 Stage::OnDrawHighPrio(Stage *arg)
     {
         if (!g_Gui.IsStageFinished())
         {
-            if (0 < arg->vm1.activeSpriteIdx)
+            if (arg->vm1.activeSpriteIdx > 0)
             {
                 g_AnmManager->DrawInterpAndFlush(&arg->vm1);
             }
-            if (0 < arg->vm2.activeSpriteIdx)
+            if (arg->vm2.activeSpriteIdx > 0)
             {
                 g_AnmManager->DrawInterpAndFlush(&arg->vm2);
             }
@@ -773,11 +773,11 @@ ZunResult Stage::AddedCallback(Stage *arg)
 
 ZunResult Stage::DeletedCallback(Stage *arg)
 {
-    g_AnmManager->ReleaseAnm(5);
-    g_AnmManager->ReleaseAnm(6);
-    g_AnmManager->ReleaseAnm(7);
-    g_AnmManager->ReleaseAnm(8);
-    g_AnmManager->ReleaseAnm(9);
+    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE_BG1);
+    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE_BG2);
+    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE_BG3);
+    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE_BG4);
+    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE_BG5);
     SAFE_DELETE_ARRAY(arg->objects);
     SAFE_FREE(arg->quadVms);
     SAFE_FREE(arg->stdData);

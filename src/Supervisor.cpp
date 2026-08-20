@@ -595,7 +595,7 @@ ZunResult Supervisor::DeletedCallback(Supervisor *arg)
 {
     SAFE_FREE(g_Supervisor.version);
     g_AnmManager->ReleaseVertexBuffer();
-    g_AnmManager->ReleaseAnm(0);
+    g_AnmManager->ReleaseAnm(ANM_FILE_TEXT);
     AsciiManager::CutChain();
     g_SoundPlayer.PushCommand(AUDIO_SHUTDOWN, 0, "dummy");
     if (arg->midiOutput)

@@ -1476,20 +1476,23 @@ i32 Player::HandlePlayerInputs()
 
     if (horizontalSpeed < 0.0f && this->previousHorizontalSpeed >= 0.0f)
     {
-        g_AnmManager->SetAnmIdxAndExecuteScript(&this->playerSprite, 1025);
+        g_AnmManager->SetAnmIdxAndExecuteScript(&this->playerSprite, ANM_SCRIPT_PLAYER_MOVING_LEFT);
     }
     else if (horizontalSpeed == 0.0f && this->previousHorizontalSpeed < 0.0f)
     {
-        g_AnmManager->SetAnmIdxAndExecuteScript(&this->playerSprite, 1026);
+        g_AnmManager->SetAnmIdxAndExecuteScript(&this->playerSprite,
+                                                ANM_SCRIPT_PLAYER_STOPPING_LEFT);
     }
 
     if (horizontalSpeed > 0.0f && this->previousHorizontalSpeed <= 0.0f)
     {
-        g_AnmManager->SetAnmIdxAndExecuteScript(&this->playerSprite, 1027);
+        g_AnmManager->SetAnmIdxAndExecuteScript(&this->playerSprite,
+                                                ANM_SCRIPT_PLAYER_MOVING_RIGHT);
     }
     else if (horizontalSpeed == 0.0f && this->previousHorizontalSpeed > 0.0f)
     {
-        g_AnmManager->SetAnmIdxAndExecuteScript(&this->playerSprite, 1028);
+        g_AnmManager->SetAnmIdxAndExecuteScript(&this->playerSprite,
+                                                ANM_SCRIPT_PLAYER_STOPPING_RIGHT);
     }
 
     this->previousHorizontalSpeed = horizontalSpeed;
@@ -1966,7 +1969,7 @@ i32 Player::UpdateDeath()
             this->invulnerabilityTimer = 0;
             this->playerSprite.scale.x = 3.0f;
             this->playerSprite.scale.y = 3.0f;
-            g_AnmManager->SetAnmIdxAndExecuteScript(&this->playerSprite, 1024);
+            g_AnmManager->SetAnmIdxAndExecuteScript(&this->playerSprite, ANM_SCRIPT_PLAYER_IDLE);
             if ((i32)g_GameManager.globals->livesRemaining <= 0)
             {
                 g_GameManager.isInRetryMenu = 1;
@@ -2472,7 +2475,7 @@ ZunResult Player::AddedCallback(Player *arg)
             }
         }
     }
-    g_AnmManager->SetAnmIdxAndExecuteScript(&arg->playerSprite, 1024);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&arg->playerSprite, ANM_SCRIPT_PLAYER_IDLE);
     arg->positionCenter.x = g_GameManager.arcadeRegionSize.x / 2.0f;
     arg->positionCenter.y = g_GameManager.arcadeRegionSize.y - 64.0f;
     arg->positionCenter.z = 0.49f;
@@ -2503,8 +2506,8 @@ ZunResult Player::AddedCallback(Player *arg)
     arg->playerState = PLAYER_STATE_SPAWNING;
     arg->invulnerabilityTimer = 120;
     arg->optionState = OPTION_UNFOCUSED;
-    g_AnmManager->SetAnmIdxAndExecuteScript(&arg->optionsSprite[0], 1152);
-    g_AnmManager->SetAnmIdxAndExecuteScript(&arg->optionsSprite[1], 1153);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&arg->optionsSprite[0], ANM_SCRIPT_PLAYER_OPTION_LEFT);
+    g_AnmManager->SetAnmIdxAndExecuteScript(&arg->optionsSprite[1], ANM_SCRIPT_PLAYER_OPTION_RIGHT);
     bullet = arg->bullets;
     for (i = 0; i < 96; i++, bullet++)
     {
@@ -2548,7 +2551,7 @@ ZunResult Player::DeletedCallback(Player *arg)
               g_Supervisor.curState != SUPERVISOR_STATE_RESTART_STAGE &&
               g_Supervisor.curState != SUPERVISOR_STATE_NEXT_STAGE_USELESS))
     {
-        g_AnmManager->ReleaseAnm(10);
+        g_AnmManager->ReleaseAnm(ANM_FILE_PLAYER);
         g_AsciiManager.cherryGauge.pendingInterrupt = 99;
         g_AsciiManager.uiFadeState = 99;
         g_AsciiManager.GetBossMarker(0)->pendingInterrupt = 99;

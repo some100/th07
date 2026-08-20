@@ -412,8 +412,7 @@ struct ResultScreen
         {
             this->spellcardListVms[i].UpdatePrev();
         }
-        this->leftArrowVm.UpdatePrev();
-        this->rightArrowVm.UpdatePrev();
+        this->spellcardBarVm.UpdatePrev();
     }
 
     ScoreDat *scoreDat;
@@ -440,8 +439,8 @@ struct ResultScreen
     u8 pad[3];
     AnmVm vms[41];
     AnmVm spellcardListVms[15];
-    AnmVm leftArrowVm;
-    AnmVm rightArrowVm;
+    AnmVm unused_8110;
+    AnmVm spellcardBarVm;
     ScoreListNode scoreLists[6][6];
     Hscr defaultScores[6][6][10];
     Hscr curScore;

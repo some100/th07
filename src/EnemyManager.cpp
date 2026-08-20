@@ -1393,10 +1393,8 @@ ZunResult EnemyManager::AddedCallback(EnemyManager *arg)
 
 ZunResult EnemyManager::DeletedCallback(EnemyManager *arg)
 {
-    (void)arg;
-
-    g_AnmManager->ReleaseAnm(16);
-    g_AnmManager->ReleaseAnm(15);
+    g_AnmManager->ReleaseAnm(ANM_FILE_ENEMY2);
+    g_AnmManager->ReleaseAnm(ANM_FILE_ENEMY);
     ZunVec3 vec = ZunVec3(-999.0f, -999.0f, -999.0f);
     g_AsciiManager.GetBossMarker(0)->pos = vec;
     g_AsciiManager.GetBossMarker(1)->pos = vec;

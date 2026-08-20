@@ -457,7 +457,7 @@ ZunResult Ending::AddedCallback(Ending *arg)
     g_GameManager.clrd[shotType].difficultyClearedWithoutRetries[g_GameManager.difficulty] = 99;
     for (i = 0; i < MAX_ENDING_SPRITES; i++)
     {
-        g_AnmManager->ExecuteAnmIdx(&arg->sprites[i], i + 1807);
+        g_AnmManager->ExecuteAnmIdx(&arg->sprites[i], i + ANM_SCRIPT_TEXT_ENDING);
         arg->sprites[i].pos = ZunVec3(64.0f, (f32)i * 16.0f + 392.0f, 0.0f);
     }
     if (g_GameManager.globals->numRetries != 0)
@@ -479,7 +479,7 @@ ZunResult Ending::AddedCallback(Ending *arg)
 
 ZunResult Ending::DeletedCallback(Ending *arg)
 {
-    g_AnmManager->ReleaseAnm(49);
+    g_AnmManager->ReleaseAnm(ANM_FILE_STAFF);
     g_Supervisor.curState = SUPERVISOR_STATE_RESULTSCREEN_FROM_GAME;
     g_AnmManager->ReleaseSurface(0);
     free(arg->endFileData);

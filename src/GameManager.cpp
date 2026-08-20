@@ -2,6 +2,7 @@
 
 #include <cstdio>
 
+#include "AnmIdx.hpp"
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
 #include "Chain.hpp"
@@ -362,7 +363,7 @@ void GameManager::DrawLoadingSprite()
     rect.top = 0.0f;
     rect.right = 640.0f;
     rect.bottom = 480.0f;
-    g_AnmManager->InitializeAndSetActiveSprite(&spriteVm, 268);
+    g_AnmManager->InitializeAndSetActiveSprite(&spriteVm, ANM_SPRITE_ASCII_LOADING);
     spritePos.x = 528.0f;
     spritePos.y = 448.0f;
     spritePos.z = 0.0f;

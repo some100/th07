@@ -2179,9 +2179,9 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
                 oldX = pos.x;
                 pos.x += 320.0f;
                 pos.y += 16.0f;
-                arg->rightArrowVm.pos = pos;
-                arg->rightArrowVm.scale.x = 2.375f;
-                g_AnmManager->DrawNoRotation(&arg->rightArrowVm);
+                arg->spellcardBarVm.pos = pos;
+                arg->spellcardBarVm.scale.x = 2.375f;
+                g_AnmManager->DrawNoRotation(&arg->spellcardBarVm);
                 pos.y -= 16.0f;
                 pos.x = oldX;
                 arg->spellcardListVms[i].pos = pos;
@@ -2435,13 +2435,15 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
         {
             vm->pos = ZunVec3(0.0f, 0.0f, 0.0f);
             vm->offset = ZunVec3(0.0f, 0.0f, 0.0f);
-            g_AnmManager->SetAnmIdxAndExecuteScript(vm, i + 2304);
+            g_AnmManager->SetAnmIdxAndExecuteScript(vm, i + ANM_SCRIPT_RESULT_ARRAY);
         }
-        g_AnmManager->InitializeAndSetActiveSprite(&arg->rightArrowVm, 2320);
+        g_AnmManager->InitializeAndSetActiveSprite(&arg->spellcardBarVm,
+                                                   ANM_SPRITE_RESULT_SPELLCARD_BAR);
         vm = arg->spellcardListVms;
         for (i = 0; i < ARRAY_SIZE_SIGNED(arg->spellcardListVms); i++, vm++)
         {
-            g_AnmManager->InitializeAndSetActiveSprite(vm, i + 1813);
+            g_AnmManager->InitializeAndSetActiveSprite(vm,
+                                                       i + ANM_SCRIPT_TEXT_SPELLCARD_LIST_ARRAY);
             vm->pos = ZunVec3(0.0f, 0.0f, 0.0f);
             vm->anchor = 3;
             vm->fontWidth = 15;
@@ -2505,7 +2507,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
     arg->spellcardListPage = 6;
     arg->prevSpellcardListPage = 6;
     arg->listScrollAnimState = 0;
-    arg->leftArrowVm.activeSpriteIdx = -1;
+    arg->unused_8110.activeSpriteIdx = -1;
     if (arg->resultScreenState == RESULT_STATE_INIT_PARSE_ONLY)
     {
         DeletedCallback(arg);
@@ -2533,10 +2535,10 @@ ZunResult ResultScreen::DeletedCallback(ResultScreen *arg)
             arg->FreeScore(i, j);
         }
     }
-    g_AnmManager->ReleaseAnm(42);
-    g_AnmManager->ReleaseAnm(43);
-    g_AnmManager->ReleaseAnm(44);
-    g_AnmManager->ReleaseAnm(45);
+    g_AnmManager->ReleaseAnm(ANM_FILE_RESULT_0);
+    g_AnmManager->ReleaseAnm(ANM_FILE_RESULT_1);
+    g_AnmManager->ReleaseAnm(ANM_FILE_RESULT_2);
+    g_AnmManager->ReleaseAnm(ANM_FILE_RESULT_3);
     g_AnmManager->ReleaseSurface(0);
     g_Chain.Cut(arg->drawChain);
     arg->drawChain = NULL;

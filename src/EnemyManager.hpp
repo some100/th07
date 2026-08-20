@@ -289,10 +289,9 @@ struct EnemyManager
     i32 HasActiveBoss();
     i32 RemoveAllEnemies(i32 scoreMax, i32 scoreMin);
     static void RunEclTimeline(EclTimeline *timeline);
-    Enemy *SpawnEnemy(i32 eclSubId, ZunVec3 *pos, i32 life, i32 itemDrop,
-                      i32 score, u8 param_6);
-    Enemy *SpawnEnemyEx(i32 eclSubId, ZunVec3 *pos, i32 life, i32 itemDrop,
-                        i32 score, EclContextArgs *args);
+    Enemy *SpawnEnemy(i32 eclSubId, ZunVec3 *pos, i32 life, i32 itemDrop, i32 score, u8 param_6);
+    Enemy *SpawnEnemyEx(i32 eclSubId, ZunVec3 *pos, i32 life, i32 itemDrop, i32 score,
+                        EclContextArgs *args);
 
     void Initialize()
     {

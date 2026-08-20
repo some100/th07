@@ -167,8 +167,8 @@ struct AsciiManager
         }
     }
 
-    AnmVm vm0;
-    AnmVm vm1;
+    AnmVm smallScorePopupVm;
+    AnmVm largeTextVm;
     AnmVm cherryGauge;
     AnmVm cherryDigit;
     AnmVm cherryBorderActive;

@@ -361,8 +361,8 @@ ZunResult MusicRoom::DeletedCallback(MusicRoom *arg)
     delete[] arg->trackDescriptors;
     arg->trackDescriptors = NULL;
     g_AnmManager->ReleaseSurface(0);
-    g_AnmManager->ReleaseAnm(46);
-    g_AnmManager->ReleaseAnm(47);
+    g_AnmManager->ReleaseAnm(ANM_FILE_MUSIC_0);
+    g_AnmManager->ReleaseAnm(ANM_FILE_MUSIC_1);
     g_Chain.Cut(arg->drawChain);
     arg->drawChain = NULL;
     return ZUN_SUCCESS;

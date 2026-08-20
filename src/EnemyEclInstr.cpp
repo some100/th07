@@ -1,5 +1,6 @@
 #include "EnemyEclInstr.hpp"
 
+#include "AnmIdx.hpp"
 #include "BulletManager.hpp"
 #include "EnemyManager.hpp"
 #include "GameManager.hpp"
@@ -401,10 +402,9 @@ void EnemyEclInstr::ExInsReflectBulletsFromLasers(Enemy *enemy, EclRawInstr *ins
                             g_Supervisor.effectiveFramerateMultiplier * bullet->speed);
                         bullet->state2 = 10;
                         bullet->sprites = g_BulletManager.bulletTypeTemplates[5];
-                        g_AnmManager->SetActiveSprite(
-                            &bullet->sprites.spriteBullet,
-                            (i32)bullet->sprites.spriteBullet.activeSpriteIdx +
-                                (i32)bullet->spriteOffset);
+                        g_AnmManager->SetActiveSprite(&bullet->sprites.spriteBullet,
+                                                      bullet->sprites.spriteBullet.activeSpriteIdx +
+                                                          bullet->spriteOffset);
                     }
                 }
             }
@@ -531,10 +531,11 @@ void EnemyEclInstr::ExInsYoumuSetGameSpeed(Enemy *enemy, EclRawInstr *instr)
 
         bullet->velocity *= g_Supervisor.effectiveFramerateMultiplier;
         bullet->sprites.spriteBullet.baseSpriteIdx = bullet->sprites.spriteBullet.activeSpriteIdx;
-        if (bullet->sprites.spriteBullet.activeSpriteIdx >= 608 &&
-            bullet->sprites.spriteBullet.activeSpriteIdx <= 623)
+        if (bullet->sprites.spriteBullet.activeSpriteIdx >= ANM_SPRITE_BULLETS_ARROWHEAD &&
+            bullet->sprites.spriteBullet.activeSpriteIdx <= ANM_SPRITE_BULLETS_ARROWHEAD_WHITE)
         {
-            g_AnmManager->SetActiveSprite(&bullet->sprites.spriteBullet, 623);
+            g_AnmManager->SetActiveSprite(&bullet->sprites.spriteBullet,
+                                          ANM_SPRITE_BULLETS_ARROWHEAD_WHITE);
         }
     }
 }
@@ -557,8 +558,8 @@ void EnemyEclInstr::ExInsYoumuRestoreGameSpeed(Enemy *enemy, EclRawInstr *instr)
         }
 
         bullet->velocity *= fps;
-        if (bullet->sprites.spriteBullet.activeSpriteIdx >= 608 &&
-            bullet->sprites.spriteBullet.activeSpriteIdx <= 623)
+        if (bullet->sprites.spriteBullet.activeSpriteIdx >= ANM_SPRITE_BULLETS_ARROWHEAD &&
+            bullet->sprites.spriteBullet.activeSpriteIdx <= ANM_SPRITE_BULLETS_ARROWHEAD_WHITE)
         {
             g_AnmManager->SetActiveSprite(&bullet->sprites.spriteBullet,
                                           bullet->sprites.spriteBullet.baseSpriteIdx);
@@ -719,8 +720,9 @@ void EnemyEclInstr::ExInsYuyukoTransformButterflyBullets(Enemy *enemy, EclRawIns
         {
             continue;
         }
-        if (bullet->state2 == 0 && bullet->sprites.spriteBullet.activeSpriteIdx >= 632 &&
-            bullet->sprites.spriteBullet.activeSpriteIdx <= 639)
+        if (bullet->state2 == 0 &&
+            bullet->sprites.spriteBullet.activeSpriteIdx >= ANM_SPRITE_BULLETS_BUTTERFLY &&
+            bullet->sprites.spriteBullet.activeSpriteIdx <= ANM_SPRITE_BULLETS_BUTTERFLY_WHITE)
         {
             bulletProps.pos = bullet->pos;
             bulletProps.sprite = 0;
@@ -757,7 +759,8 @@ void EnemyEclInstr::ExInsYuyukoButterflySpawnEnemy(Enemy *enemy, EclRawInstr *in
             continue;
         }
 
-        if (bullet->state2 == 0 && bullet->sprites.spriteBullet.activeSpriteIdx == 636)
+        if (bullet->state2 == 0 &&
+            bullet->sprites.spriteBullet.activeSpriteIdx == ANM_SPRITE_BULLETS_BUTTERFLY_LBLUE)
         {
             args.floatVars1[0] = bullet->angle;
             args.floatVars1[7] = angleOffset;
@@ -766,8 +769,8 @@ void EnemyEclInstr::ExInsYuyukoButterflySpawnEnemy(Enemy *enemy, EclRawInstr *in
                                         &args);
             bullet->Initialize();
         }
-        else if (bullet->sprites.spriteBullet.activeSpriteIdx >= 632 &&
-                 bullet->sprites.spriteBullet.activeSpriteIdx <= 639)
+        else if (bullet->sprites.spriteBullet.activeSpriteIdx >= ANM_SPRITE_BULLETS_BUTTERFLY &&
+                 bullet->sprites.spriteBullet.activeSpriteIdx <= ANM_SPRITE_BULLETS_BUTTERFLY_WHITE)
         {
             bullet->Initialize();
         }
@@ -789,7 +792,8 @@ void EnemyEclInstr::ExInsYuyukoCountButterflyBullets(Enemy *enemy, EclRawInstr *
         {
             continue;
         }
-        if (bullet->state2 == 0 && bullet->sprites.spriteBullet.activeSpriteIdx == 636)
+        if (bullet->state2 == 0 &&
+            bullet->sprites.spriteBullet.activeSpriteIdx == ANM_SPRITE_BULLETS_BUTTERFLY_LBLUE)
         {
             enemy->currentContext.eclContextArgs.intVars1[0]++;
         }

@@ -16,12 +16,39 @@
 #include <algorithm>
 
 const BulletTypeInfo g_BulletTypeInfos[11] = {
-    {0x200, 0x212, 0x213, 0x214, 0x20f}, {0x201, 0x215, 0x216, 0x217, 0x210},
-    {0x202, 0x215, 0x216, 0x217, 0x210}, {0x203, 0x215, 0x216, 0x217, 0x210},
-    {0x204, 0x215, 0x216, 0x217, 0x210}, {0x205, 0x215, 0x216, 0x217, 0x210},
-    {0x206, 0x215, 0x216, 0x217, 0x210}, {0x207, 0x218, 0x218, 0x218, 0x211},
-    {0x208, 0x218, 0x218, 0x218, 0x211}, {0x209, 0x218, 0x218, 0x218, 0x211},
-    {0x2a8, 0x2aa, 0x2aa, 0x2aa, 0x2a9},
+    {ANM_SCRIPT_BULLETS_PELLET, ANM_SCRIPT_BULLETS_PELLET_SPAWN_FAST,
+     ANM_SCRIPT_BULLETS_PELLET_SPAWN_NORMAL, ANM_SCRIPT_BULLETS_PELLET_SPAWN_SLOW,
+     ANM_SCRIPT_BULLETS_SPAWN_DONUT_SMALL},
+    {ANM_SCRIPT_BULLETS_RING_BALL, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_FAST,
+     ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_NORMAL, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_SLOW,
+     ANM_SCRIPT_BULLETS_SPAWN_DONUT_MEDIUM},
+    {ANM_SCRIPT_BULLETS_RICE, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_FAST,
+     ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_NORMAL, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_SLOW,
+     ANM_SCRIPT_BULLETS_SPAWN_DONUT_MEDIUM},
+    {ANM_SCRIPT_BULLETS_BALL, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_FAST,
+     ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_NORMAL, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_SLOW,
+     ANM_SCRIPT_BULLETS_SPAWN_DONUT_MEDIUM},
+    {ANM_SCRIPT_BULLETS_KUNAI, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_FAST,
+     ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_NORMAL, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_SLOW,
+     ANM_SCRIPT_BULLETS_SPAWN_DONUT_MEDIUM},
+    {ANM_SCRIPT_BULLETS_SHARD, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_FAST,
+     ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_NORMAL, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_SLOW,
+     ANM_SCRIPT_BULLETS_SPAWN_DONUT_MEDIUM},
+    {ANM_SCRIPT_BULLETS_ARROWHEAD, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_FAST,
+     ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_NORMAL, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_SLOW,
+     ANM_SCRIPT_BULLETS_SPAWN_DONUT_MEDIUM},
+    {ANM_SCRIPT_BULLETS_BIG_BALL, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_HUGE,
+     ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_HUGE, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_HUGE,
+     ANM_SCRIPT_BULLETS_SPAWN_DONUT_BIG},
+    {ANM_SCRIPT_BULLETS_BUTTERFLY, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_HUGE,
+     ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_HUGE, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_HUGE,
+     ANM_SCRIPT_BULLETS_SPAWN_DONUT_BIG},
+    {ANM_SCRIPT_BULLETS_KNIFE, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_HUGE,
+     ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_HUGE, ANM_SCRIPT_BULLETS_BIG_BALL_SPAWN_HUGE,
+     ANM_SCRIPT_BULLETS_SPAWN_DONUT_BIG},
+    {ANM_SCRIPT_BULLETS_BUBBLE, ANM_SCRIPT_BULLETS_BUBBLE_SPAWN_SLOW,
+     ANM_SCRIPT_BULLETS_BUBBLE_SPAWN_SLOW, ANM_SCRIPT_BULLETS_BUBBLE_SPAWN_SLOW,
+     ANM_SCRIPT_BULLETS_BUBBLE_SPAWN_NORMAL},
 };
 
 u32 g_BulletColorsArray[28] = {
@@ -195,22 +222,21 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x, i32
     bullet->sprites.collisionType = bulletProps->sprites->collisionType;
     bullet->soundIdx = bulletProps->soundOverride;
     bullet->spawnDelay = 0;
-    if ((i32)bullet->sprites.spriteBullet.activeSpriteIdx !=
-        (i32)bulletProps->sprites->spriteBullet.activeSpriteIdx + (i32)bulletProps->spriteOffset)
+    if (bullet->sprites.spriteBullet.activeSpriteIdx !=
+        bulletProps->sprites->spriteBullet.activeSpriteIdx + bulletProps->spriteOffset)
     {
         g_AnmManager->SetActiveSprite(&bullet->sprites.spriteBullet,
-                                      (i32)bulletProps->sprites->spriteBullet.activeSpriteIdx +
-                                          (i32)bulletProps->spriteOffset);
+                                      bulletProps->sprites->spriteBullet.activeSpriteIdx +
+                                          bulletProps->spriteOffset);
     }
-    if ((i32)bullet->sprites.spriteSpawnEffectDonut.activeSpriteIdx !=
-        (i32)bulletProps->sprites->spriteSpawnEffectDonut.activeSpriteIdx +
-            (i32)bulletProps->spriteOffset)
+    if (bullet->sprites.spriteSpawnEffectDonut.activeSpriteIdx !=
+        bulletProps->sprites->spriteSpawnEffectDonut.activeSpriteIdx + bulletProps->spriteOffset)
     {
         if (bullet->sprites.spriteBullet.sprite->heightPx <= 16.0f)
         {
             g_AnmManager->SetActiveSprite(
                 &bullet->sprites.spriteSpawnEffectDonut,
-                (i32)bulletProps->sprites->spriteSpawnEffectDonut.activeSpriteIdx +
+                bulletProps->sprites->spriteSpawnEffectDonut.activeSpriteIdx +
                     g_BulletSpriteOffset16Px[bulletProps->spriteOffset]);
         }
         else
@@ -219,15 +245,15 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x, i32
             {
                 g_AnmManager->SetActiveSprite(
                     &bullet->sprites.spriteSpawnEffectDonut,
-                    (i32)bulletProps->sprites->spriteSpawnEffectDonut.activeSpriteIdx +
+                    bulletProps->sprites->spriteSpawnEffectDonut.activeSpriteIdx +
                         g_BulletSpriteOffset32Px[bulletProps->spriteOffset]);
             }
             else
             {
                 g_AnmManager->SetActiveSprite(
                     &bullet->sprites.spriteSpawnEffectDonut,
-                    (i32)bulletProps->sprites->spriteSpawnEffectDonut.activeSpriteIdx +
-                        (i32)bulletProps->spriteOffset);
+                    bulletProps->sprites->spriteSpawnEffectDonut.activeSpriteIdx +
+                        bulletProps->spriteOffset);
             }
         }
     }
@@ -327,9 +353,9 @@ void Bullet::RunCommands()
             this->commandStates[1].angle = cmd->angle > -990.0f ? cmd->angle : this->angle;
             this->commandStates[1].timer = 0;
             this->commandStates[1].duration = cmd->duration;
-            this->commandStates[1].vec3.FromAngleMagnitude(this->commandStates[1].angle,
-                                                           g_Supervisor.effectiveFramerateMultiplier *
-                                                               this->commandStates[1].speed);
+            this->commandStates[1].vec3.FromAngleMagnitude(
+                this->commandStates[1].angle,
+                g_Supervisor.effectiveFramerateMultiplier * this->commandStates[1].speed);
             if (this->curCmdIdx != 0 && this->soundIdx >= 0)
             {
                 g_SoundPlayer.PlaySoundByIdx(this->soundIdx, 0);
@@ -601,11 +627,13 @@ Laser *BulletManager::SpawnLaserPattern(EnemyLaserShooter *laserShooter)
             continue;
         }
 
-        g_AnmManager->SetAnmIdxAndExecuteScript(&laser->vm0, laserShooter->sprite + 522);
-        g_AnmManager->SetActiveSprite(&laser->vm0, (i32)laser->vm0.activeSpriteIdx +
-                                                       (i32)laserShooter->spriteOffset);
+        g_AnmManager->SetAnmIdxAndExecuteScript(&laser->vm0,
+                                                laserShooter->sprite + ANM_SCRIPT_BULLETS_LASER);
+        g_AnmManager->SetActiveSprite(&laser->vm0,
+                                      laser->vm0.activeSpriteIdx + laserShooter->spriteOffset);
         g_AnmManager->InitializeAndSetActiveSprite(
-            &laser->vm1, g_BulletSpriteOffset16Px[laserShooter->spriteOffset] + 658);
+            &laser->vm1,
+            g_BulletSpriteOffset16Px[laserShooter->spriteOffset] + ANM_SPRITE_BULLETS_ORB);
         laser->vm1.blendMode = 1;
         laser->prevPos = laser->pos = laserShooter->pos;
         laser->color = laserShooter->spriteOffset;
@@ -649,8 +677,8 @@ void Bullet::UpdateBulletBurstSpeed()
     if (this->commandStates[0].timer <= 16)
     {
         f32 local_8 = 5.0f - this->commandStates[0].timer.AsFloat() * 5.0f / 16.0f;
-        this->velocity.FromAngleMagnitude(this->angle,
-                                          (local_8 + this->speed) * g_Supervisor.effectiveFramerateMultiplier);
+        this->velocity.FromAngleMagnitude(
+            this->angle, (local_8 + this->speed) * g_Supervisor.effectiveFramerateMultiplier);
     }
     else
     {
@@ -685,10 +713,8 @@ void Bullet::UpdateBulletTargetAngle()
     else
     {
         this->angle = utils::AddNormalizeAngle(
-            this->angle, this->commandStates[2].angle *
-                             g_Supervisor.effectiveFramerateMultiplier);
-        this->speed += this->commandStates[2].speed *
-                       g_Supervisor.effectiveFramerateMultiplier;
+            this->angle, this->commandStates[2].angle * g_Supervisor.effectiveFramerateMultiplier);
+        this->speed += this->commandStates[2].speed * g_Supervisor.effectiveFramerateMultiplier;
         this->velocity.FromAngleMagnitude(this->angle,
                                           this->speed * g_Supervisor.effectiveFramerateMultiplier);
     }
@@ -1364,7 +1390,7 @@ ZunResult BulletManager::AddedCallback(BulletManager *arg)
         }
     }
 
-    for (i = 0; i < 11; i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(g_BulletTypeInfos); i++)
     {
         g_AnmManager->SetAnmIdxAndExecuteScript(&arg->bulletTypeTemplates[i].spriteBullet,
                                                 g_BulletTypeInfos[i].anmFileIdx);
@@ -1461,10 +1487,10 @@ ZunResult BulletManager::DeletedCallback(BulletManager *arg)
               g_Supervisor.curState != SUPERVISOR_STATE_RESTART_STAGE &&
               g_Supervisor.curState != SUPERVISOR_STATE_NEXT_STAGE_USELESS))
     {
-        g_AnmManager->ReleaseAnm(11);
-        g_AnmManager->ReleaseAnm(12);
-        g_AnmManager->ReleaseAnm(13);
-        g_AnmManager->ReleaseAnm(14);
+        g_AnmManager->ReleaseAnm(ANM_FILE_BULLETS_0);
+        g_AnmManager->ReleaseAnm(ANM_FILE_BULLETS_1);
+        g_AnmManager->ReleaseAnm(ANM_FILE_BULLETS_2);
+        g_AnmManager->ReleaseAnm(ANM_FILE_BULLETS_3);
     }
     return ZUN_SUCCESS;
 }

@@ -501,7 +501,7 @@ void AnmManager::ReleaseAnm(i32 anmIdx)
 
 void AnmManager::ReleaseTexture(i32 textureIdx)
 {
-    if (textureIdx < 0 || (u32)textureIdx >= 264)
+    if (textureIdx < 0 || textureIdx >= ARRAY_SIZE(this->textures))
     {
         return;
     }
