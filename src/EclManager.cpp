@@ -2132,7 +2132,7 @@ restart:
                 }
                 g_EnemyManager.timer++;
             }
-            if (enemy->isBoss && g_GameManager.currentStage >= 7)
+            if (enemy->isBoss && g_GameManager.currentStage >= EXTRASTAGE)
             {
                 if (g_Player.bombInfo.isInUse && g_EnemyManager.spellcardInfo.isActive &&
                     g_EnemyManager.spellcardInfo.spellcardIdx >= SPELLCARD_EX_BOSS_1)

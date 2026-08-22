@@ -50,9 +50,9 @@ u32 ReplayManager::OnUpdate(ReplayManager *arg)
     }
 
     stage = g_GameManager.currentStage - 1;
-    if (stage >= 7)
+    if (stage >= REPLAY_STAGE_COUNT) // PHANTASMSTAGE
     {
-        stage = 6;
+        stage = 6; // EXTRASTAGE
     }
     g_CurFrameGameInput = curInput = g_CurFrameRawInput;
     arg->replayInputs++;
@@ -160,7 +160,7 @@ ZunResult ReplayManager::AddedCallback(ReplayManager *arg)
         arg->data->data.difficulty = g_GameManager.difficulty;
         memcpy(arg->data->data.name, "NO NAME", 4);
         arg->data->data.cfg = *g_GameManager.defaultCfg;
-        for (i = 0; i < 7; i++)
+        for (i = 0; i < REPLAY_STAGE_COUNT; i++)
         {
             arg->data->stageReplayData[i] = NULL;
             arg->data->stageEndData[i] = NULL;
@@ -175,9 +175,9 @@ ZunResult ReplayManager::AddedCallback(ReplayManager *arg)
         }
     }
     i = g_GameManager.currentStage - 1;
-    if (i >= 7)
+    if (i >= REPLAY_STAGE_COUNT) // PHANTASMSTAGE
     {
-        i = 6;
+        i = 6; // EXTRASTAGE
     }
     SAFE_FREE(arg->data->stageReplayData[i]);
     SAFE_FREE(arg->data->stageEndData[i]);
@@ -333,7 +333,7 @@ ZunResult ReplayManager::AddedCallbackDemo(ReplayManager *arg)
             return ZUN_ERROR;
         }
         arg->unused_40 = NULL;
-        for (i = 0; i < 7; i++)
+        for (i = 0; i < REPLAY_STAGE_COUNT; i++)
         {
             arg->stageReplayDataSize[i] = 0;
             arg->stageEndDataSize[i] = 0;
@@ -377,9 +377,9 @@ ZunResult ReplayManager::AddedCallbackDemo(ReplayManager *arg)
         }
     }
     i = g_GameManager.currentStage - 1;
-    if (i >= 7)
+    if (i >= REPLAY_STAGE_COUNT) // PHANTASMSTAGE
     {
-        i = 6;
+        i = 6; // EXTRASTAGE
     }
     if (!arg->data->stageReplayData[i])
     {
@@ -419,7 +419,7 @@ ZunResult ReplayManager::AddedCallbackDemo(ReplayManager *arg)
         replayData->nextNeededPointItemsForExtend;
     arg->stageReplayData = endData;
     arg->fpsCursor = (u8 *)&endData->score;
-    if (g_GameManager.currentStage >= 2 && g_GameManager.currentStage <= 6 &&
+    if (g_GameManager.currentStage >= STAGE2 && g_GameManager.currentStage <= STAGE6 &&
         arg->data->stageReplayData[g_GameManager.currentStage - 2])
     {
         g_GameManager.globals->guiScore = g_GameManager.globals->score =
@@ -543,9 +543,9 @@ void ReplayManager::StopRecording()
         mgr->replayInputs++;
         mgr->replayInputs->frameNum = 0;
         i32 stage = g_GameManager.currentStage - 1;
-        if (stage >= 7)
+        if (stage >= REPLAY_STAGE_COUNT) // PHANTASMSTAGE
         {
-            stage = 6;
+            stage = 6; // EXTRASTAGE
         }
         mgr->replayInputsByStage[stage] = mgr->replayInputs + 1;
     }
@@ -589,14 +589,14 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
                 replayCopy = *mgr->data;
                 StopRecording();
                 i = g_GameManager.currentStage - 1;
-                if (i >= 7)
+                if (i >= REPLAY_STAGE_COUNT) // PHANTASMSTAGE
                 {
-                    i = 6;
+                    i = 6; // EXTRASTAGE
                 }
                 mgr->data->stageReplayData[i]->score = g_GameManager.globals->score;
                 replaySize = sizeof(ReplayHeader);
                 replaySize += sizeof(ReplayData);
-                for (i = 0; i < 7; i++)
+                for (i = 0; i < REPLAY_STAGE_COUNT; i++)
                 {
                     if (mgr->data->stageReplayData[i])
                     {
@@ -608,7 +608,7 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
                         replaySize += stageSize;
                     }
                 }
-                for (i = 0; i < 7; i++)
+                for (i = 0; i < REPLAY_STAGE_COUNT; i++)
                 {
                     if (mgr->data->stageEndData[i])
                     {
@@ -685,7 +685,7 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
                 }
             }
         SKIP_WRITE:
-            for (i = 0; i < 7; i++)
+            for (i = 0; i < REPLAY_STAGE_COUNT; i++)
             {
                 SAFE_FREE(g_ReplayManager->data->stageReplayData[i]);
                 SAFE_FREE(g_ReplayManager->data->stageEndData[i]);
@@ -729,14 +729,14 @@ void ReplayManager::SaveReplay2(const char *filename)
             replayData = (u8 *)malloc(0x100000);
             replayCopy = *mgr->data;
             i = g_GameManager.currentStage - 1;
-            if (i >= 7)
+            if (i >= REPLAY_STAGE_COUNT) // PHANTASMSTAGE
             {
-                i = 6;
+                i = 6; // EXTRASTAGE
             }
             mgr->data->stageReplayData[i]->score = g_GameManager.globals->score;
             replaySize = sizeof(ReplayHeader);
             replaySize += sizeof(ReplayData);
-            for (i = 0; i < 7; i++)
+            for (i = 0; i < REPLAY_STAGE_COUNT; i++)
             {
                 if (mgr->data->stageReplayData[i])
                 {
@@ -747,7 +747,7 @@ void ReplayManager::SaveReplay2(const char *filename)
                     replaySize += stageSize;
                 }
             }
-            for (i = 0; i < 7; i++)
+            for (i = 0; i < REPLAY_STAGE_COUNT; i++)
             {
                 if (mgr->data->stageEndData[i])
                 {

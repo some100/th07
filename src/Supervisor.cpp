@@ -238,7 +238,7 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
                 GameManager::CutChain();
                 if (!g_GameManager.practice && g_GameManager.difficulty < 4)
                 {
-                    g_GameManager.currentStage = 0;
+                    g_GameManager.currentStage = DUMMYSTAGE;
                 }
                 else
                 {

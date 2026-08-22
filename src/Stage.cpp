@@ -665,70 +665,70 @@ ZunResult Stage::AddedCallback(Stage *arg)
     arg->skyFogInterpDuration = 0;
     switch (g_GameManager.currentStage)
     {
-    case 1:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG1, "data/stg1bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+    case STAGE1:
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg1bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
         break;
-    case 2:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG1, "data/stg2bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+    case STAGE2:
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg2bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
         break;
-    case 3:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG1, "data/stg3bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+    case STAGE3:
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg3bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
         break;
-    case 4:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG1, "data/stg4bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+    case STAGE4:
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg4bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
 
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG2, "data/stg4bg2.anm", ANM_OFFSET_STAGE4_BG2) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE4_BG2, "data/stg4bg2.anm", ANM_OFFSET_STAGE4_BG2) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
 
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG3, "data/stg4bg3.anm", ANM_OFFSET_STAGE4_BG3) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE4_BG3, "data/stg4bg3.anm", ANM_OFFSET_STAGE4_BG3) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
 
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG4, "data/stg4bg4.anm", ANM_OFFSET_STAGE4_BG4) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE4_BG4, "data/stg4bg4.anm", ANM_OFFSET_STAGE4_BG4) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
 
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG5, "data/stg4bg5.anm", ANM_OFFSET_STAGE4_BG5) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE4_BG5, "data/stg4bg5.anm", ANM_OFFSET_STAGE4_BG5) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
         break;
-    case 5:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG1, "data/stg5bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+    case STAGE5:
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg5bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
         break;
-    case 6:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG1, "data/stg6bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+    case STAGE6:
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg6bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
         break;
-    case 7:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG1, "data/stg7bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+    case EXTRASTAGE:
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg7bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
         break;
-    case 8:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG1, "data/stg8bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+    case PHANTASMSTAGE:
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg8bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
@@ -759,11 +759,11 @@ ZunResult Stage::AddedCallback(Stage *arg)
 
 ZunResult Stage::DeletedCallback(Stage *arg)
 {
-    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE_BG1);
-    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE_BG2);
-    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE_BG3);
-    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE_BG4);
-    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE_BG5);
+    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE_BG);
+    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE4_BG2);
+    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE4_BG3);
+    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE4_BG4);
+    g_AnmManager->ReleaseAnm(ANM_FILE_STAGE4_BG5);
     SAFE_DELETE_ARRAY(arg->objects);
     SAFE_FREE(arg->quadVms);
     SAFE_FREE(arg->stdData);

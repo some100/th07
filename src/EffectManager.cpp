@@ -833,8 +833,8 @@ ZunResult EffectManager::AddedCallback(EffectManager *arg)
     g_Stage.spellcardVmsIdx = 0;
     switch (g_GameManager.currentStage)
     {
-    case 0:
-    case 1:
+    case DUMMYSTAGE:
+    case STAGE1:
         g_Stage.numSpellcardVms = 1;
         if (g_AnmManager->LoadAnms(ANM_FILE_EFFECTS, "data/eff01.anm", ANM_OFFSET_EFFECTS) !=
             ZUN_SUCCESS)
@@ -842,7 +842,7 @@ ZunResult EffectManager::AddedCallback(EffectManager *arg)
             return ZUN_ERROR;
         }
         break;
-    case 2:
+    case STAGE2:
         g_Stage.numSpellcardVms = 1;
         if (g_AnmManager->LoadAnms(ANM_FILE_EFFECTS, "data/eff02.anm", ANM_OFFSET_EFFECTS) !=
             ZUN_SUCCESS)
@@ -850,7 +850,7 @@ ZunResult EffectManager::AddedCallback(EffectManager *arg)
             return ZUN_ERROR;
         }
         break;
-    case 3:
+    case STAGE3:
         g_Stage.numSpellcardVms = 1;
         if (g_AnmManager->LoadAnms(ANM_FILE_EFFECTS, "data/eff03.anm", ANM_OFFSET_EFFECTS) !=
             ZUN_SUCCESS)
@@ -858,7 +858,7 @@ ZunResult EffectManager::AddedCallback(EffectManager *arg)
             return ZUN_ERROR;
         }
         break;
-    case 4:
+    case STAGE4:
         g_Stage.numSpellcardVms = 2;
         if (g_AnmManager->LoadAnms(ANM_FILE_EFFECTS, "data/eff04.anm", ANM_OFFSET_EFFECTS) !=
             ZUN_SUCCESS)
@@ -871,7 +871,7 @@ ZunResult EffectManager::AddedCallback(EffectManager *arg)
             return ZUN_ERROR;
         }
         break;
-    case 5:
+    case STAGE5:
         g_Stage.numSpellcardVms = 2;
         if (g_AnmManager->LoadAnms(ANM_FILE_EFFECTS, "data/eff05.anm", ANM_OFFSET_EFFECTS) !=
             ZUN_SUCCESS)
@@ -879,7 +879,7 @@ ZunResult EffectManager::AddedCallback(EffectManager *arg)
             return ZUN_ERROR;
         }
         break;
-    case 6:
+    case STAGE6:
         g_Stage.numSpellcardVms = 2;
         if (g_AnmManager->LoadAnms(ANM_FILE_EFFECTS, "data/eff05.anm", ANM_OFFSET_EFFECTS) !=
             ZUN_SUCCESS)
@@ -892,7 +892,7 @@ ZunResult EffectManager::AddedCallback(EffectManager *arg)
             return ZUN_ERROR;
         }
         break;
-    case 7:
+    case EXTRASTAGE:
         g_Stage.numSpellcardVms = 1;
         if (g_AnmManager->LoadAnms(ANM_FILE_EFFECTS, "data/eff02.anm", ANM_OFFSET_EFFECTS) !=
             ZUN_SUCCESS)
@@ -905,7 +905,7 @@ ZunResult EffectManager::AddedCallback(EffectManager *arg)
             return ZUN_ERROR;
         }
         break;
-    case 8:
+    case PHANTASMSTAGE:
         g_Stage.numSpellcardVms = 2;
         if (g_AnmManager->LoadAnms(ANM_FILE_EFFECTS, "data/eff07.anm", ANM_OFFSET_EFFECTS) !=
             ZUN_SUCCESS)

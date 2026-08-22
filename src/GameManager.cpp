@@ -161,7 +161,7 @@ void GameManager::Pause()
     g_Player.prevOptionsPosition[1] = g_Player.optionsPosition[1];
     g_Stage.prevCam = g_Stage.cam;
     g_Stage.prevPos = g_Stage.pos;
-    if (g_GameManager.currentStage != 6 || g_Gui.frameCounter >= 300)
+    if (g_GameManager.currentStage != STAGE6 || g_Gui.frameCounter >= 300)
     {
         g_SoundPlayer.PushCommand(AUDIO_PAUSE, 0, "Pause");
     }
@@ -211,8 +211,7 @@ u32 GameManager::OnUpdate(GameManager *arg)
             (arg->demoIdx == 1 && arg->demoFrames == 7020) ||
             (arg->demoIdx == 2 && arg->demoFrames == 4620))
         {
-            ScreenEffect::RegisterChain(
-                SCREEN_EFFECT_FADE_IN_PLAY_AREA, 120, 0, 0, 0);
+            ScreenEffect::RegisterChain(SCREEN_EFFECT_FADE_IN_PLAY_AREA, 120, 0, 0, 0);
             g_Supervisor.FadeOutMusic(3.0f);
         }
         if ((arg->demoIdx == 0 && arg->demoFrames >= 8220) ||
@@ -611,22 +610,22 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
             }
             switch (arg->currentStage + 1)
             {
-            case 2:
+            case STAGE2:
                 arg->cherry = arg->cherryMax;
                 break;
-            case 3:
+            case STAGE3:
                 arg->cherryMax += 50000;
                 arg->cherry = arg->cherryMax;
                 break;
-            case 4:
+            case STAGE4:
                 arg->cherryMax += 100000;
                 arg->cherry = arg->cherryMax;
                 break;
-            case 5:
+            case STAGE5:
                 arg->cherryMax += 150000;
                 arg->cherry = arg->cherryMax;
                 break;
-            case 6:
+            case STAGE6:
                 arg->cherryMax += 200000;
                 arg->cherry = arg->cherryMax;
                 break;
@@ -687,7 +686,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
     arg->globals->pointItemsCollectedThisStage = 0;
     arg->globals->grazeInStage = 0;
     arg->isInPauseMenu = 0;
-    arg->currentStage = arg->currentStage + 1;
+    arg->currentStage++;
     if (!g_GameManager.replay)
     {
         shotTypeAndChar = g_GameManager.shotTypeAndCharacter;
@@ -709,7 +708,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
     {
         switch (arg->currentStage)
         {
-        case 1:
+        case STAGE1:
             break;
         default:
             arg->globals->currentPower = 128.0f;
@@ -770,7 +769,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
     }
     g_Supervisor.LoadAudio(0, g_Stage.stdData->bgmPaths[0]);
     g_Supervisor.LoadAudio(1, g_Stage.stdData->bgmPaths[1]);
-    if (arg->currentStage != 6)
+    if (arg->currentStage != STAGE6)
     {
         g_Supervisor.PlayLoadedAudio(0);
     }
@@ -965,8 +964,7 @@ i32 GameManager::HasUnlockedPhantom(i32 shotType)
             numSuccesses++;
         }
     }
-    if (numSuccesses >= 60 &&
-        this->clrd[shotType].difficultyClearedWithRetries[DIFF_EXTRA] == 99)
+    if (numSuccesses >= 60 && this->clrd[shotType].difficultyClearedWithRetries[DIFF_EXTRA] == 99)
     {
         this->clrd[shotType].difficultyClearedWithRetries[DIFF_PHANTASM] = 99;
     }
@@ -975,12 +973,9 @@ i32 GameManager::HasUnlockedPhantom(i32 shotType)
 
 i32 GameManager::HasReachedMaxClearsAllShotTypes()
 {
-    return !HasReachedMaxClears(SHOT_REIMU_A) &&
-                   !HasReachedMaxClears(SHOT_REIMU_B) &&
-                   !HasReachedMaxClears(SHOT_MARISA_A) &&
-                   !HasReachedMaxClears(SHOT_MARISA_B) &&
-                   !HasReachedMaxClears(SHOT_SAKUYA_A) &&
-                   !HasReachedMaxClears(SHOT_SAKUYA_B)
+    return !HasReachedMaxClears(SHOT_REIMU_A) && !HasReachedMaxClears(SHOT_REIMU_B) &&
+                   !HasReachedMaxClears(SHOT_MARISA_A) && !HasReachedMaxClears(SHOT_MARISA_B) &&
+                   !HasReachedMaxClears(SHOT_SAKUYA_A) && !HasReachedMaxClears(SHOT_SAKUYA_B)
                ? 0
                : 1;
 }
