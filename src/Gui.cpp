@@ -950,7 +950,8 @@ ZunResult GuiImpl::RunMsg()
             g_Supervisor.FadeOutMusic(4.0f);
             break;
         case MSG_FADE_IN_EFFECT:
-            BombEffects::RegisterChain(4, 0x192, 0xffffff, 0, 0);
+            ScreenEffect::RegisterChain(
+                SCREEN_EFFECT_FADE_IN_FULLSCREEN, 0x192, 0xffffff, 0, 0);
             g_Supervisor.renderSkipFrames = 0x192;
             break;
         case MSG_NEXT_LEVEL:
@@ -1366,8 +1367,8 @@ void Gui::DrawGameScene()
     g_AnmManager->Flush();
     g_Supervisor.viewport.x = 0;
     g_Supervisor.viewport.y = 0;
-    g_Supervisor.viewport.width = 640;
-    g_Supervisor.viewport.height = 480;
+    g_Supervisor.viewport.width = GAME_WINDOW_WIDTH;
+    g_Supervisor.viewport.height = GAME_WINDOW_HEIGHT;
     g_Supervisor.gfxDevice->SetViewport(g_Supervisor.viewport);
     vm = &this->impl->vms0[12];
     if (g_Supervisor.cfg.redrawEveryFrame || vm->currentInstruction ||
@@ -1788,7 +1789,7 @@ void Gui::DrawStageElements()
         if (secondsRemaining < 10 &&
             this->lastSpellcardSecondsRemaining != this->spellcardSecondsRemaining)
         {
-            g_SoundPlayer.PlaySoundByIdx(SOUND_29, 0);
+            g_SoundPlayer.PlaySoundByIdx(SOUND_LOW_SPELL_TIME_WARNING, 0);
         }
         AsciiManager::AddFormatText(&g_AsciiManager, &timerPos, "%.2d", secondsRemaining);
         g_AsciiManager.color = 0xffffffff;

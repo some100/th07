@@ -113,7 +113,7 @@ u32 Ending::OnDraw(Ending *arg)
     f32 drawX = utils::Lerp(arg->prevBackgroundPos.x, arg->backgroundPos.x, g_RenderAlpha);
     f32 drawY = utils::Lerp(arg->prevBackgroundPos.y, arg->backgroundPos.y, g_RenderAlpha);
 
-    g_AnmManager->DrawEndingRect(0, 0, 0, drawX, drawY, 640, 480);
+    g_AnmManager->DrawEndingRect(0, 0, 0, drawX, drawY, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT);
     for (i32 i = 0; i < MAX_ENDING_SPRITES; i++)
     {
         g_AnmManager->DrawInterp(&arg->sprites[i]);
@@ -142,8 +142,8 @@ void Ending::FadingEffect()
 
     rect.left = 0.0f;
     rect.top = 0.0f;
-    rect.right = 640.0f;
-    rect.bottom = 480.0f;
+    rect.right = (f32)GAME_WINDOW_WIDTH;
+    rect.bottom = (f32)GAME_WINDOW_HEIGHT;
     if ((this->endingFadeRectColor.color & 0xff000000) != 0 ||
         (this->prevEndingFadeRectColor.color & 0xff000000) != 0)
     {

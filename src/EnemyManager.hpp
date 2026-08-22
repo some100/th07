@@ -358,7 +358,7 @@ struct EnemyManager
         enemy->bulletRankSpeedLow = -0.15f;
         enemy->bulletRankSpeedHigh = 0.15f;
         enemy->bulletProps.soundIdx = SOUND_BOMB_MARISA_A_FOCUS;
-        enemy->bulletProps.soundOverride = SOUND_25;
+        enemy->bulletProps.soundOverride = SOUND_DIR_CHANGING;
     }
 
     const char *stgEnmAnmFilename;

@@ -177,16 +177,16 @@ struct MainMenu
 
     void UpdatePrev()
     {
-        if (this->vmHead)
+        if (this->vms)
         {
             for (i32 i = 0; i < this->vmCount; i++)
             {
-                this->vmHead[i].UpdatePrev();
+                this->vms[i].UpdatePrev();
             }
         }
-        for (i32 i = 0; i < 14; i++)
+        for (i32 i = 0; i < ARRAY_SIZE_SIGNED(this->descriptionVms); i++)
         {
-            this->vms[i].UpdatePrev();
+            this->descriptionVms[i].UpdatePrev();
         }
     }
 
@@ -206,9 +206,9 @@ struct MainMenu
     i32 chosenReplay;
     i32 selectedStage;
     i32 idleFrames;
-    AnmVm *vmHead;
-    AnmVm *cursorVm;
-    AnmVm vms[14];
+    AnmVm *vms;
+    AnmVm *curDescriptionVm;
+    AnmVm descriptionVms[14];
     i32 vmCount;
     i32 menuState;
     i32 stateTimer;

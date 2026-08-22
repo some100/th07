@@ -1183,7 +1183,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
             laser->inUse = 0;
             continue;
         }
-        if (laser->startOffset >= 640.0f)
+        if (laser->startOffset >= (f32)GAME_WINDOW_WIDTH)
         {
             laser->inUse = 0;
         }
@@ -1233,7 +1233,7 @@ void Bullet::Draw()
     if (vm->autoRotate)
     {
         vm->SetRotationZ(utils::AddNormalizeAngle(
-            1.5707964f + utils::LerpAngle(this->prevAngle, this->angle, g_RenderAlpha), 0.0f));
+            ZUN_PI / 2.0f + utils::LerpAngle(this->prevAngle, this->angle, g_RenderAlpha), 0.0f));
         vm->prevRotation.z = vm->rotation.z;
         vm->updateRotation = 1;
     }

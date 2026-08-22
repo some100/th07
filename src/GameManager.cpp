@@ -165,7 +165,7 @@ void GameManager::Pause()
     {
         g_SoundPlayer.PushCommand(AUDIO_PAUSE, 0, "Pause");
     }
-    g_SoundPlayer.PlaySoundByIdx(SOUND_37, 0);
+    g_SoundPlayer.PlaySoundByIdx(SOUND_PAUSED, 0);
     g_Supervisor.UpdateTime();
 }
 
@@ -211,7 +211,8 @@ u32 GameManager::OnUpdate(GameManager *arg)
             (arg->demoIdx == 1 && arg->demoFrames == 7020) ||
             (arg->demoIdx == 2 && arg->demoFrames == 4620))
         {
-            BombEffects::RegisterChain(2, 120, 0, 0, 0);
+            ScreenEffect::RegisterChain(
+                SCREEN_EFFECT_FADE_IN_PLAY_AREA, 120, 0, 0, 0);
             g_Supervisor.FadeOutMusic(3.0f);
         }
         if ((arg->demoIdx == 0 && arg->demoFrames >= 8220) ||
@@ -361,8 +362,8 @@ void GameManager::DrawLoadingSprite()
 
     rect.left = 0.0f;
     rect.top = 0.0f;
-    rect.right = 640.0f;
-    rect.bottom = 480.0f;
+    rect.right = (f32)GAME_WINDOW_WIDTH;
+    rect.bottom = (f32)GAME_WINDOW_HEIGHT;
     g_AnmManager->InitializeAndSetActiveSprite(&spriteVm, ANM_SPRITE_ASCII_LOADING);
     spritePos.x = 528.0f;
     spritePos.y = 448.0f;

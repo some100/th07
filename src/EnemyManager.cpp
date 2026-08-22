@@ -173,7 +173,8 @@ void Enemy::UpdateEffects()
         {
             effect->radius = effect->radius + 0.3f;
         }
-        effect->angularVelocity = utils::AddNormalizeAngle(effect->angularVelocity, 0.03141593f);
+        effect->angularVelocity =
+            utils::AddNormalizeAngle(effect->angularVelocity, ZUN_PI / 100.0f);
     }
 }
 
@@ -876,7 +877,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                         angle = atan2f(enemy->pos.y - g_Player.positionCenter.y,
                                        enemy->pos.x - g_Player.positionCenter.x);
 
-                        if (angle >= -2.0943952f && angle <= -1.0471976f &&
+                        if (angle >= -ZUN_2PI / 3.0f && angle <= -ZUN_PI / 3.0f &&
                             (!g_Player.targetingEnemy ||
                              fabsf(diffToPlayer.x) > fabsf(enemyDiff.x)))
                         {
@@ -900,7 +901,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                     {
                         angle = atan2f(enemy->pos.y - g_Player.positionCenter.y,
                                        enemy->pos.x - g_Player.positionCenter.x);
-                        if (angle >= -2.0943952f && angle <= -1.0471976f)
+                        if (angle >= -ZUN_2PI / 3.0f && angle <= -ZUN_PI / 3.0f)
                         {
                             g_Player.sakuyaTargetPosition = enemy->pos;
                         }
@@ -1019,7 +1020,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
         }
         else if (playedDamageSound != 0)
         {
-            g_SoundPlayer.PlaySoundByIdx(SOUND_20, 0);
+            g_SoundPlayer.PlaySoundByIdx(SOUND_ENEMY_DAMAGED, 0);
             enemy->primaryVm.color2.bytes.r = 255;
             enemy->primaryVm.color2.bytes.g = 128;
             enemy->primaryVm.color2.bytes.b = 192;

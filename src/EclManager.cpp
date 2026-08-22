@@ -652,7 +652,7 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
     {
         g_AnmManager->SetAnmIdxAndExecuteScript(&g_Stage.spellcardVms[i],
                                                 i + g_Stage.spellcardVmsIdx +
-                                                    ANM_SCRIPT_EFFECTS_SPELLCARD_ARRAY);
+                                                    ANM_SCRIPT_EFFECTS_SPELLCARD_BG_ARRAY);
     }
     g_EnemyManager.spellcardInfo.isActive = 1;
     g_EnemyManager.spellcardInfo.isCapturing = 1;
@@ -674,8 +674,8 @@ void EclManager::BeginSpellcard(Enemy *enemy, EclRawInstr *instr)
     enemy->specialEffect->vm.interpEndTimes[4] = enemy->timerCallbackThreshold;
     enemy->specialEffect->vm.easeModes[4] = 0;
     enemy->specialEffect->vm.scaleInterpInitial = enemy->specialEffect->vm.scale;
-    enemy->specialEffect->vm.scaleInterpFinal.x = 0.125;
-    enemy->specialEffect->vm.scaleInterpFinal.y = 0.125;
+    enemy->specialEffect->vm.scaleInterpFinal.x = 1.0f / 8.0f;
+    enemy->specialEffect->vm.scaleInterpFinal.y = 1.0f / 8.0f;
     enemy->specialEffect->pos1 = enemy->pos;
     enemy->customSpecialEffectPos = 0;
     if (!g_GameManager.replay)
@@ -1501,32 +1501,32 @@ restart:
                 if (g_Player.positionCenter.x < enemy->pos.x)
                 {
                     exitAngle = utils::AddNormalizeAngle(
-                        g_Rng.GetRandomFloatInRange(1.5707964f) + 2.3561945f, 0.0f);
+                        g_Rng.GetRandomFloatInRange(ZUN_PI / 2.0f) + ZUN_3PI / 4.0f, 0.0f);
                 }
                 else
                 {
-                    exitAngle = g_Rng.GetRandomFloatInRange(1.5707964f) - 0.7853982f;
+                    exitAngle = g_Rng.GetRandomFloatInRange(ZUN_PI / 2.0f) - ZUN_PI / 4.0f;
                 }
                 if (enemy->pos.x < enemy->lowerMoveLimit.x + 96.0f)
                 {
-                    if (exitAngle > 1.5707964f)
+                    if (exitAngle > ZUN_PI / 2.0f)
                     {
-                        exitAngle = 3.1415927f - exitAngle;
+                        exitAngle = ZUN_PI - exitAngle;
                     }
-                    else if (exitAngle < -1.5707964f)
+                    else if (exitAngle < -ZUN_PI / 2.0f)
                     {
-                        exitAngle = -3.1415927f - exitAngle;
+                        exitAngle = -ZUN_PI - exitAngle;
                     }
                 }
                 if (enemy->upperMoveLimit.x - 96.0f < enemy->pos.x)
                 {
-                    if (exitAngle < 1.5707964f && exitAngle >= 0.0f)
+                    if (exitAngle < ZUN_PI / 2.0f && exitAngle >= 0.0f)
                     {
-                        exitAngle = 3.1415927f - enemy->angle;
+                        exitAngle = ZUN_PI - enemy->angle;
                     }
-                    else if (exitAngle > -1.5707964f && exitAngle <= 0.0f)
+                    else if (exitAngle > -ZUN_PI / 2.0f && exitAngle <= 0.0f)
                     {
-                        exitAngle = -3.1415927f - exitAngle;
+                        exitAngle = -ZUN_PI - exitAngle;
                     }
                 }
                 if (enemy->lowerMoveLimit.y + 48.0f > enemy->pos.y && exitAngle < 0.0f)
@@ -1853,11 +1853,12 @@ restart:
                     enemy->pos.x > 288.0f)
                 {
                     *GET_FLOAT_PTR(enemy, 0) = utils::AddNormalizeAngle(
-                        g_Rng.GetRandomFloatInRange(1.5707964f) + 2.3561945f, 0.0f);
+                        g_Rng.GetRandomFloatInRange(ZUN_PI / 2.0f) + ZUN_3PI / 4.0f, 0.0f);
                 }
                 else
                 {
-                    *GET_FLOAT_PTR(enemy, 0) = g_Rng.GetRandomFloatInRange(1.5707964f) - 0.7853982f;
+                    *GET_FLOAT_PTR(enemy, 0) =
+                        g_Rng.GetRandomFloatInRange(ZUN_PI / 2.0f) - ZUN_PI / 4.0f;
                 }
                 break;
             case ECL_ADD_CHERRY_PLUS:

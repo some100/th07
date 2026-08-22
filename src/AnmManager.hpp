@@ -11,6 +11,9 @@
 #include "ZunResult.hpp"
 #include "graphics/ZunGraphics.hpp"
 
+#define GAME_WINDOW_WIDTH 640
+#define GAME_WINDOW_HEIGHT 480
+
 struct VertexDiffuseXyzrhw
 {
     ZunVec3 pos;
@@ -117,6 +120,11 @@ struct AnmEntry
     i32 childCount;
 };
 
+#define MAX_SCRIPTS_SPRITES 2560
+#define MAX_TEXTURES 264
+#define MAX_ANM_FILES 50
+#define MAX_SURFACES 32
+
 struct AnmManager
 {
     AnmManager();
@@ -187,7 +195,7 @@ struct AnmManager
 
     void ReleaseSurfaces()
     {
-        for (i32 i = 0; i < 32; i++)
+        for (i32 i = 0; i < MAX_SURFACES; i++)
         {
             if (this->surfaces[i])
             {
@@ -378,22 +386,22 @@ struct AnmManager
     Float2 shakeOffset;
     Float2 prevShakeOffset;
     ZunMatrix matrix;
-    AnmLoadedSprite sprites[2560];
+    AnmLoadedSprite sprites[MAX_SCRIPTS_SPRITES];
     AnmVm vm;
-    GfxTextureHandle textures[264];
+    GfxTextureHandle textures[MAX_TEXTURES];
     void *imageDataArray[256];
-    char *textureNames[264];
+    char *textureNames[MAX_TEXTURES];
     i32 loadedSpriteCount;
-    AnmRawInstr *scripts[2560];
-    i32 spriteIndices[2560];
-    AnmEntry anmFiles[50];
-    SDL_Surface *surfaces[32];
-    SDL_Surface *surfacesBis[32];
-    GfxTextureHandle surfaceTextures[32];
-    u32 textureWidths[264];
-    u32 textureHeights[264];
-    u32 texturePitches[264];
-    ZunImageInfo surfaceSourceInfo[32];
+    AnmRawInstr *scripts[MAX_SCRIPTS_SPRITES];
+    i32 spriteIndices[MAX_SCRIPTS_SPRITES];
+    AnmEntry anmFiles[MAX_ANM_FILES];
+    SDL_Surface *surfaces[MAX_SURFACES];
+    SDL_Surface *surfacesBis[MAX_SURFACES];
+    GfxTextureHandle surfaceTextures[MAX_SURFACES];
+    u32 textureWidths[MAX_TEXTURES];
+    u32 textureHeights[MAX_TEXTURES];
+    u32 texturePitches[MAX_TEXTURES];
+    ZunImageInfo surfaceSourceInfo[MAX_SURFACES];
     ZunColor currentTextureFactor;
     GfxTextureHandle currentTexture;
     u8 currentBlendMode;

@@ -2083,8 +2083,8 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
     g_AnmManager->Flush();
     g_Supervisor.viewport.x = 0;
     g_Supervisor.viewport.y = 0;
-    g_Supervisor.viewport.width = 640;
-    g_Supervisor.viewport.height = 480;
+    g_Supervisor.viewport.width = GAME_WINDOW_WIDTH;
+    g_Supervisor.viewport.height = GAME_WINDOW_HEIGHT;
     g_Supervisor.gfxDevice->SetViewport(g_Supervisor.viewport);
     g_AnmManager->CopySurfaceToBackBuffer(0, 0, 0, 0, 0);
     for (i = 0; i < ARRAY_SIZE_SIGNED(arg->vms); i++, vm++)
@@ -2096,7 +2096,7 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
         vm->pos = pos;
     }
     vm = arg->vms + 16;
-    if (vm->pos.x < 640.0f)
+    if (vm->pos.x < (f32)GAME_WINDOW_WIDTH)
     {
         pos = vm->prevPos.Lerp(vm->pos, g_RenderAlpha);
         if (arg->stateStep != 9)

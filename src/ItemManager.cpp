@@ -515,7 +515,7 @@ void ItemManager::OnUpdate()
     }
     if (itemAcquired)
     {
-        g_SoundPlayer.PlaySoundByIdx(SOUND_21, 0);
+        g_SoundPlayer.PlaySoundByIdx(SOUND_ITEM_GET, 0);
     }
 }
 
