@@ -937,7 +937,7 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
         }
         g_ControllerMapping = g_Supervisor.cfg.controllerMapping;
     }
-    g_Supervisor.cfg.loaded = 1;
+    g_Supervisor.cfg.colorAddEmulation = 1;
     if (this->cfg.noVertexBuffers)
     {
         g_GameErrorContext.Log("頂点バッファの使用を抑制します\n");

@@ -95,7 +95,7 @@ struct GameConfiguration
         u32 opts;
         struct
         {
-            u32 loaded : 1;
+            u32 colorAddEmulation : 1;
             u32 noVertexBuffers : 1;
             u32 use16BitTextures : 1;
             u32 forceBackBufferClear : 1;
@@ -146,6 +146,11 @@ struct Supervisor
     void UpdateTime();
 
     i32 IsSlowMode();
+
+    i32 IsSoftwareTexturing()
+    {
+        return this->cfg.disableTextureBlend | this->cfg.colorAddEmulation;
+    }
 
     i32 IsClearingBackbuffer()
     {

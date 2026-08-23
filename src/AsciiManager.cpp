@@ -250,7 +250,7 @@ void AsciiManager::AddString(ZunVec3 *pos, const char *text)
     curString->scale.y = this->scale.y;
     curString->isGui = this->isGui;
 
-    if (g_Supervisor.cfg.loaded | g_Supervisor.cfg.unused)
+    if (g_Supervisor.IsSoftwareTexturing())
     {
         curString->isSelected = this->isSelected;
     }
