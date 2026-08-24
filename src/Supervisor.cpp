@@ -1082,7 +1082,7 @@ ZunResult Supervisor::PlayAudio(const char *path)
         if (g_Supervisor.cfg.musicMode == MUSIC_WAV)
         {
             strcpy(pathBuf, path);
-            pathExt = strrchr(pathExt, '.');
+            pathExt = strrchr(pathBuf, '.');
             if (!pathExt)
             {
                 return ZUN_ERROR;
