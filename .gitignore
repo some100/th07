@@ -12,6 +12,8 @@ reccmp-user.yml
 reccmp-build.yml
 scripts/__pycache__/
 compile_commands.json
+src/th07/i18n.hpp
+src/custom/i18n.hpp
 
 android/.gradle
 android/.idea

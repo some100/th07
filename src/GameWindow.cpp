@@ -146,7 +146,7 @@ RenderResult GameWindow::Render()
     timeToRender = SDL_GetTicksNS() - timeToRender;
 
     constexpr u64 nsPerFrame = 1000000000 / 60;
-    if (g_Supervisor.vsyncEnabled && timeToRender < nsPerFrame)
+    if (g_Supervisor.vsyncDisabled && timeToRender < nsPerFrame)
     {
         // should have gotten ACTUAL vsync then
         SDL_DelayNS(nsPerFrame - timeToRender);

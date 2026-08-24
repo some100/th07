@@ -109,7 +109,7 @@ struct GameConfiguration
             u32 disableDinput : 1;
             u32 redrawEveryFrame : 1;
             u32 preloadBgm : 1;
-            u32 enableVsync : 1;
+            u32 disableVsync : 1;
         };
     };
 };
@@ -157,9 +157,9 @@ struct Supervisor
         return this->cfg.forceBackBufferClear | this->cfg.disableItemDrawAroundPlayfield;
     }
 
-    i32 VsyncEnabled()
+    i32 VsyncDisabled()
     {
-        return this->vsyncEnabled;
+        return this->vsyncDisabled;
     }
 
     ZunGraphics *gfxDevice;
@@ -177,7 +177,7 @@ struct Supervisor
     i32 unused_160;
     i32 renderSkipFrames;
     i32 isInEnding;
-    i32 vsyncEnabled;
+    i32 vsyncDisabled;
     i32 lockableBackBuffer;
     u32 lastFrameTime;
     f32 effectiveFramerateMultiplier;

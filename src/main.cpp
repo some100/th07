@@ -181,7 +181,7 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result)
         // model
         // however, this is really only ever used when the application is restarting after enabling
         // vsync. afaik, it should be pretty safe to just not have the application restart after
-        // enabling vsync since theres nothing before the checkvsync call that needs vsyncenabled to
+        // enabling vsync since theres nothing before the checkvsync call that needs vsyncDisabled to
         // be there beforehand
     }
     FileSystem::WriteDataToFile("th07.cfg", &g_Supervisor.cfg, sizeof(GameConfiguration));

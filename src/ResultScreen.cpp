@@ -1793,6 +1793,60 @@ i32 ResultScreen::DrawStats()
             {
                 AnmManager::DrawVmTextFmt(g_AnmManager, vm, 0xffffff, 0,
                                           "コンティニュー   %6d %6d %6d %6d %6d %6d %6d",
+                                          g_GameManager.plst.playDataByDifficulty[0].continueCount,
+                                          g_GameManager.plst.playDataByDifficulty[1].continueCount,
+                                          g_GameManager.plst.playDataByDifficulty[2].continueCount,
+                                          g_GameManager.plst.playDataByDifficulty[3].continueCount,
+                                          g_GameManager.plst.playDataByDifficulty[4].continueCount,
+                                          g_GameManager.plst.playDataByDifficulty[5].continueCount,
+                                          g_GameManager.plst.playDataByDifficulty[6].continueCount);
+            }
+            else
+            {
+                AnmManager::DrawVmTextFmt(g_AnmManager, vm, 0xffffff, 0,
+                                          "コンティニュー   %6d %6d %6d %6d %6d %6d",
+                                          g_GameManager.plst.playDataByDifficulty[0].continueCount,
+                                          g_GameManager.plst.playDataByDifficulty[1].continueCount,
+                                          g_GameManager.plst.playDataByDifficulty[2].continueCount,
+                                          g_GameManager.plst.playDataByDifficulty[3].continueCount,
+                                          g_GameManager.plst.playDataByDifficulty[4].continueCount,
+                                          g_GameManager.plst.playDataByDifficulty[6].continueCount);
+            }
+
+            vm++;
+            pos.y += 17.0f;
+            vm->pos = pos;
+            if (g_GameManager.HasUnlockedPhantomAndMaxClears())
+            {
+                AnmManager::DrawVmTextFmt(
+                    g_AnmManager, vm, 0xffffff, 0, "プラクティス　   %6d %6d %6d %6d %6d %6d %6d",
+                    g_GameManager.plst.playDataByDifficulty[0].practiceCount,
+                    g_GameManager.plst.playDataByDifficulty[1].practiceCount,
+                    g_GameManager.plst.playDataByDifficulty[2].practiceCount,
+                    g_GameManager.plst.playDataByDifficulty[3].practiceCount,
+                    g_GameManager.plst.playDataByDifficulty[4].practiceCount,
+                    g_GameManager.plst.playDataByDifficulty[5].practiceCount,
+                    g_GameManager.plst.playDataByDifficulty[6].practiceCount);
+            }
+            else
+            {
+                AnmManager::DrawVmTextFmt(
+                    g_AnmManager, vm, 0xffffff, 0, "プラクティス　   %6d %6d %6d %6d %6d %6d",
+                    g_GameManager.plst.playDataByDifficulty[0].practiceCount,
+                    g_GameManager.plst.playDataByDifficulty[1].practiceCount,
+                    g_GameManager.plst.playDataByDifficulty[2].practiceCount,
+                    g_GameManager.plst.playDataByDifficulty[3].practiceCount,
+                    g_GameManager.plst.playDataByDifficulty[4].practiceCount,
+                    g_GameManager.plst.playDataByDifficulty[6].practiceCount);
+            }
+
+            vm++;
+            pos.y += 17.0f;
+            vm->pos = pos;
+            if (g_GameManager.HasUnlockedPhantomAndMaxClears())
+            {
+                AnmManager::DrawVmTextFmt(g_AnmManager, vm, 0xffffff, 0,
+                                          "リトライ回数  　 %6d %6d %6d %6d %6d %6d %6d",
                                           g_GameManager.plst.playDataByDifficulty[0].retryCount,
                                           g_GameManager.plst.playDataByDifficulty[1].retryCount,
                                           g_GameManager.plst.playDataByDifficulty[2].retryCount,
@@ -1804,67 +1858,13 @@ i32 ResultScreen::DrawStats()
             else
             {
                 AnmManager::DrawVmTextFmt(g_AnmManager, vm, 0xffffff, 0,
-                                          "コンティニュー   %6d %6d %6d %6d %6d %6d",
+                                          "リトライ回数  　 %6d %6d %6d %6d %6d %6d",
                                           g_GameManager.plst.playDataByDifficulty[0].retryCount,
                                           g_GameManager.plst.playDataByDifficulty[1].retryCount,
                                           g_GameManager.plst.playDataByDifficulty[2].retryCount,
                                           g_GameManager.plst.playDataByDifficulty[3].retryCount,
                                           g_GameManager.plst.playDataByDifficulty[4].retryCount,
                                           g_GameManager.plst.playDataByDifficulty[6].retryCount);
-            }
-
-            vm++;
-            pos.y += 17.0f;
-            vm->pos = pos;
-            if (g_GameManager.HasUnlockedPhantomAndMaxClears())
-            {
-                AnmManager::DrawVmTextFmt(
-                    g_AnmManager, vm, 0xffffff, 0, "プラクティス　   %6d %6d %6d %6d %6d %6d %6d",
-                    g_GameManager.plst.playDataByDifficulty[0].extraClearCount,
-                    g_GameManager.plst.playDataByDifficulty[1].extraClearCount,
-                    g_GameManager.plst.playDataByDifficulty[2].extraClearCount,
-                    g_GameManager.plst.playDataByDifficulty[3].extraClearCount,
-                    g_GameManager.plst.playDataByDifficulty[4].extraClearCount,
-                    g_GameManager.plst.playDataByDifficulty[5].extraClearCount,
-                    g_GameManager.plst.playDataByDifficulty[6].extraClearCount);
-            }
-            else
-            {
-                AnmManager::DrawVmTextFmt(
-                    g_AnmManager, vm, 0xffffff, 0, "プラクティス　   %6d %6d %6d %6d %6d %6d",
-                    g_GameManager.plst.playDataByDifficulty[0].extraClearCount,
-                    g_GameManager.plst.playDataByDifficulty[1].extraClearCount,
-                    g_GameManager.plst.playDataByDifficulty[2].extraClearCount,
-                    g_GameManager.plst.playDataByDifficulty[3].extraClearCount,
-                    g_GameManager.plst.playDataByDifficulty[4].extraClearCount,
-                    g_GameManager.plst.playDataByDifficulty[6].extraClearCount);
-            }
-
-            vm++;
-            pos.y += 17.0f;
-            vm->pos = pos;
-            if (g_GameManager.HasUnlockedPhantomAndMaxClears())
-            {
-                AnmManager::DrawVmTextFmt(g_AnmManager, vm, 0xffffff, 0,
-                                          "リトライ回数  　 %6d %6d %6d %6d %6d %6d %6d",
-                                          g_GameManager.plst.playDataByDifficulty[0].clearCount,
-                                          g_GameManager.plst.playDataByDifficulty[1].clearCount,
-                                          g_GameManager.plst.playDataByDifficulty[2].clearCount,
-                                          g_GameManager.plst.playDataByDifficulty[3].clearCount,
-                                          g_GameManager.plst.playDataByDifficulty[4].clearCount,
-                                          g_GameManager.plst.playDataByDifficulty[5].clearCount,
-                                          g_GameManager.plst.playDataByDifficulty[6].clearCount);
-            }
-            else
-            {
-                AnmManager::DrawVmTextFmt(g_AnmManager, vm, 0xffffff, 0,
-                                          "リトライ回数  　 %6d %6d %6d %6d %6d %6d",
-                                          g_GameManager.plst.playDataByDifficulty[0].clearCount,
-                                          g_GameManager.plst.playDataByDifficulty[1].clearCount,
-                                          g_GameManager.plst.playDataByDifficulty[2].clearCount,
-                                          g_GameManager.plst.playDataByDifficulty[3].clearCount,
-                                          g_GameManager.plst.playDataByDifficulty[4].clearCount,
-                                          g_GameManager.plst.playDataByDifficulty[6].clearCount);
             }
         }
 

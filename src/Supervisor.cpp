@@ -474,14 +474,14 @@ i32 Supervisor::CheckVSync()
         // a ridiculously high framerate
         if (swapInterval != 0)
         {
-            g_Supervisor.vsyncEnabled = 0;
+            g_Supervisor.vsyncDisabled = 0;
             return 0;
         }
     }
 
     g_GameErrorContext.Log("垂直同期が取れてないか、リフレッシュレートが高すぎます\n");
     g_GameErrorContext.Log("強制６０フレームモードで動作します\n");
-    g_Supervisor.vsyncEnabled = 1;
+    g_Supervisor.vsyncDisabled = 1;
     return 0;
 }
 
@@ -502,7 +502,7 @@ ZunResult Supervisor::AddedCallback(Supervisor *arg)
     }
     g_AnmManager->LoadSurface(0, "data/title/th07logo.jpg");
     g_Supervisor.isInEnding = 1;
-    if (!g_Supervisor.vsyncEnabled)
+    if (!g_Supervisor.vsyncDisabled)
     {
         CheckVSync();
     }
@@ -966,7 +966,7 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
     {
         g_GameErrorContext.Log("デプステストを抑制します\n");
     }
-    this->vsyncEnabled = 0;
+    this->vsyncDisabled = 0;
     this->cfg.unused = 0;
     if (this->cfg.disableTextureBlend)
     {
@@ -994,10 +994,10 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
     {
         g_GameErrorContext.Log("ＢＧＭをメモリに読み込みます\n");
     }
-    if (this->cfg.enableVsync)
+    if (this->cfg.disableVsync)
     {
         g_GameErrorContext.Log("垂直同期を取りません\n");
-        g_Supervisor.vsyncEnabled = 1;
+        g_Supervisor.vsyncDisabled = 1;
     }
     if (FileSystem::WriteDataToFile(configFilename, &g_Supervisor.cfg, sizeof(GameConfiguration)))
     {

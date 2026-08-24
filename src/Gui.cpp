@@ -986,12 +986,8 @@ ZunResult GuiImpl::RunMsg()
                         g_GameManager.clrd[g_GameManager.shotTypeAndCharacter]
                             .difficultyClearedWithRetries[g_GameManager.difficulty] = 99;
                     }
-                    ((Plst *)(g_GameManager.pscr + 6))
-                        ->playDataByDifficulty[g_GameManager.difficulty]
-                        .noContinueClearCount = ((Plst *)(g_GameManager.pscr + 6))
-                                                    ->playDataByDifficulty[g_GameManager.difficulty]
-                                                    .noContinueClearCount +
-                                                1;
+                    g_GameManager.plst.playDataByDifficulty[g_GameManager.difficulty]
+                        .noContinueClearCount++;
                     g_GameManager.finished = 1;
                     g_GameManager.globals->guiScore = g_GameManager.globals->score;
                     g_Supervisor.curState = SUPERVISOR_STATE_RESULTSCREEN_FROM_GAME;

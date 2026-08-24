@@ -649,21 +649,21 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
                     999999);
                 if (g_Supervisor.curState == SUPERVISOR_STATE_RESTART_FROM_BEGINNING)
                 {
-                    IncrementCappedAgain(&((Plst *)(g_GameManager.pscr + 6))
-                                              ->playDataByDifficulty[g_GameManager.difficulty]
-                                              .clearCount,
-                                         999999);
-                    IncrementCappedAgain(&g_GameManager.plst.playDataByDifficulty[6].clearCount,
+                    IncrementCappedAgain(
+                        &g_GameManager.plst.playDataByDifficulty[g_GameManager.difficulty]
+                             .retryCount,
+                        999999);
+                    IncrementCappedAgain(&g_GameManager.plst.playDataByDifficulty[6].retryCount,
                                          999999);
                 }
                 if (g_GameManager.practice)
                 {
-                    IncrementCappedAgain(&((Plst *)(g_GameManager.pscr + 6))
-                                              ->playDataByDifficulty[g_GameManager.difficulty]
-                                              .extraClearCount,
-                                         999999);
                     IncrementCappedAgain(
-                        &g_GameManager.plst.playDataByDifficulty[6].extraClearCount, 999999);
+                        &g_GameManager.plst.playDataByDifficulty[g_GameManager.difficulty]
+                             .practiceCount,
+                        999999);
+                    IncrementCappedAgain(&g_GameManager.plst.playDataByDifficulty[6].practiceCount,
+                                         999999);
                 }
             }
         }

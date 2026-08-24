@@ -295,10 +295,10 @@ struct PlstPlayCounts
 {
     u32 playCount;
     u32 playCountPerShotType[SHOT_COUNT];
-    u32 clearCount;
-    u32 noContinueClearCount;
     u32 retryCount;
-    u32 extraClearCount;
+    u32 noContinueClearCount;
+    u32 continueCount;
+    u32 practiceCount;
 };
 static_assert(sizeof(PlstPlayCounts) == 0x2c);
 
