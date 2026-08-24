@@ -117,6 +117,7 @@ ScoreDat *ResultScreen::OpenScore(const char *path)
     {
         Supervisor::DebugPrint("warning : score.dat size is short\r\n");
         delete scoreData;
+        scoreData = NULL;
         goto RECREATE_SCORE;
     }
 
@@ -1818,26 +1819,26 @@ i32 ResultScreen::DrawStats()
             vm->pos = pos;
             if (g_GameManager.HasUnlockedPhantomAndMaxClears())
             {
-                AnmManager::DrawVmTextFmt(
-                    g_AnmManager, vm, 0xffffff, 0, "プラクティス　   %6d %6d %6d %6d %6d %6d %6d",
-                    g_GameManager.plst.playDataByDifficulty[0].practiceCount,
-                    g_GameManager.plst.playDataByDifficulty[1].practiceCount,
-                    g_GameManager.plst.playDataByDifficulty[2].practiceCount,
-                    g_GameManager.plst.playDataByDifficulty[3].practiceCount,
-                    g_GameManager.plst.playDataByDifficulty[4].practiceCount,
-                    g_GameManager.plst.playDataByDifficulty[5].practiceCount,
-                    g_GameManager.plst.playDataByDifficulty[6].practiceCount);
+                AnmManager::DrawVmTextFmt(g_AnmManager, vm, 0xffffff, 0,
+                                          "プラクティス　   %6d %6d %6d %6d %6d %6d %6d",
+                                          g_GameManager.plst.playDataByDifficulty[0].practiceCount,
+                                          g_GameManager.plst.playDataByDifficulty[1].practiceCount,
+                                          g_GameManager.plst.playDataByDifficulty[2].practiceCount,
+                                          g_GameManager.plst.playDataByDifficulty[3].practiceCount,
+                                          g_GameManager.plst.playDataByDifficulty[4].practiceCount,
+                                          g_GameManager.plst.playDataByDifficulty[5].practiceCount,
+                                          g_GameManager.plst.playDataByDifficulty[6].practiceCount);
             }
             else
             {
-                AnmManager::DrawVmTextFmt(
-                    g_AnmManager, vm, 0xffffff, 0, "プラクティス　   %6d %6d %6d %6d %6d %6d",
-                    g_GameManager.plst.playDataByDifficulty[0].practiceCount,
-                    g_GameManager.plst.playDataByDifficulty[1].practiceCount,
-                    g_GameManager.plst.playDataByDifficulty[2].practiceCount,
-                    g_GameManager.plst.playDataByDifficulty[3].practiceCount,
-                    g_GameManager.plst.playDataByDifficulty[4].practiceCount,
-                    g_GameManager.plst.playDataByDifficulty[6].practiceCount);
+                AnmManager::DrawVmTextFmt(g_AnmManager, vm, 0xffffff, 0,
+                                          "プラクティス　   %6d %6d %6d %6d %6d %6d",
+                                          g_GameManager.plst.playDataByDifficulty[0].practiceCount,
+                                          g_GameManager.plst.playDataByDifficulty[1].practiceCount,
+                                          g_GameManager.plst.playDataByDifficulty[2].practiceCount,
+                                          g_GameManager.plst.playDataByDifficulty[3].practiceCount,
+                                          g_GameManager.plst.playDataByDifficulty[4].practiceCount,
+                                          g_GameManager.plst.playDataByDifficulty[6].practiceCount);
             }
 
             vm++;
