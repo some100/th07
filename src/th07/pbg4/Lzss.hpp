@@ -10,13 +10,14 @@ namespace Lzss
 {
 u8 *Compress(u8 *src, i32 dstLen, i32 *outSize);
 u8 *Decompress(u8 *src, i32 srcLen, u8 *dst, u32 dstLen);
-void ContractNode(i32 firstNode, i32 secondNode);
-void DeleteNode(i32 node);
-i32 FindMinNode(i32 startNode);
+
+void InitTree(i32 root);
 void InitializeDictionary();
-void InitializeTree(i32 root);
-i32 InsertNode(i32 node, i32 *matchPosition);
+i32 AddString(i32 node, i32 *matchPosition);
+void DeleteString(i32 node);
+void ContractNode(i32 firstNode, i32 secondNode);
 void ReplaceNode(i32 oldNode, i32 newNode);
+i32 FindNextNode(i32 startNode);
 
 struct LzssNode
 {

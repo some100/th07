@@ -1,3 +1,23 @@
+// Copyright (c) 1996 Mark Nelson
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #include "Lzss.hpp"
 
 #include <windows.h>
@@ -43,7 +63,7 @@ u8 g_LzssDictionary[LZSS_DICTSIZE];
 
 #pragma var_order(curByte, dst, dstCursor, matchOffset, i, bytesToCopyToDict, inBitMask, srcCursor, matchLength, \
                   checksum, lookAheadBytes, dictValue, dictHead, bitfieldMask)
-LPBYTE Lzss::Compress(LPBYTE src, i32 dstLen, i32 *srcLen)
+LPBYTE Lzss::Compress(LPBYTE src, i32 srcLen, i32 *outSize)
 {
     i32 i;
     i32 bytesToCopyToDict;
@@ -55,7 +75,7 @@ LPBYTE Lzss::Compress(LPBYTE src, i32 dstLen, i32 *srcLen)
     u32 curByte = 0;
     u32 checksum = 0;
 
-    LPBYTE dst = (LPBYTE)GlobalAlloc(GMEM_FIXED, dstLen * 2);
+    LPBYTE dst = (LPBYTE)GlobalAlloc(GMEM_FIXED, srcLen * 2);
     if (dst == NULL)
     {
         return NULL;
@@ -63,14 +83,14 @@ LPBYTE Lzss::Compress(LPBYTE src, i32 dstLen, i32 *srcLen)
 
     LPBYTE srcCursor = src;
     LPBYTE dstCursor = dst;
-    *srcLen = 0;
+    *outSize = 0;
 
     InitializeDictionary();
 
     u32 dictHead = 1;
     for (i = 0; i < LZSS_LOOKAHEAD_SIZE; i++)
     {
-        if (srcCursor - src >= dstLen)
+        if (srcCursor - src >= srcLen)
         {
             dictValue = -1;
         }
@@ -88,7 +108,7 @@ LPBYTE Lzss::Compress(LPBYTE src, i32 dstLen, i32 *srcLen)
     }
 
     lookAheadBytes = i;
-    InitializeTree(dictHead);
+    InitTree(dictHead);
     i32 matchLength = 0;
     i32 matchOffset = 0;
 
@@ -117,9 +137,9 @@ LPBYTE Lzss::Compress(LPBYTE src, i32 dstLen, i32 *srcLen)
 
         for (i = 0; i < bytesToCopyToDict; i++)
         {
-            DeleteNode(LZSS_DICTPOS_MOD(dictHead, LZSS_LOOKAHEAD_SIZE));
+            DeleteString(LZSS_DICTPOS_MOD(dictHead, LZSS_LOOKAHEAD_SIZE));
 
-            if (srcCursor - src >= dstLen)
+            if (srcCursor - src >= srcLen)
             {
                 dictValue = -1;
             }
@@ -141,7 +161,7 @@ LPBYTE Lzss::Compress(LPBYTE src, i32 dstLen, i32 *srcLen)
 
             if (lookAheadBytes != 0)
             {
-                matchLength = InsertNode(dictHead, &matchOffset);
+                matchLength = AddString(dictHead, &matchOffset);
             }
         }
     }
@@ -149,7 +169,7 @@ LPBYTE Lzss::Compress(LPBYTE src, i32 dstLen, i32 *srcLen)
     ENC_WRITE_FLAG_BIT(0);
     ENC_WRITE_BITS(LZSS_OFFSET_BITS, FALSE);
 
-    *srcLen = dstCursor - dst;
+    *outSize = dstCursor - dst;
     return dst;
 }
 
@@ -272,7 +292,7 @@ LPBYTE Lzss::Decompress(u8 *src, i32 srcLen, u8 *dst, u32 decompressedSize)
 }
 
 // FUNCTION: TH07 0x0045f270
-void Lzss::InitializeTree(i32 root)
+void Lzss::InitTree(i32 root)
 {
     g_LzssTree[LZSS_DICTSIZE].rightChild = root;
     g_LzssTree[root].parent = LZSS_DICTSIZE;
@@ -289,7 +309,7 @@ void Lzss::InitializeDictionary()
     {
         g_LzssDictionary[i] = 0;
     }
-    for (i = 0; i < 0x2001; i++)
+    for (i = 0; i < LZSS_DICTSIZE + 1; i++)
     {
         g_LzssTree[i].parent = 0;
         g_LzssTree[i].leftChild = 0;
@@ -299,7 +319,7 @@ void Lzss::InitializeDictionary()
 
 #pragma var_order(i, child, testNode, matchLength, delta)
 // FUNCTION: TH07 0x0045f340
-i32 Lzss::InsertNode(i32 node, i32 *matchPosition)
+i32 Lzss::AddString(i32 node, i32 *matchPosition)
 {
     i32 delta;
     i32 *child;
@@ -354,7 +374,7 @@ i32 Lzss::InsertNode(i32 node, i32 *matchPosition)
 }
 
 // FUNCTION: TH07 0x0045f460
-void Lzss::DeleteNode(i32 node)
+void Lzss::DeleteString(i32 node)
 {
     if (g_LzssTree[node].parent == 0)
     {
@@ -371,8 +391,8 @@ void Lzss::DeleteNode(i32 node)
     }
     else
     {
-        i32 iVar1 = FindMinNode(node);
-        DeleteNode(iVar1);
+        i32 iVar1 = FindNextNode(node);
+        DeleteString(iVar1);
         ReplaceNode(node, iVar1);
     }
 }
@@ -413,7 +433,7 @@ void Lzss::ReplaceNode(i32 oldNode, i32 newNode)
 }
 
 // FUNCTION: TH07 0x0045f640
-i32 Lzss::FindMinNode(i32 startNode)
+i32 Lzss::FindNextNode(i32 startNode)
 {
     i32 node = g_LzssTree[startNode].leftChild;
     while (g_LzssTree[node].rightChild != 0)
