@@ -334,7 +334,7 @@ void AsciiManager::DrawStrings()
             this->bossMarkers[i].pos.x <= 392.0f)
         {
             charWidth = fabsf(this->bossMarkers[i].pos.x - 32.0f -
-                              g_Player.positionCenter.x);
+                              g_Player.pos.x);
             if (charWidth < 64.0f)
             {
                 this->bossMarkers[i].color.bytes.a =
@@ -1091,8 +1091,8 @@ void AsciiManager::DrawPopups()
         this->largeTextVm.pos.y = popup->pos.y;
         this->largeTextVm.color.color = popup->color;
 
-        dx = g_Player.positionCenter.x - popup->pos.x;
-        dy = g_Player.positionCenter.y - popup->pos.y;
+        dx = g_Player.pos.x - popup->pos.x;
+        dy = g_Player.pos.y - popup->pos.y;
         alpha = (i32)(dx * dx + dy * dy);
 
         if (alpha > 4096)

@@ -8,16 +8,16 @@ typedef i32 (*EffectCallback)(struct Effect *);
 struct Effect
 {
     AnmVm vm;
-    Float3 pos1;
+    Float3 pos;
     Float3 custom;
     Float3 velocity;
-    Float3 acceleration;
-    Float3 basePosition;
-    Float3 emitterPosition;
+    Float3 accel;
+    Float3 basePos;
+    Float3 emitterPos;
     Float3 direction;
     D3DXQUATERNION rotationQuat;
     f32 radius;
-    f32 angularVelocity;
+    f32 angleVel;
     ZunTimer timer;
     i32 unused_2c4;
     EffectCallback callback;
@@ -25,7 +25,7 @@ struct Effect
     i8 effectId;
     u8 isFadingOut;
     i8 fadeOutTime;
-    i8 is2D;
+    i8 drawType;
     // pad 3
     Effect *next;
 };

@@ -740,10 +740,10 @@ void AnmManager::SetRenderStateForVm(AnmVm *vm)
             color.bytes.b = ZunColor::Multiply(color.bytes.b, this->color.bytes.b);
             color.bytes.a = ZunColor::Multiply(color.bytes.a, this->color.bytes.a);
         }
-        g_QuadVertices[0].color = color;
-        g_QuadVertices[1].color = color;
-        g_QuadVertices[2].color = color;
-        g_QuadVertices[3].color = color;
+        g_QuadVertices[0].diffuse = color;
+        g_QuadVertices[1].diffuse = color;
+        g_QuadVertices[2].diffuse = color;
+        g_QuadVertices[3].diffuse = color;
         g_Quad3DFallback[0].diffuse = color;
         g_Quad3DFallback[1].diffuse = color;
         g_Quad3DFallback[2].diffuse = color;
@@ -931,10 +931,10 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, u32 drawFlags)
             color.bytes.b = ZunColor::Multiply(color.bytes.b, this->color.bytes.b);
             color.bytes.a = ZunColor::Multiply(color.bytes.a, this->color.bytes.a);
         }
-        g_QuadVertices[0].color = color;
-        g_QuadVertices[1].color = color;
-        g_QuadVertices[2].color = color;
-        g_QuadVertices[3].color = color;
+        g_QuadVertices[0].diffuse = color;
+        g_QuadVertices[1].diffuse = color;
+        g_QuadVertices[2].diffuse = color;
+        g_QuadVertices[3].diffuse = color;
     }
     SyncRenderState(vm);
     PushSprite(g_QuadVertices);
@@ -2739,7 +2739,7 @@ ZunResult AnmManager::UpdateTrail(AnmVm *vm, VertexTex1DiffuseXyzrhw *vertices,
     {
         vertex->textureUV.x = uvX;
         vertex->textureUV.y = uvY;
-        vertex->color.color = vm->color.color;
+        vertex->diffuse.color = vm->color.color;
         vertex->w = 1.0f;
     }
 
@@ -2750,7 +2750,7 @@ ZunResult AnmManager::UpdateTrail(AnmVm *vm, VertexTex1DiffuseXyzrhw *vertices,
     {
         vertex->textureUV.x = uvX;
         vertex->textureUV.y = uvY;
-        vertex->color.color = vm->color.color;
+        vertex->diffuse.color = vm->color.color;
         vertex->w = 1.0f;
     }
 

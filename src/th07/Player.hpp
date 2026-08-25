@@ -78,13 +78,13 @@ struct PlayerBombSubInfo
 {
     i32 state;
     i32 counter;
-    f32 accel;
+    f32 custom;
     f32 speed;
     f32 angle;
-    Float3 bombRegionPositions;
-    Float3 bombRegionPositionsTrails[32];
-    Float3 bombRegionVelocities;
-    Float3 bombRegionAcceleration;
+    Float3 pos;
+    Float3 posHistory[32];
+    Float3 velocity;
+    Float3 accel;
     AnmVm vms[8];
     Effect *effect;
     ZunTimer timer;
@@ -235,14 +235,14 @@ struct Player
         bottomRight->y = center->y + size->y * 0.5f;
     }
 
-    f32 *GetPosCenterX()
+    f32 *GetPosX()
     {
-        return &this->positionCenter.x;
+        return &this->pos.x;
     }
 
-    f32 *GetPosCenterY()
+    f32 *GetPosY()
     {
-        return &this->positionCenter.y;
+        return &this->pos.y;
     }
 
     void SetFocusEffect(Effect *effect)
@@ -252,8 +252,8 @@ struct Player
 
     AnmVm playerSprite;
     AnmVm optionsSprite[3];
-    Float3 positionCenter;
-    Float3 prevFramePos;
+    Float3 pos;
+    Float3 unused_93c;
     Float3 hitboxTopLeft;
     Float3 hitboxBottomRight;
     Float3 grazeTopLeft;

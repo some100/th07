@@ -225,8 +225,8 @@ struct Bullet
     Float3 velocity;
     Float3 unused_ba4;
     f32 speed;
-    f32 acceleration;
-    f32 angularVelocity;
+    f32 accel;
+    f32 angleVel;
     f32 angle;
     f32 unused_bc0;
     f32 unused_bc4;

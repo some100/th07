@@ -28,7 +28,7 @@ enum EnemyDeathType
 struct EnemyHistory
 {
     Float3 pos;
-    Float3 axisSpeed;
+    Float3 velocity;
     f32 angle;
 };
 
@@ -79,17 +79,17 @@ struct Enemy
         if (!this->mirror)
         {
             this->pos.x +=
-                g_Supervisor.effectiveFramerateMultiplier * this->axisSpeed.x;
+                g_Supervisor.effectiveFramerateMultiplier * this->velocity.x;
         }
         else
         {
             this->pos.x -=
-                g_Supervisor.effectiveFramerateMultiplier * this->axisSpeed.x;
+                g_Supervisor.effectiveFramerateMultiplier * this->velocity.x;
         }
         this->pos.y +=
-            g_Supervisor.effectiveFramerateMultiplier * this->axisSpeed.y;
+            g_Supervisor.effectiveFramerateMultiplier * this->velocity.y;
         this->pos.z +=
-            g_Supervisor.effectiveFramerateMultiplier * this->axisSpeed.z;
+            g_Supervisor.effectiveFramerateMultiplier * this->velocity.z;
     }
 
     static i32 BulletRankAmountInner(i32 low, i32 high, i32 scaleFactor)
@@ -137,19 +137,19 @@ struct Enemy
     i32 interrupts[32];
     i32 runInterrupt;
     Float3 pos;
-    Float3 axisSpeed;
+    Float3 velocity;
     Float3 prevPos;
     Float3 deltaPos;
     Float3 hitboxSize;
     Float3 grazeSize;
     f32 angle;
-    f32 angularVelocity;
-    f32 moveAngle;
-    f32 moveAngularVelocity;
-    f32 moveSpeed;
-    f32 moveAcceleration;
-    f32 moveRadius;
-    f32 moveRadialVelocity;
+    f32 angleVel;
+    f32 orbitAngle;
+    f32 orbitAngleVel;
+    f32 speed;
+    f32 accel;
+    f32 orbitRadius;
+    f32 orbitRadialVel;
     Float3 shootOffset;
     Float3 moveInterp;
     Float3 moveInterpStartPos;
@@ -324,11 +324,11 @@ struct EnemyManager
         enemy->timer = 0;
         enemy->isInBounds = 0;
         enemy->hitboxSize = Float3(12.0f, 12.0f, 12.0f);
-        enemy->axisSpeed = Float3(0.0f, 0.0f, 0.0f);
-        enemy->angularVelocity = 0.0f;
+        enemy->velocity = Float3(0.0f, 0.0f, 0.0f);
+        enemy->angleVel = 0.0f;
         enemy->angle = 0.0f;
-        enemy->moveAcceleration = 0.0f;
-        enemy->moveSpeed = 0.0f;
+        enemy->accel = 0.0f;
+        enemy->speed = 0.0f;
         enemy->moveMode = ENEMY_MOVE_AXIS;
         enemy->disableBullets = 0;
         enemy->mirror = 0;

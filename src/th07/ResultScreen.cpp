@@ -1060,7 +1060,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
                 g_AnmManager, arg->spellcardListVms + 10, 0xffffff, 0,
                 TH_RESULT_SPELL_OBTAINED_COUNT,
                 g_CharacterList[arg->prevSpellcardListPage], SPELLCARD_COUNT,
-                arg->totalPlayCountPerShot[arg->spellcardListPage]);
+                arg->spellsCapturedPerShot[arg->spellcardListPage]);
             arg->spellcardListVms[10].color.bytes.a = 255;
         }
         if (arg->frameTimer < 30)
@@ -2618,7 +2618,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
     for (i = 0; i < SHOT_COUNT + 1; i++)
     {
         catk = g_GameManager.catk;
-        arg->totalPlayCountPerShot[i] = 0;
+        arg->spellsCapturedPerShot[i] = 0;
         for (catkIdx = 0; catkIdx < SPELLCARD_COUNT; catkIdx++, catk++)
         {
             if (catk->magic != CATK_MAGIC || catk->version != 1)
@@ -2627,7 +2627,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
             }
             if (catk->numSuccessesPerShot[i] != 0)
             {
-                arg->totalPlayCountPerShot[i]++;
+                arg->spellsCapturedPerShot[i]++;
             }
         }
     }

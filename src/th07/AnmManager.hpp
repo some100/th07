@@ -153,7 +153,7 @@ struct VertexTex1DiffuseXyzrhw
 {
     Float3 pos;
     f32 w;
-    ZunColor color;
+    ZunColor diffuse;
     Float2 textureUV;
 };
 C_ASSERT(sizeof(VertexTex1DiffuseXyzrhw) == 0x1c);

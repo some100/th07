@@ -41,9 +41,9 @@ struct GameWindow
     LARGE_INTEGER lpFrequency;
     bool usesRelativePath;
     // pad 3
-    u32 screen_save_active;
-    u32 low_power_active;
-    u32 power_off_active;
+    u32 screenSaveActive;
+    u32 lowPowerActive;
+    u32 powerOffActive;
 };
 C_ASSERT(sizeof(GameWindow) == 0x2c);
 extern GameWindow g_GameWindow;

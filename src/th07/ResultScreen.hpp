@@ -420,7 +420,7 @@ struct ResultScreen
     i32 isClearingReplayName;
     char replayName[8];
     i32 unused_4c;
-    i32 totalPlayCountPerShot[SHOT_COUNT + 1];
+    i32 spellsCapturedPerShot[SHOT_COUNT + 1];
     u8 lastTotalSeconds;
     // pad 3
     AnmVm vms[41];

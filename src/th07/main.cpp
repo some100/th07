@@ -44,11 +44,11 @@ i32 WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     res = RENDER_RESULT_KEEP_RUNNING;
     g_Supervisor.hInstance = hInstance;
     SystemParametersInfoA(SPI_GETSCREENSAVEACTIVE, 0,
-                          &g_GameWindow.screen_save_active, 0);
+                          &g_GameWindow.screenSaveActive, 0);
     SystemParametersInfoA(SPI_GETLOWPOWERACTIVE, 0,
-                          &g_GameWindow.low_power_active, 0);
+                          &g_GameWindow.lowPowerActive, 0);
     SystemParametersInfoA(SPI_GETPOWEROFFACTIVE, 0,
-                          &g_GameWindow.power_off_active, 0);
+                          &g_GameWindow.powerOffActive, 0);
     SystemParametersInfoA(SPI_SETSCREENSAVEACTIVE, 0, NULL, 2);
     SystemParametersInfoA(SPI_SETLOWPOWERACTIVE, 0, NULL, 2);
     SystemParametersInfoA(SPI_SETPOWEROFFACTIVE, 0, NULL, 2);
@@ -188,10 +188,10 @@ stop:
     FileSystem::WriteDataToFile("th07.cfg", &g_Supervisor.cfg,
                                 sizeof(GameConfiguration));
     SystemParametersInfoA(SPI_SETSCREENSAVEACTIVE,
-                          g_GameWindow.screen_save_active, NULL, 2);
-    SystemParametersInfoA(SPI_SETLOWPOWERACTIVE, g_GameWindow.low_power_active,
+                          g_GameWindow.screenSaveActive, NULL, 2);
+    SystemParametersInfoA(SPI_SETLOWPOWERACTIVE, g_GameWindow.lowPowerActive,
                           NULL, 2);
-    SystemParametersInfoA(SPI_SETPOWEROFFACTIVE, g_GameWindow.power_off_active,
+    SystemParametersInfoA(SPI_SETPOWEROFFACTIVE, g_GameWindow.powerOffActive,
                           NULL, 2);
     WINNLSEnableIME(0, 1);
     g_GameErrorContext.Flush();

@@ -631,22 +631,22 @@ void BombData::BombReimuADrawFocus(Player *player)
         }
 
         vm = player->bombInfo.subInfo[i].vms;
-        vm->pos = player->bombInfo.subInfo[i].bombRegionPositions + vm->offset;
+        vm->pos = player->bombInfo.subInfo[i].pos + vm->offset;
         player->SetToTopLeftPos(vm);
         g_AnmManager->DrawNoRotation(vm);
         vm++;
         vm->pos =
-            player->bombInfo.subInfo[i].bombRegionPositions + vm->offset;
+            player->bombInfo.subInfo[i].pos + vm->offset;
         player->SetToTopLeftPos(vm);
         g_AnmManager->DrawNoRotation(vm);
         vm++;
         vm->pos =
-            player->bombInfo.subInfo[i].bombRegionPositions + vm->offset;
+            player->bombInfo.subInfo[i].pos + vm->offset;
         player->SetToTopLeftPos(vm);
         g_AnmManager->DrawNoRotation(vm);
         vm++;
         vm->pos =
-            player->bombInfo.subInfo[i].bombRegionPositions + vm->offset;
+            player->bombInfo.subInfo[i].pos + vm->offset;
         player->SetToTopLeftPos(vm);
         g_AnmManager->DrawNoRotation(vm);
         vm++;
