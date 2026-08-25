@@ -442,7 +442,6 @@ struct AnmManager
     void TakeScreenshot(i32 textureId, i32 srcLeft, i32 srcTop, i32 srcWidth,
                         i32 srcHeight, i32 dstLeft, i32 dstTop, i32 dstWidth,
                         i32 dstHeight);
-    void TakeScreenshotIfRequested();
     void TranslateRotation(VertexTex1DiffuseXyzrhw *vertex, f32 width,
                            f32 height, f32 sine, f32 cosine,
                            f32 xOffset, f32 yOffset);
@@ -516,6 +515,19 @@ struct AnmManager
             this->screenshotDstWidth = width;
             this->screenshotDstHeight = height;
             return 0;
+        }
+    }
+
+    void TakeScreenshotIfRequested()
+    {
+        if (this->screenshotTextureId >= 0)
+        {
+            TakeScreenshot(this->screenshotTextureId, this->screenshotSrcLeft,
+                           this->screenshotSrcTop, this->screenshotSrcWidth,
+                           this->screenshotSrcHeight, this->screenshotDstLeft,
+                           this->screenshotDstTop, this->screenshotDstWidth,
+                           this->screenshotDstHeight);
+            this->screenshotTextureId = -1;
         }
     }
 

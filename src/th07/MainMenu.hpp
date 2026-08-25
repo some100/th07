@@ -105,6 +105,16 @@ enum MenuCursorSelectShotType
 
 struct MainMenu
 {
+    void SetMenuState(MenuState menuState)
+    {
+        this->prevMenuState = this->menuState;
+        this->menuState = menuState;
+        this->inputDelayTimer = 0;
+        this->stateTimer = 0;
+        this->menuSubState = 0;
+        this->idleFrames = 0;
+    }
+
     MainMenu()
     {
         memset(this, 0, sizeof(MainMenu));
@@ -137,27 +147,6 @@ struct MainMenu
     ZunResult Release();
     void SwapMapping(i16 btnPressed, i16 oldMapping, i16 idk);
     ZunResult UpdateMenuDigits(AnmVm *vm, i16 number);
-
-    // FUNCTION: TH07 0x004553fa
-    static void InitializeTimingVars(Supervisor *arg)
-    {
-        arg->timingErrorCount = 0;
-        arg->maxTimingError = 0;
-        arg->checkTiming = 0;
-        arg->timingSpikeAccumulator = 0;
-        arg->timingBadCount = 0;
-    }
-
-    // FUNCTION: TH07 0x00455435
-    void SetMenuState(MenuState menuState)
-    {
-        this->prevMenuState = this->menuState;
-        this->menuState = menuState;
-        this->inputDelayTimer = 0;
-        this->stateTimer = 0;
-        this->menuSubState = 0;
-        this->idleFrames = 0;
-    }
 
     i32 IsSelected(i32 idx)
     {

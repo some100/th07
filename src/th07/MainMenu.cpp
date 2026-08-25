@@ -2616,7 +2616,7 @@ ZunResult MainMenu::ActualAddedCallback()
     }
     g_GameManager.phantasmUnlocked = g_GameManager.HasUnlockedPhantomAndMaxClears();
     this->menuState = MENU_STATE_PRE_INPUT;
-    InitializeTimingVars(&g_Supervisor);
+    g_Supervisor.InitializeTimingVars();
     switch (g_Supervisor.prevState)
     {
     case SUPERVISOR_STATE_GAMEMANAGER:

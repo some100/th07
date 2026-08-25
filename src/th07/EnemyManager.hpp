@@ -279,30 +279,6 @@ C_ASSERT(sizeof(Enemy) == 0x4f48);
 
 struct EnemyManager
 {
-    EnemyManager()
-    {
-        Initialize();
-    }
-
-    static ZunResult RegisterChain(const char *stgEnm1, const char *stgEnm2);
-    static void CutChain();
-
-    static ZunResult AddedCallback(EnemyManager *arg);
-    static ZunResult DeletedCallback(EnemyManager *arg);
-    static u32 OnUpdate(EnemyManager *arg);
-    static u32 OnDraw1(EnemyManager *arg);
-    static u32 OnDraw2(EnemyManager *arg);
-
-    static u32 ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3);
-
-    i32 HasActiveBoss();
-    i32 RemoveAllEnemies(i32 scoreMax, i32 scoreMin);
-    static void RunEclTimeline(EclTimeline *timeline);
-    Enemy *SpawnEnemy(i32 eclSubId, Float3 *pos, i32 life, i32 itemDrop,
-                      i32 score, u8 param_6);
-    Enemy *SpawnEnemyEx(i32 eclSubId, Float3 *pos, i32 life, i32 itemDrop,
-                        i32 score, EclContextArgs *args);
-
     void Initialize()
     {
         Enemy *enemy;
@@ -370,6 +346,30 @@ struct EnemyManager
         enemy->bulletProps.soundIdx = SOUND_BOMB_MARISA_A_FOCUS;
         enemy->bulletProps.soundOverride = SOUND_DIR_CHANGING;
     }
+
+    EnemyManager()
+    {
+        Initialize();
+    }
+
+    static ZunResult RegisterChain(const char *stgEnm1, const char *stgEnm2);
+    static void CutChain();
+
+    static ZunResult AddedCallback(EnemyManager *arg);
+    static ZunResult DeletedCallback(EnemyManager *arg);
+    static u32 OnUpdate(EnemyManager *arg);
+    static u32 OnDraw1(EnemyManager *arg);
+    static u32 OnDraw2(EnemyManager *arg);
+
+    static u32 ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3);
+
+    i32 HasActiveBoss();
+    i32 RemoveAllEnemies(i32 scoreMax, i32 scoreMin);
+    static void RunEclTimeline(EclTimeline *timeline);
+    Enemy *SpawnEnemy(i32 eclSubId, Float3 *pos, i32 life, i32 itemDrop,
+                      i32 score, u8 param_6);
+    Enemy *SpawnEnemyEx(i32 eclSubId, Float3 *pos, i32 life, i32 itemDrop,
+                        i32 score, EclContextArgs *args);
 
     const char *stgEnmAnmFilename;
     const char *stgEnm2AnmFilename;

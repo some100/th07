@@ -450,7 +450,7 @@ address|name|type
 0043d790|Player::DrawBulletExplosions|function
 0043d880|Player::UpdateFireBulletTimer|function
 0043d990|Player::StartFireBulletTimer|function
-0043d9e0|Player::CheckCollisionWithEnemy|function
+0043d9e0|Player::CalcDamageToEnemy|function
 0043e0a0|Player::CheckBombGraze|function
 0043e260|Player::CalcKillboxCollision|function
 0043e3b0|Player::CheckGraze|function

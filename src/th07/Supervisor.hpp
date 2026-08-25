@@ -155,6 +155,15 @@ struct Supervisor
     static i32 __stdcall EnumGameControllersCb(LPCDIDEVICEINSTANCEA param_1,
                                                void *param_2);
 
+    void InitializeTimingVars()
+    {
+        this->timingErrorCount = 0;
+        this->maxTimingError = 0;
+        this->checkTiming = 0;
+        this->timingSpikeAccumulator = 0;
+        this->timingBadCount = 0;
+    }
+
     i32 IsSoftwareTexturing()
     {
         return this->cfg.disableTextureBlend | this->cfg.colorAddEmulation;

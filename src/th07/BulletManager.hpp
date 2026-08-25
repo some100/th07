@@ -207,7 +207,6 @@ struct Bullet
 
     void Draw();
 
-    // FUNCTION: TH07 0x00417b20
     void Initialize()
     {
         this->state = BULLET_INACTIVE;
@@ -256,17 +255,18 @@ C_ASSERT(sizeof(Bullet) == 0xd68);
 
 struct BulletManager
 {
-    BulletManager()
-    {
-        Initialize();
-    }
-
+    // Would be nice to do away with the __declspec(noinline)
     __declspec(noinline) void Initialize()
     {
         memset(this, 0, sizeof(BulletManager));
         this->bulletsStart = this->bullets;
         this->bullets[MAX_BULLETS].state = BULLET_END_ARRAY;
         this->itemType = ITEM_POINT_BULLET;
+    }
+
+    BulletManager()
+    {
+        Initialize();
     }
 
     static ZunResult RegisterChain(const char *etamaAnmPath);

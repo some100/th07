@@ -48,7 +48,6 @@ TH07_SOURCES = [
     "TextHelper.cpp",
     "ItemManager.cpp",
     "main.cpp",
-    "GameWindow.cpp",
     "MidiOutput.cpp",
     "Supervisor.cpp",
     "MusicRoom.cpp",
