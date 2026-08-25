@@ -1,18 +1,19 @@
-#include "AsciiManager.hpp"
-
 #include <stdio.h>
 
+// clang-format off
+#include "GameManager.hpp"
+#include "AsciiManager.hpp"
 #include "AnmIdx.hpp"
 #include "AnmManager.hpp"
 #include "Chain.hpp"
 #include "Controller.hpp"
-#include "GameManager.hpp"
 #include "Gui.hpp"
 #include "Player.hpp"
 #include "SoundPlayer.hpp"
 #include "Supervisor.hpp"
 #include "ZunResult.hpp"
 #include "utils.hpp"
+// clang-format on
 
 // GLOBAL: TH07 0x0134cdf4
 ChainElem g_AsciiManagerOnDrawMenusChain;

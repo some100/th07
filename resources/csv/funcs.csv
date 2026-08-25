@@ -599,7 +599,7 @@ address|name|type
 00455110|AnmManager::ExecuteVmsAnms|function
 00455170|AnmManager::UpdateTrail|function
 004552d0|AnmManager::DrawTriangleStrip|function
-004553fa|MainMenu::InitializeTimingVars|function
+004553fa|Supervisor::InitializeTimingVars|function
 00455435|MainMenu::SetMenuState|function
 0045547d|MainMenu::MainMenu|function
 004554d6|MainMenu::OnUpdate|function
@@ -674,13 +674,13 @@ address|name|type
 0045e9d0|Pbg4File::GetFullPath|function
 0045ead0|Lzss::Compress|function
 0045ef00|Lzss::Decompress|function
-0045f270|Lzss::InitializeTree|function
+0045f270|Lzss::InitTree|function
 0045f2c0|Lzss::InitializeDictionary|function
-0045f340|Lzss::InsertNode|function
-0045f460|Lzss::DeleteNode|function
+0045f340|Lzss::AddString|function
+0045f460|Lzss::DeleteString|function
 0045f4f0|Lzss::ContractNode|function
 0045f580|Lzss::ReplaceNode|function
-0045f640|Lzss::FindMinNode|function
+0045f640|Lzss::FindNextNode|function
 0045f680|Pbg4Entry::~Pbg4Entry|function
 0045f6b0|Pbg4Archive::Pbg4Archive|function
 0045f6f0|Pbg4Archive::~Pbg4Archive|function
