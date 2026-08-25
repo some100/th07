@@ -1006,7 +1006,7 @@ u32 ResultScreen::OnUpdate(ResultScreen *arg)
             AnmManager::DrawVmTextFmt(g_AnmManager, arg->spellcardListVms + 10, 0xffffff, 0,
                                       "%s %3d枚中%3d枚取得（キャラ切り替え↓↑）",
                                       g_CharacterList[arg->prevSpellcardListPage], SPELLCARD_COUNT,
-                                      arg->totalPlayCountPerShot[arg->spellcardListPage]);
+                                      arg->spellsCapturedPerShot[arg->spellcardListPage]);
             arg->spellcardListVms[10].color.bytes.a = 255;
         }
         if (arg->frameTimer < 30)
@@ -2492,7 +2492,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
     for (i = 0; i < SHOT_COUNT + 1; i++)
     {
         catk = g_GameManager.catk;
-        arg->totalPlayCountPerShot[i] = 0;
+        arg->spellsCapturedPerShot[i] = 0;
         for (catkIdx = 0; catkIdx < SPELLCARD_COUNT; catkIdx++, catk++)
         {
             if (catk->base.magic != CATK_MAGIC || catk->base.version != 1)
@@ -2501,7 +2501,7 @@ ZunResult ResultScreen::AddedCallback(ResultScreen *arg)
             }
             if (catk->numSuccessesPerShot[i] != 0)
             {
-                arg->totalPlayCountPerShot[i]++;
+                arg->spellsCapturedPerShot[i]++;
             }
         }
     }

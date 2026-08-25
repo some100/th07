@@ -7,7 +7,7 @@
 #include "inttypes.hpp"
 #include "utils.hpp"
 
-//LARGE_INTEGER g_PerfCounter;
+// LARGE_INTEGER g_PerfCounter;
 
 MidiDevice::MidiDevice()
 {
@@ -691,17 +691,17 @@ void MidiOutput::FadeOutSetVolume(i32 vol)
 
 void DummyMidiTimer::OnTimerElapsed()
 {
-    //QueryPerformanceCounter(&g_PerfCounter);
+    // QueryPerformanceCounter(&g_PerfCounter);
 }
 
 void MidiTimer::StartTimerDefault()
 {
-    //StartTimer(6, NULL, 0);
+    // StartTimer(6, NULL, 0);
 }
 
 void Supervisor::StopMidiTimer(MidiTimer *timer)
 {
-    //timer->StopTimer();
+    // timer->StopTimer();
 }
 
 void MidiTimer::OnTimerElapsed()

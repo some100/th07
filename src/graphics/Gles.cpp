@@ -275,7 +275,7 @@ ZunGraphics *GlesGraphics::Init()
                               (void *)offsetof(VertexTex1DiffuseXyzrhw, pos));
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VertexTex1DiffuseXyzrhw),
-                              (void *)offsetof(VertexTex1DiffuseXyzrhw, color));
+                              (void *)offsetof(VertexTex1DiffuseXyzrhw, diffuse));
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexTex1DiffuseXyzrhw),
                               (void *)offsetof(VertexTex1DiffuseXyzrhw, textureUV));

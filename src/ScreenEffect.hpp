@@ -23,8 +23,7 @@ struct ZunRect
 
 struct ScreenEffect
 {
-    static ScreenEffect *RegisterChain(i32 type, i32 duration, u32 arg1, u32 arg2,
-                                       u32 arg3);
+    static ScreenEffect *RegisterChain(i32 type, i32 duration, u32 arg1, u32 arg2, u32 arg3);
 
     static ZunResult AddedCallback(ScreenEffect *arg);
     static ZunResult DeletedCallback(ScreenEffect *arg);
@@ -38,8 +37,7 @@ struct ScreenEffect
 
     static void Clear(ZunColor color);
     static void DrawSquare(ZunRect *rect, u32 color);
-    static void DrawColoredQuad(ZunRect *rect, u32 param_2, u32 param_3,
-                                u32 param_4, u32 param_5);
+    static void DrawColoredQuad(ZunRect *rect, u32 param_2, u32 param_3, u32 param_4, u32 param_5);
     static void SetViewport(u32 color);
 
     i32 type;

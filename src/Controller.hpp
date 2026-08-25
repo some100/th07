@@ -48,5 +48,5 @@ u16 GetControllerInput(u16 buttons);
 u8 *GetControllerState();
 u16 GetInput();
 void ResetKeyboard();
-u32 SetButton(u16* outButtons, i32 controllerButton, u32 thButton);
+u32 SetButton(u16 *outButtons, i32 controllerButton, u32 thButton);
 } // namespace Controller

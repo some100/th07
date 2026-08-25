@@ -1529,8 +1529,8 @@ void BulletManager::StopBulletMovement()
 
         bullet->velocity = ZunVec3(0.0f, 0.0f, 0.0f);
         bullet->unused_ba4 = ZunVec3(0.0f, 0.0f, 0.0f);
-        bullet->angularVelocity = 0.0f;
-        bullet->acceleration = 0.0f;
+        bullet->angleVel = 0.0f;
+        bullet->accel = 0.0f;
         bullet->speed = 0.0f;
         bullet->spriteOffset = 0;
         g_AnmManager->SetActiveSprite(&bullet->sprites.spriteBullet,

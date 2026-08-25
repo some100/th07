@@ -28,7 +28,7 @@ enum EnemyDeathType
 struct EnemyHistory
 {
     ZunVec3 pos;
-    ZunVec3 axisSpeed;
+    ZunVec3 velocity;
     f32 angle;
 };
 
@@ -131,20 +131,20 @@ struct Enemy
     i32 interrupts[32];
     i32 runInterrupt;
     ZunVec3 pos;
-    ZunVec3 prevPosition;
-    ZunVec3 axisSpeed;
+    ZunVec3 prevRenderPos;
+    ZunVec3 velocity;
     ZunVec3 prevPos;
     ZunVec3 deltaPos;
     ZunVec3 hitboxSize;
     ZunVec3 grazeSize;
     f32 angle;
-    f32 angularVelocity;
-    f32 moveAngle;
-    f32 moveAngularVelocity;
-    f32 moveSpeed;
-    f32 moveAcceleration;
-    f32 moveRadius;
-    f32 moveRadialVelocity;
+    f32 angleVel;
+    f32 orbitAngle;
+    f32 orbitAngleVel;
+    f32 speed;
+    f32 accel;
+    f32 orbitRadius;
+    f32 orbitRadialVel;
     ZunVec3 shootOffset;
     ZunVec3 moveInterp;
     ZunVec3 moveInterpStartPos;
@@ -314,11 +314,11 @@ struct EnemyManager
         enemy->timer = 0;
         enemy->isInBounds = 0;
         enemy->hitboxSize = ZunVec3(12.0f, 12.0f, 12.0f);
-        enemy->axisSpeed = ZunVec3(0.0f, 0.0f, 0.0f);
-        enemy->angularVelocity = 0.0f;
+        enemy->velocity = ZunVec3(0.0f, 0.0f, 0.0f);
+        enemy->angleVel = 0.0f;
         enemy->angle = 0.0f;
-        enemy->moveAcceleration = 0.0f;
-        enemy->moveSpeed = 0.0f;
+        enemy->accel = 0.0f;
+        enemy->speed = 0.0f;
         enemy->moveMode = ENEMY_MOVE_AXIS;
         enemy->disableBullets = 0;
         enemy->mirror = 0;

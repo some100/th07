@@ -156,7 +156,7 @@ void GameManager::Pause()
     g_GameManager.arcadeRegionSize.x = 384.0f;
     g_GameManager.arcadeRegionSize.y = 448.0f;
     this->isPaused = 1;
-    g_Player.prevPositionCenter = g_Player.positionCenter;
+    g_Player.prevPos = g_Player.pos;
     g_Player.prevOptionsPosition[0] = g_Player.optionsPosition[0];
     g_Player.prevOptionsPosition[1] = g_Player.optionsPosition[1];
     g_Stage.prevCam = g_Stage.cam;

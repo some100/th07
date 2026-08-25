@@ -295,8 +295,7 @@ ZunResult ScreenEffect::DeletedCallback(ScreenEffect *arg)
     return ZUN_SUCCESS;
 }
 
-ScreenEffect *ScreenEffect::RegisterChain(i32 type, i32 duration, u32 arg1,
-                                          u32 arg2, u32 arg3)
+ScreenEffect *ScreenEffect::RegisterChain(i32 type, i32 duration, u32 arg1, u32 arg2, u32 arg3)
 {
     ChainElem *calcChain = NULL;
     ChainElem *drawChain = NULL;

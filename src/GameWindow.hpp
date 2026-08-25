@@ -39,10 +39,6 @@ struct GameWindow
     i64 frequency;
     f64 accumulator = 0.0;
     bool usesRelativePath;
-    // pad 3
-    u32 screen_save_active;
-    u32 low_power_active;
-    u32 power_off_active;
 };
 
 extern GameWindow g_GameWindow;

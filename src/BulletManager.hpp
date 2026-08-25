@@ -230,8 +230,8 @@ struct Bullet
     ZunVec3 velocity;
     ZunVec3 unused_ba4;
     f32 speed;
-    f32 acceleration;
-    f32 angularVelocity;
+    f32 accel;
+    f32 angleVel;
     f32 angle;
     f32 prevAngle;
     f32 unused_bc0;

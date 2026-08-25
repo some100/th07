@@ -26,24 +26,24 @@ struct Item
 
     i32 IsBelowPoc()
     {
-        return this->currentPosition.y < g_Player.shooterData->pocY;
+        return this->pos.y < g_Player.shooterData->pocY;
     }
 
     i32 OffsetFromPoc()
     {
-        return this->currentPosition.y - g_Player.shooterData->pocY;
+        return this->pos.y - g_Player.shooterData->pocY;
     }
 
     i32 ShouldAwardMaxScore()
     {
-        return this->currentPosition.y < g_Player.shooterData->pocY || this->autoCollect;
+        return this->pos.y < g_Player.shooterData->pocY || this->autoCollect;
     }
 
     AnmVm sprite;
-    ZunVec3 currentPosition;
-    ZunVec3 prevPosition;
-    ZunVec3 startPosition;
-    ZunVec3 targetPosition;
+    ZunVec3 pos;
+    ZunVec3 prevPos;
+    ZunVec3 velocity;
+    ZunVec3 targetPos;
     ZunTimer timer;
     i8 itemType;
     i8 isInUse;

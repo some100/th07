@@ -2036,8 +2036,7 @@ u32 MainMenu::OnUpdateSelectReplay()
             ReplayManager::FreeReplay(this->currentReplay);
             this->currentReplay = NULL;
             g_GameManager.currentStage =
-                g_GameManager.difficulty >= DIFF_PHANTASM ? EXTRASTAGE
-                                                          : this->selectedStage;
+                g_GameManager.difficulty >= DIFF_PHANTASM ? EXTRASTAGE : this->selectedStage;
             g_Supervisor.curState = SUPERVISOR_STATE_GAMEMANAGER;
             g_GameManager.replayStage = (u8)this->cursor;
             g_Supervisor.StopAudio();

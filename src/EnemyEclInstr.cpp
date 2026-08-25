@@ -48,7 +48,7 @@ void EnemyEclInstr::ExInsSetPosToBoss(Enemy *enemy, EclRawInstr *instr)
 {
     i32 bossIdx = instr->args[1].i;
     enemy->pos = g_EnemyManager.bosses[bossIdx]->pos;
-    enemy->axisSpeed = g_EnemyManager.bosses[bossIdx]->axisSpeed;
+    enemy->velocity = g_EnemyManager.bosses[bossIdx]->velocity;
     enemy->angle = g_EnemyManager.bosses[bossIdx]->angle;
     enemy->disableMovement = 1;
 }
@@ -209,8 +209,8 @@ void EnemyEclInstr::ExInsCopyMainBossMovement(Enemy *enemy, EclRawInstr *instr)
 
     Enemy *boss = g_EnemyManager.bosses[0];
     enemy->moveInterpStartPos = boss->pos;
-    enemy->moveRadius = boss->moveRadius;
-    enemy->moveAngularVelocity = boss->moveAngularVelocity;
+    enemy->orbitRadius = boss->orbitRadius;
+    enemy->orbitAngleVel = boss->orbitAngleVel;
 }
 
 void EnemyEclInstr::ExInsSplitBulletsOrShootBackwards(Enemy *enemy, EclRawInstr *instr)

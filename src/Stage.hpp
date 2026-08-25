@@ -165,8 +165,7 @@ struct Stage
     static u32 OnDrawHighPrio(Stage *arg);
     static u32 OnDrawLowPrio(Stage *arg);
 
-    static void DrawColoredQuad(ZunRect *rect, u32 param_2, u32 param_3, u32 param_4,
-                                u32 param_5);
+    static void DrawColoredQuad(ZunRect *rect, u32 param_2, u32 param_3, u32 param_4, u32 param_5);
     ZunResult LoadStageData(const char *stdPath);
     i32 RenderObjects(i32 param_1);
     void SmoothBlendColor(ZunColor param_1);

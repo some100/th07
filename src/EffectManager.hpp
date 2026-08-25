@@ -9,17 +9,17 @@ typedef i32 (*EffectCallback)(struct Effect *);
 struct Effect
 {
     AnmVm vm;
-    ZunVec3 pos1;
+    ZunVec3 pos;
     ZunVec3 prevPos;
     ZunVec3 custom;
     ZunVec3 velocity;
-    ZunVec3 acceleration;
-    ZunVec3 basePosition;
-    ZunVec3 emitterPosition;
+    ZunVec3 accel;
+    ZunVec3 basePos;
+    ZunVec3 emitterPos;
     ZunVec3 direction;
     ZunQuaternion rotationQuat;
     f32 radius;
-    f32 angularVelocity;
+    f32 angleVel;
     ZunTimer timer;
     i32 unused_2c4;
     EffectCallback callback;
@@ -27,7 +27,7 @@ struct Effect
     i8 effectId;
     u8 isFadingOut;
     i8 fadeOutTime;
-    i8 is2D;
+    i8 drawType;
     // pad 3
     Effect *next;
 };

@@ -6,7 +6,6 @@
 
 enum RendererType
 {
-    RENDERER_SOFTWARE,
     RENDERER_OPENGLES,
 };
 

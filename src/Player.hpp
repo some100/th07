@@ -85,15 +85,15 @@ struct PlayerBombSubInfo
 {
     i32 state;
     i32 counter;
-    f32 accel;
-    f32 prevAccel;
+    f32 custom;
+    f32 prevCustom;
     f32 speed;
     f32 angle;
-    ZunVec3 bombRegionPositions;
-    ZunVec3 prevBombRegionPositions;
-    ZunVec3 bombRegionPositionsTrails[32];
-    ZunVec3 bombRegionVelocities;
-    ZunVec3 bombRegionAcceleration;
+    ZunVec3 pos;
+    ZunVec3 prevPos;
+    ZunVec3 posHistory[32];
+    ZunVec3 velocity;
+    ZunVec3 accel;
     AnmVm vms[8];
     Effect *effect;
     ZunTimer timer;
@@ -244,14 +244,14 @@ struct Player
         bottomRight->y = center->y + size->y * 0.5f;
     }
 
-    f32 *GetPosCenterX()
+    f32 *GetPosX()
     {
-        return &this->positionCenter.x;
+        return &this->pos.x;
     }
 
-    f32 *GetPosCenterY()
+    f32 *GetPosY()
     {
-        return &this->positionCenter.y;
+        return &this->pos.y;
     }
 
     void SetFocusEffect(Effect *effect)
@@ -275,9 +275,8 @@ struct Player
         {
             for (i32 i = 0; i < 128; i++)
             {
-                this->bombInfo.subInfo[i].prevBombRegionPositions =
-                    this->bombInfo.subInfo[i].bombRegionPositions;
-                this->bombInfo.subInfo[i].prevAccel = this->bombInfo.subInfo[i].accel;
+                this->bombInfo.subInfo[i].prevPos = this->bombInfo.subInfo[i].pos;
+                this->bombInfo.subInfo[i].prevCustom = this->bombInfo.subInfo[i].custom;
                 for (i32 j = 0; j < 8; j++)
                 {
                     this->bombInfo.subInfo[i].vms[j].UpdatePrev();
@@ -288,9 +287,8 @@ struct Player
 
     AnmVm playerSprite;
     AnmVm optionsSprite[3];
-    ZunVec3 positionCenter;
-    ZunVec3 prevPositionCenter;
-    ZunVec3 prevFramePos;
+    ZunVec3 pos;
+    ZunVec3 prevPos;
     ZunVec3 hitboxTopLeft;
     ZunVec3 hitboxBottomRight;
     ZunVec3 grazeTopLeft;
