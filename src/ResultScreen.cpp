@@ -425,15 +425,10 @@ ZunResult ResultScreen::ParsePlst(ScoreDat *scoreDat, Plst *outPlst)
 
 void ResultScreen::ReleaseScoreDat(ScoreDat *scoreDat)
 {
-// for reasons inexplicable to myself, this makes emscripten die with a memory access oob error.
-// meaning that we _have_ to leak this
-// Sorry in advance
-#ifndef __EMSCRIPTEN__
     if (scoreDat->decodedData)
     {
         free(scoreDat->decodedData);
     }
-#endif
     FreeAllScores(scoreDat->scores);
     delete scoreDat->scores;
     delete scoreDat;
