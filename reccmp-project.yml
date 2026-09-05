@@ -17,6 +17,7 @@ targets:
       allow_hash_mismatch: false
     report:
       ignore_functions: []
+      ignore_variables: ["g_Player", "g_ItemManager", "g_BulletManager", "g_EnemyManager", "g_EffectManager", "g_AsciiManager"]
   CUSTOM:
     filename: custom.exe
     source_root: src/custom
