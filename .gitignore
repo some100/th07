@@ -6,6 +6,7 @@ resources/custom.exe
 resources/th07.exe
 reccmp-user.yml
 reccmp-build.yml
+reccmp-gui.yml
 scripts/__pycache__/
 compile_commands.json
 src/th07/i18n.hpp

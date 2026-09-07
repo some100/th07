@@ -1028,7 +1028,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
             if (!bullet->grazed && bullet->timer2.GetCurrent() >= 16)
             {
                 collisionRes = g_Player.CheckGraze(&bullet->pos, &bullet->sprites.grazeSize);
-                if (collisionRes == 1)
+                if (collisionRes == PLAYER_COLLISION_HIT)
                 {
                     bullet->grazed = 1;
                     goto do_player_collision;
@@ -1046,7 +1046,7 @@ u32 BulletManager::OnUpdate(BulletManager *arg)
 
         do_player_collision:
             collisionRes = g_Player.CalcKillboxCollision(&bullet->pos, &bullet->sprites.grazeSize);
-            if (collisionRes != 0)
+            if (collisionRes != PLAYER_COLLISION_NONE)
             {
                 if (collisionRes != 2 || (bullet->moreFlags & 0x1000) == 0)
                 {

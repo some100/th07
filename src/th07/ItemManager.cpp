@@ -137,8 +137,8 @@ void ItemManager::OnUpdate()
             {
                 itemTimerSecs = item->timer.AsFloat() / 60.0f;
                 item->pos = itemTimerSecs * item->targetPos +
-                                        item->velocity *
-                                            (1.0f - itemTimerSecs);
+                            item->velocity *
+                                (1.0f - itemTimerSecs);
                 goto check_collision;
             }
             else if (item->timer == 60)
@@ -193,7 +193,7 @@ void ItemManager::OnUpdate()
             item->velocity.y = 3.0f;
         }
     check_collision:
-        if (g_Player.CalcItemBoxCollision(&item->pos, &local_20))
+        if (g_Player.CalcItemBoxCollision(&item->pos, &local_20) != PLAYER_COLLISION_NONE)
         {
             g_ReplayManager->replayEventFlags |= 0x40;
             switch (item->itemType)

@@ -32,13 +32,6 @@ inline void sincosf(f32 *outSin, f32 *outCos, f32 angle)
     }
 }
 
-struct PodFloat3
-{
-    f32 x;
-    f32 y;
-    f32 z;
-};
-
 struct Float3
 {
     Float3()

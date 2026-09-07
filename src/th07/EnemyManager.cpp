@@ -585,7 +585,7 @@ void Enemy::CheckBulletPlayerCollision(Float3 *bulletCenter,
         g_Player.CheckGraze(bulletCenter, &grazeSize);
     }
     grazeSize = *bulletSize / 1.5f;
-    if (g_Player.CalcKillboxCollision(bulletCenter, &grazeSize) == 1 &&
+    if (g_Player.CalcKillboxCollision(bulletCenter, &grazeSize) == PLAYER_COLLISION_HIT &&
         this->canDie &&
         (!this->isBoss && !this->isProjectile))
     {

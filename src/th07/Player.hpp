@@ -34,6 +34,13 @@ enum PlayerDirection
     MOVEMENT_DOWN_RIGHT
 };
 
+enum PlayerCollisionResult
+{
+    PLAYER_COLLISION_NONE,
+    PLAYER_COLLISION_HIT,
+    PLAYER_COLLISION_BOMB,
+};
+
 enum OptionState
 {
     OPTION_HIDDEN,
@@ -64,8 +71,10 @@ C_ASSERT(sizeof(BombProjectile) == 0x20);
 
 struct BombClearBox
 {
-    PodFloat3 pos;
-    PodFloat3 size;
+    Float2 pos;
+    Float2 size;
+    f32 radius;
+    f32 radiusGrowth;
     i32 lifetime;
     union {
         i32 itemType;
@@ -198,7 +207,7 @@ struct Player
     i32 CalcKillboxCollision(Float3 *center, Float3 *size);
     i32 CalcLaserHitbox(Float3 *center, Float3 *size,
                         Float3 *origin, f32 rotation, i32 canGraze);
-    i32 CheckBombGraze(Float3 *center, Float3 *size);
+    i32 CalcBombCollision(Float3 *center, Float3 *size);
     i32 CalcDamageToEnemy(Float3 *param_1, Float3 *param_2,
                           i32 *param_3);
     i32 CheckGraze(Float3 *center, Float3 *size);
@@ -207,10 +216,10 @@ struct Player
     i32 HandlePlayerInputs();
     void Respawn();
     void ScoreGraze(Float3 *param_1);
-    BombClearBox *SpawnBombEffect(Float3 *pos, f32 sizeY, f32 sizeZ,
+    BombClearBox *SpawnGrowingBomb(Float3 *pos, f32 radius, f32 radiusGrowth,
                                   i32 lifetime, i32 itemType);
-    BombClearBox *SpawnBombProjectile(Float3 *centerPosition, f32 posZ,
-                                      f32 size, i32 itemType);
+    BombClearBox *SpawnBombProjectile(Float3 *centerPosition, f32 sizeX,
+                                      f32 sizeY, i32 itemType);
     static void SpawnBullets(Player *player, u32 timer);
     void StartFireBulletTimer();
 

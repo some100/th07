@@ -945,7 +945,7 @@ i32 Player::CalcDamageToEnemy(Float3 *center, Float3 *size,
 
 #pragma var_order(bombTopLeft, bombY, bombX, i, bulletBottomRight, bulletTopLeft, bombProjectile, bombBottomRight)
 // FUNCTION: TH07 0x0043e0a0
-i32 Player::CheckBombGraze(Float3 *center, Float3 *size)
+i32 Player::CalcBombCollision(Float3 *center, Float3 *size)
 {
     BombClearBox *bombProjectile;
     i32 i;
@@ -963,12 +963,12 @@ i32 Player::CheckBombGraze(Float3 *center, Float3 *size)
     bulletBottomRight.y = center->y + size->y / 2.0f;
     for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombClearBoxes); i++, bombProjectile++)
     {
-        if (bombProjectile->pos.z != 0.0f)
+        if (bombProjectile->size.x != 0.0f)
         {
-            bombTopLeft.x = bombProjectile->pos.x - bombProjectile->pos.z / 2.0f;
-            bombTopLeft.y = bombProjectile->pos.y - bombProjectile->size.x / 2.0f;
-            bombBottomRight.x = bombProjectile->pos.z / 2.0f + bombProjectile->pos.x;
-            bombBottomRight.y = bombProjectile->size.x / 2.0f + bombProjectile->pos.y;
+            bombTopLeft.x = bombProjectile->pos.x - bombProjectile->size.x / 2.0f;
+            bombTopLeft.y = bombProjectile->pos.y - bombProjectile->size.y / 2.0f;
+            bombBottomRight.x = bombProjectile->size.x / 2.0f + bombProjectile->pos.x;
+            bombBottomRight.y = bombProjectile->size.y / 2.0f + bombProjectile->pos.y;
             if (!(bombTopLeft.x > bulletBottomRight.x ||
                   bombBottomRight.x < bulletTopLeft.x ||
                   bombTopLeft.y > bulletBottomRight.y ||
@@ -978,12 +978,12 @@ i32 Player::CheckBombGraze(Float3 *center, Float3 *size)
                 return 2;
             }
         }
-        else if (bombProjectile->size.y != 0.0) // double used here for some reason
+        else if (bombProjectile->radius != 0.0) // double used here for some reason
         {
             bombX = center->x - bombProjectile->pos.x;
             bombY = center->y - bombProjectile->pos.y;
             if (bombX * bombX + bombY * bombY <
-                bombProjectile->size.y * bombProjectile->size.y)
+                bombProjectile->radius * bombProjectile->radius)
             {
                 this->itemType = bombProjectile->itemType;
                 return 2;
@@ -1005,9 +1005,9 @@ i32 Player::CalcKillboxCollision(Float3 *center, Float3 *size)
     Float3 killboxTopLeft;
 
     this->itemType = ITEM_POINT_BULLET;
-    if (CheckBombGraze(center, size))
+    if (CalcBombCollision(center, size))
     {
-        return 2;
+        return PLAYER_COLLISION_BOMB;
     }
 
     killboxTopLeft.x = center->x - size->x / 2.0f;
@@ -1019,23 +1019,23 @@ i32 Player::CalcKillboxCollision(Float3 *center, Float3 *size)
         this->hitboxBottomRight.x < killboxTopLeft.x ||
         this->hitboxBottomRight.y < killboxTopLeft.y)
     {
-        return 0;
+        return PLAYER_COLLISION_NONE;
     }
 
     g_ReplayManager->replayEventFlags = g_ReplayManager->replayEventFlags | 2;
     if (this->playerState == PLAYER_STATE_BORDER)
     {
         g_Player.BreakBorder(0);
-        return 1;
+        return PLAYER_COLLISION_HIT;
     }
     if (this->playerState != PLAYER_STATE_ALIVE)
     {
-        return 1;
+        return PLAYER_COLLISION_HIT;
     }
 
     g_GameManager.RerollRng();
     Die();
-    return 1;
+    return PLAYER_COLLISION_HIT;
 }
 
 #pragma var_order(bulletBottomRight, bulletTopLeft)
@@ -1047,9 +1047,9 @@ i32 Player::CheckGraze(Float3 *center, Float3 *size)
 
     this->itemType = ITEM_POINT_BULLET;
 
-    if (CheckBombGraze(center, size))
+    if (CalcBombCollision(center, size))
     {
-        return 2;
+        return PLAYER_COLLISION_BOMB;
     }
 
     bulletTopLeft.x = center->x - size->x / 2.0f - 20.0f;
@@ -1060,17 +1060,17 @@ i32 Player::CheckGraze(Float3 *center, Float3 *size)
     if (this->playerState == PLAYER_STATE_DEAD ||
         this->playerState == PLAYER_STATE_SPAWNING)
     {
-        return 0;
+        return PLAYER_COLLISION_NONE;
     }
 
     if (this->grazeTopLeft.x > bulletBottomRight.x || this->grazeBottomRight.x < bulletTopLeft.x ||
         this->grazeTopLeft.y > bulletBottomRight.y || this->grazeBottomRight.y < bulletTopLeft.y)
     {
-        return 0;
+        return PLAYER_COLLISION_NONE;
     }
 
     ScoreGraze(center);
-    return 1;
+    return PLAYER_COLLISION_HIT;
 }
 
 #pragma var_order(itemBottomRight, itemTopLeft)
@@ -1084,7 +1084,7 @@ i32 Player::CalcItemBoxCollision(Float3 *center, Float3 *size)
         this->playerState != PLAYER_STATE_INVULNERABLE &&
         this->playerState != PLAYER_STATE_BORDER)
     {
-        return 0;
+        return PLAYER_COLLISION_NONE;
     }
 
     memcpy(&itemTopLeft, &(*center - *size / 2.0f), sizeof(Float3));
@@ -1095,10 +1095,10 @@ i32 Player::CalcItemBoxCollision(Float3 *center, Float3 *size)
         this->grabItemTopLeft.y > itemBottomRight.y ||
         this->grabItemBottomRight.y < itemTopLeft.y)
     {
-        return 0;
+        return PLAYER_COLLISION_NONE;
     }
 
-    return 1;
+    return PLAYER_COLLISION_HIT;
 }
 
 #pragma var_order(playerRelativeTopLeft, laserBottomRight, laserTopLeft, playerRelativeBottomRight)
@@ -1130,7 +1130,7 @@ i32 Player::CalcLaserHitbox(Float3 *center, Float3 *size,
 
     if (!canGraze)
     {
-        return 0;
+        return PLAYER_COLLISION_NONE;
     }
 
     laserTopLeft.x -= 48.0f;
@@ -1142,17 +1142,17 @@ i32 Player::CalcLaserHitbox(Float3 *center, Float3 *size,
         playerRelativeTopLeft.y > laserBottomRight.y ||
         playerRelativeBottomRight.y < laserTopLeft.y)
     {
-        return 0;
+        return PLAYER_COLLISION_NONE;
     }
 
     if (this->playerState == PLAYER_STATE_DEAD ||
         this->playerState == PLAYER_STATE_SPAWNING)
     {
-        return 0;
+        return PLAYER_COLLISION_NONE;
     }
 
     ScoreGraze(&this->pos);
-    return 2;
+    return PLAYER_COLLISION_BOMB;
 
 LASER_COLLISION:
     g_ReplayManager->replayEventFlags = g_ReplayManager->replayEventFlags | 2;
@@ -1160,16 +1160,16 @@ LASER_COLLISION:
     {
         // this is already a member function of Player though
         g_Player.BreakBorder(0);
-        return 1;
+        return PLAYER_COLLISION_HIT;
     }
     if (this->playerState != PLAYER_STATE_ALIVE)
     {
-        return 0;
+        return PLAYER_COLLISION_NONE;
     }
 
     g_GameManager.RerollRng();
     Die();
-    return 1;
+    return PLAYER_COLLISION_HIT;
 }
 
 // FUNCTION: TH07 0x0043eb90
@@ -1668,13 +1668,13 @@ void Player::UpdateBombProjectiles()
     {
         if (bomb->lifetime <= 0)
         {
-            bomb->size.y = 0.0f;
-            bomb->pos.z = 0.0f;
+            bomb->radius = 0.0f;
+            bomb->size.x = 0.0f;
         }
         else
         {
             bomb->lifetime--;
-            bomb->size.y += bomb->size.z;
+            bomb->radius += bomb->radiusGrowth;
         }
     }
 }
@@ -2035,7 +2035,7 @@ void Player::BreakBorderNaturally()
 #pragma var_order(i, bomb)
 // FUNCTION: TH07 0x00441800
 BombClearBox *Player::SpawnBombProjectile(Float3 *centerPosition,
-                                          f32 posZ, f32 size, i32 itemType)
+                                          f32 sizeX, f32 sizeY, i32 itemType)
 {
     BombClearBox *bomb;
     i32 i;
@@ -2043,15 +2043,15 @@ BombClearBox *Player::SpawnBombProjectile(Float3 *centerPosition,
     bomb = this->bombClearBoxes;
     for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombClearBoxes) - 1; i++, bomb++)
     {
-        if (bomb->pos.z == 0.0f && bomb->size.y == 0.0f)
+        if (bomb->size.x == 0.0f && bomb->radius == 0.0f)
         {
             break;
         }
     }
     bomb->pos.x = centerPosition->x;
     bomb->pos.y = centerPosition->y;
-    bomb->pos.z = posZ;
-    bomb->size.x = size;
+    bomb->size.x = sizeX;
+    bomb->size.y = sizeY;
     bomb->lifetime = 0;
     bomb->itemType = itemType;
     return bomb;
@@ -2059,7 +2059,7 @@ BombClearBox *Player::SpawnBombProjectile(Float3 *centerPosition,
 
 #pragma var_order(i, bomb)
 // FUNCTION: TH07 0x004418b0
-BombClearBox *Player::SpawnBombEffect(Float3 *pos, f32 sizeY, f32 sizeZ,
+BombClearBox *Player::SpawnGrowingBomb(Float3 *pos, f32 radius, f32 radiusGrowth,
                                       i32 lifetime, i32 itemType)
 {
     BombClearBox *bomb;
@@ -2068,15 +2068,15 @@ BombClearBox *Player::SpawnBombEffect(Float3 *pos, f32 sizeY, f32 sizeZ,
     bomb = this->bombClearBoxes;
     for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombClearBoxes) - 1; i++, bomb++)
     {
-        if (bomb->pos.z == 0.0f && bomb->size.y == 0.0f)
+        if (bomb->size.x == 0.0f && bomb->radius == 0.0f)
         {
             break;
         }
     }
     bomb->pos.x = pos->x;
     bomb->pos.y = pos->y;
-    bomb->size.y = sizeY;
-    bomb->size.z = sizeZ;
+    bomb->radius = radius;
+    bomb->radiusGrowth = radiusGrowth;
     bomb->lifetime = lifetime;
     bomb->itemType = itemType;
     return bomb;
@@ -2178,7 +2178,7 @@ void Player::BreakBorder(u32 unused)
     this->invulnerabilityTimer = 40;
     this->borderInvulnerabilityTime = 40;
     g_GameManager.cherryPlus = g_GameManager.globals->cherryStart;
-    SpawnBombEffect(&this->pos, 32.0f, 16.0f, 50, 8);
+    SpawnGrowingBomb(&this->pos, 32.0f, 16.0f, 50, 8);
     angle = -ZUN_PI;
     for (i = 0; i < 32; i++, angle += ZUN_PI / 16.0f)
     {

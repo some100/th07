@@ -451,7 +451,7 @@ address|name|type
 0043d880|Player::UpdateFireBulletTimer|function
 0043d990|Player::StartFireBulletTimer|function
 0043d9e0|Player::CalcDamageToEnemy|function
-0043e0a0|Player::CheckBombGraze|function
+0043e0a0|Player::CalcBombCollision|function
 0043e260|Player::CalcKillboxCollision|function
 0043e3b0|Player::CheckGraze|function
 0043e4e0|Player::CalcItemBoxCollision|function
@@ -466,7 +466,7 @@ address|name|type
 00441330|Player::UpdateState|function
 00441670|Player::BreakBorderNaturally|function
 00441800|Player::SpawnBombProjectile|function
-004418b0|Player::SpawnBombEffect|function
+004418b0|Player::SpawnGrowingBomb|function
 00441960|Player::ActivateBorder|function
 00441bd0|Player::BreakBorder|function
 00441e80|Player::UpdateUI|function
