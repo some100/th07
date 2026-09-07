@@ -211,7 +211,7 @@ void ItemManager::OnUpdate()
             item->velocity.y = 3.0f;
         }
     check_collision:
-        if (g_Player.CalcItemBoxCollision(&item->pos, &local_20))
+        if (g_Player.CalcItemBoxCollision(&item->pos, &local_20) != PLAYER_COLLISION_NONE)
         {
             g_ReplayManager->replayEventFlags |= 0x40;
             switch (item->itemType)
