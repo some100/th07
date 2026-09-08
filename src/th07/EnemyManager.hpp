@@ -67,8 +67,8 @@ struct Enemy
                                     Float3 *bulletSize);
     void ClampPos();
     void Despawn();
-    i32 HandleLifeCallback();
-    i32 HandleTimerCallback();
+    ZunBool HandleLifeCallback();
+    ZunBool HandleTimerCallback();
     void ResetEffectArray();
     void UpdateEffects();
 
@@ -363,7 +363,7 @@ struct EnemyManager
 
     static u32 ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3);
 
-    i32 HasActiveBoss();
+    ZunBool HasActiveBoss();
     i32 RemoveAllEnemies(i32 scoreMax, i32 scoreMin);
     static void RunEclTimeline(EclTimeline *timeline);
     Enemy *SpawnEnemy(i32 eclSubId, Float3 *pos, i32 life, i32 itemDrop,

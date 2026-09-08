@@ -178,7 +178,7 @@ struct Laser
     i32 duration;
     i32 endTime;
     i32 hitboxEndTime;
-    i32 inUse;
+    ZunBool isInUse;
     ZunTimer timer;
     u16 flags;
     i16 color;
@@ -277,7 +277,7 @@ struct BulletManager
     static u32 OnUpdate(BulletManager *arg);
     static u32 OnDraw(BulletManager *arg);
 
-    i32 DespawnBullets(i32 param_1, i32 turnIntoItem);
+    i32 DespawnBullets(i32 param_1, ZunBool turnIntoItem);
     void RemoveAllBullets(i32 param_1);
     void RemoveBulletsInRadius(Float3 *centerPos, f32 radius);
     static void SetActiveSpriteByResolution(AnmVm *sprite,

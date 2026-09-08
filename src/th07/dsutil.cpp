@@ -311,7 +311,7 @@ CSound::CSound(LPDIRECTSOUNDBUFFER *apDSBuffer, DWORD dwDSBufferSize,
     {
         this->m_apDSBuffer[i]->SetCurrentPosition(0);
     }
-    this->m_bIsPlaying = 0;
+    this->m_bIsPlaying = FALSE;
 }
 
 //-----------------------------------------------------------------------------
@@ -323,7 +323,7 @@ HRESULT CStreamingSound::InitSoundBuffers()
 {
     DWORD i;
 
-    this->m_bIsPlaying = 0;
+    this->m_bIsPlaying = FALSE;
     for (i = 0; i < this->m_dwNumBuffers; i++)
     {
         SAFE_RELEASE(this->m_apDSBuffer[i]);
@@ -609,7 +609,7 @@ HRESULT CSound::Play(DWORD dwPriority, DWORD dwFlags)
     this->m_iCurFadeoutProgress = 0;
     this->m_iTotalFadeout = 0;
     this->m_apDSBuffer[0]->SetVolume(0);
-    this->m_bIsPlaying = 1;
+    this->m_bIsPlaying = TRUE;
     this->m_dwPriority = dwPriority;
     this->m_dwFlags = dwFlags;
     this->unused_2c = 0;
@@ -629,7 +629,7 @@ u32 CSound::Stop()
     }
 
     HRESULT hr = 0;
-    this->m_bIsPlaying = 0;
+    this->m_bIsPlaying = FALSE;
     for (DWORD i = 0; i < this->m_dwNumBuffers; i++)
     {
         hr |= this->m_apDSBuffer[i]->Stop();
@@ -652,7 +652,7 @@ HRESULT CSound::Pause()
     }
 
     HRESULT hr = 0;
-    this->m_bIsPlaying = 0;
+    this->m_bIsPlaying = FALSE;
     hr |= this->m_apDSBuffer[0]->Stop();
     return hr;
 }
@@ -670,7 +670,7 @@ HRESULT CSound::Unpause()
     }
 
     LPDIRECTSOUNDBUFFER pDSB = this->m_apDSBuffer[0];
-    this->m_bIsPlaying = 1;
+    this->m_bIsPlaying = TRUE;
     return pDSB->Play(0, this->m_dwPriority, this->m_dwFlags);
 }
 
@@ -750,7 +750,7 @@ HRESULT CStreamingSound::UpdateFadeOut()
                   bRestored, dwPlayDelta, hr, dwDSLockedBufferSize,           \
                   dwCurrentPlayPos2, dwCurrentWritePos, dwReadSoFar)
 // FUNCTION: TH07 0x0045db60
-HRESULT CStreamingSound::HandleWaveStreamNotification(i32 bLoopedPlay)
+HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
 {
     HRESULT hr;
     DWORD dwPlayDelta;

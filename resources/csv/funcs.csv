@@ -281,10 +281,10 @@ address|name|type
 0042f69f|GameManager::AddCherry|function
 0042f736|GameManager::IncreaseCherry|function
 0042f789|GameManager::IncreaseCherryMax|function
-0042f7df|GameManager::HasReachedMaxClears|function
-0042f853|GameManager::HasUnlockedPhantom|function
-0042f8de|GameManager::HasReachedMaxClearsAllShotTypes|function
-0042f94c|GameManager::HasUnlockedPhantomAndMaxClears|function
+0042f7df|GameManager::HasReachedMaxClearsAnyDifficulty|function
+0042f853|GameManager::HasUnlockedPhantasm|function
+0042f8de|GameManager::HasReachedMaxClearsAnyShotType|function
+0042f94c|GameManager::HasUnlockedPhantasmAndMaxClears|function
 0042fa60|Chain::~Chain|function
 0042fab0|ChainElem::ChainElem|function
 0042fb20|ChainElem::~ChainElem|function

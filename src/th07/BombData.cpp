@@ -57,7 +57,7 @@ void BombData::DarkenViewport(Player *player)
     }
     g_AnmManager->SetColor(0x80808080);
     g_Stage.SmoothBlendColor(color);
-    g_Stage.isDarkening = 1;
+    g_Stage.isDarkening = TRUE;
 }
 
 // FUNCTION: TH07 0x004084f0
@@ -127,7 +127,7 @@ void BombData::BombReimuACalc(Player *player)
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
     {
         g_Gui.EndPlayerSpellcard();
-        player->bombInfo.isInUse = 0;
+        player->bombInfo.isInUse = FALSE;
         return;
     }
 
@@ -325,7 +325,7 @@ void BombData::BombReimuACalcFocus(Player *player)
     if (bombInfo->bombTimer >= bombInfo->bombDuration)
     {
         g_Gui.EndPlayerSpellcard();
-        bombInfo->isInUse = 0;
+        bombInfo->isInUse = FALSE;
         player->verticalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 1.0f;
         return;
@@ -525,7 +525,7 @@ void BombData::BombReimuBCalc(Player *player)
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
     {
         g_Gui.EndPlayerSpellcard();
-        player->bombInfo.isInUse = 0;
+        player->bombInfo.isInUse = FALSE;
         return;
     }
 
@@ -636,7 +636,7 @@ void BombData::BombReimuBCalcFocus(Player *player)
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
     {
         g_Gui.EndPlayerSpellcard();
-        player->bombInfo.isInUse = 0;
+        player->bombInfo.isInUse = FALSE;
         player->verticalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 1.0f;
         return;
@@ -718,7 +718,7 @@ void BombData::BombMarisaACalc(Player *player)
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
     {
         g_Gui.EndPlayerSpellcard();
-        player->bombInfo.isInUse = 0;
+        player->bombInfo.isInUse = FALSE;
         return;
     }
 
@@ -827,7 +827,7 @@ void BombData::BombMarisaACalcFocus(Player *player)
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
     {
         g_Gui.EndPlayerSpellcard();
-        player->bombInfo.isInUse = 0;
+        player->bombInfo.isInUse = FALSE;
         player->verticalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 1.0f;
         return;
@@ -978,7 +978,7 @@ void BombData::BombMarisaBCalc(Player *player)
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
     {
         g_Gui.EndPlayerSpellcard();
-        player->bombInfo.isInUse = 0;
+        player->bombInfo.isInUse = FALSE;
         player->verticalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 1.0f;
         return;
@@ -1106,7 +1106,7 @@ void BombData::BombMarisaBCalcFocus(Player *player)
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
     {
         g_Gui.EndPlayerSpellcard();
-        player->bombInfo.isInUse = 0;
+        player->bombInfo.isInUse = FALSE;
         player->verticalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 1.0f;
         return;
@@ -1209,7 +1209,7 @@ void BombData::BombSakuyaACalc(Player *player)
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
     {
         g_Gui.EndPlayerSpellcard();
-        player->bombInfo.isInUse = 0;
+        player->bombInfo.isInUse = FALSE;
         return;
     }
 
@@ -1341,7 +1341,7 @@ void BombData::BombSakuyaACalcFocus(Player *player)
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
     {
         g_Gui.EndPlayerSpellcard();
-        player->bombInfo.isInUse = 0;
+        player->bombInfo.isInUse = FALSE;
         player->verticalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 1.0f;
         return;
@@ -1511,7 +1511,7 @@ void BombData::BombSakuyaBCalc(Player *player)
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
     {
         g_Gui.EndPlayerSpellcard();
-        player->bombInfo.isInUse = 0;
+        player->bombInfo.isInUse = FALSE;
         player->verticalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->SpawnGrowingBomb(&player->pos, 800.0f, 0.0f, 0,
@@ -1634,7 +1634,7 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
     {
         g_Gui.EndPlayerSpellcard();
-        player->bombInfo.isInUse = 0;
+        player->bombInfo.isInUse = FALSE;
         player->verticalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->SpawnGrowingBomb(&player->pos, 800.0f, 0.0f, 0,
@@ -1654,7 +1654,7 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
         player->bombInfo.bombDuration = 300;
         player->invulnerabilityTimer = 420;
         SpawnBombInvulnEffect(player);
-        player->isBombing = 0;
+        player->isBombing = FALSE;
         subInfo = player->bombInfo.subInfo;
         for (i = 0; i < 2; i++, subInfo++)
         {

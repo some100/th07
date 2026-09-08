@@ -195,7 +195,7 @@ class CStreamingSound : public CSound
     // SYNTHETIC: TH07 0x0045da80
     // CStreamingSound::`scalar deleting destructor'
 
-    HRESULT HandleWaveStreamNotification(i32 bLoopedPlay);
+    HRESULT HandleWaveStreamNotification(BOOL bLoopedPlay);
     HRESULT Reset();
     HRESULT InitSoundBuffers();
     HRESULT UpdateFadeOut();

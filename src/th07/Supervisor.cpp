@@ -132,7 +132,7 @@ void Supervisor::CheckTiming()
         {
             this->timingErrorCount--;
         }
-        this->checkTiming = 0;
+        this->checkTiming = FALSE;
     }
 
     if (this->maxTimingError >= 40 || this->timingBadCount >= 16)
@@ -630,13 +630,13 @@ i32 Supervisor::CheckVSync()
         {
             g_GameErrorContext.Log(TH_LOG_VSYNC_FAIL);
             g_GameErrorContext.Log(TH_LOG_FORCE_60FPS);
-            g_Supervisor.vsyncDisabled = 1;
+            g_Supervisor.vsyncDisabled = TRUE;
         }
         else if (fpsSum >= 65.0f)
         {
             g_GameErrorContext.Log(TH_LOG_VSYNC_FAIL_2);
             g_GameErrorContext.Log(TH_LOG_FORCE_60FPS);
-            g_Supervisor.vsyncDisabled = 1;
+            g_Supervisor.vsyncDisabled = TRUE;
             return -2;
         }
     }
@@ -671,7 +671,7 @@ ZunResult Supervisor::AddedCallback(Supervisor *arg)
 
     // STRING: TH07 0x00497038
     g_AnmManager->LoadSurface(0, "data/title/th07logo.jpg");
-    g_Supervisor.isInEnding = 1;
+    g_Supervisor.isInEnding = TRUE;
     if (!g_Supervisor.vsyncDisabled)
     {
         if (CheckVSync())
@@ -696,7 +696,7 @@ ZunResult Supervisor::AddedCallback(Supervisor *arg)
         }
     }
     g_AnmManager->ReleaseSurface(0);
-    arg->isInEnding = 0;
+    arg->isInEnding = FALSE;
     arg->renderSkipFrames = 0;
     arg->lastTotalPlayTimeUpdate = timeGetTime();
     g_Rng.SetSeed(arg->lastTotalPlayTimeUpdate);
@@ -1266,7 +1266,7 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
     {
         g_GameErrorContext.Log(TH_CONFIG_DISABLE_DEPTH_TEST);
     }
-    this->vsyncDisabled = 0;
+    this->vsyncDisabled = FALSE;
     this->cfg.unused = 0;
     if (this->cfg.disableTextureBlend)
     {
@@ -1295,7 +1295,7 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
     if (this->cfg.disableVsync)
     {
         g_GameErrorContext.Log(TH_CONFIG_DISABLE_VSYNC);
-        g_Supervisor.vsyncDisabled = 1;
+        g_Supervisor.vsyncDisabled = TRUE;
     }
     if (FileSystem::WriteDataToFile(configFilename, &g_Supervisor.cfg,
                                     sizeof(GameConfiguration)))
@@ -1477,9 +1477,9 @@ i32 Supervisor::IsSlowMode()
 HRESULT Supervisor::EnableFog()
 {
     g_AnmManager->Flush();
-    if (this->fogEnabled != 1)
+    if (this->fogEnabled != TRUE)
     {
-        this->fogEnabled = 1;
+        this->fogEnabled = TRUE;
         return this->d3dDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
     }
 
@@ -1492,7 +1492,7 @@ HRESULT Supervisor::DisableFog()
     g_AnmManager->Flush();
     if (this->fogEnabled)
     {
-        this->fogEnabled = 0;
+        this->fogEnabled = FALSE;
         return this->d3dDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
     }
 

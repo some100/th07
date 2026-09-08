@@ -34,7 +34,7 @@ ZunResult MusicRoom::CheckInputEnable()
     }
     if (this->waitFramesCounter >= 8)
     {
-        this->enableInput = 1;
+        this->enableInput = TRUE;
     }
     return ZUN_SUCCESS;
 }

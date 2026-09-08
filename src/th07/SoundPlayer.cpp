@@ -914,16 +914,16 @@ loop_breakout:
 // FUNCTION: TH07 0x0044d200
 DWORD __stdcall SoundPlayer::BackgroundMusicPlayerThread(LPVOID lpThreadParameter)
 {
-    u32 stopped;
+    ZunBool stopped;
     HRESULT hr;
     DWORD waitObj;
     LPVOID lpThreadParameterCopy;
-    u32 looped;
+    ZunBool looped;
     MSG msg;
 
     lpThreadParameterCopy = lpThreadParameter;
-    stopped = false;
-    looped = true;
+    stopped = FALSE;
+    looped = TRUE;
     while (!stopped)
     {
         waitObj = MsgWaitForMultipleObjects(
@@ -932,7 +932,7 @@ DWORD __stdcall SoundPlayer::BackgroundMusicPlayerThread(LPVOID lpThreadParamete
                 QS_MOUSEBUTTON | QS_MOUSEMOVE | QS_KEY);
         if (!g_SoundPlayer.backgroundMusic)
         {
-            stopped = true;
+            stopped = TRUE;
         }
 
         switch (waitObj)
@@ -941,9 +941,9 @@ DWORD __stdcall SoundPlayer::BackgroundMusicPlayerThread(LPVOID lpThreadParamete
             if (g_SoundPlayer.backgroundMusic &&
                 g_SoundPlayer.backgroundMusic->m_bIsPlaying)
             {
-                g_SoundPlayer.backgroundMusic->m_bIsLocked = 1;
+                g_SoundPlayer.backgroundMusic->m_bIsLocked = TRUE;
                 hr = g_SoundPlayer.backgroundMusic->HandleWaveStreamNotification(looped);
-                g_SoundPlayer.backgroundMusic->m_bIsLocked = 0;
+                g_SoundPlayer.backgroundMusic->m_bIsLocked = FALSE;
             }
             break;
         case 1:
@@ -951,7 +951,7 @@ DWORD __stdcall SoundPlayer::BackgroundMusicPlayerThread(LPVOID lpThreadParamete
             {
                 if (msg.message == WM_QUIT)
                 {
-                    stopped = true;
+                    stopped = TRUE;
                 }
             }
             break;

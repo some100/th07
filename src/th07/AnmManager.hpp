@@ -474,13 +474,13 @@ struct AnmManager
 
     void SetColor(D3DCOLOR color)
     {
-        this->colorMulEnabled = 0;
+        this->colorMulEnabled = FALSE;
         this->color.color = color;
     }
 
     void SetColorWithMulEnabled(D3DCOLOR color)
     {
-        this->colorMulEnabled = 1;
+        this->colorMulEnabled = TRUE;
         this->color.color = color;
     }
 
@@ -531,7 +531,7 @@ struct AnmManager
         }
     }
 
-    i32 ShouldDraw(AnmVm *vm)
+    ZunBool ShouldDraw(AnmVm *vm)
     {
         if (!vm->sprite)
         {
@@ -627,7 +627,7 @@ struct AnmManager
     }
 
     ZunColor color;
-    i32 colorMulEnabled;
+    ZunBool colorMulEnabled;
     i32 scriptsExecutedThisFrame;
     i32 scriptTicksThisFrame;
     i32 renderStateChangesThisFrame;

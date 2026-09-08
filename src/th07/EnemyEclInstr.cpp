@@ -333,7 +333,7 @@ void EnemyEclInstr::ExInsSplitBulletsOrShootBackwards(Enemy *enemy,
 
 #pragma var_order(p, rot, d)
 // FUNCTION: TH07 0x004185d0
-i32 IsPointInRotatedRect(Float3 *point, Float3 *center,
+ZunBool IsPointInRotatedRect(Float3 *point, Float3 *center,
                          Float3 *size, Float3 *pivot,
                          f32 sine, f32 cosine)
 {
@@ -355,10 +355,10 @@ i32 IsPointInRotatedRect(Float3 *point, Float3 *center,
     if (p.x > rot.x || p.x < d.x ||
         p.y > rot.y || p.y < d.y)
     {
-        return 0;
+        return FALSE;
     }
 
-    return 1;
+    return TRUE;
 }
 
 #pragma var_order(j, sine, dot, size, bullet, laser, i, cosine, center)
@@ -379,7 +379,7 @@ void EnemyEclInstr::ExInsReflectBulletsFromLasers(Enemy *enemy,
     laser = g_BulletManager.lasers;
     for (i = 0; i < ARRAY_SIZE_SIGNED(g_BulletManager.lasers); i++, laser++)
     {
-        if (!laser->inUse)
+        if (!laser->isInUse)
         {
             continue;
         }
@@ -469,7 +469,7 @@ void EnemyEclInstr::ExInsShootBulletsAlongLaser(Enemy *enemy,
     laser = g_BulletManager.lasers;
     for (i = 0; i < ARRAY_SIZE_SIGNED(g_BulletManager.lasers); i++, laser++)
     {
-        if (!laser->inUse)
+        if (!laser->isInUse)
         {
             continue;
         }

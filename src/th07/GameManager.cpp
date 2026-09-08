@@ -135,7 +135,7 @@ u32 GameManager::OnUpdate(GameManager *arg)
         g_GameManager.arcadeRegionTopLeftPos.y = 16.0f;
         g_GameManager.arcadeRegionSize.x = 384.0f;
         g_GameManager.arcadeRegionSize.y = 448.0f;
-        arg->isPaused = 1;
+        arg->isPaused = TRUE;
         if (g_GameManager.currentStage != STAGE6 || g_Gui.frameCounter >= 300)
         {
             // STRING: TH07 0x00498a40
@@ -493,7 +493,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
     i32 shotTypeAndChar;
     u32 size;
 
-    g_Supervisor.checkTiming = 0;
+    g_Supervisor.checkTiming = FALSE;
     arg->difficultyMask = 1 << arg->difficulty;
     arg->shotTypeAndCharacter = arg->character * 2 + arg->shotType;
     g_Supervisor.currentTime = timeGetTime();
@@ -662,7 +662,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
                 {
                     IncrementCappedAgain(
                         &g_GameManager.plst
-                            .playDataByDifficulty[g_GameManager.difficulty]
+                             .playDataByDifficulty[g_GameManager.difficulty]
                              .practiceCount,
                         999999);
                     IncrementCappedAgain(
@@ -726,7 +726,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
     if (g_GameManager.replay)
     {
         arg->InitializeRank();
-        ReplayManager::RegisterChain(1, g_GameManager.replayFilename);
+        ReplayManager::RegisterChain(TRUE, g_GameManager.replayFilename);
         oldSeed = g_Rng.seed;
         arg->RegenerateGameIntegrityCsum();
         g_Rng.seed = oldSeed;
@@ -773,7 +773,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
     if (!g_GameManager.replay)
     {
         // STRING: TH07 0x00497e1c
-        ReplayManager::RegisterChain(0, "replay/th7_00.rpy");
+        ReplayManager::RegisterChain(FALSE, "replay/th7_00.rpy");
     }
     g_Supervisor.LoadAudio(0, g_Stage.stdData->bgmPaths[0]);
     g_Supervisor.LoadAudio(1, g_Stage.stdData->bgmPaths[1]);
@@ -967,18 +967,16 @@ void GameManager::IncreaseCherryMax(i32 amount)
 }
 
 // FUNCTION: TH07 0x0042f7df
-i32 GameManager::HasReachedMaxClears(i32 shotType)
+ZunBool GameManager::HasReachedMaxClearsAnyDifficulty(i32 shotType)
 {
-    return this->clrd[shotType].difficultyClearedWithRetries[DIFF_EASY] != 99 &&
-                   this->clrd[shotType].difficultyClearedWithRetries[DIFF_NORMAL] != 99 &&
-                   this->clrd[shotType].difficultyClearedWithRetries[DIFF_HARD] != 99 &&
-                   this->clrd[shotType].difficultyClearedWithRetries[DIFF_LUNATIC] != 99
-               ? 0
-               : 1;
+    return this->clrd[shotType].difficultyClearedWithRetries[DIFF_EASY] == 99 ||
+           this->clrd[shotType].difficultyClearedWithRetries[DIFF_NORMAL] == 99 ||
+           this->clrd[shotType].difficultyClearedWithRetries[DIFF_HARD] == 99 ||
+           this->clrd[shotType].difficultyClearedWithRetries[DIFF_LUNATIC] == 99;
 }
 
 // FUNCTION: TH07 0x0042f853
-i32 GameManager::HasUnlockedPhantom(i32 shotType)
+ZunBool GameManager::HasUnlockedPhantasm(i32 shotType)
 {
     i32 numSuccesses = 0;
     for (i32 i = 0; i < SPELLCARD_COUNT; i++)
@@ -997,21 +995,19 @@ i32 GameManager::HasUnlockedPhantom(i32 shotType)
 }
 
 // FUNCTION: TH07 0x0042f8de
-i32 GameManager::HasReachedMaxClearsAllShotTypes()
+ZunBool GameManager::HasReachedMaxClearsAnyShotType()
 {
-    return !HasReachedMaxClears(SHOT_REIMU_A) &&
-                   !HasReachedMaxClears(SHOT_REIMU_B) &&
-                   !HasReachedMaxClears(SHOT_MARISA_A) &&
-                   !HasReachedMaxClears(SHOT_MARISA_B) &&
-                   !HasReachedMaxClears(SHOT_SAKUYA_A) &&
-                   !HasReachedMaxClears(SHOT_SAKUYA_B)
-               ? 0
-               : 1;
+    return HasReachedMaxClearsAnyDifficulty(SHOT_REIMU_A) ||
+           HasReachedMaxClearsAnyDifficulty(SHOT_REIMU_B) ||
+           HasReachedMaxClearsAnyDifficulty(SHOT_MARISA_A) ||
+           HasReachedMaxClearsAnyDifficulty(SHOT_MARISA_B) ||
+           HasReachedMaxClearsAnyDifficulty(SHOT_SAKUYA_A) ||
+           HasReachedMaxClearsAnyDifficulty(SHOT_SAKUYA_B);
 }
 
 #pragma var_order(spellCardsCaptured, i, j)
 // FUNCTION: TH07 0x0042f94c
-i32 GameManager::HasUnlockedPhantomAndMaxClears()
+ZunBool GameManager::HasUnlockedPhantasmAndMaxClears()
 {
     i32 j;
     i32 i;

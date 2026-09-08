@@ -48,7 +48,7 @@ u32 AsciiManager::OnUpdate(AsciiManager *arg)
         curPopup = arg->popups;
         for (i = 0; i < ARRAY_SIZE_SIGNED(arg->popups); i++, curPopup++)
         {
-            if (!curPopup->inUse)
+            if (!curPopup->isInUse)
             {
                 continue;
             }
@@ -57,7 +57,7 @@ u32 AsciiManager::OnUpdate(AsciiManager *arg)
             curPopup->timer.NextTick();
             if (curPopup->timer > 60)
             {
-                curPopup->inUse = 0;
+                curPopup->isInUse = 0;
             }
         }
     }
@@ -116,8 +116,8 @@ void AsciiManager::InitializeVms()
     memset(&this->retryMenu, 0, sizeof(RetryMenu));
     memset(&this->popups, 0, sizeof(this->popups));
     this->numStrings = 0;
-    this->isGui = 0;
-    this->isSelected = 0;
+    this->isGui = FALSE;
+    this->isSelected = FALSE;
     this->nextPopupIndex1 = 0;
     this->nextPopupIndex2 = 0;
     this->unused_74e4 = 0;
@@ -128,7 +128,7 @@ void AsciiManager::InitializeVms()
     g_AnmManager->InitializeAndSetActiveSprite(&this->largeTextVm, ANM_SPRITE_ASCII_LARGE_FONT);
     g_AnmManager->InitializeAndSetActiveSprite(&this->smallScorePopupVm, ANM_SPRITE_ASCII_SMALL_SCORE);
     this->largeTextVm.pos.z = 0.1f;
-    this->isSelected = 0;
+    this->isSelected = FALSE;
     this->fontSpacing = 14;
     this->SetFadeState(this->uiFadeState);
 }
@@ -239,7 +239,7 @@ void AsciiManager::AddString(Float3 *pos, const char *text)
     }
     else
     {
-        curString->isSelected = 0;
+        curString->isSelected = FALSE;
     }
 }
 
@@ -263,12 +263,12 @@ void AsciiManager::DrawStrings()
 {
     i32 idk[3];
     f32 charWidth;
-    i32 guiString;
+    ZunBool guiString;
     char *text;
     AsciiManagerString *string;
     i32 i;
 
-    guiString = 1;
+    guiString = TRUE;
     string = this->strings;
     this->smallScorePopupVm.visible = 1;
     this->smallScorePopupVm.anchor = 3;
@@ -283,7 +283,7 @@ void AsciiManager::DrawStrings()
         {
             guiString = string->isGui;
             g_AnmManager->Flush();
-            if (guiString != 0)
+            if (guiString)
             {
                 g_Supervisor.viewport.X = g_GameManager.arcadeRegionTopLeftPos.x;
                 g_Supervisor.viewport.Y = g_GameManager.arcadeRegionTopLeftPos.y;
@@ -375,7 +375,7 @@ void AsciiManager::CreatePopup1(Float3 *pos, i32 value,
         this->nextPopupIndex1 = 0;
     }
     popup = this->popups + this->nextPopupIndex1;
-    popup->inUse = 1;
+    popup->isInUse = 1;
     characterCount = 0;
     if (value >= 0)
     {
@@ -414,7 +414,7 @@ void AsciiManager::CreatePopup2(Float3 *pos, i32 value,
         this->nextPopupIndex2 = 0;
     }
     popup = &this->popups[this->nextPopupIndex2 + MAX_POPUP1];
-    popup->inUse = 1;
+    popup->isInUse = 1;
     characterCount = 0;
     if (value >= 0)
     {
@@ -1083,7 +1083,7 @@ void AsciiManager::DrawPopups()
 
     for (i = 0; i < ARRAY_SIZE_SIGNED(this->popups); i++, popup++)
     {
-        if (!popup->inUse)
+        if (!popup->isInUse)
         {
             continue;
         }

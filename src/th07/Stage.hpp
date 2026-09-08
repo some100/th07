@@ -196,7 +196,7 @@ struct Stage
     // pad 3
     i32 spellCardState;
     i32 ticksSinceSpellcardStarted;
-    i32 clearBackground;
+    ZunBool clearBackground;
     i32 numSpellcardVms;
     i32 spellcardVmsIdx;
     AnmVm spellcardVms[32];
@@ -217,7 +217,7 @@ struct Stage
     u8 cameraTeleported;
     // pad 3
     ZunColor color2;
-    i32 isDarkening;
+    ZunBool isDarkening;
 };
 C_ASSERT(sizeof(Stage) == 0x52b4);
 extern Stage g_Stage;

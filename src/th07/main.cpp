@@ -45,15 +45,15 @@ struct GameWindow
     static void Present();
     RenderResult Render();
     static void ResetRenderState();
-    static i32 ResolveIt(const char *shortcutPath, char *dstPath, i32 maxPathLen);
+    static ZunBool ResolveIt(const char *shortcutPath, char *dstPath, i32 maxPathLen);
     static void SetWindowActive(HWND window);
     static LRESULT __stdcall WindowProc(HWND hWnd, u32 uMsg, WPARAM wParam,
                                         LPARAM lParam);
 
     HWND window;
-    i32 isAppClosing;
-    i32 isAppActive;
-    i32 isAppInactive;
+    ZunBool isAppClosing;
+    ZunBool isAppActive;
+    ZunBool isAppInactive;
     i8 curFrame;
     // pad 3
     LARGE_INTEGER lpFrequency;
@@ -264,11 +264,11 @@ LRESULT __stdcall GameWindow::WindowProc(HWND hWnd, u32 uMsg, WPARAM wParam,
         g_GameWindow.isAppActive = wParam;
         if (g_GameWindow.isAppActive)
         {
-            g_GameWindow.isAppInactive = 0;
+            g_GameWindow.isAppInactive = FALSE;
         }
         else
         {
-            g_GameWindow.isAppInactive = 1;
+            g_GameWindow.isAppInactive = TRUE;
         }
         break;
     case WM_SETCURSOR:
@@ -292,7 +292,7 @@ LRESULT __stdcall GameWindow::WindowProc(HWND hWnd, u32 uMsg, WPARAM wParam,
         }
         return 1;
     case WM_CLOSE:
-        g_GameWindow.isAppClosing = 1;
+        g_GameWindow.isAppClosing = TRUE;
         return 1;
     }
     return DefWindowProcA(hWnd, uMsg, wParam, lParam);
@@ -490,8 +490,8 @@ i32 GameWindow::CreateGameWindow(HINSTANCE hInstance)
     base_class.hCursor = LoadCursorA(NULL, IDC_ARROW);
     base_class.hInstance = hInstance;
     base_class.lpfnWndProc = WindowProc;
-    g_GameWindow.isAppActive = 1;
-    g_GameWindow.isAppInactive = 0;
+    g_GameWindow.isAppActive = TRUE;
+    g_GameWindow.isAppInactive = FALSE;
     // STRING: TH07 0x00497bd0
     base_class.lpszClassName = "BASE";
     RegisterClassA(&base_class);
@@ -541,7 +541,7 @@ i32 GameWindow::InitD3dRendering()
     D3DPRESENT_PARAMETERS presentParams;
     D3DDISPLAYMODE displayMode;
     bool usingD3dHal;
-    i32 retryWithoutRefreshRate;
+    ZunBool retryWithoutRefreshRate;
 
     usingD3dHal = true;
     memset(&presentParams, 0, sizeof(D3DPRESENT_PARAMETERS));
@@ -569,7 +569,7 @@ i32 GameWindow::InitD3dRendering()
         }
         if (g_GameWindow.usesRelativePath != false)
         {
-            g_Supervisor.vsyncDisabled = 1;
+            g_Supervisor.vsyncDisabled = TRUE;
         }
         if (!g_Supervisor.vsyncDisabled)
         {
@@ -606,8 +606,8 @@ i32 GameWindow::InitD3dRendering()
     presentParams.AutoDepthStencilFormat = D3DFMT_D16;
     presentParams.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
     g_Supervisor.hasLockableBackbuffer = 1;
-    g_Supervisor.lockableBackBuffer = 1;
-    retryWithoutRefreshRate = 0;
+    g_Supervisor.lockableBackBuffer = TRUE;
+    retryWithoutRefreshRate = FALSE;
     for (;;)
     {
         if (g_Supervisor.cfg.forceReferenceRender)
@@ -641,8 +641,8 @@ i32 GameWindow::InitD3dRendering()
                     {
                         g_GameErrorContext.Log(TH_LOG_REFRESH_RATE_UNCHANGED);
                         presentParams.FullScreen_RefreshRateInHz = 0;
-                        g_Supervisor.lockableBackBuffer = 0;
-                        retryWithoutRefreshRate = 1;
+                        g_Supervisor.lockableBackBuffer = FALSE;
+                        retryWithoutRefreshRate = TRUE;
                         continue;
                     }
 
@@ -737,7 +737,7 @@ i32 GameWindow::InitD3dRendering()
     }
     ResetRenderState();
     ScreenEffect::SetViewport(0xff000000);
-    g_GameWindow.isAppClosing = 0;
+    g_GameWindow.isAppClosing = FALSE;
     g_Supervisor.lastFrameTime = 0;
     return 0;
 }
@@ -1083,8 +1083,8 @@ i32 GameWindow::ChecksumExecutable()
 
 #pragma var_order(hr, ret, psl, ppf, wPath, wfd)
 // FUNCTION: TH07 0x00435fc0
-i32 GameWindow::ResolveIt(const char *shortcutPath, char *dstPath,
-                          i32 maxPathLen)
+ZunBool GameWindow::ResolveIt(const char *shortcutPath, char *dstPath,
+                              i32 maxPathLen)
 {
     WIN32_FIND_DATAA wfd;
     LPWSTR wPath;

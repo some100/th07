@@ -10,7 +10,7 @@ u32 g_LastFileSize;
 
 #pragma var_order(entryIdx, filename, fsize, buf, hFile)
 // FUNCTION: TH07 0x00431330
-u8 *FileSystem::OpenFile(const char *filepath, i32 isExternalResource)
+u8 *FileSystem::OpenFile(const char *filepath, ZunBool isExternalResource)
 {
     HANDLE hFile;
     u8 *buf;
@@ -89,7 +89,7 @@ u8 *FileSystem::OpenFile(const char *filepath, i32 isExternalResource)
 }
 
 // FUNCTION: TH07 0x004314f0
-i32 FileSystem::CheckFileExists(const char *file)
+ZunBool FileSystem::CheckFileExists(const char *file)
 {
     HANDLE hObject;
 

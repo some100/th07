@@ -561,7 +561,7 @@ u32 Stage::OnDrawHighPrio(Stage *arg)
         g_Supervisor.d3dDevice->SetViewport(&viewport);
         g_Supervisor.d3dDevice->Clear(0, NULL, D3DCLEAR_TARGET, 0xff000000, 1.0f,
                                       0);
-        arg->clearBackground = 0;
+        arg->clearBackground = FALSE;
     }
     g_Supervisor.d3dDevice->SetViewport(&g_Supervisor.viewport);
     if (arg->color2.bytes.a > 0)
@@ -687,7 +687,7 @@ u32 Stage::OnDrawLowPrio(Stage *arg)
     {
         g_AnmManager->SetColor(0x80808080);
     }
-    arg->isDarkening = 0;
+    arg->isDarkening = FALSE;
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
@@ -952,7 +952,7 @@ i32 Stage::RenderObjects(i32 zLevel)
     f32 var_98;
     Float3 projectSrc;
     f32 radius;
-    i32 didDraw;
+    ZunBool didDraw;
     StdRawQuadBasic *curQuad;
     Float3 diffPos;
     Float3 quadPos;
@@ -967,7 +967,7 @@ i32 Stage::RenderObjects(i32 zLevel)
 
     instance = this->objectInstances;
     instancesDrawn = 0;
-    didDraw = 0;
+    didDraw = FALSE;
     projectSrc.x = 0.0f;
     projectSrc.y = 0.0f;
     projectSrc.z = 0.0f;
@@ -1008,7 +1008,7 @@ i32 Stage::RenderObjects(i32 zLevel)
                 else
                 {
                     obj->flags |= 2;
-                    didDraw = 1;
+                    didDraw = TRUE;
 
                     while (curQuad->type >= 0)
                     {

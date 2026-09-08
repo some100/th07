@@ -240,7 +240,7 @@ u32 MainMenu::OnUpdatePreInput()
             this->idleFrames = 0;
             g_AnmManager->SetInterruptActiveVms(this->vms, this->vmCount, 13);
             this->curDescriptionVm->SetInterrupt(2);
-            g_GameManager.SetReplay(0);
+            g_GameManager.SetIsReplay(FALSE);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
         if (this->isPracticeMode)
@@ -264,7 +264,7 @@ u32 MainMenu::OnUpdatePreInput()
         i = MoveCursorVertical(ARRAY_SIZE_SIGNED(g_MainMenuStrings));
         if (i != 0)
         {
-            while (g_GameManager.HasReachedMaxClearsAllShotTypes() == 0 &&
+            while (g_GameManager.HasReachedMaxClearsAnyShotType() == 0 &&
                    this->cursor == 1)
             {
                 this->cursor += i;
@@ -300,7 +300,7 @@ u32 MainMenu::OnUpdatePreInput()
             }
             else
             {
-                g_GameManager.SetReplay(1);
+                g_GameManager.SetIsReplay(TRUE);
                 g_GameManager.demo = 1;
                 g_GameManager.demoFrames = 0;
                 g_GameManager.difficulty = this->currentReplay->data.difficulty;
@@ -370,7 +370,7 @@ u32 MainMenu::OnUpdatePreInput()
                 this->curDescriptionVm->SetInterrupt(2);
                 return CHAIN_CALLBACK_RESULT_CONTINUE;
             case MENU_CURSOR_PREINPUT_EXTRA_START:
-                if (g_GameManager.HasReachedMaxClearsAllShotTypes())
+                if (g_GameManager.HasReachedMaxClearsAnyShotType())
                 {
                     g_GameManager.practice = 0;
                     this->cursor = g_Supervisor.cfg.defaultDifficulty == 5;
@@ -1122,7 +1122,7 @@ u32 MainMenu::OnUpdateSelectDifficulty()
             {
                 g_AnmManager->SetInterruptActiveVms(this->vms, this->vmCount, 7);
             }
-            else if (!g_GameManager.HasUnlockedPhantomAndMaxClears())
+            else if (!g_GameManager.HasUnlockedPhantasmAndMaxClears())
             {
                 g_AnmManager->SetInterruptActiveVms(this->vms, this->vmCount, 12);
                 this->cursor = MENU_CURSOR_SELECTDIFFICULTY_EXTRA;
@@ -1182,7 +1182,7 @@ u32 MainMenu::OnUpdateSelectDifficulty()
     case MENU_SUBSTATE_SELECT_INPUT:
         numDifficulties = this->menuState != MENU_STATE_EXTRA_SELECT_DIFFICULTY
                               ? 4
-                          : g_GameManager.HasUnlockedPhantomAndMaxClears()
+                          : g_GameManager.HasUnlockedPhantasmAndMaxClears()
                               ? 2
                               : 1;
         if (MoveCursorVertical(numDifficulties))
@@ -1306,7 +1306,7 @@ u32 MainMenu::OnUpdateSelectCharacter()
             }
             else
             {
-                if (!g_GameManager.HasUnlockedPhantomAndMaxClears())
+                if (!g_GameManager.HasUnlockedPhantasmAndMaxClears())
                 {
                     this->vms[161].SetInterrupt(9);
                 }
@@ -1320,8 +1320,8 @@ u32 MainMenu::OnUpdateSelectCharacter()
             if (g_Supervisor.cfg.defaultDifficulty == DIFF_EXTRA)
             {
                 while (
-                    !g_GameManager.HasReachedMaxClears(this->cursor * 2) &&
-                    !g_GameManager.HasReachedMaxClears(this->cursor * 2 + 1))
+                    !g_GameManager.HasReachedMaxClearsAnyDifficulty(this->cursor * 2) &&
+                    !g_GameManager.HasReachedMaxClearsAnyDifficulty(this->cursor * 2 + 1))
                 {
                     this->cursor++;
                     if (this->cursor >= MENU_CURSOR_SELECTCHARACTER_COUNT)
@@ -1333,8 +1333,8 @@ u32 MainMenu::OnUpdateSelectCharacter()
             else if (g_Supervisor.cfg.defaultDifficulty == DIFF_PHANTASM)
             {
                 while (
-                    g_GameManager.HasUnlockedPhantom(this->cursor << 1) == 0 &&
-                    g_GameManager.HasUnlockedPhantom(this->cursor * 2 + 1) == 0)
+                    g_GameManager.HasUnlockedPhantasm(this->cursor << 1) == 0 &&
+                    g_GameManager.HasUnlockedPhantasm(this->cursor * 2 + 1) == 0)
                 {
                     this->cursor++;
                     if (this->cursor >= MENU_CURSOR_SELECTCHARACTER_COUNT)
@@ -1456,8 +1456,8 @@ u32 MainMenu::OnUpdateSelectCharacter()
             if (g_Supervisor.cfg.defaultDifficulty == DIFF_EXTRA)
             {
                 while (
-                    !g_GameManager.HasReachedMaxClears(this->cursor * 2) &&
-                    !g_GameManager.HasReachedMaxClears(this->cursor * 2 + 1))
+                    !g_GameManager.HasReachedMaxClearsAnyDifficulty(this->cursor * 2) &&
+                    !g_GameManager.HasReachedMaxClearsAnyDifficulty(this->cursor * 2 + 1))
                 {
                     this->cursor++;
                     if (this->cursor >= MENU_CURSOR_SELECTCHARACTER_COUNT)
@@ -1469,8 +1469,8 @@ u32 MainMenu::OnUpdateSelectCharacter()
             else if (g_Supervisor.cfg.defaultDifficulty == 5)
             {
                 while (
-                    g_GameManager.HasUnlockedPhantom(this->cursor << 1) == 0 &&
-                    g_GameManager.HasUnlockedPhantom(this->cursor * 2 + 1) == 0)
+                    g_GameManager.HasUnlockedPhantasm(this->cursor << 1) == 0 &&
+                    g_GameManager.HasUnlockedPhantasm(this->cursor * 2 + 1) == 0)
                 {
                     this->cursor++;
                     if (this->cursor >= MENU_CURSOR_SELECTCHARACTER_COUNT)
@@ -1601,7 +1601,7 @@ u32 MainMenu::OnUpdateSelectShotType()
             }
             else
             {
-                if (!g_GameManager.HasUnlockedPhantomAndMaxClears())
+                if (!g_GameManager.HasUnlockedPhantasmAndMaxClears())
                 {
                     this->vms[161].SetInterrupt(9);
                 }
@@ -1629,7 +1629,7 @@ u32 MainMenu::OnUpdateSelectShotType()
             this->cursor = g_GameManager.shotType;
             if (g_Supervisor.cfg.defaultDifficulty == DIFF_EXTRA)
             {
-                while (!g_GameManager.HasReachedMaxClears(
+                while (!g_GameManager.HasReachedMaxClearsAnyDifficulty(
                     this->cursor + (u32)g_GameManager.character * 2))
                 {
                     this->cursor++;
@@ -1641,7 +1641,7 @@ u32 MainMenu::OnUpdateSelectShotType()
             }
             else if (g_Supervisor.cfg.defaultDifficulty == DIFF_PHANTASM)
             {
-                while (!g_GameManager.HasUnlockedPhantom(
+                while (!g_GameManager.HasUnlockedPhantasm(
                     this->cursor + (u32)g_GameManager.character * 2))
                 {
                     this->cursor++;
@@ -1707,7 +1707,7 @@ u32 MainMenu::OnUpdateSelectShotType()
         {
             if (g_Supervisor.cfg.defaultDifficulty == DIFF_EXTRA)
             {
-                while (!g_GameManager.HasReachedMaxClears(
+                while (!g_GameManager.HasReachedMaxClearsAnyDifficulty(
                     this->cursor + (u32)g_GameManager.character * 2))
                 {
                     this->cursor++;
@@ -1719,7 +1719,7 @@ u32 MainMenu::OnUpdateSelectShotType()
             }
             else if (g_Supervisor.cfg.defaultDifficulty == DIFF_PHANTASM)
             {
-                while (g_GameManager.HasUnlockedPhantom(
+                while (g_GameManager.HasUnlockedPhantasm(
                            this->cursor + (u32)g_GameManager.character * 2) == 0)
                 {
                     this->cursor++;
@@ -1774,7 +1774,7 @@ u32 MainMenu::OnUpdateSelectShotType()
                     g_GameManager.currentStage = g_GameManager.difficulty + 2;
                 }
                 g_Supervisor.curState = SUPERVISOR_STATE_GAMEMANAGER;
-                g_GameManager.SetReplay(0);
+                g_GameManager.SetIsReplay(FALSE);
                 g_Supervisor.StopAudio();
                 while (g_SoundPlayer.ProcessQueues())
                     ;
@@ -2181,7 +2181,7 @@ u32 MainMenu::OnUpdateSelectReplay()
         }
         if (WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU))
         {
-            g_GameManager.SetReplay(1);
+            g_GameManager.SetIsReplay(TRUE);
             strcpy(g_GameManager.replayFilename,
                    this->replayFilenames[this->chosenReplay]);
             g_GameManager.difficulty = this->currentReplay->data.difficulty;
@@ -2267,7 +2267,7 @@ i32 MainMenu::DrawReplayMenu()
     if ((this->menuSubState == 2 || this->menuSubState == 3) && this->currentReplay != NULL)
     {
         g_AsciiManager.color = 0xffffffff;
-        g_AsciiManager.isSelected = 0;
+        g_AsciiManager.isSelected = FALSE;
         vm = &this->vms[133];
         AsciiManager::AddFormatText(&g_AsciiManager, &vm->pos,
                                     // STRING: TH07 0x00495554
@@ -2339,7 +2339,7 @@ i32 MainMenu::DrawReplayMenu()
         }
     }
     g_AsciiManager.color = 0xffffffff;
-    g_AsciiManager.isSelected = 0;
+    g_AsciiManager.isSelected = FALSE;
     return 1;
 }
 
@@ -2353,7 +2353,7 @@ i32 MainMenu::DrawPracticeMenu()
     AnmVm *vm;
 
     g_AsciiManager.color = 0xffffffff;
-    g_AsciiManager.isSelected = 0;
+    g_AsciiManager.isSelected = FALSE;
     vm = &this->vms[131];
     AsciiManager::AddFormatText(&g_AsciiManager, &vm->pos,
                                 // STRING: TH07 0x004954e4
@@ -2399,7 +2399,7 @@ i32 MainMenu::DrawPracticeMenu()
         local_1c.y += 16.0f;
     }
     g_AsciiManager.color = 0xffffffff;
-    g_AsciiManager.isSelected = 0;
+    g_AsciiManager.isSelected = FALSE;
     return 1;
 }
 
@@ -2559,7 +2559,7 @@ ZunResult MainMenu::ActualAddedCallback()
         g_GameManager.maxRetries = 5;
     }
     if (!g_GameManager.phantasmUnlocked &&
-        g_GameManager.HasUnlockedPhantomAndMaxClears())
+        g_GameManager.HasUnlockedPhantasmAndMaxClears())
     {
         frameCount = 0;
         // STRING: TH07 0x004954bc
@@ -2614,7 +2614,7 @@ ZunResult MainMenu::ActualAddedCallback()
         }
         g_AnmManager->ReleaseSurface(0);
     }
-    g_GameManager.phantasmUnlocked = g_GameManager.HasUnlockedPhantomAndMaxClears();
+    g_GameManager.phantasmUnlocked = g_GameManager.HasUnlockedPhantasmAndMaxClears();
     this->menuState = MENU_STATE_PRE_INPUT;
     g_Supervisor.InitializeTimingVars();
     switch (g_Supervisor.prevState)
