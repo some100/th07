@@ -2,6 +2,7 @@
 
 #include "AnmIdx.hpp"
 #include "AnmVm.hpp"
+#include "ZunBool.hpp"
 #include "ZunResult.hpp"
 
 #define TRANSITION_QUAD_ROWS 14
@@ -170,7 +171,7 @@ struct GuiImpl
     // pad 3
     i32 finishedStage;
     i32 stageClearBonus;
-    i32 transitionToScoreScreen;
+    ZunBool transitionToScoreScreen;
     GuiFormattedText bonusScore;
     GuiFormattedText statusPopup;
     GuiFormattedText spellCardBonus;
@@ -196,12 +197,12 @@ struct Gui
     void DrawGameScene();
     void DrawStageElements();
     void FreeMsgFile();
-    i32 HasCurrentMsgIdx();
-    i32 IsDialogueSkippable();
-    i32 IsStageFinished();
+    ZunBool HasCurrentMsgIdx();
+    ZunBool IsDialogueSkippable();
+    ZunBool IsStageFinished();
     ZunResult LoadMsg(const char *filename);
     void MsgRead(i32 msgIdx);
-    i32 MsgWait();
+    ZunBool MsgWait();
 
     void EndEnemySpellcard();
     void EndPlayerSpellcard();

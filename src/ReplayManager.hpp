@@ -90,7 +90,7 @@ struct ReplayManager
     {
     }
 
-    static ZunResult RegisterChain(i32 isDemo, const char *replayFilename);
+    static ZunResult RegisterChain(ZunBool isDemo, const char *replayFilename);
 
     static ZunResult AddedCallback(ReplayManager *arg);
     static ZunResult AddedCallbackDemo(ReplayManager *arg);
@@ -106,12 +106,12 @@ struct ReplayManager
     static ReplayFile *ValidateReplayData(ReplayFile *data, i32 size);
     static void FreeReplay(ReplayFile *replay);
 
-    i32 StageReplayExists(i32 stage)
+    ZunBool StageReplayExists(i32 stage)
     {
         return this->data->stageReplayData[stage] != NULL;
     }
 
-    i32 IsDemo()
+    ZunBool IsDemo()
     {
         return this->isDemo;
     }
@@ -121,7 +121,7 @@ struct ReplayManager
     i32 stageReplayDataSize[REPLAY_STAGE_COUNT];
     i32 stageEndDataSize[REPLAY_STAGE_COUNT];
     void *unused_40;
-    i32 isDemo;
+    ZunBool isDemo;
     const char *replayFilename;
     u8 unused_4c[54];
     i16 unused_82;

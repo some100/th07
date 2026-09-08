@@ -165,8 +165,7 @@ struct Stage
     static u32 OnDrawHighPrio(Stage *arg);
     static u32 OnDrawLowPrio(Stage *arg);
 
-    static void DrawColoredQuad(ZunRect *rect, u32 param_2, u32 param_3, u32 param_4,
-                                u32 param_5);
+    static void DrawColoredQuad(ZunRect *rect, u32 param_2, u32 param_3, u32 param_4, u32 param_5);
     ZunResult LoadStageData(const char *stdPath);
     i32 RenderObjects(i32 param_1);
     void SmoothBlendColor(ZunColor param_1);
@@ -200,7 +199,7 @@ struct Stage
     // pad 3
     i32 spellCardState;
     i32 ticksSinceSpellcardStarted;
-    i32 clearBackground;
+    ZunBool clearBackground;
     i32 numSpellcardVms;
     i32 spellcardVmsIdx;
     AnmVm spellcardVms[32];
@@ -221,7 +220,7 @@ struct Stage
     u8 cameraTeleported;
     // pad 3
     ZunColor color2;
-    i32 isDarkening;
+    ZunBool isDarkening;
 };
 
 extern Stage g_Stage;

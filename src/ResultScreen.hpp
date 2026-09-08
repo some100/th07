@@ -414,7 +414,7 @@ struct ResultScreen
     static void ReleaseScoreDat(ScoreDat *scoreDat);
     void FreeScore(i32 difficulty, i32 character);
     static void FreeAllScores(ScoreListNode *scores);
-    static i32 ParseLsnm(ScoreDat *scoreDat, Lsnm *outLsnm);
+    static ZunBool ParseLsnm(ScoreDat *scoreDat, Lsnm *outLsnm);
     void WriteScore();
 
     ScoreDat *scoreDat;
@@ -433,7 +433,7 @@ struct ResultScreen
     i32 lastSpellcardSelected;
     i32 diffPlayed;
     i32 cheatCodeStep;
-    i32 isClearingReplayName;
+    ZunBool isClearingReplayName;
     char replayName[8];
     i32 unused_4c;
     i32 spellsCapturedPerShot[SHOT_COUNT + 1];

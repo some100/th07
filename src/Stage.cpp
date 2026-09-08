@@ -306,7 +306,8 @@ loop_begin:
         case STD_BG_SCRIPT1:
             if (curInstr->args.args[0].i >= 0)
             {
-                g_AnmManager->ExecuteAnmIdx(&arg->vm1, curInstr->args.args[0].i + ANM_OFFSET_STAGE_BG);
+                g_AnmManager->ExecuteAnmIdx(&arg->vm1,
+                                            curInstr->args.args[0].i + ANM_OFFSET_STAGE_BG);
             }
             else
             {
@@ -316,7 +317,8 @@ loop_begin:
         case STD_BG_SCRIPT2:
             if (curInstr->args.args[0].i >= 0)
             {
-                g_AnmManager->ExecuteAnmIdx(&arg->vm2, curInstr->args.args[0].i + ANM_OFFSET_STAGE_BG);
+                g_AnmManager->ExecuteAnmIdx(&arg->vm2,
+                                            curInstr->args.args[0].i + ANM_OFFSET_STAGE_BG);
             }
             else
             {
@@ -499,7 +501,7 @@ u32 Stage::OnDrawHighPrio(Stage *arg)
         g_Supervisor.gfxDevice->SetViewport(viewport);
         g_Supervisor.gfxDevice->SetClearColor({0xff000000});
         g_Supervisor.gfxDevice->Clear(CLEAR_COLOR_BUFFER);
-        arg->clearBackground = 0;
+        arg->clearBackground = FALSE;
     }
     g_Supervisor.gfxDevice->SetViewport(g_Supervisor.viewport);
     if (arg->color2.bytes.a > 0)
@@ -617,7 +619,7 @@ u32 Stage::OnDrawLowPrio(Stage *arg)
     {
         g_AnmManager->SetColor(0x80808080);
     }
-    arg->isDarkening = 0;
+    arg->isDarkening = FALSE;
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
@@ -635,69 +637,81 @@ ZunResult Stage::AddedCallback(Stage *arg)
     switch (g_GameManager.currentStage)
     {
     case STAGE1:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg1bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg1bg.anm", ANM_OFFSET_STAGE_BG) !=
+            ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
         break;
     case STAGE2:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg2bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg2bg.anm", ANM_OFFSET_STAGE_BG) !=
+            ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
         break;
     case STAGE3:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg3bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg3bg.anm", ANM_OFFSET_STAGE_BG) !=
+            ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
         break;
     case STAGE4:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg4bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg4bg.anm", ANM_OFFSET_STAGE_BG) !=
+            ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
 
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE4_BG2, "data/stg4bg2.anm", ANM_OFFSET_STAGE4_BG2) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE4_BG2, "data/stg4bg2.anm",
+                                   ANM_OFFSET_STAGE4_BG2) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
 
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE4_BG3, "data/stg4bg3.anm", ANM_OFFSET_STAGE4_BG3) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE4_BG3, "data/stg4bg3.anm",
+                                   ANM_OFFSET_STAGE4_BG3) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
 
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE4_BG4, "data/stg4bg4.anm", ANM_OFFSET_STAGE4_BG4) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE4_BG4, "data/stg4bg4.anm",
+                                   ANM_OFFSET_STAGE4_BG4) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
 
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE4_BG5, "data/stg4bg5.anm", ANM_OFFSET_STAGE4_BG5) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE4_BG5, "data/stg4bg5.anm",
+                                   ANM_OFFSET_STAGE4_BG5) != ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
         break;
     case STAGE5:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg5bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg5bg.anm", ANM_OFFSET_STAGE_BG) !=
+            ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
         break;
     case STAGE6:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg6bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg6bg.anm", ANM_OFFSET_STAGE_BG) !=
+            ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
         break;
     case EXTRASTAGE:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg7bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg7bg.anm", ANM_OFFSET_STAGE_BG) !=
+            ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }
         break;
     case PHANTASMSTAGE:
-        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg8bg.anm", ANM_OFFSET_STAGE_BG) != ZUN_SUCCESS)
+        if (g_AnmManager->LoadAnms(ANM_FILE_STAGE_BG, "data/stg8bg.anm", ANM_OFFSET_STAGE_BG) !=
+            ZUN_SUCCESS)
         {
             return ZUN_ERROR;
         }

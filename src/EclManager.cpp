@@ -738,7 +738,7 @@ void EclManager::EndSpellcard()
         g_Gui.EndEnemySpellcard();
         if (g_EnemyManager.spellcardInfo.isActive == 1)
         {
-            score = g_BulletManager.DespawnBullets(8000, 1);
+            score = g_BulletManager.DespawnBullets(8000, TRUE);
             score = g_EnemyManager.RemoveAllEnemies(8000, score);
             if (score != 0)
             {
@@ -1374,7 +1374,7 @@ restart:
                 break;
             case ECL_TEST_LASER_NOT_IN_USE:
                 arg = GET_INT_VALUE(enemy, 0);
-                if (enemy->lasers[arg] && enemy->lasers[arg]->inUse)
+                if (enemy->lasers[arg] && enemy->lasers[arg]->isInUse)
                 {
                     enemy->currentContext.laserNotInUse = 0;
                 }
@@ -1385,7 +1385,7 @@ restart:
                 break;
             case ECL_STOP_LASER:
                 arg = GET_INT_VALUE(enemy, 0);
-                if (enemy->lasers[arg] && enemy->lasers[arg]->inUse &&
+                if (enemy->lasers[arg] && enemy->lasers[arg]->isInUse &&
                     enemy->lasers[arg]->state < 2)
                 {
                     enemy->lasers[arg]->state = 2;

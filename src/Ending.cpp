@@ -421,7 +421,7 @@ ZunResult Ending::AddedCallback(Ending *arg)
     const char *endingPath;
 
     g_GameManager.finished = 1;
-    g_Supervisor.isInEnding = 1;
+    g_Supervisor.isInEnding = TRUE;
     g_AnmManager->LoadAnms(ANM_FILE_STAFF, "data/staff01.anm", ANM_OFFSET_STAFF);
     g_AnmManager->SetTexture(0);
     g_AnmManager->SetSprite(NULL);
@@ -476,7 +476,7 @@ ZunResult Ending::DeletedCallback(Ending *arg)
     arg->drawChain = NULL;
     delete arg;
     arg = NULL;
-    g_Supervisor.isInEnding = 0;
+    g_Supervisor.isInEnding = FALSE;
 
     return ZUN_SUCCESS;
 }

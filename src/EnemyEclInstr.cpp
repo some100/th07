@@ -305,8 +305,8 @@ void EnemyEclInstr::ExInsSplitBulletsOrShootBackwards(Enemy *enemy, EclRawInstr 
     }
 }
 
-i32 IsPointInRotatedRect(ZunVec3 *point, ZunVec3 *center, ZunVec3 *size, ZunVec3 *pivot, f32 sine,
-                         f32 cosine)
+ZunBool IsPointInRotatedRect(ZunVec3 *point, ZunVec3 *center, ZunVec3 *size, ZunVec3 *pivot,
+                             f32 sine, f32 cosine)
 {
     ZunVec3 d;
     ZunVec3 rot;
@@ -325,10 +325,10 @@ i32 IsPointInRotatedRect(ZunVec3 *point, ZunVec3 *center, ZunVec3 *size, ZunVec3
 
     if (p.x > rot.x || p.x < d.x || p.y > rot.y || p.y < d.y)
     {
-        return 0;
+        return FALSE;
     }
 
-    return 1;
+    return TRUE;
 }
 
 void EnemyEclInstr::ExInsReflectBulletsFromLasers(Enemy *enemy, EclRawInstr *instr)
@@ -348,7 +348,7 @@ void EnemyEclInstr::ExInsReflectBulletsFromLasers(Enemy *enemy, EclRawInstr *ins
     laser = g_BulletManager.lasers;
     for (i = 0; i < ARRAY_SIZE_SIGNED(g_BulletManager.lasers); i++, laser++)
     {
-        if (!laser->inUse)
+        if (!laser->isInUse)
         {
             continue;
         }
@@ -431,7 +431,7 @@ void EnemyEclInstr::ExInsShootBulletsAlongLaser(Enemy *enemy, EclRawInstr *instr
     laser = g_BulletManager.lasers;
     for (i = 0; i < ARRAY_SIZE_SIGNED(g_BulletManager.lasers); i++, laser++)
     {
-        if (!laser->inUse)
+        if (!laser->isInUse)
         {
             continue;
         }

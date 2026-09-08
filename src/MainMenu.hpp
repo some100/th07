@@ -157,19 +157,19 @@ struct MainMenu
         this->idleFrames = 0;
     }
 
-    i32 IsSelected(i32 idx)
+    ZunBool IsSelected(i32 idx)
     {
         i32 selected = idx == this->cursor;
         return selected;
     }
 
-    i32 IsReplaySelected(i32 idx)
+    ZunBool IsReplaySelected(i32 idx)
     {
         i32 selected = idx == this->chosenReplay;
         return selected;
     }
 
-    i32 IsStageSelected(i32 idx)
+    ZunBool IsStageSelected(i32 idx)
     {
         i32 selected = idx == this->selectedStage;
         return selected;
@@ -181,7 +181,7 @@ struct MainMenu
     i32 inputDelayTimer;
     i32 unused_10[21];
     i32 prevMenuState;
-    i32 isPracticeMode;
+    ZunBool isPracticeMode;
     char replayFilenames[60][512];
     char replayLabels[60][8];
     ReplayFile replays[60];

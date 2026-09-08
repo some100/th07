@@ -24,7 +24,7 @@ u32 ReplayManager::OnUpdateRng(ReplayManager *arg)
     {
         arg->replayEventFlags |= 256;
     }
-    g_GameManager.isPaused = 0;
+    g_GameManager.isPaused = FALSE;
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
@@ -469,7 +469,7 @@ ZunResult ReplayManager::DeletedCallback(ReplayManager *arg)
     return ZUN_SUCCESS;
 }
 
-ZunResult ReplayManager::RegisterChain(i32 isDemo, const char *replayFilename)
+ZunResult ReplayManager::RegisterChain(ZunBool isDemo, const char *replayFilename)
 {
     g_LastFrameGameInput = 0;
     g_CurFrameGameInput = 0;

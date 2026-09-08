@@ -24,7 +24,7 @@ struct Item
 {
     Item();
 
-    i32 IsBelowPoc()
+    ZunBool IsBelowPoc()
     {
         return this->pos.y < g_Player.shooterData->pocY;
     }
@@ -34,7 +34,7 @@ struct Item
         return this->pos.y - g_Player.shooterData->pocY;
     }
 
-    i32 ShouldAwardMaxScore()
+    ZunBool ShouldAwardMaxScore()
     {
         return this->pos.y < g_Player.shooterData->pocY || this->autoCollect;
     }

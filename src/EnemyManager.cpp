@@ -417,10 +417,11 @@ i32 Enemy::HandleLifeCallback()
                     enemy->deathCallbackSub = -1;
                 }
             }
-            return 1;
+            return TRUE;
         }
     }
-    return 0;
+
+    return FALSE;
 }
 
 i32 Enemy::HandleTimerCallback()
@@ -505,12 +506,10 @@ i32 Enemy::HandleTimerCallback()
         this->bulletRankAmount2Low = 0;
         this->bulletRankAmount2High = 0;
         this->stackDepth = 0;
-        return 1;
+        return TRUE;
     }
-    else
-    {
-        return 0;
-    }
+
+    return FALSE;
 }
 
 void Enemy::Despawn()
@@ -676,24 +675,24 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
         }
         if (!enemy->hasNoCollision && !enemy->isInBounds &&
             g_GameManager.IsInBounds(enemy->pos.x, enemy->pos.y, enemy->primaryVm.sprite->widthPx,
-                                     enemy->primaryVm.sprite->heightPx) != 0)
+                                     enemy->primaryVm.sprite->heightPx))
         {
             enemy->isInBounds = 1;
         }
         if (enemy->isInBounds == 1 &&
-            (((enemy->trailFlags == 0 &&
-               g_GameManager.IsInBounds(enemy->pos.x, enemy->pos.y,
+            ((enemy->trailFlags == 0 &&
+              !g_GameManager.IsInBounds(enemy->pos.x, enemy->pos.y,
                                         enemy->primaryVm.sprite->widthPx,
-                                        enemy->primaryVm.sprite->heightPx) == 0) ||
-              (enemy->trailFlags != 0 &&
-               (g_GameManager.IsInBounds(enemy->pos.x, enemy->pos.y,
-                                         enemy->primaryVm.sprite->widthPx,
-                                         enemy->primaryVm.sprite->heightPx) == 0 &&
-                g_GameManager.IsInBounds(enemy->enemyHistory[enemy->trailCount - 1].pos.x,
-                                         enemy->enemyHistory[enemy->trailCount - 1].pos.y,
-                                         enemy->primaryVm.sprite->widthPx,
-                                         enemy->primaryVm.sprite->heightPx) == 0))) &&
-             !enemy->disableOOBDespawn))
+                                        enemy->primaryVm.sprite->heightPx)) ||
+             (enemy->trailFlags != 0 &&
+              !g_GameManager.IsInBounds(enemy->pos.x, enemy->pos.y,
+                                        enemy->primaryVm.sprite->widthPx,
+                                        enemy->primaryVm.sprite->heightPx) &&
+              !g_GameManager.IsInBounds(enemy->enemyHistory[enemy->trailCount - 1].pos.x,
+                                        enemy->enemyHistory[enemy->trailCount - 1].pos.y,
+                                        enemy->primaryVm.sprite->widthPx,
+                                        enemy->primaryVm.sprite->heightPx))) &&
+            !enemy->disableOOBDespawn)
         {
             enemy->active = 0;
             enemy->Despawn();
@@ -769,7 +768,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                             cherryGain = 70;
                         }
                         if (cherryGain == 0 &&
-                            (g_Player.isFocus == 0 || (enemy->timer.GetCurrent() & 1) != 0))
+                            (!g_Player.isFocus || (enemy->timer.GetCurrent() & 1) != 0))
                         {
                             cherryGain = 10;
                         }
@@ -873,12 +872,12 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                              fabsf(diffToPlayer.x) > fabsf(enemyDiff.x)))
                         {
                             g_Player.sakuyaTargetPosition = enemy->pos;
-                            g_Player.targetingEnemy = 1;
+                            g_Player.targetingEnemy = TRUE;
                         }
                     }
                     else
                     {
-                        g_Player.targetingEnemy = 1;
+                        g_Player.targetingEnemy = TRUE;
                     }
                 }
                 if (!g_Player.targetingEnemy)
@@ -962,7 +961,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                 }
                 if (enemy->isBoss && !g_EnemyManager.spellcardInfo.isActive)
                 {
-                    removedScore = g_BulletManager.DespawnBullets(8000, 1);
+                    removedScore = g_BulletManager.DespawnBullets(8000, TRUE);
                     removedScore = g_EnemyManager.RemoveAllEnemies(8000, removedScore);
                     if (removedScore != 0)
                     {

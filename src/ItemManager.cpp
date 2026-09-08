@@ -123,7 +123,7 @@ void ItemManager::OnUpdate()
     i32 prevPowerIdx;
     i32 j;
     Item *item;
-    i32 itemAcquired;
+    ZunBool itemAcquired;
     f32 playerAngle;
     i32 itemScore;
     f32 itemTimerSecs;
@@ -132,7 +132,7 @@ void ItemManager::OnUpdate()
     item = this->items;
     ZunVec3 local_20(g_Player.shooterData->itemCollectRadius,
                      g_Player.shooterData->itemCollectRadius, 16.0f);
-    itemAcquired = 0;
+    itemAcquired = FALSE;
     this->activeItemCount = 0;
     this->listTail = &this->listHead;
     this->listHead.next = NULL;
@@ -492,7 +492,7 @@ void ItemManager::OnUpdate()
                 break;
             }
             item->isInUse = 0;
-            itemAcquired = 1;
+            itemAcquired = TRUE;
             continue;
         }
         else

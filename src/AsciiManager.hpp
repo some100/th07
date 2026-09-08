@@ -63,7 +63,7 @@ struct AsciiManagerPopup
     ZunVec3 pos;
     u32 color;
     ZunTimer timer;
-    u8 inUse;
+    u8 isInUse;
     u8 characterCount;
     // pad 2
 };
@@ -74,8 +74,8 @@ struct AsciiManagerString
     ZunVec3 pos;
     u32 color;
     Float2 scale;
-    i32 isSelected;
-    i32 isGui;
+    ZunBool isSelected;
+    ZunBool isGui;
 };
 
 #define MAX_POPUP1 720
@@ -151,8 +151,8 @@ struct AsciiManager
     i32 numStrings;
     u32 color;
     Float2 scale;
-    i32 isGui;
-    i32 isSelected;
+    ZunBool isGui;
+    ZunBool isSelected;
     i32 uiFadeState;
     i32 fontSpacing;
     i32 nextPopupIndex1;

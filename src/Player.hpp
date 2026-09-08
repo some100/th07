@@ -110,8 +110,8 @@ struct PlayerBombInfo
         }
     }
 
-    i32 isInUse;
-    i32 isFocus;
+    ZunBool isInUse;
+    ZunBool isFocus;
     i32 bombDuration;
     i32 cherryDrain;
     ZunTimer bombTimer;
@@ -201,7 +201,7 @@ struct Player
     i32 CalcItemBoxCollision(ZunVec3 *center, ZunVec3 *size);
     i32 CalcKillboxCollision(ZunVec3 *center, ZunVec3 *size);
     i32 CalcLaserHitbox(ZunVec3 *center, ZunVec3 *size, ZunVec3 *origin, f32 rotation,
-                        i32 canGraze);
+                        ZunBool canGraze);
     i32 CalcBombCollision(ZunVec3 *center, ZunVec3 *size);
     i32 CalcDamageToEnemy(ZunVec3 *param_1, ZunVec3 *param_2, i32 *param_3);
     i32 CheckGraze(ZunVec3 *center, ZunVec3 *size);
@@ -272,7 +272,7 @@ struct Player
     Effect *focusEffect;
     BombProjectile bombDamageBoxes[112];
     BombClearBox bombClearBoxes[96];
-    i32 isBombing;
+    ZunBool isBombing;
     ShtEntry *shtEntries[4];
     f32 horizontalMovementSpeedMultiplierDuringBomb;
     f32 verticalMovementSpeedMultiplierDuringBomb;
@@ -293,7 +293,7 @@ struct Player
     f32 previousVerticalSpeed;
     ZunVec3 positionOfLastEnemyHit;
     ZunVec3 sakuyaTargetPosition;
-    i32 targetingEnemy;
+    ZunBool targetingEnemy;
     PlayerBullet bullets[96];
     PlayerBulletTimer timers[3];
     ZunTimer fireBulletTimer;

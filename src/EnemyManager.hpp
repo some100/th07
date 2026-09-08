@@ -69,8 +69,8 @@ struct Enemy
     void CheckBulletPlayerCollision(ZunVec3 *bulletCenter, ZunVec3 *bulletSize);
     void ClampPos();
     void Despawn();
-    i32 HandleLifeCallback();
-    i32 HandleTimerCallback();
+    ZunBool HandleLifeCallback();
+    ZunBool HandleTimerCallback();
     void Move();
     void ResetEffectArray();
     void UpdateEffects();
