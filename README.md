@@ -45,7 +45,7 @@ If you prefer to build the game in standalone mode (for example, you plan to red
 - Linux and Windows: No effect, since they're already running in standalone mode.
 - macOS: Builds the game as a standalone binary without any prepacked assets. You're expected to have all assets in the same directory as the application at runtime.
 - iOS: Builds the game as a bundle without any prepacked assets. You are expected to have the assets `th07.dat`, `thbgm.dat`, and `msgothic.ttc` available in the Documents directory of the game (the folder available in Files), otherwise the game won't start.
-- Android: Builds the game as a bundle without any prepacked assets. The assets `th07.dat`, `thbgm.dat`, and `msgothic.ttc` should be available in the externally available storage, otherwise the game won't start. This folder is available somewhere like `/storage/sdcard0/Android/data/com.zun.th07/files`.
+- Android: Builds the game as a bundle without any prepacked assets. The assets `th07.dat`, `thbgm.dat`, and `msgothic.ttc` should be available in the externally available storage, otherwise the game won't start. This folder is available somewhere like `/storage/sdcard0/Android/data/com.zun.th07/files` or `/storage/emulated/0/Android/data/com.zun.th07/files`.
 
 #### Non-desktop
 
