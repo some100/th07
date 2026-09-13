@@ -132,7 +132,7 @@ std::string FileSystem::GetBasePath(const char *filename)
 #endif
     if (path)
     {
-        return std::string(path) + filename;
+        return std::string(path) + '/' + filename;
     }
 #endif
     const char *basePath = SDL_GetBasePath();
