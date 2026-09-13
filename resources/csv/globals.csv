@@ -13,7 +13,7 @@ address|name|type|size
 00495144|g_TextureBytesPerPixel|global|28
 00495160|g_BulletTypeInfos|global|220
 00495248|Pbg4File|vtable|36
-0049526c|IPbg4File|vtable|4
+0049526c|IPbg4File|vtable|32
 0049528c|CStreamingSound|vtable|4
 00495290|CSound|vtable|4
 004964f4|g_DifficultyWeightsList|global|20

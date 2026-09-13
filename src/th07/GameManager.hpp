@@ -76,9 +76,9 @@ struct GameManager
     }
 
     // FUNCTION: TH07 0x00401390
-    void SetBombsRemainingAndComputeCsum(i32 param_1)
+    void SetBombsRemainingAndComputeCsum(i32 amount)
     {
-        this->globals->bombsRemaining = (f32)param_1;
+        this->globals->bombsRemaining = (f32)amount;
         this->globals->curCsum = this->globals->rng1[2];
         this->globals->csumAsSum = ComputeGameIntegrityCsum();
         this->csumFloat =

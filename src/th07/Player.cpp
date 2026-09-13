@@ -953,8 +953,8 @@ i32 Player::CalcBombCollision(Float3 *center, Float3 *size)
     Float3 bulletTopLeft;
     Float3 bombBottomRight;
     Float3 bombTopLeft;
-    f32 bombY;
-    f32 bombX;
+    f32 relY;
+    f32 relX;
 
     bombProjectile = this->bombClearBoxes;
     bulletTopLeft.x = center->x - size->x / 2.0f;
@@ -980,9 +980,9 @@ i32 Player::CalcBombCollision(Float3 *center, Float3 *size)
         }
         else if (bombProjectile->radius != 0.0) // double used here for some reason
         {
-            bombX = center->x - bombProjectile->pos.x;
-            bombY = center->y - bombProjectile->pos.y;
-            if (bombX * bombX + bombY * bombY <
+            relX = center->x - bombProjectile->pos.x;
+            relY = center->y - bombProjectile->pos.y;
+            if (relX * relX + relY * relY <
                 bombProjectile->radius * bombProjectile->radius)
             {
                 this->itemType = bombProjectile->itemType;

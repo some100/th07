@@ -505,7 +505,7 @@ void ItemManager::RemoveAllItems()
 
 #pragma var_order(i, item)
 // FUNCTION: TH07 0x00433b20
-void ItemManager::DespawnAllItems(i32 param_1)
+void ItemManager::DespawnAllItems(i32 skipItemIdx)
 {
     Item *item;
     i32 i;
@@ -513,7 +513,7 @@ void ItemManager::DespawnAllItems(i32 param_1)
     item = this->items;
     for (i = 0; i < MAX_ITEMS; i++, item++)
     {
-        if (item->isInUse == 0 || i == param_1)
+        if (item->isInUse == 0 || i == skipItemIdx)
         {
             continue;
         }
