@@ -943,7 +943,7 @@ i32 Player::CalcDamageToEnemy(Float3 *center, Float3 *size,
     return damage;
 }
 
-#pragma var_order(bombTopLeft, bombY, bombX, i, bulletBottomRight, bulletTopLeft, bombProjectile, bombBottomRight)
+#pragma var_order(bombTopLeft, relY, relX, i, bulletBottomRight, bulletTopLeft, bombProjectile, bombBottomRight)
 // FUNCTION: TH07 0x0043e0a0
 i32 Player::CalcBombCollision(Float3 *center, Float3 *size)
 {
