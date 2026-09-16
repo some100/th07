@@ -112,14 +112,14 @@ void BombData::ComputeBombCherryDrain(Player *player, i32 minCost, f32 scale)
     player->bombInfo.cherryDrain = drain < minCost ? minCost : drain;
 }
 
-#pragma var_order(angle, bombInfo, i, subInfo, vm, unused, j)
+#pragma var_order(angle, bombInfo, i, projectile, vm, unused, j)
 // FUNCTION: TH07 0x00408710
 void BombData::BombReimuACalc(Player *player)
 {
     i32 j;
     i32 unused[3];
     AnmVm *vm;
-    PlayerBombSubInfo *subInfo;
+    PlayerBombProjectile *projectile;
     i32 i;
     PlayerBombInfo *bombInfo = &player->bombInfo;
     f32 angle;
@@ -141,13 +141,13 @@ void BombData::BombReimuACalc(Player *player)
         SpawnBombInvulnEffect(player);
         for (i = 0; i < 32; i++)
         {
-            bombInfo->subInfo[i].state = 0;
+            bombInfo->projectiles[i].state = 0;
         }
         g_ItemManager.RemoveAllItems();
         g_EffectManager.SpawnEffect(12, &player->pos, 1,
                                     0xff4040ff);
         player->SpawnGrowingBomb(&player->pos, 32.0f, 8.0f, 16,
-                                ITEM_POINT_BULLET);
+                                 ITEM_POINT_BULLET);
 
         bombInfo->startPos = player->pos;
         ComputeBombCherryDrain(player, 4000, 0.2f);
@@ -158,10 +158,10 @@ void BombData::BombReimuACalc(Player *player)
         bombInfo->bombTimer.GetCurrent() % 6 == 0)
     {
         i = (bombInfo->bombTimer.GetCurrent() - 8) / 6;
-        subInfo = &bombInfo->subInfo[i];
-        subInfo->state = 1;
-        subInfo->speed = 15.0f;
-        subInfo->pos = player->pos;
+        projectile = &bombInfo->projectiles[i];
+        projectile->state = 1;
+        projectile->speed = 15.0f;
+        projectile->pos = player->pos;
 
         if (bombInfo->startPos.x < 192.0f)
         {
@@ -171,10 +171,10 @@ void BombData::BombReimuACalc(Player *player)
         {
             angle = (f32)-i * ZUN_2PI / 8.0f - ZUN_PI / 2.0f;
         }
-        subInfo->angle = utils::AddNormalizeAngle(angle, 0.0f);
-        subInfo->counter = 0;
+        projectile->angle = utils::AddNormalizeAngle(angle, 0.0f);
+        projectile->counter = 0;
         player->bombDamageBoxes[i].damage = 0;
-        vm = subInfo->vms;
+        vm = projectile->vms;
         for (j = 0; j < 4; j++, vm++)
         {
             g_AnmManager->ExecuteAnmIdx(
@@ -183,40 +183,40 @@ void BombData::BombReimuACalc(Player *player)
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_REIMU_A, 0);
     }
     player->playerState = PLAYER_STATE_INVULNERABLE;
-    for (i = 0, subInfo = bombInfo->subInfo; i < 8; i++, subInfo++)
+    for (i = 0, projectile = bombInfo->projectiles; i < 8; i++, projectile++)
     {
-        if (subInfo->state == 0)
+        if (projectile->state == 0)
         {
             continue;
         }
 
-        if (subInfo->state == 1)
+        if (projectile->state == 1)
         {
-            subInfo->speed -=
+            projectile->speed -=
                 0.4f * g_Supervisor.effectiveFramerateMultiplier;
-            subInfo->velocity.FromAngleMagnitude(subInfo->angle,
-                                                 subInfo->speed);
-            if (subInfo->speed < -10.0f)
+            projectile->velocity.FromAngleMagnitude(projectile->angle,
+                                                    projectile->speed);
+            if (projectile->speed < -10.0f)
             {
-                g_EffectManager.SpawnEffect(6, &subInfo->pos, 8,
+                g_EffectManager.SpawnEffect(6, &projectile->pos, 8,
                                             0xffffffff);
-                g_EffectManager.SpawnEffect(12, &subInfo->pos,
+                g_EffectManager.SpawnEffect(12, &projectile->pos,
                                             1, 0xff4040ff);
-                subInfo->state = 2;
-                subInfo->vms[0].pendingInterrupt = 1;
-                subInfo->vms[1].pendingInterrupt = 1;
-                subInfo->vms[2].pendingInterrupt = 1;
-                subInfo->vms[3].pendingInterrupt = 1;
+                projectile->state = 2;
+                projectile->vms[0].pendingInterrupt = 1;
+                projectile->vms[1].pendingInterrupt = 1;
+                projectile->vms[2].pendingInterrupt = 1;
+                projectile->vms[3].pendingInterrupt = 1;
                 player->bombDamageBoxes[i].pos =
-                    subInfo->pos;
+                    projectile->pos;
                 player->bombDamageBoxes[i].size.x = 256.0f;
                 player->bombDamageBoxes[i].size.y = 256.0f;
                 player->bombDamageBoxes[i].lifetime = 400;
-                player->SpawnGrowingBomb(&subInfo->pos, 64.0f,
-                                        4.266667f, 30, ITEM_POINT_BULLET);
-                subInfo->velocity.x = 0.0f;
-                subInfo->velocity.y = 0.0f;
-                subInfo->velocity.z = 0.0f;
+                player->SpawnGrowingBomb(&projectile->pos, 64.0f,
+                                         4.266667f, 30, ITEM_POINT_BULLET);
+                projectile->velocity.x = 0.0f;
+                projectile->velocity.y = 0.0f;
+                projectile->velocity.z = 0.0f;
                 g_SoundPlayer.PlaySoundByIdx(SOUND_ENEMY_SPELLCARD_END, 0);
                 ScreenEffect::RegisterChain(SCREEN_EFFECT_SHAKE, 16, 8, 0, 0);
             }
@@ -225,80 +225,80 @@ void BombData::BombReimuACalc(Player *player)
                 player->bombDamageBoxes[i].size.x = 48.0f;
                 player->bombDamageBoxes[i].size.y = 48.0f;
                 player->bombDamageBoxes[i].pos =
-                    subInfo->pos;
+                    projectile->pos;
                 player->bombDamageBoxes[i].lifetime = 8;
-                player->SpawnGrowingBomb(&subInfo->pos, 128.0f,
-                                        0.0f, 0, ITEM_POINT_BULLET);
+                player->SpawnGrowingBomb(&projectile->pos, 128.0f,
+                                         0.0f, 0, ITEM_POINT_BULLET);
             }
         }
-        else if (subInfo->state != 0 && bombInfo->bombTimer.HasTicked())
+        else if (projectile->state != 0 && bombInfo->bombTimer.HasTicked())
         {
             player->bombDamageBoxes[i].pos =
-                bombInfo->subInfo[i].pos;
+                bombInfo->projectiles[i].pos;
             player->bombDamageBoxes[i].size.x = 256.0f;
             player->bombDamageBoxes[i].size.y = 256.0f;
             player->bombDamageBoxes[i].lifetime = 2;
-            subInfo->counter++;
-            if (subInfo->counter >= 30)
+            projectile->counter++;
+            if (projectile->counter >= 30)
             {
-                subInfo->state = 0;
+                projectile->state = 0;
             }
         }
-        subInfo->pos.x +=
+        projectile->pos.x +=
             g_Supervisor.effectiveFramerateMultiplier *
-            subInfo->velocity.x;
-        subInfo->pos.y +=
+            projectile->velocity.x;
+        projectile->pos.y +=
             g_Supervisor.effectiveFramerateMultiplier *
-            subInfo->velocity.y;
-        g_AnmManager->ExecuteScript(&subInfo->vms[0]);
-        g_AnmManager->ExecuteScript(&subInfo->vms[1]);
-        g_AnmManager->ExecuteScript(&subInfo->vms[2]);
-        g_AnmManager->ExecuteScript(&subInfo->vms[3]);
+            projectile->velocity.y;
+        g_AnmManager->ExecuteScript(&projectile->vms[0]);
+        g_AnmManager->ExecuteScript(&projectile->vms[1]);
+        g_AnmManager->ExecuteScript(&projectile->vms[2]);
+        g_AnmManager->ExecuteScript(&projectile->vms[3]);
     }
     bombInfo->bombTimer++;
 }
 
-#pragma var_order(vm, i, subInfo)
+#pragma var_order(vm, i, projectile)
 // FUNCTION: TH07 0x00408e10
 void BombData::BombReimuADraw(Player *player)
 {
-    PlayerBombSubInfo *subInfo;
+    PlayerBombProjectile *projectile;
     i32 i;
     AnmVm *vm;
 
     DarkenViewport(player);
-    for (i = 0, subInfo = player->bombInfo.subInfo; i < 8; i++, subInfo++)
+    for (i = 0, projectile = player->bombInfo.projectiles; i < 8; i++, projectile++)
     {
-        if (subInfo->state == 0)
+        if (projectile->state == 0)
         {
             continue;
         }
 
-        vm = subInfo->vms;
+        vm = projectile->vms;
 
         vm->pos =
-            subInfo->pos + vm->offset;
+            projectile->pos + vm->offset;
         vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         vm->pos.z = 0.0f;
         g_AnmManager->DrawNoRotation(vm);
         vm++;
         vm->pos =
-            subInfo->pos + vm->offset;
+            projectile->pos + vm->offset;
         vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         vm->pos.z = 0.0f;
         g_AnmManager->DrawNoRotation(vm);
         vm++;
         vm->pos =
-            subInfo->pos + vm->offset;
+            projectile->pos + vm->offset;
         vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         vm->pos.z = 0.0f;
         g_AnmManager->DrawNoRotation(vm);
         vm++;
         vm->pos =
-            subInfo->pos + vm->offset;
+            projectile->pos + vm->offset;
         vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         vm->pos.z = 0.0f;
@@ -307,7 +307,7 @@ void BombData::BombReimuADraw(Player *player)
     }
 }
 
-#pragma var_order(tmpFloat3, tmpFloat2, bombInfo, i, subInfo, vm, tmpFloat1, \
+#pragma var_order(tmpFloat3, tmpFloat2, bombInfo, i, projectile, vm, tmpFloat1, \
                   targetPos, j)
 // FUNCTION: TH07 0x004091b0
 void BombData::BombReimuACalcFocus(Player *player)
@@ -316,7 +316,7 @@ void BombData::BombReimuACalcFocus(Player *player)
     Float3 targetPos;
     f32 tmpFloat1;
     AnmVm *vm;
-    PlayerBombSubInfo *subInfo;
+    PlayerBombProjectile *projectile;
     i32 i;
     PlayerBombInfo *bombInfo = &player->bombInfo;
     f32 tmpFloat2;
@@ -341,13 +341,13 @@ void BombData::BombReimuACalcFocus(Player *player)
         SpawnBombInvulnEffect(player);
         for (i = 0; i < 8; i++)
         {
-            bombInfo->subInfo[i].state = 0;
+            bombInfo->projectiles[i].state = 0;
         }
         g_ItemManager.RemoveAllItems();
         g_EffectManager.SpawnEffect(12, &player->pos, 1,
                                     0xff4040ff);
         player->SpawnGrowingBomb(&player->pos, 32.0f, 8.0f, 16,
-                                ITEM_POINT_BULLET);
+                                 ITEM_POINT_BULLET);
         ComputeBombCherryDrain(player, 5000, 0.22f);
         player->verticalMovementSpeedMultiplierDuringBomb = 0.6f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 0.6f;
@@ -357,19 +357,19 @@ void BombData::BombReimuACalcFocus(Player *player)
         if (bombInfo->bombTimer.GetCurrent() % 16 == 0)
         {
             i = (bombInfo->bombTimer.GetCurrent() - 60) / 16;
-            subInfo = bombInfo->subInfo + i;
+            projectile = bombInfo->projectiles + i;
             if (i != 0)
             {
-                subInfo->state = 1;
-                subInfo->counter = 0;
-                subInfo->custom = 8.0f;
-                subInfo->pos = player->pos;
+                projectile->state = 1;
+                projectile->counter = 0;
+                projectile->custom = 8.0f;
+                projectile->pos = player->pos;
 
                 tmpFloat2 = g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI;
-                subInfo->velocity.FromAngleMagnitude(tmpFloat2, subInfo->custom);
+                projectile->velocity.FromAngleMagnitude(tmpFloat2, projectile->custom);
 
                 player->bombDamageBoxes[i].damage = 0;
-                vm = subInfo->vms;
+                vm = projectile->vms;
                 for (j = 0; j < 4; j++, vm++)
                 {
                     g_AnmManager->ExecuteAnmIdx(
@@ -380,14 +380,14 @@ void BombData::BombReimuACalcFocus(Player *player)
         }
     }
     player->playerState = PLAYER_STATE_INVULNERABLE;
-    for (i = 0, subInfo = bombInfo->subInfo; i < 8; i++, subInfo++)
+    for (i = 0, projectile = bombInfo->projectiles; i < 8; i++, projectile++)
     {
-        if (subInfo->state == 0)
+        if (projectile->state == 0)
         {
             continue;
         }
 
-        if (subInfo->state == 1)
+        if (projectile->state == 1)
         {
             if (bombInfo->bombTimer.HasTicked())
             {
@@ -400,53 +400,53 @@ void BombData::BombReimuACalcFocus(Player *player)
                     targetPos = player->pos;
                 }
 
-                tmpFloat2 = targetPos.x - subInfo->pos.x;
-                tmpFloat3 = targetPos.y - subInfo->pos.y;
+                tmpFloat2 = targetPos.x - projectile->pos.x;
+                tmpFloat3 = targetPos.y - projectile->pos.y;
                 tmpFloat1 = sqrtf(tmpFloat2 * tmpFloat2 + tmpFloat3 * tmpFloat3) /
-                            (subInfo->custom / 8.0f);
+                            (projectile->custom / 8.0f);
                 if (tmpFloat1 < 1.0f)
                 {
                     tmpFloat1 = 1.0f;
                 }
 
-                tmpFloat2 = tmpFloat2 / tmpFloat1 + subInfo->velocity.x;
-                tmpFloat3 = tmpFloat3 / tmpFloat1 + subInfo->velocity.y;
+                tmpFloat2 = tmpFloat2 / tmpFloat1 + projectile->velocity.x;
+                tmpFloat3 = tmpFloat3 / tmpFloat1 + projectile->velocity.y;
                 tmpFloat1 = sqrtf(tmpFloat2 * tmpFloat2 + tmpFloat3 * tmpFloat3);
 
-                subInfo->custom = tmpFloat1 > 10.0f ? 10.0f : tmpFloat1;
-                if (subInfo->custom < 1.0f)
+                projectile->custom = tmpFloat1 > 10.0f ? 10.0f : tmpFloat1;
+                if (projectile->custom < 1.0f)
                 {
-                    subInfo->custom = 1.0f;
+                    projectile->custom = 1.0f;
                 }
-                subInfo->velocity.x = tmpFloat2 * subInfo->custom / tmpFloat1;
-                subInfo->velocity.y = tmpFloat3 * subInfo->custom / tmpFloat1;
+                projectile->velocity.x = tmpFloat2 * projectile->custom / tmpFloat1;
+                projectile->velocity.y = tmpFloat3 * projectile->custom / tmpFloat1;
 
                 player->bombDamageBoxes[i].size.x = 48.0f;
                 player->bombDamageBoxes[i].size.y = 48.0f;
-                player->bombDamageBoxes[i].pos = subInfo->pos;
+                player->bombDamageBoxes[i].pos = projectile->pos;
                 player->bombDamageBoxes[i].lifetime = 8;
-                player->SpawnGrowingBomb(&subInfo->pos, 128.0f,
-                                        0.0f, 0, ITEM_POINT_BULLET);
+                player->SpawnGrowingBomb(&projectile->pos, 128.0f,
+                                         0.0f, 0, ITEM_POINT_BULLET);
                 if (player->bombDamageBoxes[i].damage >= 100 ||
                     bombInfo->bombTimer >= bombInfo->bombDuration - 30)
                 {
-                    g_EffectManager.SpawnEffect(6, &subInfo->pos,
+                    g_EffectManager.SpawnEffect(6, &projectile->pos,
                                                 8, 0xffffffff);
                     g_EffectManager.SpawnEffect(
-                        12, &subInfo->pos, 1, 0xff4040ff);
-                    subInfo->state = 2;
-                    subInfo->vms[0].pendingInterrupt = 1;
-                    subInfo->vms[1].pendingInterrupt = 1;
-                    subInfo->vms[2].pendingInterrupt = 1;
-                    subInfo->vms[3].pendingInterrupt = 1;
+                        12, &projectile->pos, 1, 0xff4040ff);
+                    projectile->state = 2;
+                    projectile->vms[0].pendingInterrupt = 1;
+                    projectile->vms[1].pendingInterrupt = 1;
+                    projectile->vms[2].pendingInterrupt = 1;
+                    projectile->vms[3].pendingInterrupt = 1;
                     player->bombDamageBoxes[i].size.x = 256.0f;
                     player->bombDamageBoxes[i].size.y = 256.0f;
                     player->bombDamageBoxes[i].lifetime = 400;
-                    player->SpawnGrowingBomb(&subInfo->pos, 32.0f,
-                                            6.6666665f, 15, ITEM_POINT_BULLET);
+                    player->SpawnGrowingBomb(&projectile->pos, 32.0f,
+                                             6.6666665f, 15, ITEM_POINT_BULLET);
 
                     // ZUN bloat: This does absolutely nothing
-                    subInfo->velocity / 8.0f;
+                    projectile->velocity / 8.0f;
 
                     g_SoundPlayer.PlaySoundByIdx(SOUND_ENEMY_SPELLCARD_END, 0);
                     ScreenEffect::RegisterChain(
@@ -454,24 +454,24 @@ void BombData::BombReimuACalcFocus(Player *player)
                 }
             }
         }
-        else if (subInfo->state != 0 && bombInfo->bombTimer.HasTicked())
+        else if (projectile->state != 0 && bombInfo->bombTimer.HasTicked())
         {
-            subInfo->counter++;
-            if (subInfo->counter >= 30)
+            projectile->counter++;
+            if (projectile->counter >= 30)
             {
-                subInfo->state = 0;
+                projectile->state = 0;
             }
         }
-        subInfo->pos.x +=
+        projectile->pos.x +=
             g_Supervisor.effectiveFramerateMultiplier *
-            subInfo->velocity.x;
-        subInfo->pos.y +=
+            projectile->velocity.x;
+        projectile->pos.y +=
             g_Supervisor.effectiveFramerateMultiplier *
-            subInfo->velocity.y;
-        g_AnmManager->ExecuteScript(&subInfo->vms[0]);
-        g_AnmManager->ExecuteScript(&subInfo->vms[1]);
-        g_AnmManager->ExecuteScript(&subInfo->vms[2]);
-        g_AnmManager->ExecuteScript(&subInfo->vms[3]);
+            projectile->velocity.y;
+        g_AnmManager->ExecuteScript(&projectile->vms[0]);
+        g_AnmManager->ExecuteScript(&projectile->vms[1]);
+        g_AnmManager->ExecuteScript(&projectile->vms[2]);
+        g_AnmManager->ExecuteScript(&projectile->vms[3]);
     }
     bombInfo->bombTimer++;
 }
@@ -486,28 +486,28 @@ void BombData::BombReimuADrawFocus(Player *player)
     DarkenViewport(player);
     for (i = 0; i < 8; i++)
     {
-        if (player->bombInfo.subInfo[i].state == 0)
+        if (player->bombInfo.projectiles[i].state == 0)
         {
             continue;
         }
 
-        vm = player->bombInfo.subInfo[i].vms;
-        vm->pos = player->bombInfo.subInfo[i].pos + vm->offset;
+        vm = player->bombInfo.projectiles[i].vms;
+        vm->pos = player->bombInfo.projectiles[i].pos + vm->offset;
         player->SetToTopLeftPos(vm);
         g_AnmManager->DrawNoRotation(vm);
         vm++;
         vm->pos =
-            player->bombInfo.subInfo[i].pos + vm->offset;
+            player->bombInfo.projectiles[i].pos + vm->offset;
         player->SetToTopLeftPos(vm);
         g_AnmManager->DrawNoRotation(vm);
         vm++;
         vm->pos =
-            player->bombInfo.subInfo[i].pos + vm->offset;
+            player->bombInfo.projectiles[i].pos + vm->offset;
         player->SetToTopLeftPos(vm);
         g_AnmManager->DrawNoRotation(vm);
         vm++;
         vm->pos =
-            player->bombInfo.subInfo[i].pos + vm->offset;
+            player->bombInfo.projectiles[i].pos + vm->offset;
         player->SetToTopLeftPos(vm);
         g_AnmManager->DrawNoRotation(vm);
         vm++;
@@ -540,27 +540,27 @@ void BombData::BombReimuBCalc(Player *player)
         SpawnBombInvulnEffect(player);
         for (i = 0; i < 4; i++)
         {
-            vm = player->bombInfo.subInfo[i].vms;
+            vm = player->bombInfo.projectiles[i].vms;
             g_AnmManager->ExecuteAnmIdx(
                 vm, i + ANM_SCRIPT_PLAYER_REIMU_B_BOMB_ARRAY);
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_REIMARI, 0);
-        player->bombInfo.subInfo[0].pos.x =
+        player->bombInfo.projectiles[0].pos.x =
             player->pos.x;
-        player->bombInfo.subInfo[0].pos.y = 224.0f;
-        player->bombInfo.subInfo[0].pos.z = 0.42f;
-        player->bombInfo.subInfo[1].pos.x = 192.0f;
-        player->bombInfo.subInfo[1].pos.y =
+        player->bombInfo.projectiles[0].pos.y = 224.0f;
+        player->bombInfo.projectiles[0].pos.z = 0.42f;
+        player->bombInfo.projectiles[1].pos.x = 192.0f;
+        player->bombInfo.projectiles[1].pos.y =
             player->pos.y;
-        player->bombInfo.subInfo[1].pos.z = 0.415f;
-        player->bombInfo.subInfo[2].pos.x =
+        player->bombInfo.projectiles[1].pos.z = 0.415f;
+        player->bombInfo.projectiles[2].pos.x =
             player->pos.x;
-        player->bombInfo.subInfo[2].pos.y = 224.0f;
-        player->bombInfo.subInfo[2].pos.z = 0.41f;
-        player->bombInfo.subInfo[3].pos.x = 192.0f;
-        player->bombInfo.subInfo[3].pos.y =
+        player->bombInfo.projectiles[2].pos.y = 224.0f;
+        player->bombInfo.projectiles[2].pos.z = 0.41f;
+        player->bombInfo.projectiles[3].pos.x = 192.0f;
+        player->bombInfo.projectiles[3].pos.y =
             player->pos.y;
-        player->bombInfo.subInfo[3].pos.z = 0.405f;
+        player->bombInfo.projectiles[3].pos.z = 0.405f;
         ScreenEffect::RegisterChain(SCREEN_EFFECT_SHAKE, 60, 2, 6, 0);
         ComputeBombCherryDrain(player, 3000, 0.17f);
     }
@@ -580,24 +580,24 @@ void BombData::BombReimuBCalc(Player *player)
                                                      62.0f, 6);
         for (i = 0; i < 4; i++)
         {
-            g_AnmManager->ExecuteScript(player->bombInfo.subInfo[i].vms);
+            g_AnmManager->ExecuteScript(player->bombInfo.projectiles[i].vms);
             if (player->bombInfo.bombTimer.HasTicked())
             {
                 if (player->bombInfo.bombTimer.GetCurrent() % 2 != 0)
                 {
                     projectiles[i]->pos.x =
-                        player->bombInfo.subInfo[i].pos.x +
-                        player->bombInfo.subInfo[i].vms[0].offset.x;
+                        player->bombInfo.projectiles[i].pos.x +
+                        player->bombInfo.projectiles[i].vms[0].offset.x;
                     projectiles[i]->pos.y =
-                        player->bombInfo.subInfo[i].pos.y +
-                        player->bombInfo.subInfo[i].vms[0].offset.y;
+                        player->bombInfo.projectiles[i].pos.y +
+                        player->bombInfo.projectiles[i].vms[0].offset.y;
                     player->bombDamageBoxes[i].size.x =
                         projectiles[i]->size.x;
                     player->bombDamageBoxes[i].size.y =
                         projectiles[i]->size.y;
                     player->bombDamageBoxes[i].pos =
-                        player->bombInfo.subInfo[i].pos +
-                        player->bombInfo.subInfo[i].vms->offset;
+                        player->bombInfo.projectiles[i].pos +
+                        player->bombInfo.projectiles[i].vms->offset;
                     player->bombDamageBoxes[i].lifetime = 16;
                 }
             }
@@ -617,8 +617,8 @@ void BombData::BombReimuBDraw(Player *player)
     DarkenViewport(player);
     for (i = 0; i < 4; i++)
     {
-        vm = player->bombInfo.subInfo[i].vms;
-        vm->pos = player->bombInfo.subInfo[i].pos + vm->offset;
+        vm = player->bombInfo.projectiles[i].vms;
+        vm->pos = player->bombInfo.projectiles[i].pos + vm->offset;
         vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         vm->pos.z = 0.0f;
@@ -651,7 +651,7 @@ void BombData::BombReimuBCalcFocus(Player *player)
         player->bombInfo.bombDuration = 190;
         player->invulnerabilityTimer = 250;
         SpawnBombInvulnEffect(player);
-        vm = player->bombInfo.subInfo[0].vms;
+        vm = player->bombInfo.projectiles[0].vms;
         for (i = 0; i < 3; i++, vm++)
         {
             g_AnmManager->ExecuteAnmIdx(
@@ -664,7 +664,7 @@ void BombData::BombReimuBCalcFocus(Player *player)
         player->verticalMovementSpeedMultiplierDuringBomb = 0.4f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 0.4f;
         player->SpawnGrowingBomb(&player->pos, 192.0f, 0.384f, 210,
-                                ITEM_POINT_BULLET);
+                                 ITEM_POINT_BULLET);
     }
     else
     {
@@ -672,15 +672,15 @@ void BombData::BombReimuBCalcFocus(Player *player)
         {
             ScreenEffect::RegisterChain(SCREEN_EFFECT_SHAKE, 80, 20, 0, 0);
         }
-        g_AnmManager->ExecuteScript(&player->bombInfo.subInfo[0].vms[0]);
-        g_AnmManager->ExecuteScript(&player->bombInfo.subInfo[0].vms[1]);
-        g_AnmManager->ExecuteScript(&player->bombInfo.subInfo[0].vms[2]);
+        g_AnmManager->ExecuteScript(&player->bombInfo.projectiles[0].vms[0]);
+        g_AnmManager->ExecuteScript(&player->bombInfo.projectiles[0].vms[1]);
+        g_AnmManager->ExecuteScript(&player->bombInfo.projectiles[0].vms[2]);
 
         player->bombDamageBoxes[0].size.x = 256.0f;
         player->bombDamageBoxes[0].size.y = 256.0f;
         player->bombDamageBoxes[0].pos =
             player->bombInfo.startPos +
-            player->bombInfo.subInfo[0].vms[0].offset;
+            player->bombInfo.projectiles[0].vms[0].offset;
         player->bombDamageBoxes[0].lifetime = 18;
     }
     player->playerState = PLAYER_STATE_INVULNERABLE;
@@ -697,7 +697,7 @@ void BombData::BombReimuBDrawFocus(Player *player)
     DarkenViewport(player);
     for (i = 0; i < 3; i++)
     {
-        vm = &player->bombInfo.subInfo[0].vms[i];
+        vm = &player->bombInfo.projectiles[0].vms[i];
         vm->pos = player->bombInfo.startPos + vm->offset;
         vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
@@ -733,15 +733,15 @@ void BombData::BombMarisaACalc(Player *player)
         SpawnBombInvulnEffect(player);
         for (i = 0; i < 8; i++, vm++)
         {
-            vm = player->bombInfo.subInfo[i].vms;
+            vm = player->bombInfo.projectiles[i].vms;
             g_AnmManager->ExecuteAnmIdx(
                 vm, i % 3 + ANM_SCRIPT_PLAYER_MARISA_A_BOMB_ARRAY);
-            player->bombInfo.subInfo[i].pos =
+            player->bombInfo.projectiles[i].pos =
                 player->pos;
 
             angle = (f32)i * ZUN_2PI / 8.0f;
-            player->bombInfo.subInfo[i].velocity.FromAngleMagnitude(angle, 2.0f);
-            player->bombInfo.subInfo[i].velocity.z = 0.0f;
+            player->bombInfo.projectiles[i].velocity.FromAngleMagnitude(angle, 2.0f);
+            player->bombInfo.projectiles[i].velocity.z = 0.0f;
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_REIMARI, 0);
         ScreenEffect::RegisterChain(SCREEN_EFFECT_SHAKE, 120, 4, 1, 0);
@@ -751,22 +751,22 @@ void BombData::BombMarisaACalc(Player *player)
     {
         for (i = 0; i < 8; i++)
         {
-            player->bombInfo.subInfo[i].pos +=
-                player->bombInfo.subInfo[i].velocity *
+            player->bombInfo.projectiles[i].pos +=
+                player->bombInfo.projectiles[i].velocity *
                 g_Supervisor.effectiveFramerateMultiplier;
             if (player->bombInfo.bombTimer.HasTicked() &&
                 player->bombInfo.bombTimer.GetCurrent() % 3 != 0)
             {
                 player->SpawnGrowingBomb(
-                    &player->bombInfo.subInfo[i].pos, 96.0f, 0.0f, 0,
+                    &player->bombInfo.projectiles[i].pos, 96.0f, 0.0f, 0,
                     ITEM_POINT_BULLET);
                 player->bombDamageBoxes[i].size.x = 128.0f;
                 player->bombDamageBoxes[i].size.y = 128.0f;
                 player->bombDamageBoxes[i].pos =
-                    player->bombInfo.subInfo[i].pos;
+                    player->bombInfo.projectiles[i].pos;
                 player->bombDamageBoxes[i].lifetime = 8;
             }
-            g_AnmManager->ExecuteScript(&player->bombInfo.subInfo[i].vms[0]);
+            g_AnmManager->ExecuteScript(&player->bombInfo.projectiles[i].vms[0]);
         }
     }
     player->playerState = PLAYER_STATE_INVULNERABLE;
@@ -783,26 +783,26 @@ void BombData::BombMarisaADraw(Player *player)
     DarkenViewport(player);
     for (i = 0; i < 8; i++)
     {
-        vm = player->bombInfo.subInfo[i].vms;
-        vm->pos = player->bombInfo.subInfo[i].pos;
+        vm = player->bombInfo.projectiles[i].vms;
+        vm->pos = player->bombInfo.projectiles[i].pos;
         vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         vm->pos.z = 0.0f;
         vm->scale.x = 3.2f;
         vm->scale.y = 3.2f;
         g_AnmManager->Draw(vm);
-        vm->pos -= player->bombInfo.subInfo[i].velocity * 6;
+        vm->pos -= player->bombInfo.projectiles[i].velocity * 6;
         vm->pos.x += -32.0f;
         vm->pos.y += -32.0f;
         vm->pos.z = 0.0f;
         vm->scale.x = 2.2f;
         vm->scale.y = 2.2f;
         g_AnmManager->Draw(vm);
-        vm->pos -= player->bombInfo.subInfo[i].velocity * 2;
+        vm->pos -= player->bombInfo.projectiles[i].velocity * 2;
         vm->pos.x += 64.0f;
         vm->pos.y += 64.0f;
         vm->pos.z = 0.0f;
-        vm->pos -= player->bombInfo.subInfo[i].velocity * 2;
+        vm->pos -= player->bombInfo.projectiles[i].velocity * 2;
         vm->pos.x += -32.0f;
         vm->pos.y += -32.0f;
         vm->pos.z = 0.0f;
@@ -813,7 +813,7 @@ void BombData::BombMarisaADraw(Player *player)
     }
 }
 
-#pragma var_order(i, subInfo, vm, unused, j, angle)
+#pragma var_order(i, projectile, vm, unused, j, angle)
 // FUNCTION: TH07 0x0040af10
 void BombData::BombMarisaACalcFocus(Player *player)
 {
@@ -821,7 +821,7 @@ void BombData::BombMarisaACalcFocus(Player *player)
     i32 j;
     i32 unused[3];
     AnmVm *vm;
-    PlayerBombSubInfo *subInfo;
+    PlayerBombProjectile *projectile;
     i32 i;
 
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
@@ -844,7 +844,7 @@ void BombData::BombMarisaACalcFocus(Player *player)
         SpawnBombInvulnEffect(player);
         for (i = 0; i < 24; i++)
         {
-            player->bombInfo.subInfo[i].state = 0;
+            player->bombInfo.projectiles[i].state = 0;
         }
         ComputeBombCherryDrain(player, 9000, 0.33f);
         player->verticalMovementSpeedMultiplierDuringBomb = 0.4f;
@@ -856,103 +856,103 @@ void BombData::BombMarisaACalcFocus(Player *player)
         i = player->bombInfo.bombTimer.GetCurrent() / 6;
         if (i < 24)
         {
-            vm = player->bombInfo.subInfo[i].vms;
+            vm = player->bombInfo.projectiles[i].vms;
             g_AnmManager->ExecuteAnmIdx(
                 vm, i % 3 + ANM_SCRIPT_PLAYER_MARISA_A_BOMB_ARRAY);
 
-            player->bombInfo.subInfo[i].pos =
+            player->bombInfo.projectiles[i].pos =
                 player->pos;
             for (j = 0; j < 8; j++)
             {
-                player->bombInfo.subInfo[i].posHistory[j] =
+                player->bombInfo.projectiles[i].posHistory[j] =
                     player->pos;
             }
-            player->bombInfo.subInfo[i].state = 1;
+            player->bombInfo.projectiles[i].state = 1;
             angle = g_Rng.GetRandomFloatInRange(ZUN_PI / 8.0f) -
                     (ZUN_PI / 16.0f) - (ZUN_PI / 2.0f);
-            player->bombInfo.subInfo[i].velocity.FromAngleMagnitude(angle, -5.0f);
-            player->bombInfo.subInfo[i].velocity.z = 0.0f;
+            player->bombInfo.projectiles[i].velocity.FromAngleMagnitude(angle, -5.0f);
+            player->bombInfo.projectiles[i].velocity.z = 0.0f;
             angle = g_Rng.GetRandomFloatInRange(ZUN_PI / 8.0f) -
                     (ZUN_PI / 16.0f) - (ZUN_PI / 2.0f);
-            player->bombInfo.subInfo[i].accel.FromAngleMagnitude(angle, 0.24f);
-            player->bombInfo.subInfo[i].accel.z = 0.0f;
+            player->bombInfo.projectiles[i].accel.FromAngleMagnitude(angle, 0.24f);
+            player->bombInfo.projectiles[i].accel.z = 0.0f;
             g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_MARISA_A_FOCUS, 0);
             ScreenEffect::RegisterChain(SCREEN_EFFECT_SHAKE, 120, 4, 1, 0);
             player->bombDamageBoxes[i].damage = 0;
         }
     }
-    subInfo = player->bombInfo.subInfo;
-    for (i = 0; i < 24; i++, subInfo++)
+    projectile = player->bombInfo.projectiles;
+    for (i = 0; i < 24; i++, projectile++)
     {
-        if (subInfo->state == 0)
+        if (projectile->state == 0)
         {
             continue;
         }
 
         for (j = 7; j > 0; j--)
         {
-            subInfo->posHistory[j] =
-                subInfo->posHistory[j - 1];
+            projectile->posHistory[j] =
+                projectile->posHistory[j - 1];
         }
-        subInfo->posHistory[0] = subInfo->pos;
-        subInfo->pos +=
-            subInfo->velocity *
+        projectile->posHistory[0] = projectile->pos;
+        projectile->pos +=
+            projectile->velocity *
             g_Supervisor.effectiveFramerateMultiplier;
-        subInfo->velocity +=
-            subInfo->accel *
+        projectile->velocity +=
+            projectile->accel *
             g_Supervisor.effectiveFramerateMultiplier;
-        if (subInfo->pos.y < -256.0f)
+        if (projectile->pos.y < -256.0f)
         {
-            subInfo->state = 0;
+            projectile->state = 0;
         }
-        player->SpawnGrowingBomb(&subInfo->pos, 96.0f, 0.0f, 0,
-                                ITEM_POINT_BULLET);
+        player->SpawnGrowingBomb(&projectile->pos, 96.0f, 0.0f, 0,
+                                 ITEM_POINT_BULLET);
         if (player->bombDamageBoxes[i].damage < 80)
         {
             player->bombDamageBoxes[i].size.x = 128.0f;
             player->bombDamageBoxes[i].size.y = 128.0f;
-            player->bombDamageBoxes[i].pos = subInfo->pos;
+            player->bombDamageBoxes[i].pos = projectile->pos;
             player->bombDamageBoxes[i].lifetime = 12;
         }
-        g_AnmManager->ExecuteScript(subInfo->vms);
+        g_AnmManager->ExecuteScript(projectile->vms);
     }
     player->playerState = PLAYER_STATE_INVULNERABLE;
     player->bombInfo.bombTimer++;
 }
 
-#pragma var_order(vm, i, subInfo)
+#pragma var_order(vm, i, projectile)
 // FUNCTION: TH07 0x0040b5d0
 void BombData::BombMarisaADrawFocus(Player *player)
 {
-    PlayerBombSubInfo *subInfo;
+    PlayerBombProjectile *projectile;
     i32 i;
     AnmVm *vm;
 
     DarkenViewport(player);
-    subInfo = player->bombInfo.subInfo;
-    for (i = 0; i < 24; i++, subInfo++)
+    projectile = player->bombInfo.projectiles;
+    for (i = 0; i < 24; i++, projectile++)
     {
-        if (player->bombInfo.subInfo[i].state == 0)
+        if (player->bombInfo.projectiles[i].state == 0)
         {
             continue;
         }
 
-        vm = subInfo->vms;
-        vm->pos = subInfo->pos;
+        vm = projectile->vms;
+        vm->pos = projectile->pos;
         vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         vm->pos.z = 0.3f;
         vm->scale.x = 3.2f;
         vm->scale.y = 3.2f;
         g_AnmManager->Draw(vm);
-        vm->pos = subInfo->posHistory[3];
+        vm->pos = projectile->posHistory[3];
         vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         vm->pos.z = 0.32f;
         vm->scale.x = 2.2f;
         vm->scale.y = 2.2f;
         g_AnmManager->Draw(vm);
-        vm->pos = subInfo->posHistory[7];
+        vm->pos = projectile->posHistory[7];
         vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
         vm->pos.z = 0.34f;
@@ -963,16 +963,16 @@ void BombData::BombMarisaADrawFocus(Player *player)
     }
 }
 
-#pragma var_order(i, subInfo, offset, projectile, unused, j, angle)
+#pragma var_order(i, projectile, offset, damageBox, unused, j, angle)
 // FUNCTION: TH07 0x0040b7d0
 void BombData::BombMarisaBCalc(Player *player)
 {
     f32 angle;
     i32 j;
     i32 unused[3];
-    BombProjectile *projectile;
+    BombDamageBox *damageBox;
     f32 offset;
-    PlayerBombSubInfo *subInfo;
+    PlayerBombProjectile *projectile;
     i32 i;
 
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
@@ -994,13 +994,13 @@ void BombData::BombMarisaBCalc(Player *player)
         player->bombInfo.bombDuration = 300;
         player->invulnerabilityTimer = 300;
         SpawnBombInvulnEffect(player);
-        subInfo = player->bombInfo.subInfo;
-        for (i = 0; i < 3; i++, subInfo++)
+        projectile = player->bombInfo.projectiles;
+        for (i = 0; i < 3; i++, projectile++)
         {
             g_AnmManager->ExecuteAnmIdx(
-                subInfo->vms, i + ANM_SCRIPT_PLAYER_MARISA_B_BOMB_ARRAY);
-            subInfo->pos = player->pos;
-            subInfo->custom = (f32)i * ZUN_2PI / 3.0f + (-ZUN_PI / 2.0f);
+                projectile->vms, i + ANM_SCRIPT_PLAYER_MARISA_B_BOMB_ARRAY);
+            projectile->pos = player->pos;
+            projectile->custom = (f32)i * ZUN_2PI / 3.0f + (-ZUN_PI / 2.0f);
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_SAKUMARI, 0);
         player->verticalMovementSpeedMultiplierDuringBomb = 0.4f;
@@ -1009,53 +1009,53 @@ void BombData::BombMarisaBCalc(Player *player)
     }
     else
     {
-        subInfo = player->bombInfo.subInfo;
-        projectile = player->bombDamageBoxes;
-        for (i = 0; i < 3; i++, subInfo++)
+        projectile = player->bombInfo.projectiles;
+        damageBox = player->bombDamageBoxes;
+        for (i = 0; i < 3; i++, projectile++)
         {
             if (player->bombInfo.startPos.x < 192.0f)
             {
-                subInfo->custom = utils::AddNormalizeAngle(
-                    subInfo->custom, player->bombInfo.bombTimer.AsFloat() *
-                                         ZUN_PI /
-                                         30.0f /
-                                         (f32)player->bombInfo.bombDuration);
+                projectile->custom = utils::AddNormalizeAngle(
+                    projectile->custom, player->bombInfo.bombTimer.AsFloat() *
+                                            ZUN_PI /
+                                            30.0f /
+                                            (f32)player->bombInfo.bombDuration);
             }
             else
             {
-                subInfo->custom = utils::AddNormalizeAngle(
-                    subInfo->custom, player->bombInfo.bombTimer.AsFloat() *
-                                         -ZUN_PI /
-                                         30.0f /
-                                         (f32)player->bombInfo.bombDuration);
+                projectile->custom = utils::AddNormalizeAngle(
+                    projectile->custom, player->bombInfo.bombTimer.AsFloat() *
+                                            -ZUN_PI /
+                                            30.0f /
+                                            (f32)player->bombInfo.bombDuration);
             }
-            angle = subInfo->custom;
-            subInfo->vms[0].pos = player->pos;
-            subInfo->vms[0].pos.x +=
-                cosf(angle) * subInfo->vms[0].sprite->heightPx *
-                subInfo->vms[0].scale.y /
+            angle = projectile->custom;
+            projectile->vms[0].pos = player->pos;
+            projectile->vms[0].pos.x +=
+                cosf(angle) * projectile->vms[0].sprite->heightPx *
+                projectile->vms[0].scale.y /
                 2.0f;
-            subInfo->vms[0].pos.y +=
-                sinf(angle) * subInfo->vms[0].sprite->heightPx *
-                subInfo->vms[0].scale.y /
+            projectile->vms[0].pos.y +=
+                sinf(angle) * projectile->vms[0].sprite->heightPx *
+                projectile->vms[0].scale.y /
                 2.0f;
             offset = 32.0f;
-            for (j = 0; j < 6; j++, projectile++)
+            for (j = 0; j < 6; j++, damageBox++)
             {
-                projectile->pos = player->pos;
-                projectile->pos.x += cosf(angle) * offset;
-                projectile->pos.y += sinf(angle) * offset;
-                projectile->size.x = 128.0f;
-                projectile->size.y = 128.0f;
-                projectile->lifetime = 10;
-                player->SpawnGrowingBomb(&projectile->pos, 64.0f, 0.0f, 0,
-                                        ITEM_POINT_BULLET);
+                damageBox->pos = player->pos;
+                damageBox->pos.x += cosf(angle) * offset;
+                damageBox->pos.y += sinf(angle) * offset;
+                damageBox->size.x = 128.0f;
+                damageBox->size.y = 128.0f;
+                damageBox->lifetime = 10;
+                player->SpawnGrowingBomb(&damageBox->pos, 64.0f, 0.0f, 0,
+                                         ITEM_POINT_BULLET);
                 offset =
-                    subInfo->vms[0].sprite->heightPx * subInfo->vms[0].scale.y /
+                    projectile->vms[0].sprite->heightPx * projectile->vms[0].scale.y /
                         5.0f +
                     offset;
             }
-            g_AnmManager->ExecuteScript(subInfo->vms);
+            g_AnmManager->ExecuteScript(projectile->vms);
         }
         if (player->bombInfo.bombTimer == 20)
         {
@@ -1081,8 +1081,8 @@ void BombData::BombMarisaBDraw(Player *player)
     DarkenViewport(player);
     for (i = 0; i < 3; i++)
     {
-        vm = player->bombInfo.subInfo[i].vms;
-        angle = player->bombInfo.subInfo[i].custom;
+        vm = player->bombInfo.projectiles[i].vms;
+        angle = player->bombInfo.projectiles[i].custom;
         vm->pos = player->pos;
         vm->pos.x += cosf(angle) * vm->sprite->heightPx * vm->scale.y / 2.0f;
         vm->pos.y += sinf(angle) * vm->sprite->heightPx * vm->scale.y / 2.0f;
@@ -1121,12 +1121,12 @@ void BombData::BombMarisaBCalcFocus(Player *player)
         player->bombInfo.bombDuration = 340;
         player->invulnerabilityTimer = 390;
         SpawnBombInvulnEffect(player);
-        vm = player->bombInfo.subInfo[0].vms;
+        vm = player->bombInfo.projectiles[0].vms;
         for (i = 0; i < 4; i++, vm++)
         {
             g_AnmManager->ExecuteAnmIdx(
                 vm, i + ANM_SCRIPT_PLAYER_MARISA_B_FOCUS_BOMB_ARRAY);
-            player->bombInfo.subInfo[i].pos =
+            player->bombInfo.projectiles[i].pos =
                 player->pos;
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_SAKUMARI, 0);
@@ -1157,10 +1157,10 @@ void BombData::BombMarisaBCalcFocus(Player *player)
                                             player->pos.y, 6);
             }
         }
-        g_AnmManager->ExecuteScript(&player->bombInfo.subInfo[0].vms[0]);
-        g_AnmManager->ExecuteScript(&player->bombInfo.subInfo[0].vms[1]);
-        g_AnmManager->ExecuteScript(&player->bombInfo.subInfo[0].vms[2]);
-        g_AnmManager->ExecuteScript(&player->bombInfo.subInfo[0].vms[3]);
+        g_AnmManager->ExecuteScript(&player->bombInfo.projectiles[0].vms[0]);
+        g_AnmManager->ExecuteScript(&player->bombInfo.projectiles[0].vms[1]);
+        g_AnmManager->ExecuteScript(&player->bombInfo.projectiles[0].vms[2]);
+        g_AnmManager->ExecuteScript(&player->bombInfo.projectiles[0].vms[3]);
     }
 
     player->playerState = PLAYER_STATE_INVULNERABLE;
@@ -1176,7 +1176,7 @@ void BombData::BombMarisaBDrawFocus(Player *player)
     AnmVm *vm;
 
     DarkenViewport(player);
-    vm = player->bombInfo.subInfo[0].vms;
+    vm = player->bombInfo.projectiles[0].vms;
     for (i = 0; i < 4; i++)
     {
         angle = (f32)i * (ZUN_PI / 5.0f) / 3.0f - ZUN_PI + (ZUN_2PI / 5.0f);
@@ -1195,7 +1195,7 @@ void BombData::BombMarisaBDrawFocus(Player *player)
     }
 }
 
-#pragma var_order(i, subInfo, vm, unused, angle, spawnsRemaining)
+#pragma var_order(i, projectile, vm, unused, angle, spawnsRemaining)
 // FUNCTION: TH07 0x0040c2e0
 void BombData::BombSakuyaACalc(Player *player)
 {
@@ -1203,7 +1203,7 @@ void BombData::BombSakuyaACalc(Player *player)
     f32 angle;
     i32 unused[3];
     AnmVm *vm;
-    PlayerBombSubInfo *subInfo;
+    PlayerBombProjectile *projectile;
     i32 i;
 
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
@@ -1222,120 +1222,120 @@ void BombData::BombSakuyaACalc(Player *player)
         player->invulnerabilityTimer = 210;
         SpawnBombInvulnEffect(player);
         player->bombInfo.startPos = player->pos;
-        subInfo = player->bombInfo.subInfo;
-        for (i = 0; i < 96; i++, subInfo++)
+        projectile = player->bombInfo.projectiles;
+        for (i = 0; i < 96; i++, projectile++)
         {
-            subInfo->state = 0;
+            projectile->state = 0;
         }
         ComputeBombCherryDrain(player, 6000, 0.28f);
-        player->bombInfo.subInfo[0].effect = g_EffectManager.SpawnEffect(
+        player->bombInfo.projectiles[0].effect = g_EffectManager.SpawnEffect(
             21, &player->pos, 1, 0xffffffff);
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_SAKUYA_A, 0);
     }
     if (player->bombInfo.bombTimer >= 60)
     {
         spawnsRemaining = 5;
-        subInfo = player->bombInfo.subInfo;
-        for (i = 0; i < 96; i++, subInfo++)
+        projectile = player->bombInfo.projectiles;
+        for (i = 0; i < 96; i++, projectile++)
         {
-            if (subInfo->state == 0)
+            if (projectile->state == 0)
             {
                 if (player->bombInfo.bombTimer <= 120 && spawnsRemaining != 0)
                 {
-                    subInfo->state = 1;
-                    vm = subInfo->vms;
+                    projectile->state = 1;
+                    vm = projectile->vms;
                     g_AnmManager->ExecuteAnmIdx(
                         vm, ANM_SCRIPT_PLAYER_SAKUYA_A_BOMB_ARRAY + (i & 1));
                     angle = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
-                    subInfo->angle = angle;
-                    subInfo->speed = g_Rng.GetRandomFloatInRange(6.0f) + 5.5f;
-                    subInfo->custom = g_Rng.GetRandomFloatInRange(0.1f) + 0.1f;
-                    subInfo->accel.x =
+                    projectile->angle = angle;
+                    projectile->speed = g_Rng.GetRandomFloatInRange(6.0f) + 5.5f;
+                    projectile->custom = g_Rng.GetRandomFloatInRange(0.1f) + 0.1f;
+                    projectile->accel.x =
                         g_Rng.GetRandomFloatInRange(ZUN_PI / 50.0f) - ZUN_PI / 100.0f;
-                    subInfo->velocity.x = cosf(subInfo->angle) * 24.0f;
-                    subInfo->velocity.y = sinf(subInfo->angle) * 24.0f;
-                    subInfo->pos =
-                        player->bombInfo.startPos + subInfo->velocity;
-                    subInfo->velocity.z = 0.0f;
+                    projectile->velocity.x = cosf(projectile->angle) * 24.0f;
+                    projectile->velocity.y = sinf(projectile->angle) * 24.0f;
+                    projectile->pos =
+                        player->bombInfo.startPos + projectile->velocity;
+                    projectile->velocity.z = 0.0f;
                     player->bombDamageBoxes[i].damage = 0;
                     spawnsRemaining--;
                 }
                 continue;
             }
 
-            subInfo->angle = utils::AddNormalizeAngle(
-                subInfo->angle, subInfo->accel.x);
-            subInfo->speed = subInfo->speed + subInfo->custom;
-            subInfo->velocity.x =
-                cosf(subInfo->angle) * subInfo->speed;
-            subInfo->velocity.y =
-                sinf(subInfo->angle) * subInfo->speed;
+            projectile->angle = utils::AddNormalizeAngle(
+                projectile->angle, projectile->accel.x);
+            projectile->speed = projectile->speed + projectile->custom;
+            projectile->velocity.x =
+                cosf(projectile->angle) * projectile->speed;
+            projectile->velocity.y =
+                sinf(projectile->angle) * projectile->speed;
             if (player->bombDamageBoxes[i].damage < 30)
             {
-                subInfo->pos +=
-                    subInfo->velocity *
+                projectile->pos +=
+                    projectile->velocity *
                     g_Supervisor.effectiveFramerateMultiplier;
-                player->SpawnGrowingBomb(&subInfo->pos, 32.0f, 0.0f,
-                                        0, ITEM_POINT_BULLET);
+                player->SpawnGrowingBomb(&projectile->pos, 32.0f, 0.0f,
+                                         0, ITEM_POINT_BULLET);
                 player->bombDamageBoxes[i].size.x = 24.0f;
                 player->bombDamageBoxes[i].size.y = 24.0f;
-                player->bombDamageBoxes[i].pos = subInfo->pos;
+                player->bombDamageBoxes[i].pos = projectile->pos;
                 player->bombDamageBoxes[i].lifetime = 10;
             }
             else if (player->bombDamageBoxes[i].damage < 999)
             {
-                g_AnmManager->ExecuteAnmIdx(subInfo->vms, 1120);
+                g_AnmManager->ExecuteAnmIdx(projectile->vms, 1120);
                 player->bombDamageBoxes[i].damage = 999;
             }
-            if (g_GameManager.IsInBounds(subInfo->pos.x,
-                                         subInfo->pos.y, 64.0f,
+            if (g_GameManager.IsInBounds(projectile->pos.x,
+                                         projectile->pos.y, 64.0f,
                                          64.0f) == 0)
             {
-                subInfo->state = 0;
+                projectile->state = 0;
             }
-            g_AnmManager->ExecuteScript(subInfo->vms);
+            g_AnmManager->ExecuteScript(projectile->vms);
         }
     }
     player->playerState = PLAYER_STATE_INVULNERABLE;
     player->bombInfo.bombTimer++;
 }
 
-#pragma var_order(i, subInfo, angle, vm)
+#pragma var_order(i, projectile, angle, vm)
 // FUNCTION: TH07 0x0040c970
 void BombData::BombSakuyaADraw(Player *player)
 {
     AnmVm *vm;
     f32 angle;
-    PlayerBombSubInfo *subInfo;
+    PlayerBombProjectile *projectile;
     i32 i;
 
     DarkenViewport(player);
-    subInfo = player->bombInfo.subInfo;
-    for (i = 0; i < 96; i++, subInfo++)
+    projectile = player->bombInfo.projectiles;
+    for (i = 0; i < 96; i++, projectile++)
     {
-        if (subInfo->state == 0)
+        if (projectile->state == 0)
         {
             continue;
         }
 
-        angle = utils::AddNormalizeAngle(subInfo->angle, ZUN_PI / 2.0f);
-        vm = subInfo->vms;
+        angle = utils::AddNormalizeAngle(projectile->angle, ZUN_PI / 2.0f);
+        vm = projectile->vms;
         vm->rotation.z = angle;
         vm->updateRotation = 1;
-        subInfo->vms[0].pos = subInfo->pos;
-        subInfo->vms[0].pos.z = 0.0f;
-        g_AnmManager->Draw(subInfo->vms);
+        projectile->vms[0].pos = projectile->pos;
+        projectile->vms[0].pos.z = 0.0f;
+        g_AnmManager->Draw(projectile->vms);
     }
 }
 
-#pragma var_order(i, subInfo, vm, unused, angle)
+#pragma var_order(i, projectile, vm, unused, angle)
 // FUNCTION: TH07 0x0040ca50
 void BombData::BombSakuyaACalcFocus(Player *player)
 {
     f32 angle;
     i32 unused[3];
     AnmVm *vm;
-    PlayerBombSubInfo *subInfo;
+    PlayerBombProjectile *projectile;
     i32 i;
 
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
@@ -1355,157 +1355,157 @@ void BombData::BombSakuyaACalcFocus(Player *player)
         player->bombInfo.bombDuration = 250;
         player->invulnerabilityTimer = 290;
         SpawnBombInvulnEffect(player);
-        subInfo = player->bombInfo.subInfo;
-        for (i = 0; i < 96; i++, subInfo++)
+        projectile = player->bombInfo.projectiles;
+        for (i = 0; i < 96; i++, projectile++)
         {
-            subInfo->state = 0;
+            projectile->state = 0;
         }
         ComputeBombCherryDrain(player, 6500, 0.29f);
         player->verticalMovementSpeedMultiplierDuringBomb = 0.3f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 0.3f;
-        player->bombInfo.subInfo[0].effect = g_EffectManager.SpawnEffect(
+        player->bombInfo.projectiles[0].effect = g_EffectManager.SpawnEffect(
             21, &player->pos, 1, 0xffffffff);
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_SAKUYA_A, 0);
     }
     if (player->bombInfo.bombTimer >= 0 &&
         player->bombInfo.bombTimer <= 60)
     {
-        player->bombInfo.subInfo[0].effect->pos = player->pos;
+        player->bombInfo.projectiles[0].effect->pos = player->pos;
     }
     if (player->bombInfo.bombTimer >= 20 &&
         player->bombInfo.bombTimer < 116)
     {
-        subInfo = player->bombInfo.subInfo;
-        for (i = 0; i < 96; i++, subInfo++)
+        projectile = player->bombInfo.projectiles;
+        for (i = 0; i < 96; i++, projectile++)
         {
             if (!player->GetBombTimer()->HasTickedAndIsEq(i % 48 * 2 + 20))
             {
                 continue;
             }
 
-            subInfo->state = 1;
-            vm = subInfo->vms;
+            projectile->state = 1;
+            vm = projectile->vms;
             g_AnmManager->ExecuteAnmIdx(
                 vm, (i & 1) + ANM_SCRIPT_PLAYER_SAKUYA_A_FOCUS_BOMB_ARRAY);
             angle = (f32)i * ZUN_2PI / 96.0f - ZUN_PI;
-            subInfo->angle = angle;
-            subInfo->speed = g_Rng.GetRandomFloatInRange(1.0f) + 0.5f;
-            subInfo->custom = g_Rng.GetRandomFloatInRange(0.1f) + 0.03f;
-            subInfo->accel.x =
+            projectile->angle = angle;
+            projectile->speed = g_Rng.GetRandomFloatInRange(1.0f) + 0.5f;
+            projectile->custom = g_Rng.GetRandomFloatInRange(0.1f) + 0.03f;
+            projectile->accel.x =
                 g_Rng.GetRandomU16InRange(1) ? ZUN_PI / 20.0f
                                              : -ZUN_PI / 20.0f;
-            subInfo->velocity.x = cosf(subInfo->angle) * 24.0f;
-            subInfo->velocity.y = sinf(subInfo->angle) * 24.0f;
-            subInfo->pos =
-                player->pos + subInfo->velocity;
-            subInfo->timer = 0;
-            subInfo->velocity.z = 0.0f;
+            projectile->velocity.x = cosf(projectile->angle) * 24.0f;
+            projectile->velocity.y = sinf(projectile->angle) * 24.0f;
+            projectile->pos =
+                player->pos + projectile->velocity;
+            projectile->timer = 0;
+            projectile->velocity.z = 0.0f;
             player->bombDamageBoxes[i].damage = 0;
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_REIMARI, 0);
         ScreenEffect::RegisterChain(SCREEN_EFFECT_SHAKE, 120, 4, 1, 0);
     }
-    subInfo = player->bombInfo.subInfo;
-    for (i = 0; i < 96; i++, subInfo++)
+    projectile = player->bombInfo.projectiles;
+    for (i = 0; i < 96; i++, projectile++)
     {
-        if (subInfo->state == 0)
+        if (projectile->state == 0)
         {
             continue;
         }
 
-        if (subInfo->timer.GetCurrent() < 30 ||
-            subInfo->timer.GetCurrent() >= 70)
+        if (projectile->timer.GetCurrent() < 30 ||
+            projectile->timer.GetCurrent() >= 70)
         {
-            if (subInfo->timer.HasTickedAndIsEq(70))
+            if (projectile->timer.HasTickedAndIsEq(70))
             {
                 if (player->positionOfLastEnemyHit.x > -100.0f)
                 {
-                    subInfo->angle = utils::AddNormalizeAngle(
+                    projectile->angle = utils::AddNormalizeAngle(
                         atan2f(player->positionOfLastEnemyHit.y -
-                                   subInfo->pos.y,
+                                   projectile->pos.y,
                                player->positionOfLastEnemyHit.x -
-                                   subInfo->pos.x),
+                                   projectile->pos.x),
                         0.0f);
                 }
-                subInfo->speed = 14.0f;
+                projectile->speed = 14.0f;
             }
-            subInfo->speed = subInfo->speed + subInfo->custom;
-            subInfo->velocity.x =
-                cosf(subInfo->angle) * subInfo->speed;
-            subInfo->velocity.y =
-                sinf(subInfo->angle) * subInfo->speed;
+            projectile->speed = projectile->speed + projectile->custom;
+            projectile->velocity.x =
+                cosf(projectile->angle) * projectile->speed;
+            projectile->velocity.y =
+                sinf(projectile->angle) * projectile->speed;
         }
         else
         {
-            subInfo->angle = utils::AddNormalizeAngle(
-                subInfo->angle, subInfo->accel.x);
-            subInfo->velocity.x = 0.0f;
-            subInfo->velocity.y = 0.0f;
+            projectile->angle = utils::AddNormalizeAngle(
+                projectile->angle, projectile->accel.x);
+            projectile->velocity.x = 0.0f;
+            projectile->velocity.y = 0.0f;
         }
         if (player->bombDamageBoxes[i].damage == 0)
         {
-            subInfo->pos +=
-                subInfo->velocity *
+            projectile->pos +=
+                projectile->velocity *
                 g_Supervisor.effectiveFramerateMultiplier;
             player->SpawnGrowingBomb(
-                &player->bombInfo.subInfo[i].pos, 32.0f,
+                &player->bombInfo.projectiles[i].pos, 32.0f,
                 0.0f, 0, ITEM_POINT_BULLET);
             player->bombDamageBoxes[i].size.x = 24.0f;
             player->bombDamageBoxes[i].size.y = 24.0f;
-            player->bombDamageBoxes[i].pos = subInfo->pos;
+            player->bombDamageBoxes[i].pos = projectile->pos;
             player->bombDamageBoxes[i].lifetime = 22;
         }
         else if (player->bombDamageBoxes[i].damage < 999)
         {
-            g_AnmManager->ExecuteAnmIdx(subInfo->vms, 1120);
+            g_AnmManager->ExecuteAnmIdx(projectile->vms, 1120);
             player->bombDamageBoxes[i].damage = 999;
             g_EffectManager.SpawnEffect(
-                0, &player->bombInfo.subInfo[i].pos, 1,
+                0, &player->bombInfo.projectiles[i].pos, 1,
                 0xffff80ff);
         }
-        g_AnmManager->ExecuteScript(subInfo->vms);
-        subInfo->timer++;
+        g_AnmManager->ExecuteScript(projectile->vms);
+        projectile->timer++;
     }
     player->playerState = PLAYER_STATE_INVULNERABLE;
     player->bombInfo.bombTimer++;
 }
 
-#pragma var_order(i, subInfo, angle, vm)
+#pragma var_order(i, projectile, angle, vm)
 // FUNCTION: TH07 0x0040d3b0
 void BombData::BombSakuyaADrawFocus(Player *player)
 {
     AnmVm *vm;
     f32 angle;
-    PlayerBombSubInfo *subInfo;
+    PlayerBombProjectile *projectile;
     i32 i;
 
     DarkenViewport(player);
-    subInfo = player->bombInfo.subInfo;
-    for (i = 0; i < 96; i++, subInfo++)
+    projectile = player->bombInfo.projectiles;
+    for (i = 0; i < 96; i++, projectile++)
     {
-        if (subInfo->state == 0)
+        if (projectile->state == 0)
         {
             continue;
         }
-        angle = utils::AddNormalizeAngle(subInfo->angle, ZUN_PI / 2.0f);
-        vm = subInfo->vms;
+        angle = utils::AddNormalizeAngle(projectile->angle, ZUN_PI / 2.0f);
+        vm = projectile->vms;
         vm->rotation.z = angle;
         vm->updateRotation = 1;
-        subInfo->vms[0].pos = subInfo->pos;
-        subInfo->vms[0].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-        subInfo->vms[0].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
-        subInfo->vms[0].pos.z = 0.0f;
-        g_AnmManager->Draw(subInfo->vms);
+        projectile->vms[0].pos = projectile->pos;
+        projectile->vms[0].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
+        projectile->vms[0].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
+        projectile->vms[0].pos.z = 0.0f;
+        g_AnmManager->Draw(projectile->vms);
     }
 }
 
-#pragma var_order(i, subInfo, vm, unused)
+#pragma var_order(i, projectile, vm, unused)
 // FUNCTION: TH07 0x0040d4c0
 void BombData::BombSakuyaBCalc(Player *player)
 {
     i32 unused[3];
     AnmVm *vm;
-    PlayerBombSubInfo *subInfo;
+    PlayerBombProjectile *projectile;
     i32 i;
 
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
@@ -1515,7 +1515,7 @@ void BombData::BombSakuyaBCalc(Player *player)
         player->verticalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->SpawnGrowingBomb(&player->pos, 800.0f, 0.0f, 0,
-                                ITEM_POINT_BULLET);
+                                 ITEM_POINT_BULLET);
         return;
     }
 
@@ -1527,10 +1527,10 @@ void BombData::BombSakuyaBCalc(Player *player)
         player->bombInfo.bombDuration = 160;
         player->invulnerabilityTimer = 260;
         SpawnBombInvulnEffect(player);
-        subInfo = player->bombInfo.subInfo;
-        for (i = 0; i < 4; i++, subInfo++)
+        projectile = player->bombInfo.projectiles;
+        for (i = 0; i < 4; i++, projectile++)
         {
-            subInfo->state = 0;
+            projectile->state = 0;
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_SAKUMARI, 0);
         ComputeBombCherryDrain(player, 5500, 0.26f);
@@ -1548,17 +1548,17 @@ void BombData::BombSakuyaBCalc(Player *player)
     }
     if (player->GetBombTimer()->HasTickedAndIsEq(30))
     {
-        subInfo = player->bombInfo.subInfo;
-        for (i = 0; i < 4; i++, subInfo++)
+        projectile = player->bombInfo.projectiles;
+        for (i = 0; i < 4; i++, projectile++)
         {
-            subInfo->state = 1;
-            vm = subInfo->vms;
+            projectile->state = 1;
+            vm = projectile->vms;
             g_AnmManager->ExecuteAnmIdx(
                 vm, i + ANM_SCRIPT_PLAYER_SAKUYA_B_BOMB_ARRAY);
             vm->pos.x = 192.0f + ((i & 1) != 0 ? 128.0f : -128.0f);
             vm->pos.y = 224.0f + (i / 2 != 0 ? 128.0f : -128.0f);
             vm->pos.z = 0.49f;
-            subInfo->velocity.z = 0.0f;
+            projectile->velocity.z = 0.0f;
         }
     }
     if (player->bombInfo.bombTimer >= 30 &&
@@ -1582,53 +1582,53 @@ void BombData::BombSakuyaBCalc(Player *player)
     {
         ScreenEffect::RegisterChain(SCREEN_EFFECT_SHAKE, 70, 24, 0, 0);
     }
-    subInfo = player->bombInfo.subInfo;
-    for (i = 0; i < 4; i++, subInfo++)
+    projectile = player->bombInfo.projectiles;
+    for (i = 0; i < 4; i++, projectile++)
     {
-        if (subInfo->state == 0)
+        if (projectile->state == 0)
         {
             continue;
         }
 
-        g_AnmManager->ExecuteScript(subInfo->vms);
+        g_AnmManager->ExecuteScript(projectile->vms);
     }
     player->playerState = PLAYER_STATE_INVULNERABLE;
     player->bombInfo.bombTimer++;
 }
 
-#pragma var_order(i, subInfo)
+#pragma var_order(i, projectile)
 // FUNCTION: TH07 0x0040d9a0
 void BombData::BombSakuyaBDraw(Player *player)
 {
-    PlayerBombSubInfo *subInfo;
+    PlayerBombProjectile *projectile;
     i32 i;
 
     DarkenViewport(player);
-    subInfo = player->bombInfo.subInfo;
-    for (i = 0; i < 4; i++, subInfo++)
+    projectile = player->bombInfo.projectiles;
+    for (i = 0; i < 4; i++, projectile++)
     {
-        if (subInfo->state == 0)
+        if (projectile->state == 0)
         {
             continue;
         }
 
-        subInfo->vms[0].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-        subInfo->vms[0].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
-        subInfo->vms[0].pos.z = 0.0f;
-        g_AnmManager->Draw(subInfo->vms);
-        subInfo->vms[0].pos.x -= g_GameManager.arcadeRegionTopLeftPos.x;
-        subInfo->vms[0].pos.y -= g_GameManager.arcadeRegionTopLeftPos.y;
+        projectile->vms[0].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
+        projectile->vms[0].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
+        projectile->vms[0].pos.z = 0.0f;
+        g_AnmManager->Draw(projectile->vms);
+        projectile->vms[0].pos.x -= g_GameManager.arcadeRegionTopLeftPos.x;
+        projectile->vms[0].pos.y -= g_GameManager.arcadeRegionTopLeftPos.y;
     }
 }
 
-#pragma var_order(i, subInfo, vm, unused, j)
+#pragma var_order(i, projectile, vm, unused, j)
 // FUNCTION: TH07 0x0040da80
 void BombData::BombSakuyaBCalcFocus(Player *player)
 {
     i32 j;
     i32 unused[3];
     AnmVm *vm;
-    PlayerBombSubInfo *subInfo;
+    PlayerBombProjectile *projectile;
     i32 i;
 
     if (player->bombInfo.bombTimer >= player->bombInfo.bombDuration)
@@ -1638,7 +1638,7 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
         player->verticalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->SpawnGrowingBomb(&player->pos, 800.0f, 0.0f, 0,
-                                ITEM_POINT_BULLET);
+                                 ITEM_POINT_BULLET);
         player->bombClearBoxes[0].pos.x = 192.0f;
         player->bombClearBoxes[0].pos.y = 224.0f;
         player->bombClearBoxes[0].size.x = 448.0f;
@@ -1655,37 +1655,37 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
         player->invulnerabilityTimer = 420;
         SpawnBombInvulnEffect(player);
         player->isBombing = FALSE;
-        subInfo = player->bombInfo.subInfo;
-        for (i = 0; i < 2; i++, subInfo++)
+        projectile = player->bombInfo.projectiles;
+        for (i = 0; i < 2; i++, projectile++)
         {
-            subInfo->state = 1;
-            vm = subInfo->vms;
+            projectile->state = 1;
+            vm = projectile->vms;
             g_AnmManager->ExecuteAnmIdx(
                 vm, i + ANM_SCRIPT_PLAYER_SAKUYA_B_FOCUS_BOMB_ARRAY);
-            subInfo->pos = player->pos;
+            projectile->pos = player->pos;
             for (j = 31; j >= 0; j--)
             {
-                subInfo->posHistory[j] =
-                    subInfo->pos;
+                projectile->posHistory[j] =
+                    projectile->pos;
             }
-            subInfo->velocity.x = 0.0f;
-            subInfo->velocity.y = 0.0f;
-            subInfo->velocity.z = 0.0f;
-            subInfo->accel.x = 0.0f;
-            subInfo->accel.y = -0.008f;
-            subInfo->accel.z = 0.0f;
+            projectile->velocity.x = 0.0f;
+            projectile->velocity.y = 0.0f;
+            projectile->velocity.z = 0.0f;
+            projectile->accel.x = 0.0f;
+            projectile->accel.y = -0.008f;
+            projectile->accel.z = 0.0f;
         }
         player->verticalMovementSpeedMultiplierDuringBomb = 1.5f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 1.5f;
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_SAKUMARI, 0);
         ComputeBombCherryDrain(player, 6000, 0.29f);
     }
-    player->SpawnGrowingBomb(&player->bombInfo.subInfo[0].pos,
-                            96.0f, 0.0f, 0, ITEM_POINT_BULLET);
+    player->SpawnGrowingBomb(&player->bombInfo.projectiles[0].pos,
+                             96.0f, 0.0f, 0, ITEM_POINT_BULLET);
     player->bombDamageBoxes[0].pos.x =
-        player->bombInfo.subInfo[0].pos.x;
+        player->bombInfo.projectiles[0].pos.x;
     player->bombDamageBoxes[0].pos.y =
-        player->bombInfo.subInfo[0].pos.y;
+        player->bombInfo.projectiles[0].pos.y;
     player->bombDamageBoxes[0].size.x = 160.0f;
     player->bombDamageBoxes[0].size.y = 160.0f;
     player->bombDamageBoxes[0].lifetime = 1;
@@ -1699,69 +1699,69 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
         g_BulletManager.StopBulletMovement();
         ScreenEffect::RegisterChain(SCREEN_EFFECT_SHAKE, 70, 24, 0, 0);
     }
-    subInfo = player->bombInfo.subInfo;
-    for (i = 0; i < 2; i++, subInfo++)
+    projectile = player->bombInfo.projectiles;
+    for (i = 0; i < 2; i++, projectile++)
     {
-        if (subInfo->state == 0)
+        if (projectile->state == 0)
         {
             continue;
         }
 
-        subInfo->accel =
-            (player->pos - subInfo->pos) / 1700.0f *
+        projectile->accel =
+            (player->pos - projectile->pos) / 1700.0f *
             g_Supervisor.effectiveFramerateMultiplier;
-        subInfo->velocity +=
-            subInfo->accel *
+        projectile->velocity +=
+            projectile->accel *
             g_Supervisor.effectiveFramerateMultiplier;
         for (j = 31; j > 0; j--)
         {
-            subInfo->posHistory[j] =
-                subInfo->posHistory[j - 1];
+            projectile->posHistory[j] =
+                projectile->posHistory[j - 1];
         }
-        subInfo->posHistory[0] = subInfo->pos;
-        subInfo->pos +=
-            subInfo->velocity *
+        projectile->posHistory[0] = projectile->pos;
+        projectile->pos +=
+            projectile->velocity *
             g_Supervisor.effectiveFramerateMultiplier;
-        g_AnmManager->ExecuteScript(subInfo->vms);
+        g_AnmManager->ExecuteScript(projectile->vms);
     }
     player->playerState = PLAYER_STATE_INVULNERABLE;
     player->bombInfo.bombTimer++;
 }
 
-#pragma var_order(oldAlpha, i, subInfo, j)
+#pragma var_order(oldAlpha, i, projectile, j)
 // FUNCTION: TH07 0x0040e280
 void BombData::BombSakuyaBDrawFocus(Player *player)
 {
     i32 j;
-    PlayerBombSubInfo *subInfo;
+    PlayerBombProjectile *projectile;
     i32 i;
     i32 oldAlpha;
 
     DarkenViewport(player);
-    subInfo = player->bombInfo.subInfo;
-    for (i = 0; i < 2; i++, subInfo++)
+    projectile = player->bombInfo.projectiles;
+    for (i = 0; i < 2; i++, projectile++)
     {
-        if (subInfo->state == 0)
+        if (projectile->state == 0)
         {
             continue;
         }
 
-        oldAlpha = subInfo->vms[0].color.bytes.a;
-        subInfo->vms[0].pos = subInfo->pos;
-        subInfo->vms[0].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-        subInfo->vms[0].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
-        subInfo->vms[0].pos.z = 0.0f;
-        g_AnmManager->Draw(subInfo->vms);
+        oldAlpha = projectile->vms[0].color.bytes.a;
+        projectile->vms[0].pos = projectile->pos;
+        projectile->vms[0].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
+        projectile->vms[0].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
+        projectile->vms[0].pos.z = 0.0f;
+        g_AnmManager->Draw(projectile->vms);
         for (j = 3; j < 32; j += 4)
         {
-            subInfo->vms[0].pos = subInfo->posHistory[j];
-            subInfo->vms[0].color.bytes.a =
+            projectile->vms[0].pos = projectile->posHistory[j];
+            projectile->vms[0].color.bytes.a =
                 oldAlpha - oldAlpha * j / 32;
-            subInfo->vms[0].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
-            subInfo->vms[0].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
-            subInfo->vms[0].pos.z = 0.0f;
-            g_AnmManager->Draw(subInfo->vms);
+            projectile->vms[0].pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
+            projectile->vms[0].pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
+            projectile->vms[0].pos.z = 0.0f;
+            g_AnmManager->Draw(projectile->vms);
         }
-        subInfo->vms[0].color.bytes.a = oldAlpha;
+        projectile->vms[0].color.bytes.a = oldAlpha;
     }
 }

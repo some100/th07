@@ -57,17 +57,14 @@ enum BorderState
     BORDER_READY,
 };
 
-struct BombProjectile
+struct BombDamageBox
 {
     Float3 pos;
     Float3 size;
     i32 lifetime;
-    union {
-        i32 itemType;
-        i32 damage;
-    };
+    i32 damage;
 };
-C_ASSERT(sizeof(BombProjectile) == 0x20);
+C_ASSERT(sizeof(BombDamageBox) == 0x20);
 
 struct BombClearBox
 {
@@ -76,14 +73,11 @@ struct BombClearBox
     f32 radius;
     f32 radiusGrowth;
     i32 lifetime;
-    union {
-        i32 itemType;
-        i32 damage;
-    };
+    i32 itemType;
 };
 C_ASSERT(sizeof(BombClearBox) == 0x20);
 
-struct PlayerBombSubInfo
+struct PlayerBombProjectile
 {
     i32 state;
     i32 counter;
@@ -122,7 +116,7 @@ struct PlayerBombInfo
     BombCallback draw;
     BombCallback bombFocusCalc;
     BombCallback drawFocus;
-    PlayerBombSubInfo subInfo[128];
+    PlayerBombProjectile projectiles[128];
     Float3 startPos;
 };
 
@@ -276,7 +270,7 @@ struct Player
     Float2 velocity;
     i32 unused_9d4;
     Effect *focusEffect;
-    BombProjectile bombDamageBoxes[112];
+    BombDamageBox bombDamageBoxes[112];
     BombClearBox bombClearBoxes[96];
     ZunBool isBombing;
     ShtEntry *shtEntries[4];

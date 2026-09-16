@@ -1,10 +1,11 @@
 # Contributing
 
-Contributions are welcome. Before anything can be done, `reccmp` must be installed. This is already done for you if you're using `uv`. 
+Contributions are welcome. Before anything can be done, `reccmp` must be installed. This is already done for you if you're using `uv`.
 
 First, copy the original game binary `th07.exe` into the resources directory of the repository. This is required so that `reccmp` has some kind of base to compare against.
 
 Then, simply run the command:
+
 ```sh
 uv run scripts/build.py reccmp --init
 ```
@@ -62,7 +63,7 @@ This function is still mostly unprocessed Ghidra decompiler output. While it loo
          : +mov dword ptr [eax], 0
          : +mov esp, ebp        (EclManager.cpp:84)
          : +pop ebp
-         : +ret 
+         : +ret
 
 
 EclManager::Unload is only 37.50% similar to the original, diff above
@@ -79,9 +80,9 @@ Immediately from the assembly diff, you can determine a few things just from thi
          : +mov eax, dword ptr [ebp - 4] 	(EclManager.cpp:67)
 ```
 
-* Firstly, PCB was compiled with debug settings (for most files), so you can see that the frame pointer here was not omitted. This means we can determine the amount of stack "space" we need. In this case, the very first instruction `sub esp, 8` means we should be subtracting 8 bytes from the frame pointer, `esp`. That means we need to have 8 bytes on the stack.
+- Firstly, PCB was compiled with debug settings (for most files), so you can see that the frame pointer here was not omitted. This means we can determine the amount of stack "space" we need. In this case, the very first instruction `sub esp, 8` means we should be subtracting 8 bytes from the frame pointer, `esp`. That means we need to have 8 bytes on the stack.
 
-* Secondly, since this is a _member function_ of EclManager, `this` is located at `ecx`, which is then immediately moved to the end of the stack at `[ebp - 8]` in the original binary. Thus, since `this` already occupies a stack "slot," it means that we are only missing 4 bytes of stack space from our version. Just to make sure, though, we can use a tool that comes with `reccmp`, called `stackcmp`. Call `uv run scripts/build.py stackcmp 0x0040e4f0` to get:
+- Secondly, since this is a _member function_ of EclManager, `this` is located at `ecx`, which is then immediately moved to the end of the stack at `[ebp - 8]` in the original binary. Thus, since `this` already occupies a stack "slot," it means that we are only missing 4 bytes of stack space from our version. Just to make sure, though, we can use a tool that comes with `reccmp`, called `stackcmp`. Call `uv run scripts/build.py stackcmp 0x0040e4f0` to get:
 
 ```
 [ERROR] Structural mismatch at orig=0x40e506:
@@ -96,7 +97,7 @@ Immediately from the assembly diff, you can determine a few things just from thi
 +mov dword ptr [eax], 0
 +mov esp, ebp   (EclManager.cpp:84)
 +pop ebp
-+ret 
++ret
 
 
 Ordered by original stack (left=orig, right=recomp):
@@ -150,7 +151,7 @@ Now, rerun the diff command from earlier to get this result:
 ✨ OK! ✨
 ```
 
-Congrats, you've matched a function! 
+Congrats, you've matched a function!
 
 There's also an alternative way to match this function. For at least this compiler in particular, MSVC 2002, inline functions create compiler temporaries, which can be used for matching. These compiler temporaries are placed _below_ user-defined stack variables on the stack, (so, for example, if I had two stack variables at `[ebp - 4]` and `[ebp - 8]`, and a simple getter inline function, it would move its result to `[ebp - 0xc]`), but _above_ the stack variable for the `this` pointer (if there is any). This is particularly necessary for if stack variables are mismatched, and `stackcmp` indicates that a user-defined variable and temporary variable (the unnamed ones) are swapped.
 
@@ -625,34 +626,35 @@ void BombData::BombReimuADrawFocus(Player *player)
     DarkenViewport(player);
     for (i = 0; i < 8; i++)
     {
-        if (player->bombInfo.subInfo[i].state == 0)
+        if (player->bombInfo.projectiles[i].state == 0)
         {
             continue;
         }
 
-        vm = player->bombInfo.subInfo[i].vms;
-        vm->pos = player->bombInfo.subInfo[i].pos + vm->offset;
+        vm = player->bombInfo.projectiles[i].vms;
+        vm->pos = player->bombInfo.projectiles[i].pos + vm->offset;
         player->SetToTopLeftPos(vm);
         g_AnmManager->DrawNoRotation(vm);
         vm++;
         vm->pos =
-            player->bombInfo.subInfo[i].pos + vm->offset;
+            player->bombInfo.projectiles[i].pos + vm->offset;
         player->SetToTopLeftPos(vm);
         g_AnmManager->DrawNoRotation(vm);
         vm++;
         vm->pos =
-            player->bombInfo.subInfo[i].pos + vm->offset;
+            player->bombInfo.projectiles[i].pos + vm->offset;
         player->SetToTopLeftPos(vm);
         g_AnmManager->DrawNoRotation(vm);
         vm++;
         vm->pos =
-            player->bombInfo.subInfo[i].pos + vm->offset;
+            player->bombInfo.projectiles[i].pos + vm->offset;
         player->SetToTopLeftPos(vm);
         g_AnmManager->DrawNoRotation(vm);
         vm++;
     }
 }
 ```
+
 ```
 ---
 +++
@@ -1102,11 +1104,13 @@ void BombData::BombReimuADrawFocus(Player *player)
 }
 ```
 
-Make sure that the pragma is above the reccmp annotation and that the variables you declared are ordered in stack layout order _starting from the bottom_, as such: 
+Make sure that the pragma is above the reccmp annotation and that the variables you declared are ordered in stack layout order _starting from the bottom_, as such:
+
 ```c++
 i32 i;
 AnmVm *vm;
 ```
+
 This is not for any reason in particular, it's just for consistency and to align with the stackcmp output.
 
 Now, if you run reccmp again on the function:

@@ -429,7 +429,7 @@ address|name|type
 0043b7f0|Player::Player|function
 0043ba10|PlayerBullet::PlayerBullet|function
 0043baa0|PlayerBombInfo::PlayerBombInfo|function
-0043bb10|PlayerBombSubInfo::PlayerBombSubInfo|function
+0043bb10|PlayerBombProjectile::PlayerBombProjectile|function
 0043bbd0|ShtData::DefaultFireBulletCallback|function
 0043bdc0|ShtData::FireBulletDefault|function
 0043be10|ShtData::FireOrbBulletUnfocused|function
