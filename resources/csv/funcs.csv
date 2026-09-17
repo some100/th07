@@ -401,7 +401,7 @@ address|name|type
 00439401|ZunTimer::Increment|function
 004394c7|ZunTimer::Decrement|function
 0043958d|Supervisor::TickTimer|function
-004395fb|Supervisor::SnapshotScreen|function
+004395fb|Supervisor::TakeSnapshot|function
 004398b6|Supervisor::LoadConfig|function
 00439dd0|Supervisor::LoadAudio|function
 00439ec1|Supervisor::PlayLoadedAudio|function
@@ -465,8 +465,8 @@ address|name|type
 004411c0|Player::Respawn|function
 00441330|Player::UpdateState|function
 00441670|Player::BreakBorderNaturally|function
-00441800|Player::SpawnBombProjectile|function
-004418b0|Player::SpawnGrowingBomb|function
+00441800|Player::SpawnCancelRegionRect|function
+004418b0|Player::SpawnCancelRegionCircle|function
 00441960|Player::ActivateBorder|function
 00441bd0|Player::BreakBorder|function
 00441e80|Player::UpdateUI|function

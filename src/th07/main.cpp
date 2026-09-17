@@ -324,7 +324,7 @@ void GameWindow::Present()
         }
         if (i < 1000)
         {
-            g_Supervisor.SnapshotScreen(snapshotPath);
+            g_Supervisor.TakeSnapshot(snapshotPath);
         }
     }
     if (g_Supervisor.renderSkipFrames != 0)

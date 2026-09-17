@@ -146,8 +146,8 @@ void BombData::BombReimuACalc(Player *player)
         g_ItemManager.RemoveAllItems();
         g_EffectManager.SpawnEffect(12, &player->pos, 1,
                                     0xff4040ff);
-        player->SpawnGrowingBomb(&player->pos, 32.0f, 8.0f, 16,
-                                 ITEM_POINT_BULLET);
+        player->SpawnCancelRegionCircle(&player->pos, 32.0f, 8.0f, 16,
+                                        ITEM_POINT_BULLET);
 
         bombInfo->startPos = player->pos;
         ComputeBombCherryDrain(player, 4000, 0.2f);
@@ -173,7 +173,7 @@ void BombData::BombReimuACalc(Player *player)
         }
         projectile->angle = AddNormalizeAngle(angle, 0.0f);
         projectile->counter = 0;
-        player->bombDamageBoxes[i].damage = 0;
+        player->bombDamageRegions[i].damage = 0;
         vm = projectile->vms;
         for (j = 0; j < 4; j++, vm++)
         {
@@ -207,13 +207,13 @@ void BombData::BombReimuACalc(Player *player)
                 projectile->vms[1].pendingInterrupt = 1;
                 projectile->vms[2].pendingInterrupt = 1;
                 projectile->vms[3].pendingInterrupt = 1;
-                player->bombDamageBoxes[i].pos =
+                player->bombDamageRegions[i].pos =
                     projectile->pos;
-                player->bombDamageBoxes[i].size.x = 256.0f;
-                player->bombDamageBoxes[i].size.y = 256.0f;
-                player->bombDamageBoxes[i].lifetime = 400;
-                player->SpawnGrowingBomb(&projectile->pos, 64.0f,
-                                         4.266667f, 30, ITEM_POINT_BULLET);
+                player->bombDamageRegions[i].size.x = 256.0f;
+                player->bombDamageRegions[i].size.y = 256.0f;
+                player->bombDamageRegions[i].lifetime = 400;
+                player->SpawnCancelRegionCircle(&projectile->pos, 64.0f,
+                                                4.266667f, 30, ITEM_POINT_BULLET);
                 projectile->velocity.x = 0.0f;
                 projectile->velocity.y = 0.0f;
                 projectile->velocity.z = 0.0f;
@@ -222,22 +222,22 @@ void BombData::BombReimuACalc(Player *player)
             }
             if (bombInfo->bombTimer.HasTicked())
             {
-                player->bombDamageBoxes[i].size.x = 48.0f;
-                player->bombDamageBoxes[i].size.y = 48.0f;
-                player->bombDamageBoxes[i].pos =
+                player->bombDamageRegions[i].size.x = 48.0f;
+                player->bombDamageRegions[i].size.y = 48.0f;
+                player->bombDamageRegions[i].pos =
                     projectile->pos;
-                player->bombDamageBoxes[i].lifetime = 8;
-                player->SpawnGrowingBomb(&projectile->pos, 128.0f,
-                                         0.0f, 0, ITEM_POINT_BULLET);
+                player->bombDamageRegions[i].lifetime = 8;
+                player->SpawnCancelRegionCircle(&projectile->pos, 128.0f,
+                                                0.0f, 0, ITEM_POINT_BULLET);
             }
         }
         else if (projectile->state != 0 && bombInfo->bombTimer.HasTicked())
         {
-            player->bombDamageBoxes[i].pos =
+            player->bombDamageRegions[i].pos =
                 bombInfo->projectiles[i].pos;
-            player->bombDamageBoxes[i].size.x = 256.0f;
-            player->bombDamageBoxes[i].size.y = 256.0f;
-            player->bombDamageBoxes[i].lifetime = 2;
+            player->bombDamageRegions[i].size.x = 256.0f;
+            player->bombDamageRegions[i].size.y = 256.0f;
+            player->bombDamageRegions[i].lifetime = 2;
             projectile->counter++;
             if (projectile->counter >= 30)
             {
@@ -346,8 +346,8 @@ void BombData::BombReimuACalcFocus(Player *player)
         g_ItemManager.RemoveAllItems();
         g_EffectManager.SpawnEffect(12, &player->pos, 1,
                                     0xff4040ff);
-        player->SpawnGrowingBomb(&player->pos, 32.0f, 8.0f, 16,
-                                 ITEM_POINT_BULLET);
+        player->SpawnCancelRegionCircle(&player->pos, 32.0f, 8.0f, 16,
+                                        ITEM_POINT_BULLET);
         ComputeBombCherryDrain(player, 5000, 0.22f);
         player->verticalMovementSpeedMultiplierDuringBomb = 0.6f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 0.6f;
@@ -368,7 +368,7 @@ void BombData::BombReimuACalcFocus(Player *player)
                 tmpFloat2 = g_Rng.GetRandomFloat() * ZUN_2PI - ZUN_PI;
                 projectile->velocity.FromAngleMagnitude(tmpFloat2, projectile->custom);
 
-                player->bombDamageBoxes[i].damage = 0;
+                player->bombDamageRegions[i].damage = 0;
                 vm = projectile->vms;
                 for (j = 0; j < 4; j++, vm++)
                 {
@@ -421,13 +421,13 @@ void BombData::BombReimuACalcFocus(Player *player)
                 projectile->velocity.x = tmpFloat2 * projectile->custom / tmpFloat1;
                 projectile->velocity.y = tmpFloat3 * projectile->custom / tmpFloat1;
 
-                player->bombDamageBoxes[i].size.x = 48.0f;
-                player->bombDamageBoxes[i].size.y = 48.0f;
-                player->bombDamageBoxes[i].pos = projectile->pos;
-                player->bombDamageBoxes[i].lifetime = 8;
-                player->SpawnGrowingBomb(&projectile->pos, 128.0f,
-                                         0.0f, 0, ITEM_POINT_BULLET);
-                if (player->bombDamageBoxes[i].damage >= 100 ||
+                player->bombDamageRegions[i].size.x = 48.0f;
+                player->bombDamageRegions[i].size.y = 48.0f;
+                player->bombDamageRegions[i].pos = projectile->pos;
+                player->bombDamageRegions[i].lifetime = 8;
+                player->SpawnCancelRegionCircle(&projectile->pos, 128.0f,
+                                                0.0f, 0, ITEM_POINT_BULLET);
+                if (player->bombDamageRegions[i].damage >= 100 ||
                     bombInfo->bombTimer >= bombInfo->bombDuration - 30)
                 {
                     g_EffectManager.SpawnEffect(6, &projectile->pos,
@@ -439,11 +439,11 @@ void BombData::BombReimuACalcFocus(Player *player)
                     projectile->vms[1].pendingInterrupt = 1;
                     projectile->vms[2].pendingInterrupt = 1;
                     projectile->vms[3].pendingInterrupt = 1;
-                    player->bombDamageBoxes[i].size.x = 256.0f;
-                    player->bombDamageBoxes[i].size.y = 256.0f;
-                    player->bombDamageBoxes[i].lifetime = 400;
-                    player->SpawnGrowingBomb(&projectile->pos, 32.0f,
-                                             6.6666665f, 15, ITEM_POINT_BULLET);
+                    player->bombDamageRegions[i].size.x = 256.0f;
+                    player->bombDamageRegions[i].size.y = 256.0f;
+                    player->bombDamageRegions[i].lifetime = 400;
+                    player->SpawnCancelRegionCircle(&projectile->pos, 32.0f,
+                                                    6.6666665f, 15, ITEM_POINT_BULLET);
 
                     // ZUN bloat: This does absolutely nothing
                     projectile->velocity / 8.0f;
@@ -518,7 +518,7 @@ void BombData::BombReimuADrawFocus(Player *player)
 // FUNCTION: TH07 0x00409dd0
 void BombData::BombReimuBCalc(Player *player)
 {
-    BombClearBox *projectiles[7];
+    BombCancelRegion *projectiles[7];
     AnmVm *vm;
     i32 i;
 
@@ -570,14 +570,14 @@ void BombData::BombReimuBCalc(Player *player)
         {
             ScreenEffect::RegisterChain(SCREEN_EFFECT_SHAKE, 80, 20, 0, 0);
         }
-        projectiles[0] = player->SpawnBombProjectile(&player->pos, 62.0f,
-                                                     448.0f, 6);
-        projectiles[1] = player->SpawnBombProjectile(&player->pos, 384.0f,
-                                                     62.0f, 6);
-        projectiles[2] = player->SpawnBombProjectile(&player->pos, 62.0f,
-                                                     448.0f, 6);
-        projectiles[3] = player->SpawnBombProjectile(&player->pos, 384.0f,
-                                                     62.0f, 6);
+        projectiles[0] = player->SpawnCancelRegionRect(&player->pos, 62.0f,
+                                                       448.0f, 6);
+        projectiles[1] = player->SpawnCancelRegionRect(&player->pos, 384.0f,
+                                                       62.0f, 6);
+        projectiles[2] = player->SpawnCancelRegionRect(&player->pos, 62.0f,
+                                                       448.0f, 6);
+        projectiles[3] = player->SpawnCancelRegionRect(&player->pos, 384.0f,
+                                                       62.0f, 6);
         for (i = 0; i < 4; i++)
         {
             g_AnmManager->ExecuteScript(player->bombInfo.projectiles[i].vms);
@@ -591,14 +591,14 @@ void BombData::BombReimuBCalc(Player *player)
                     projectiles[i]->pos.y =
                         player->bombInfo.projectiles[i].pos.y +
                         player->bombInfo.projectiles[i].vms[0].offset.y;
-                    player->bombDamageBoxes[i].size.x =
+                    player->bombDamageRegions[i].size.x =
                         projectiles[i]->size.x;
-                    player->bombDamageBoxes[i].size.y =
+                    player->bombDamageRegions[i].size.y =
                         projectiles[i]->size.y;
-                    player->bombDamageBoxes[i].pos =
+                    player->bombDamageRegions[i].pos =
                         player->bombInfo.projectiles[i].pos +
                         player->bombInfo.projectiles[i].vms->offset;
-                    player->bombDamageBoxes[i].lifetime = 16;
+                    player->bombDamageRegions[i].lifetime = 16;
                 }
             }
         }
@@ -663,8 +663,8 @@ void BombData::BombReimuBCalcFocus(Player *player)
         ComputeBombCherryDrain(player, 3000, 0.17f);
         player->verticalMovementSpeedMultiplierDuringBomb = 0.4f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 0.4f;
-        player->SpawnGrowingBomb(&player->pos, 192.0f, 0.384f, 210,
-                                 ITEM_POINT_BULLET);
+        player->SpawnCancelRegionCircle(&player->pos, 192.0f, 0.384f, 210,
+                                        ITEM_POINT_BULLET);
     }
     else
     {
@@ -676,12 +676,12 @@ void BombData::BombReimuBCalcFocus(Player *player)
         g_AnmManager->ExecuteScript(&player->bombInfo.projectiles[0].vms[1]);
         g_AnmManager->ExecuteScript(&player->bombInfo.projectiles[0].vms[2]);
 
-        player->bombDamageBoxes[0].size.x = 256.0f;
-        player->bombDamageBoxes[0].size.y = 256.0f;
-        player->bombDamageBoxes[0].pos =
+        player->bombDamageRegions[0].size.x = 256.0f;
+        player->bombDamageRegions[0].size.y = 256.0f;
+        player->bombDamageRegions[0].pos =
             player->bombInfo.startPos +
             player->bombInfo.projectiles[0].vms[0].offset;
-        player->bombDamageBoxes[0].lifetime = 18;
+        player->bombDamageRegions[0].lifetime = 18;
     }
     player->playerState = PLAYER_STATE_INVULNERABLE;
     player->bombInfo.bombTimer++;
@@ -757,14 +757,14 @@ void BombData::BombMarisaACalc(Player *player)
             if (player->bombInfo.bombTimer.HasTicked() &&
                 player->bombInfo.bombTimer.GetCurrent() % 3 != 0)
             {
-                player->SpawnGrowingBomb(
+                player->SpawnCancelRegionCircle(
                     &player->bombInfo.projectiles[i].pos, 96.0f, 0.0f, 0,
                     ITEM_POINT_BULLET);
-                player->bombDamageBoxes[i].size.x = 128.0f;
-                player->bombDamageBoxes[i].size.y = 128.0f;
-                player->bombDamageBoxes[i].pos =
+                player->bombDamageRegions[i].size.x = 128.0f;
+                player->bombDamageRegions[i].size.y = 128.0f;
+                player->bombDamageRegions[i].pos =
                     player->bombInfo.projectiles[i].pos;
-                player->bombDamageBoxes[i].lifetime = 8;
+                player->bombDamageRegions[i].lifetime = 8;
             }
             g_AnmManager->ExecuteScript(&player->bombInfo.projectiles[i].vms[0]);
         }
@@ -878,7 +878,7 @@ void BombData::BombMarisaACalcFocus(Player *player)
             player->bombInfo.projectiles[i].accel.z = 0.0f;
             g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_MARISA_A_FOCUS, 0);
             ScreenEffect::RegisterChain(SCREEN_EFFECT_SHAKE, 120, 4, 1, 0);
-            player->bombDamageBoxes[i].damage = 0;
+            player->bombDamageRegions[i].damage = 0;
         }
     }
     projectile = player->bombInfo.projectiles;
@@ -905,14 +905,14 @@ void BombData::BombMarisaACalcFocus(Player *player)
         {
             projectile->state = 0;
         }
-        player->SpawnGrowingBomb(&projectile->pos, 96.0f, 0.0f, 0,
-                                 ITEM_POINT_BULLET);
-        if (player->bombDamageBoxes[i].damage < 80)
+        player->SpawnCancelRegionCircle(&projectile->pos, 96.0f, 0.0f, 0,
+                                        ITEM_POINT_BULLET);
+        if (player->bombDamageRegions[i].damage < 80)
         {
-            player->bombDamageBoxes[i].size.x = 128.0f;
-            player->bombDamageBoxes[i].size.y = 128.0f;
-            player->bombDamageBoxes[i].pos = projectile->pos;
-            player->bombDamageBoxes[i].lifetime = 12;
+            player->bombDamageRegions[i].size.x = 128.0f;
+            player->bombDamageRegions[i].size.y = 128.0f;
+            player->bombDamageRegions[i].pos = projectile->pos;
+            player->bombDamageRegions[i].lifetime = 12;
         }
         g_AnmManager->ExecuteScript(projectile->vms);
     }
@@ -970,7 +970,7 @@ void BombData::BombMarisaBCalc(Player *player)
     f32 angle;
     i32 j;
     i32 unused[3];
-    BombDamageBox *damageBox;
+    BombDamageRegion *damageBox;
     f32 offset;
     PlayerBombProjectile *projectile;
     i32 i;
@@ -1010,7 +1010,7 @@ void BombData::BombMarisaBCalc(Player *player)
     else
     {
         projectile = player->bombInfo.projectiles;
-        damageBox = player->bombDamageBoxes;
+        damageBox = player->bombDamageRegions;
         for (i = 0; i < 3; i++, projectile++)
         {
             if (player->bombInfo.startPos.x < 192.0f)
@@ -1048,8 +1048,8 @@ void BombData::BombMarisaBCalc(Player *player)
                 damageBox->size.x = 128.0f;
                 damageBox->size.y = 128.0f;
                 damageBox->lifetime = 10;
-                player->SpawnGrowingBomb(&damageBox->pos, 64.0f, 0.0f, 0,
-                                         ITEM_POINT_BULLET);
+                player->SpawnCancelRegionCircle(&damageBox->pos, 64.0f, 0.0f, 0,
+                                                ITEM_POINT_BULLET);
                 offset =
                     projectile->vms[0].sprite->heightPx * projectile->vms[0].scale.y /
                         5.0f +
@@ -1148,13 +1148,13 @@ void BombData::BombMarisaBCalcFocus(Player *player)
         {
             if (player->bombInfo.bombTimer.GetCurrent() % 4 != 0)
             {
-                player->bombDamageBoxes[0].size.x = 384.0f;
-                player->bombDamageBoxes[0].size.y = player->pos.y;
-                player->bombDamageBoxes[0].pos.x = 192.0f;
-                player->bombDamageBoxes[0].pos.y = player->pos.y / 2.0f;
-                player->bombDamageBoxes[0].lifetime = 23;
-                player->SpawnBombProjectile(&player->bombDamageBoxes[0].pos, 384.0f,
-                                            player->pos.y, 6);
+                player->bombDamageRegions[0].size.x = 384.0f;
+                player->bombDamageRegions[0].size.y = player->pos.y;
+                player->bombDamageRegions[0].pos.x = 192.0f;
+                player->bombDamageRegions[0].pos.y = player->pos.y / 2.0f;
+                player->bombDamageRegions[0].lifetime = 23;
+                player->SpawnCancelRegionRect(&player->bombDamageRegions[0].pos, 384.0f,
+                                              player->pos.y, 6);
             }
         }
         g_AnmManager->ExecuteScript(&player->bombInfo.projectiles[0].vms[0]);
@@ -1257,7 +1257,7 @@ void BombData::BombSakuyaACalc(Player *player)
                     projectile->pos =
                         player->bombInfo.startPos + projectile->velocity;
                     projectile->velocity.z = 0.0f;
-                    player->bombDamageBoxes[i].damage = 0;
+                    player->bombDamageRegions[i].damage = 0;
                     spawnsRemaining--;
                 }
                 continue;
@@ -1270,22 +1270,22 @@ void BombData::BombSakuyaACalc(Player *player)
                 cosf(projectile->angle) * projectile->speed;
             projectile->velocity.y =
                 sinf(projectile->angle) * projectile->speed;
-            if (player->bombDamageBoxes[i].damage < 30)
+            if (player->bombDamageRegions[i].damage < 30)
             {
                 projectile->pos +=
                     projectile->velocity *
                     g_Supervisor.effectiveFramerateMultiplier;
-                player->SpawnGrowingBomb(&projectile->pos, 32.0f, 0.0f,
-                                         0, ITEM_POINT_BULLET);
-                player->bombDamageBoxes[i].size.x = 24.0f;
-                player->bombDamageBoxes[i].size.y = 24.0f;
-                player->bombDamageBoxes[i].pos = projectile->pos;
-                player->bombDamageBoxes[i].lifetime = 10;
+                player->SpawnCancelRegionCircle(&projectile->pos, 32.0f, 0.0f,
+                                                0, ITEM_POINT_BULLET);
+                player->bombDamageRegions[i].size.x = 24.0f;
+                player->bombDamageRegions[i].size.y = 24.0f;
+                player->bombDamageRegions[i].pos = projectile->pos;
+                player->bombDamageRegions[i].lifetime = 10;
             }
-            else if (player->bombDamageBoxes[i].damage < 999)
+            else if (player->bombDamageRegions[i].damage < 999)
             {
                 g_AnmManager->ExecuteAnmIdx(projectile->vms, 1120);
-                player->bombDamageBoxes[i].damage = 999;
+                player->bombDamageRegions[i].damage = 999;
             }
             if (g_GameManager.IsInBounds(projectile->pos.x,
                                          projectile->pos.y, 64.0f,
@@ -1400,7 +1400,7 @@ void BombData::BombSakuyaACalcFocus(Player *player)
                 player->pos + projectile->velocity;
             projectile->timer = 0;
             projectile->velocity.z = 0.0f;
-            player->bombDamageBoxes[i].damage = 0;
+            player->bombDamageRegions[i].damage = 0;
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_REIMARI, 0);
         ScreenEffect::RegisterChain(SCREEN_EFFECT_SHAKE, 120, 4, 1, 0);
@@ -1442,23 +1442,23 @@ void BombData::BombSakuyaACalcFocus(Player *player)
             projectile->velocity.x = 0.0f;
             projectile->velocity.y = 0.0f;
         }
-        if (player->bombDamageBoxes[i].damage == 0)
+        if (player->bombDamageRegions[i].damage == 0)
         {
             projectile->pos +=
                 projectile->velocity *
                 g_Supervisor.effectiveFramerateMultiplier;
-            player->SpawnGrowingBomb(
+            player->SpawnCancelRegionCircle(
                 &player->bombInfo.projectiles[i].pos, 32.0f,
                 0.0f, 0, ITEM_POINT_BULLET);
-            player->bombDamageBoxes[i].size.x = 24.0f;
-            player->bombDamageBoxes[i].size.y = 24.0f;
-            player->bombDamageBoxes[i].pos = projectile->pos;
-            player->bombDamageBoxes[i].lifetime = 22;
+            player->bombDamageRegions[i].size.x = 24.0f;
+            player->bombDamageRegions[i].size.y = 24.0f;
+            player->bombDamageRegions[i].pos = projectile->pos;
+            player->bombDamageRegions[i].lifetime = 22;
         }
-        else if (player->bombDamageBoxes[i].damage < 999)
+        else if (player->bombDamageRegions[i].damage < 999)
         {
             g_AnmManager->ExecuteAnmIdx(projectile->vms, 1120);
-            player->bombDamageBoxes[i].damage = 999;
+            player->bombDamageRegions[i].damage = 999;
             g_EffectManager.SpawnEffect(
                 0, &player->bombInfo.projectiles[i].pos, 1,
                 0xffff80ff);
@@ -1514,8 +1514,8 @@ void BombData::BombSakuyaBCalc(Player *player)
         player->bombInfo.isInUse = FALSE;
         player->verticalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 1.0f;
-        player->SpawnGrowingBomb(&player->pos, 800.0f, 0.0f, 0,
-                                 ITEM_POINT_BULLET);
+        player->SpawnCancelRegionCircle(&player->pos, 800.0f, 0.0f, 0,
+                                        ITEM_POINT_BULLET);
         return;
     }
 
@@ -1566,11 +1566,11 @@ void BombData::BombSakuyaBCalc(Player *player)
     {
         if (player->bombInfo.bombTimer.current % 4 == 0)
         {
-            player->bombDamageBoxes[0].pos.x = 192.0f;
-            player->bombDamageBoxes[0].pos.y = 224.0f;
-            player->bombDamageBoxes[0].size.x = 352.0f;
-            player->bombDamageBoxes[0].size.y = 416.0f;
-            player->bombDamageBoxes[0].lifetime = 3;
+            player->bombDamageRegions[0].pos.x = 192.0f;
+            player->bombDamageRegions[0].pos.y = 224.0f;
+            player->bombDamageRegions[0].size.x = 352.0f;
+            player->bombDamageRegions[0].size.y = 416.0f;
+            player->bombDamageRegions[0].lifetime = 3;
         }
     }
 
@@ -1637,12 +1637,12 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
         player->bombInfo.isInUse = FALSE;
         player->verticalMovementSpeedMultiplierDuringBomb = 1.0f;
         player->horizontalMovementSpeedMultiplierDuringBomb = 1.0f;
-        player->SpawnGrowingBomb(&player->pos, 800.0f, 0.0f, 0,
-                                 ITEM_POINT_BULLET);
-        player->bombClearBoxes[0].pos.x = 192.0f;
-        player->bombClearBoxes[0].pos.y = 224.0f;
-        player->bombClearBoxes[0].size.x = 448.0f;
-        player->bombClearBoxes[0].size.y = 512.0f;
+        player->SpawnCancelRegionCircle(&player->pos, 800.0f, 0.0f, 0,
+                                        ITEM_POINT_BULLET);
+        player->bombCancelRegions[0].pos.x = 192.0f;
+        player->bombCancelRegions[0].pos.y = 224.0f;
+        player->bombCancelRegions[0].size.x = 448.0f;
+        player->bombCancelRegions[0].size.y = 512.0f;
         return;
     }
 
@@ -1680,15 +1680,15 @@ void BombData::BombSakuyaBCalcFocus(Player *player)
         g_SoundPlayer.PlaySoundByIdx(SOUND_BOMB_SAKUMARI, 0);
         ComputeBombCherryDrain(player, 6000, 0.29f);
     }
-    player->SpawnGrowingBomb(&player->bombInfo.projectiles[0].pos,
-                             96.0f, 0.0f, 0, ITEM_POINT_BULLET);
-    player->bombDamageBoxes[0].pos.x =
+    player->SpawnCancelRegionCircle(&player->bombInfo.projectiles[0].pos,
+                                    96.0f, 0.0f, 0, ITEM_POINT_BULLET);
+    player->bombDamageRegions[0].pos.x =
         player->bombInfo.projectiles[0].pos.x;
-    player->bombDamageBoxes[0].pos.y =
+    player->bombDamageRegions[0].pos.y =
         player->bombInfo.projectiles[0].pos.y;
-    player->bombDamageBoxes[0].size.x = 160.0f;
-    player->bombDamageBoxes[0].size.y = 160.0f;
-    player->bombDamageBoxes[0].lifetime = 1;
+    player->bombDamageRegions[0].size.x = 160.0f;
+    player->bombDamageRegions[0].size.y = 160.0f;
+    player->bombDamageRegions[0].lifetime = 1;
     if (player->GetBombTimer()->HasTickedAndIsEq(40))
     {
         ScreenEffect::RegisterChain(SCREEN_EFFECT_SHAKE, 60, 1, 7, 0);

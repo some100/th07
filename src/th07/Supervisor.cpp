@@ -1043,7 +1043,7 @@ void Supervisor::TickTimer(i32 *frames, f32 *subframes)
                   srcPixel, dstPixel, y, x, bytesPerRow, lockedRect, bytesWritten, \
                   bitmapFile)
 // FUNCTION: TH07 0x004395fb
-i32 Supervisor::SnapshotScreen(const char *filename)
+i32 Supervisor::TakeSnapshot(const char *filename)
 {
     HANDLE bitmapFile;
     DWORD bytesWritten;

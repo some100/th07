@@ -628,7 +628,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
         {
             g_GameManager.IncreaseSubrank(100);
         }
-        g_GameManager.playTimeAll++;
+        g_GameManager.totalPlayTime++;
     }
     for (i = 0; i < ARRAY_SIZE_SIGNED(arg->enemyHead); i++)
     {

@@ -431,9 +431,9 @@ i32 ShtData::UpdatePlayerLaser(Player *player, PlayerBullet *bullet)
     {
         if (bullet->posHistory[i].x >= -900.0f)
         {
-            player->bombDamageBoxes[i + 96].pos = bullet->posHistory[i];
-            player->bombDamageBoxes[i + 96].lifetime = 1;
-            player->bombDamageBoxes[i + 96].size = bullet->hitboxSize;
+            player->bombDamageRegions[i + 96].pos = bullet->posHistory[i];
+            player->bombDamageRegions[i + 96].lifetime = 1;
+            player->bombDamageRegions[i + 96].size = bullet->hitboxSize;
         }
     }
     for (i = ARRAY_SIZE_SIGNED(bullet->posHistory) - 1; i > 0; i--)
@@ -900,15 +900,15 @@ i32 Player::CalcDamageToEnemy(Float3 *center, Float3 *size,
             }
         }
     }
-    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombDamageBoxes); i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombDamageRegions); i++)
     {
-        if (this->bombDamageBoxes[i].size.x <= 0.0f)
+        if (this->bombDamageRegions[i].size.x <= 0.0f)
         {
             continue;
         }
 
-        bulletTopLeft = this->bombDamageBoxes[i].pos - this->bombDamageBoxes[i].size / 2.0f;
-        bulletBottomRight = this->bombDamageBoxes[i].pos + this->bombDamageBoxes[i].size / 2.0f;
+        bulletTopLeft = this->bombDamageRegions[i].pos - this->bombDamageRegions[i].size / 2.0f;
+        bulletBottomRight = this->bombDamageRegions[i].pos + this->bombDamageRegions[i].size / 2.0f;
 
         if (bulletTopLeft.x > enemyBottomRight.x ||
             bulletBottomRight.x < enemyTopLeft.x ||
@@ -918,12 +918,12 @@ i32 Player::CalcDamageToEnemy(Float3 *center, Float3 *size,
             continue;
         }
 
-        damage += this->bombDamageBoxes[i].lifetime;
-        this->bombDamageBoxes[i].damage += this->bombDamageBoxes[i].lifetime;
+        damage += this->bombDamageRegions[i].lifetime;
+        this->bombDamageRegions[i].damage += this->bombDamageRegions[i].lifetime;
         this->bombParticleTime++;
         if (this->bombParticleTime % 4 == 0)
         {
-            if (i < ARRAY_SIZE_SIGNED(this->bombClearBoxes))
+            if (i < ARRAY_SIZE_SIGNED(this->bombCancelRegions))
             {
                 g_EffectManager.SpawnEffect(3, center, 1, 0xffffffff);
             }
@@ -940,11 +940,11 @@ i32 Player::CalcDamageToEnemy(Float3 *center, Float3 *size,
     return damage;
 }
 
-#pragma var_order(bombTopLeft, relY, relX, i, bulletBottomRight, bulletTopLeft, bombProjectile, bombBottomRight)
+#pragma var_order(bombTopLeft, relY, relX, i, bulletBottomRight, bulletTopLeft, region, bombBottomRight)
 // FUNCTION: TH07 0x0043e0a0
 i32 Player::CalcBombCollision(Float3 *center, Float3 *size)
 {
-    BombClearBox *bombProjectile;
+    BombCancelRegion *region;
     i32 i;
     Float3 bulletBottomRight;
     Float3 bulletTopLeft;
@@ -953,36 +953,36 @@ i32 Player::CalcBombCollision(Float3 *center, Float3 *size)
     f32 relY;
     f32 relX;
 
-    bombProjectile = this->bombClearBoxes;
+    region = this->bombCancelRegions;
     bulletTopLeft.x = center->x - size->x / 2.0f;
     bulletTopLeft.y = center->y - size->y / 2.0f;
     bulletBottomRight.x = center->x + size->x / 2.0f;
     bulletBottomRight.y = center->y + size->y / 2.0f;
-    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombClearBoxes); i++, bombProjectile++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombCancelRegions); i++, region++)
     {
-        if (bombProjectile->size.x != 0.0f)
+        if (region->size.x != 0.0f)
         {
-            bombTopLeft.x = bombProjectile->pos.x - bombProjectile->size.x / 2.0f;
-            bombTopLeft.y = bombProjectile->pos.y - bombProjectile->size.y / 2.0f;
-            bombBottomRight.x = bombProjectile->size.x / 2.0f + bombProjectile->pos.x;
-            bombBottomRight.y = bombProjectile->size.y / 2.0f + bombProjectile->pos.y;
+            bombTopLeft.x = region->pos.x - region->size.x / 2.0f;
+            bombTopLeft.y = region->pos.y - region->size.y / 2.0f;
+            bombBottomRight.x = region->size.x / 2.0f + region->pos.x;
+            bombBottomRight.y = region->size.y / 2.0f + region->pos.y;
             if (!(bombTopLeft.x > bulletBottomRight.x ||
                   bombBottomRight.x < bulletTopLeft.x ||
                   bombTopLeft.y > bulletBottomRight.y ||
                   bombBottomRight.y < bulletTopLeft.y))
             {
-                this->itemType = bombProjectile->itemType;
+                this->itemType = region->itemType;
                 return 2;
             }
         }
-        else if (bombProjectile->radius != 0.0) // double used here for some reason
+        else if (region->radius != 0.0) // double used here for some reason
         {
-            relX = center->x - bombProjectile->pos.x;
-            relY = center->y - bombProjectile->pos.y;
+            relX = center->x - region->pos.x;
+            relY = center->y - region->pos.y;
             if (relX * relX + relY * relY <
-                bombProjectile->radius * bombProjectile->radius)
+                region->radius * region->radius)
             {
-                this->itemType = bombProjectile->itemType;
+                this->itemType = region->itemType;
                 return 2;
             }
         }
@@ -1649,29 +1649,29 @@ i32 Player::HandlePlayerInputs()
     return 0;
 }
 
-#pragma var_order(i, bomb)
+#pragma var_order(i, region)
 // FUNCTION: TH07 0x00440940
 void Player::UpdateBombProjectiles()
 {
-    BombClearBox *bomb;
+    BombCancelRegion *region;
     i32 i;
 
-    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombDamageBoxes); i++)
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombDamageRegions); i++)
     {
-        this->bombDamageBoxes[i].size.x = 0.0f;
+        this->bombDamageRegions[i].size.x = 0.0f;
     }
-    bomb = this->bombClearBoxes;
-    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombClearBoxes); i++, bomb++)
+    region = this->bombCancelRegions;
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombCancelRegions); i++, region++)
     {
-        if (bomb->lifetime <= 0)
+        if (region->lifetime <= 0)
         {
-            bomb->radius = 0.0f;
-            bomb->size.x = 0.0f;
+            region->radius = 0.0f;
+            region->size.x = 0.0f;
         }
         else
         {
-            bomb->lifetime--;
-            bomb->radius += bomb->radiusGrowth;
+            region->lifetime--;
+            region->radius += region->radiusGrowth;
         }
     }
 }
@@ -2029,54 +2029,54 @@ void Player::BreakBorderNaturally()
     }
 }
 
-#pragma var_order(i, bomb)
+#pragma var_order(i, region)
 // FUNCTION: TH07 0x00441800
-BombClearBox *Player::SpawnBombProjectile(Float3 *centerPosition,
-                                          f32 sizeX, f32 sizeY, i32 itemType)
+BombCancelRegion *Player::SpawnCancelRegionRect(Float3 *centerPosition,
+                                                f32 sizeX, f32 sizeY, i32 itemType)
 {
-    BombClearBox *bomb;
+    BombCancelRegion *region;
     i32 i;
 
-    bomb = this->bombClearBoxes;
-    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombClearBoxes) - 1; i++, bomb++)
+    region = this->bombCancelRegions;
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombCancelRegions) - 1; i++, region++)
     {
-        if (bomb->size.x == 0.0f && bomb->radius == 0.0f)
+        if (region->size.x == 0.0f && region->radius == 0.0f)
         {
             break;
         }
     }
-    bomb->pos.x = centerPosition->x;
-    bomb->pos.y = centerPosition->y;
-    bomb->size.x = sizeX;
-    bomb->size.y = sizeY;
-    bomb->lifetime = 0;
-    bomb->itemType = itemType;
-    return bomb;
+    region->pos.x = centerPosition->x;
+    region->pos.y = centerPosition->y;
+    region->size.x = sizeX;
+    region->size.y = sizeY;
+    region->lifetime = 0;
+    region->itemType = itemType;
+    return region;
 }
 
-#pragma var_order(i, bomb)
+#pragma var_order(i, region)
 // FUNCTION: TH07 0x004418b0
-BombClearBox *Player::SpawnGrowingBomb(Float3 *pos, f32 radius, f32 radiusGrowth,
-                                       i32 lifetime, i32 itemType)
+BombCancelRegion *Player::SpawnCancelRegionCircle(Float3 *pos, f32 radius, f32 radiusGrowth,
+                                                  i32 lifetime, i32 itemType)
 {
-    BombClearBox *bomb;
+    BombCancelRegion *region;
     i32 i;
 
-    bomb = this->bombClearBoxes;
-    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombClearBoxes) - 1; i++, bomb++)
+    region = this->bombCancelRegions;
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->bombCancelRegions) - 1; i++, region++)
     {
-        if (bomb->size.x == 0.0f && bomb->radius == 0.0f)
+        if (region->size.x == 0.0f && region->radius == 0.0f)
         {
             break;
         }
     }
-    bomb->pos.x = pos->x;
-    bomb->pos.y = pos->y;
-    bomb->radius = radius;
-    bomb->radiusGrowth = radiusGrowth;
-    bomb->lifetime = lifetime;
-    bomb->itemType = itemType;
-    return bomb;
+    region->pos.x = pos->x;
+    region->pos.y = pos->y;
+    region->radius = radius;
+    region->radiusGrowth = radiusGrowth;
+    region->lifetime = lifetime;
+    region->itemType = itemType;
+    return region;
 }
 
 // FUNCTION: TH07 0x00441960
@@ -2175,7 +2175,7 @@ void Player::BreakBorder(u32 unused)
     this->invulnerabilityTimer = 40;
     this->borderInvulnerabilityTime = 40;
     g_GameManager.cherryPlus = g_GameManager.globals->cherryStart;
-    SpawnGrowingBomb(&this->pos, 32.0f, 16.0f, 50, 8);
+    SpawnCancelRegionCircle(&this->pos, 32.0f, 16.0f, 50, 8);
     angle = -ZUN_PI;
     for (i = 0; i < 32; i++, angle += ZUN_PI / 16.0f)
     {
@@ -2423,12 +2423,12 @@ ZunResult Player::AddedCallback(Player *arg)
     arg->optionsPosition[0].z = 0.49f;
     arg->optionsPosition[1].z = 0.49f;
 
-    // ZUN landmine: This loop goes for 128 iterations, but bombDamageBoxes has
+    // ZUN landmine: This loop goes for 128 iterations, but bombDamageRegions has
     // only 112 elements, meaning that this causes UB. In practice this makes
-    // some of it overflow into bombClearBoxes
+    // some of it overflow into bombCancelRegions
     for (i = 0; i < 128; i++)
     {
-        arg->bombDamageBoxes[i].size.x = 0.0f;
+        arg->bombDamageRegions[i].size.x = 0.0f;
     }
     arg->hitboxSize.y = g_Player.shooterData->hitboxRadius / 2.0f;
     arg->hitboxSize.x = arg->hitboxSize.y;

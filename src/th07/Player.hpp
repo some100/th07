@@ -57,16 +57,16 @@ enum BorderState
     BORDER_READY,
 };
 
-struct BombDamageBox
+struct BombDamageRegion
 {
     Float3 pos;
     Float3 size;
     i32 lifetime;
     i32 damage;
 };
-C_ASSERT(sizeof(BombDamageBox) == 0x20);
+C_ASSERT(sizeof(BombDamageRegion) == 0x20);
 
-struct BombClearBox
+struct BombCancelRegion
 {
     Float2 pos;
     Float2 size;
@@ -75,7 +75,7 @@ struct BombClearBox
     i32 lifetime;
     i32 itemType;
 };
-C_ASSERT(sizeof(BombClearBox) == 0x20);
+C_ASSERT(sizeof(BombCancelRegion) == 0x20);
 
 struct PlayerBombProjectile
 {
@@ -190,10 +190,10 @@ struct Player
     i32 HandlePlayerInputs();
     void Respawn();
     void ScoreGraze(Float3 *param_1);
-    BombClearBox *SpawnGrowingBomb(Float3 *pos, f32 radius, f32 radiusGrowth,
-                                   i32 lifetime, i32 itemType);
-    BombClearBox *SpawnBombProjectile(Float3 *centerPosition, f32 sizeX,
-                                      f32 sizeY, i32 itemType);
+    BombCancelRegion *SpawnCancelRegionCircle(Float3 *pos, f32 radius, f32 radiusGrowth,
+                                              i32 lifetime, i32 itemType);
+    BombCancelRegion *SpawnCancelRegionRect(Float3 *centerPosition, f32 sizeX,
+                                            f32 sizeY, i32 itemType);
     static void SpawnBullets(Player *player, u32 timer);
     void StartFireBulletTimer();
 
@@ -240,8 +240,8 @@ struct Player
     Float2 velocity;
     i32 unused_9d4;
     Effect *focusEffect;
-    BombDamageBox bombDamageBoxes[112];
-    BombClearBox bombClearBoxes[96];
+    BombDamageRegion bombDamageRegions[112];
+    BombCancelRegion bombCancelRegions[96];
     ZunBool isBombing;
     ShtEntry *shtEntries[4];
     f32 horizontalMovementSpeedMultiplierDuringBomb;

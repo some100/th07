@@ -533,7 +533,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
         arg->ResetRegionsPos();
         arg->globals->currentPower = 0.0f;
         arg->RegenerateGameIntegrityCsum();
-        arg->playTimeAll = 0;
+        arg->totalPlayTime = 0;
         arg->globals->guiScore = 0;
         arg->globals->score = 0;
         arg->globals->guiScoreDifference = 0;

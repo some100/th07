@@ -2029,10 +2029,10 @@ ZunResult ResultScreen::DrawFinalStats()
 
         // Please do not write code like this
         clearPercent = g_GameManager.difficulty < DIFF_EXTRA
-                           ? (f32)g_GameManager.playTimeAll / 180621.0f
+                           ? (f32)g_GameManager.totalPlayTime / 180621.0f
                            : clearPercent = g_GameManager.difficulty == DIFF_EXTRA
-                                                ? (f32)g_GameManager.playTimeAll / 80000.0f
-                                                : (f32)g_GameManager.playTimeAll / 85000.0f;
+                                                ? (f32)g_GameManager.totalPlayTime / 80000.0f
+                                                : (f32)g_GameManager.totalPlayTime / 85000.0f;
 
         pos = vm->pos;
         pos.x += 210.0f;
@@ -2680,7 +2680,7 @@ ZunResult ResultScreen::RegisterChain(u32 type)
 
     // STRING: TH07 0x0049635c
     utils::DebugPrint2("Stg.PlayTimeAll = %d\r\n",
-                            g_GameManager.playTimeAll);
+                            g_GameManager.totalPlayTime);
     if (type == 1)
     {
         if (!g_GameManager.practice)

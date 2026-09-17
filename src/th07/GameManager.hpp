@@ -249,7 +249,7 @@ struct GameManager
     i32 cherry;
     i32 cherryPlus;
     ZunBool phantasmUnlocked;
-    i32 playTimeAll; // ZUN name: PlayTimeAll
+    i32 totalPlayTime; // ZUN name: PlayTimeAll
     u32 bulletLagTime;
     i32 maxRetries;
     Rank rank;
