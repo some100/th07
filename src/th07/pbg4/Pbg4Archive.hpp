@@ -54,4 +54,3 @@ struct Pbg4Archive
     char *filename;
     Pbg4File *fileAbstraction;
 };
-extern Pbg4Archive g_Pbg4Archive;

@@ -1,12 +1,11 @@
 #include "EnemyManager.hpp"
 
 #include "AsciiManager.hpp"
-#include "Chain.hpp"
 #include "EclManager.hpp"
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "Gui.hpp"
 #include "Player.hpp"
-#include "Rng.hpp"
 #include "SoundPlayer.hpp"
 #include "ZunResult.hpp"
 #include "utils.hpp"
@@ -157,7 +156,7 @@ void Enemy::UpdateEffects()
             effect->radius = effect->radius + 0.3f;
         }
         effect->angleVel =
-            utils::AddNormalizeAngle(effect->angleVel, ZUN_PI / 100.0f);
+            AddNormalizeAngle(effect->angleVel, ZUN_PI / 100.0f);
     }
 }
 

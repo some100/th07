@@ -2,8 +2,8 @@
 
 #include <d3d8.h>
 
-#include "Chain.hpp"
-#include "ZunTimer.hpp"
+#include "Global.hpp"
+#include "Supervisor.hpp"
 #include "inttypes.hpp"
 
 enum ScreenEffectsType

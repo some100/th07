@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "AnmManager.hpp"
-#include "Chain.hpp"
+#include "Global.hpp"
 #include "ZunBool.hpp"
 
 #define MAX_TRACK_DESCRIPTORS 32

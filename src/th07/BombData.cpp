@@ -3,9 +3,9 @@
 #include "AnmManager.hpp"
 #include "BulletManager.hpp"
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "Gui.hpp"
 #include "Player.hpp"
-#include "Rng.hpp"
 #include "SoundPlayer.hpp"
 #include "Stage.hpp"
 #include "Supervisor.hpp"
@@ -171,7 +171,7 @@ void BombData::BombReimuACalc(Player *player)
         {
             angle = (f32)-i * ZUN_2PI / 8.0f - ZUN_PI / 2.0f;
         }
-        projectile->angle = utils::AddNormalizeAngle(angle, 0.0f);
+        projectile->angle = AddNormalizeAngle(angle, 0.0f);
         projectile->counter = 0;
         player->bombDamageBoxes[i].damage = 0;
         vm = projectile->vms;
@@ -1015,7 +1015,7 @@ void BombData::BombMarisaBCalc(Player *player)
         {
             if (player->bombInfo.startPos.x < 192.0f)
             {
-                projectile->custom = utils::AddNormalizeAngle(
+                projectile->custom = AddNormalizeAngle(
                     projectile->custom, player->bombInfo.bombTimer.AsFloat() *
                                             ZUN_PI /
                                             30.0f /
@@ -1023,7 +1023,7 @@ void BombData::BombMarisaBCalc(Player *player)
             }
             else
             {
-                projectile->custom = utils::AddNormalizeAngle(
+                projectile->custom = AddNormalizeAngle(
                     projectile->custom, player->bombInfo.bombTimer.AsFloat() *
                                             -ZUN_PI /
                                             30.0f /
@@ -1086,7 +1086,7 @@ void BombData::BombMarisaBDraw(Player *player)
         vm->pos = player->pos;
         vm->pos.x += cosf(angle) * vm->sprite->heightPx * vm->scale.y / 2.0f;
         vm->pos.y += sinf(angle) * vm->sprite->heightPx * vm->scale.y / 2.0f;
-        vm->SetRotationZ(utils::AddNormalizeAngle(angle, ZUN_PI / 2.0f));
+        vm->SetRotationZ(AddNormalizeAngle(angle, ZUN_PI / 2.0f));
         vm->updateRotation = 1;
         vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
@@ -1185,7 +1185,7 @@ void BombData::BombMarisaBDrawFocus(Player *player)
             cosf(angle) * vm->sprite->heightPx * vm->scale.y / 2.0f;
         vm->pos.y +=
             sinf(angle) * vm->sprite->heightPx * vm->scale.y / 2.0f;
-        vm->SetRotationZ(utils::AddNormalizeAngle(angle, ZUN_PI / 2.0f));
+        vm->SetRotationZ(AddNormalizeAngle(angle, ZUN_PI / 2.0f));
         vm->updateRotation = 1;
         vm->pos.x += g_GameManager.arcadeRegionTopLeftPos.x;
         vm->pos.y += g_GameManager.arcadeRegionTopLeftPos.y;
@@ -1263,7 +1263,7 @@ void BombData::BombSakuyaACalc(Player *player)
                 continue;
             }
 
-            projectile->angle = utils::AddNormalizeAngle(
+            projectile->angle = AddNormalizeAngle(
                 projectile->angle, projectile->accel.x);
             projectile->speed = projectile->speed + projectile->custom;
             projectile->velocity.x =
@@ -1318,7 +1318,7 @@ void BombData::BombSakuyaADraw(Player *player)
             continue;
         }
 
-        angle = utils::AddNormalizeAngle(projectile->angle, ZUN_PI / 2.0f);
+        angle = AddNormalizeAngle(projectile->angle, ZUN_PI / 2.0f);
         vm = projectile->vms;
         vm->rotation.z = angle;
         vm->updateRotation = 1;
@@ -1420,7 +1420,7 @@ void BombData::BombSakuyaACalcFocus(Player *player)
             {
                 if (player->positionOfLastEnemyHit.x > -100.0f)
                 {
-                    projectile->angle = utils::AddNormalizeAngle(
+                    projectile->angle = AddNormalizeAngle(
                         atan2f(player->positionOfLastEnemyHit.y -
                                    projectile->pos.y,
                                player->positionOfLastEnemyHit.x -
@@ -1437,7 +1437,7 @@ void BombData::BombSakuyaACalcFocus(Player *player)
         }
         else
         {
-            projectile->angle = utils::AddNormalizeAngle(
+            projectile->angle = AddNormalizeAngle(
                 projectile->angle, projectile->accel.x);
             projectile->velocity.x = 0.0f;
             projectile->velocity.y = 0.0f;
@@ -1487,7 +1487,7 @@ void BombData::BombSakuyaADrawFocus(Player *player)
         {
             continue;
         }
-        angle = utils::AddNormalizeAngle(projectile->angle, ZUN_PI / 2.0f);
+        angle = AddNormalizeAngle(projectile->angle, ZUN_PI / 2.0f);
         vm = projectile->vms;
         vm->rotation.z = angle;
         vm->updateRotation = 1;

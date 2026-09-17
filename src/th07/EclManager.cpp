@@ -6,12 +6,10 @@
 #include "AsciiManager.hpp"
 #include "EnemyEclInstr.hpp"
 #include "EnemyManager.hpp"
-#include "FileSystem.hpp"
-#include "GameErrorContext.hpp"
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "Gui.hpp"
 #include "Player.hpp"
-#include "Rng.hpp"
 #include "SoundPlayer.hpp"
 #include "Stage.hpp"
 #include "Supervisor.hpp"
@@ -97,7 +95,7 @@ void EclManager::Unload()
 {
     if (this->eclFile)
     {
-        ZunMemory::Free(this->eclFile);
+        ZUN_FREE(this->eclFile);
     }
     this->eclFile = NULL;
 }
@@ -577,7 +575,7 @@ void EclManager::MoveDirTime(Enemy *enemy, EclRawInstr *instr)
 {
     f32 fVar2;
 
-    fVar2 = utils::AddNormalizeAngle(GET_FLOAT_VALUE(enemy, 2), 0.0f);
+    fVar2 = AddNormalizeAngle(GET_FLOAT_VALUE(enemy, 2), 0.0f);
     enemy->moveInterp.x = cosf(fVar2) * GET_FLOAT_VALUE(enemy, 3) *
                           (f32)GET_INT_VALUE(enemy, 0);
     enemy->moveInterp.y = sinf(fVar2) * GET_FLOAT_VALUE(enemy, 3) *
@@ -962,7 +960,7 @@ restart:
                 break;
             case ECL_NORMALIZE_ANGLE:
                 *GET_FLOAT_PTR(enemy, 0) =
-                    utils::AddNormalizeAngle(GET_FLOAT_VALUE(enemy, 0), 0.0f);
+                    AddNormalizeAngle(GET_FLOAT_VALUE(enemy, 0), 0.0f);
                 break;
             case ECL_RAND:
                 *GET_INT_PTR(enemy, 0) =
@@ -1184,7 +1182,7 @@ restart:
                 if (enemy->noStackRet)
                 {
                     // STRING: TH07 0x004986e4
-                    DebugPrint("error : no Stack Ret\r\n");
+                    utils::DebugPrint("error : no Stack Ret\r\n");
                 }
                 enemy->stackDepth--;
                 if (enemy->currentContext.isPeriodicSub)
@@ -1202,7 +1200,7 @@ restart:
                 if (GET_INT_VALUE(enemy, 0) >= ARRAY_SIZE_SIGNED(enemy->vms))
                 {
                     // STRING: TH07 0x004986c8
-                    DebugPrint("error : sub anim overflow\r\n");
+                    utils::DebugPrint("error : sub anim overflow\r\n");
                 }
                 if (GET_INT_VALUE(enemy, 1) >= 0)
                 {
@@ -1414,7 +1412,7 @@ restart:
                 arg = GET_INT_VALUE(enemy, 0);
                 if (enemy->lasers[arg])
                 {
-                    enemy->lasers[arg]->angle = utils::AddNormalizeAngle(
+                    enemy->lasers[arg]->angle = AddNormalizeAngle(
                         enemy->lasers[arg]->angle, GET_FLOAT_VALUE(enemy, 1));
                 }
                 break;
@@ -1539,7 +1537,7 @@ restart:
                 if (GET_INT_VALUE(enemy, 0) <= 0)
                 {
                     enemy->angle =
-                        utils::AddNormalizeAngle(
+                        AddNormalizeAngle(
                             GET_FLOAT_VALUE(enemy, 2), 0.0f);
                     enemy->speed = GET_FLOAT_VALUE(enemy, 3);
                     enemy->moveMode = ENEMY_MOVE_POLAR;
@@ -1593,7 +1591,7 @@ restart:
             case ECL_GET_EXIT_ANGLE:
                 if (g_Player.pos.x < enemy->pos.x)
                 {
-                    exitAngle = utils::AddNormalizeAngle(
+                    exitAngle = AddNormalizeAngle(
                         g_Rng.GetRandomFloatInRange(ZUN_PI / 2.0f) + ZUN_3PI / 4.0f, 0.0f);
                 }
                 else
@@ -1968,7 +1966,7 @@ restart:
                     enemy->pos.x > 288.0f)
                 {
                     *GET_FLOAT_PTR(enemy, 0) =
-                        utils::AddNormalizeAngle(
+                        AddNormalizeAngle(
                             g_Rng.GetRandomFloatInRange(ZUN_PI / 2.0f) + ZUN_3PI / 4.0f, 0.0f);
                 }
                 else
@@ -1995,7 +1993,7 @@ restart:
             switch (enemy->moveMode)
             {
             case ENEMY_MOVE_ORBIT:
-                enemy->orbitAngle = utils::AddNormalizeAngle(
+                enemy->orbitAngle = AddNormalizeAngle(
                     enemy->orbitAngle, g_Supervisor.effectiveFramerateMultiplier *
                                            enemy->orbitAngleVel);
                 enemy->orbitRadius = g_Supervisor.effectiveFramerateMultiplier *
@@ -2017,7 +2015,7 @@ restart:
                 }
                 break;
             case ENEMY_MOVE_POLAR:
-                enemy->angle = utils::AddNormalizeAngle(
+                enemy->angle = AddNormalizeAngle(
                     enemy->angle,
                     g_Supervisor.effectiveFramerateMultiplier * enemy->angleVel);
                 enemy->speed = g_Supervisor.effectiveFramerateMultiplier *

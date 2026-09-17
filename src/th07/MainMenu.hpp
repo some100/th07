@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AnmManager.hpp"
-#include "Chain.hpp"
+#include "Global.hpp"
 #include "ReplayManager.hpp"
 #include "Supervisor.hpp"
 

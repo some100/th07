@@ -2,7 +2,7 @@
 
 #include "AnmManager.hpp"
 #include "GameManager.hpp"
-#include "Rng.hpp"
+#include "Global.hpp"
 #include "Supervisor.hpp"
 
 // FUNCTION: TH07 0x0044a460
@@ -305,8 +305,7 @@ ZunResult ScreenEffect::DeletedCallback(ScreenEffect *arg)
     arg->calcChain->deletedCallback = NULL;
     g_Chain.Cut(arg->drawChain);
     arg->drawChain = NULL;
-    delete arg;
-    arg = NULL;
+    ZUN_DELETE(arg);
     return ZUN_SUCCESS;
 }
 
@@ -318,7 +317,7 @@ ScreenEffect *ScreenEffect::RegisterChain(i32 type, i32 duration, u32 arg1,
     ChainElem *calcChain = NULL;
     ChainElem *drawChain = NULL;
 
-    ScreenEffect *mgr = new ScreenEffect;
+    ScreenEffect *mgr = ZUN_NEW(ScreenEffect, "ScreenInf");
     if (!mgr)
     {
         return NULL;

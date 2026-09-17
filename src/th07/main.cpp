@@ -6,12 +6,9 @@
 
 // clang-format keeps on ordering gameerrorcontext below anmmanager
 // clang-format off
-#include "GameErrorContext.hpp"
+#include "Global.hpp"
 #include "AnmManager.hpp"
 #include "BulletManager.hpp"
-#include "Chain.hpp"
-#include "Controller.hpp"
-#include "FileSystem.hpp"
 #include "GameManager.hpp"
 #include "ResultScreen.hpp"
 #include "ScreenEffect.hpp"
@@ -133,7 +130,7 @@ start:
     g_SoundPlayer.InitializeDSound(g_GameWindow.window);
     Controller::GetJoystickCaps();
     Controller::ResetKeyboard();
-    g_AnmManager = new AnmManager();
+    g_AnmManager = ZUN_NEW(AnmManager, "SprtCtrlInf");
     if (!g_Supervisor.cfg.windowed)
     {
         WINNLSEnableIME(0, 0);
@@ -195,8 +192,7 @@ cleanup:
 
 stop:
     g_SoundPlayer.Release();
-    delete g_AnmManager;
-    g_AnmManager = NULL;
+    ZUN_DELETE(g_AnmManager);
 
     if (g_Supervisor.d3dDevice)
     {
@@ -1071,8 +1067,8 @@ i32 GameWindow::ChecksumExecutable()
             checksum += *dataCursor;
         }
         // STRING: TH07 0x004972fc
-        DebugPrint("main sum %d\r\n", checksum);
-        free(dataBase);
+        utils::DebugPrint("main sum %d\r\n", checksum);
+        ZUN_FREE(dataBase);
         g_Supervisor.exeChecksum = checksum;
         g_Supervisor.exeSize = g_LastFileSize;
         return checksum;

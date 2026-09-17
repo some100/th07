@@ -3,9 +3,8 @@
 #include <windows.h>
 
 #include "AnmManager.hpp"
-#include "Chain.hpp"
+#include "Global.hpp"
 #include "ReplayManager.hpp"
-#include "ZunMemory.hpp"
 #include "ZunResult.hpp"
 #include "inttypes.hpp"
 
@@ -365,7 +364,7 @@ struct ResultScreen
 
     ~ResultScreen()
     {
-        ZunMemory::Free(this->scoreDat);
+        ZUN_FREE(this->scoreDat);
     }
 
     static ZunResult RegisterChain(u32 type);

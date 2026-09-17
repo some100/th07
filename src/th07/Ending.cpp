@@ -1,11 +1,9 @@
 #include "Ending.hpp"
 
 #include "AnmManager.hpp"
-#include "Chain.hpp"
-#include "Controller.hpp"
-#include "FileSystem.hpp"
-#include "GameErrorContext.hpp"
+
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "ScreenEffect.hpp"
 #include "Supervisor.hpp"
 #include "i18n.hpp"
@@ -448,7 +446,7 @@ ZunResult Ending::LoadEnding(const char *endFilePath)
     this->timer1 = 0;
     if (endFileDat)
     {
-        free(endFileDat);
+        ZUN_FREE(endFileDat);
     }
     return ZUN_SUCCESS;
 }
@@ -519,11 +517,10 @@ ZunResult Ending::DeletedCallback(Ending *arg)
     g_AnmManager->ReleaseAnm(ANM_FILE_STAFF);
     g_Supervisor.curState = SUPERVISOR_STATE_RESULTSCREEN_FROM_GAME;
     g_AnmManager->ReleaseSurface(0);
-    ZunMemory::Free(arg->endFileData);
+    ZUN_FREE(arg->endFileData);
     g_Chain.Cut(arg->drawChain);
     arg->drawChain = NULL;
-    delete arg;
-    arg = NULL;
+    ZUN_DELETE(arg);
     g_Supervisor.isInEnding = FALSE;
 
     return ZUN_SUCCESS;
@@ -532,7 +529,7 @@ ZunResult Ending::DeletedCallback(Ending *arg)
 // FUNCTION: TH07 0x0041e820
 ZunResult Ending::RegisterChain()
 {
-    Ending *ending = new Ending;
+    Ending *ending = ZUN_NEW(Ending, "EndingInf");
     ending->calcChain = g_Chain.CreateElem((ChainCallback)OnUpdate);
     ending->calcChain->arg = ending;
     ending->calcChain->addedCallback = (ChainLifecycleCallback)AddedCallback;

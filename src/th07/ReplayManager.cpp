@@ -1,13 +1,11 @@
 #include "ReplayManager.hpp"
 
-#include "Chain.hpp"
 #include "EffectManager.hpp"
 #include "EnemyManager.hpp"
-#include "FileSystem.hpp"
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "Gui.hpp"
 #include "Player.hpp"
-#include "Rng.hpp"
 #include "Supervisor.hpp"
 #include "dsutil.hpp"
 #include "pbg4/Lzss.hpp"
@@ -163,7 +161,7 @@ ZunResult ReplayManager::AddedCallback(ReplayManager *arg)
     arg->unused_40 = NULL;
     if (!arg->data)
     {
-        arg->data = new ReplayFile;
+        arg->data = ZUN_NEW(ReplayFile, "ReplayDataInf");
         // STRING: TH07 0x00496aa8
         arg->data->head.magic = *(u32 *)&"T7RP";
         arg->data->data.shotType = g_GameManager.shotTypeAndCharacter;
@@ -199,16 +197,16 @@ ZunResult ReplayManager::AddedCallback(ReplayManager *arg)
     }
     if (arg->data->head.stageReplayData[i].data)
     {
-        ZunMemory::Free(arg->data->head.stageReplayData[i].data);
+        ZUN_FREE(arg->data->head.stageReplayData[i].data);
     }
     if (arg->data->head.stageEndData[i].data)
     {
-        ZunMemory::Free(arg->data->head.stageEndData[i].data);
+        ZUN_FREE(arg->data->head.stageEndData[i].data);
     }
     arg->data->head.stageReplayData[i].data =
-        (StageReplayData *)ZunMemory::Alloc2(sizeof(StageReplayData));
+        (StageReplayData *)ZUN_ALLOC_WEIRD(sizeof(StageReplayData));
     arg->data->head.stageEndData[i].data =
-        (StageReplayData *)ZunMemory::Alloc2(sizeof(StageReplayData));
+        (StageReplayData *)ZUN_ALLOC_WEIRD(sizeof(StageReplayData));
 
     replayData = arg->data->head.stageReplayData[i].data;
     endData = arg->data->head.stageEndData[i].data;
@@ -281,8 +279,8 @@ ReplayManager::ValidateReplayData(ReplayFile *data, i32 size)
     {
         goto bad;
     }
-    dataDecompressed = (ReplayFile *)ZunMemory::Alloc(curData->head.sizeWithoutHeader +
-                                                      sizeof(ReplayHeader));
+    dataDecompressed = (ReplayFile *)ZUN_ALLOC(curData->head.sizeWithoutHeader +
+                                                     sizeof(ReplayHeader));
     memcpy(dataDecompressed, data, sizeof(ReplayHeader));
     Lzss::Decompress(&curData->data.rngValue3, curData->head.compressedSize,
                      &dataDecompressed->data.rngValue3, curData->head.sizeWithoutHeader);
@@ -300,11 +298,11 @@ ReplayManager::ValidateReplayData(ReplayFile *data, i32 size)
     {
         goto bad;
     }
-    ZunMemory::Free(data);
+    ZUN_FREE(data);
     return dataDecompressed;
 
 bad:
-    ZunMemory::Free(data);
+    ZUN_FREE(data);
     return NULL;
 }
 
@@ -447,16 +445,15 @@ ZunResult ReplayManager::DeletedCallback(ReplayManager *arg)
         g_Chain.Cut(arg->rngCalcChain);
         arg->rngCalcChain = NULL;
     }
-    ZunMemory::Free(g_ReplayManager->data);
+    ZUN_FREE(g_ReplayManager->data);
     if (arg->unused_40)
     {
-        ZunMemory::Free(arg->unused_40);
+        ZUN_FREE(arg->unused_40);
     }
 
-    delete g_ReplayManager;
-
-    // ZUN bloat: This is doing the exact same thing twice
-    g_ReplayManager = NULL;
+    // ZUN bloat: ZUN forgets he's using a macro that already NULLs out
+    // g_ReplayManager and NULLs it again
+    ZUN_DELETE(g_ReplayManager);
     g_ReplayManager = NULL;
     return ZUN_SUCCESS;
 }
@@ -468,7 +465,7 @@ ZunResult ReplayManager::RegisterChain(ZunBool isDemo, const char *replayFilenam
     g_CurFrameGameInput = 0;
     if (!g_ReplayManager)
     {
-        ReplayManager *mgr = new ReplayManager();
+        ReplayManager *mgr = ZUN_NEW(ReplayManager, "ReplayInf");
         g_ReplayManager = mgr;
         mgr->data = NULL;
         mgr->isDemo = isDemo;
@@ -591,8 +588,8 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
             if (filename)
             {
                 // STRING: TH07 0x00496a80
-                DebugPrint("info : Replay File write %s\r\n", filename);
-                replayData = (u8 *)ZunMemory::Alloc2(0x100000);
+                utils::DebugPrint("info : Replay File write %s\r\n", filename);
+                replayData = (u8 *)ZUN_ALLOC_WEIRD(0x100000);
                 replayCopy = *mgr->data;
                 StopRecording();
                 i = g_GameManager.currentStage - 1;
@@ -658,11 +655,11 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
                 replayCopy.data.magic30 = 30;
                 memcpy(replayData, &replayCopy.data.rngValue3, sizeof(ReplayData));
                 // STRING: TH07 0x00496a64
-                DebugPrint("info : original size %d\r\n", replaySize);
+                utils::DebugPrint("info : original size %d\r\n", replaySize);
                 replayCopy.head.sizeWithoutHeader = replaySize - sizeof(ReplayHeader);
                 lpBuffer = Lzss::Compress(replayData, replayCopy.head.sizeWithoutHeader,
                                           &replayCopy.head.compressedSize);
-                free(replayData);
+                ZUN_FREE(replayData);
                 compressedSize = replayCopy.head.compressedSize;
                 csumPtr = &replayCopy.head.key;
                 csum = 0x3f000318;
@@ -700,7 +697,7 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
                     WriteFile(hFile, lpBuffer, compressedSize, &bytesWritten, NULL);
                     CloseHandle(hFile);
                     // STRING: TH07 0x00496a4c
-                    DebugPrint("info : Size %d -> %d\r\n", replaySize,
+                    utils::DebugPrint("info : Size %d -> %d\r\n", replaySize,
                                compressedSize + sizeof(ReplayHeader));
                     GlobalFree(lpBuffer);
                 }
@@ -710,11 +707,11 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
             {
                 if (g_ReplayManager->data->head.stageReplayData[i].data)
                 {
-                    ZunMemory::Free(g_ReplayManager->data->head.stageReplayData[i].data);
+                    ZUN_FREE(g_ReplayManager->data->head.stageReplayData[i].data);
                 }
                 if (mgr->data->head.stageEndData[i].data)
                 {
-                    ZunMemory::Free(g_ReplayManager->data->head.stageEndData[i].data);
+                    ZUN_FREE(g_ReplayManager->data->head.stageEndData[i].data);
                 }
             }
         }
@@ -759,8 +756,8 @@ void ReplayManager::SaveReplay2(const char *filename)
         if (filename)
         {
             // STRING: TH07 0x00496a2c
-            DebugPrint("info : Replay File rewrite %s\r\n", filename);
-            replayData = (u8 *)ZunMemory::Alloc2(0x100000);
+            utils::DebugPrint("info : Replay File rewrite %s\r\n", filename);
+            replayData = (u8 *)ZUN_ALLOC_WEIRD(0x100000);
             replayCopy = *mgr->data;
             i = g_GameManager.currentStage - 1;
             if (i >= REPLAY_STAGE_COUNT) // PHANTASMSTAGE
@@ -808,11 +805,11 @@ void ReplayManager::SaveReplay2(const char *filename)
             replayCopy.data.slowdownRate3 = replayCopy.data.slowdownRate + 2.34f;
             replayCopy.data.magic30 = 30;
             memcpy(replayData, &replayCopy.data.rngValue3, sizeof(ReplayData));
-            DebugPrint("info : original size %d\r\n", replaySize);
+            utils::DebugPrint("info : original size %d\r\n", replaySize);
             replayCopy.head.sizeWithoutHeader = replaySize - sizeof(ReplayHeader);
             lpBuffer = Lzss::Compress(replayData, replayCopy.head.sizeWithoutHeader,
                                       &replayCopy.head.compressedSize);
-            free(replayData);
+            ZUN_FREE(replayData);
             compressedSize = replayCopy.head.compressedSize;
             csumPtr = &replayCopy.head.key;
             csum = 0x3f000318;
@@ -849,7 +846,7 @@ void ReplayManager::SaveReplay2(const char *filename)
                 WriteFile(hFile, &replayCopy, sizeof(ReplayHeader), &bytesWritten, NULL);
                 WriteFile(hFile, lpBuffer, compressedSize, &bytesWritten, NULL);
                 CloseHandle(hFile);
-                DebugPrint("info : Size %d -> %d\r\n", replaySize,
+                utils::DebugPrint("info : Size %d -> %d\r\n", replaySize,
                            compressedSize + sizeof(ReplayHeader));
                 GlobalFree(lpBuffer);
             }

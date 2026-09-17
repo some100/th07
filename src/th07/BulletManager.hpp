@@ -159,7 +159,7 @@ struct Laser
 {
     void UpdateRotationZFromAngle()
     {
-        f32 angle = utils::AddNormalizeAngle(ZUN_PI / 2.0f + this->angle, 0.0f);
+        f32 angle = AddNormalizeAngle(ZUN_PI / 2.0f + this->angle, 0.0f);
         this->vm0.rotation.z = angle;
     }
 

@@ -7,7 +7,7 @@ A work-in-progress reimplementation/decompilation of 東方妖々夢　～ Perfe
 
 This repository builds two executables, th07.exe (the main game) and custom.exe (the configuration tool).
 
-The game should be fully playable, given it is 100% implemented. The vast majority of functions are either functionally or completely matched with the original, but there are still a few (mostly constructors) that are not currently matching. The behavior of the program should be functionally identical to the original binary, but there may be bugs or differences not present within the original. Perfect functional accuracy is an eventual goal.
+The game should be fully playable, since it is 100% implemented. The vast majority of functions are either functionally or completely matched with the original, but there are still a few (mostly due to stack nonsense) that are not currently matching. The behavior of the program should be functionally identical to the original binary, but there may be bugs or differences not present within the original. Perfect functional accuracy is an eventual goal.
 
 This branch is for a matching decompilation only. It will not compile on any platform other than 32-bit Windows with the MSVC 2002 toolchain. For a desktop cross-platform port of the game, you can use the [portable branch](https://github.com/some100/th07/tree/portable) instead. Also, see the [reallyportable branch](https://github.com/some100/th07/tree/reallyportable) for an even more portable version (including iOS/Android support, macOS support, and web builds).
 
@@ -63,6 +63,10 @@ See the [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 - The earlier [decompilation for th06](https://github.com/GensokyoClub/th06), used as a source of shared types, function names, file names, source organization, basically everything. Because EoSD and PCB are so similar architecturally, the pre-existing th06 decompilation could be used as a direct reference for reverse engineering th07.
 
-- The [decompilation for th08](https://github.com/GensokyoClub/th08) for the complete and actually readable LZSS implementation. Basically nothing changed from th07 to th08 at least in this regard, so it made it much simpler.
+- The [decompilation for th08](https://github.com/GensokyoClub/th08) for:
+    - ZunMemory class
+    - Entirety of LZSS
+    - Float3 and Float2
+    - A ton of other stuff that would have been basically impossible to determine in th07 thanks to inlining
 
 - EstexNT for porting the [var_order pragma](https://gist.github.com/EstexNT/e98a1384b906a3eedaaa3eeb7e58cd9d) to MSVC 7, which is used extensively throughout this project.

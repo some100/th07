@@ -2,9 +2,7 @@
 
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
-#include "Chain.hpp"
-#include "Controller.hpp"
-#include "FileSystem.hpp"
+#include "Global.hpp"
 #include "SoundPlayer.hpp"
 #include "Supervisor.hpp"
 #include "utils.hpp"
@@ -261,7 +259,7 @@ ZunResult MusicRoom::AddedCallback(MusicRoom *arg)
         return ZUN_ERROR;
     }
 
-    arg->trackDescriptors = new TrackDescriptor[MAX_TRACK_DESCRIPTORS];
+    arg->trackDescriptors = ZUN_NEW_ARRAY(TrackDescriptor, MAX_TRACK_DESCRIPTORS, "MusicCmtInf");
     offset = -1;
     while ((u32)((i32)curChar - (i32)firstChar) < g_LastFileSize)
     {
@@ -379,15 +377,14 @@ LAB_0043b195:
             arg->descriptionSprites[offset].active = 0;
         }
     }
-    free(firstChar);
+    ZUN_FREE(firstChar);
     return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x0043b478
 ZunResult MusicRoom::DeletedCallback(MusicRoom *arg)
 {
-    delete arg->trackDescriptors;
-    arg->trackDescriptors = NULL;
+    ZUN_DELETE(arg->trackDescriptors);
     g_AnmManager->ReleaseSurface(0);
     g_AnmManager->ReleaseAnm(ANM_FILE_MUSIC_0);
     g_AnmManager->ReleaseAnm(ANM_FILE_MUSIC_1);

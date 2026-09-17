@@ -2,11 +2,10 @@
 
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
-#include "Chain.hpp"
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "ItemManager.hpp"
 #include "Player.hpp"
-#include "Rng.hpp"
 #include "SoundPlayer.hpp"
 #include "Supervisor.hpp"
 #include "ZunMath.hpp"
@@ -237,7 +236,7 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x,
     bullet->timer1 = 0;
     bullet->timer2 = 0;
     bullet->speed = bulletSpeed;
-    bullet->angle = utils::AddNormalizeAngle(bulletAngle, 0.0f);
+    bullet->angle = AddNormalizeAngle(bulletAngle, 0.0f);
     bullet->pos = bulletProps->pos;
     bullet->pos.z = 0.1f;
     bullet->velocity.FromAngleMagnitude(bulletAngle,
@@ -765,7 +764,7 @@ void Bullet::UpdateBulletTargetAngle()
     }
     else
     {
-        this->angle = utils::AddNormalizeAngle(
+        this->angle = AddNormalizeAngle(
             this->angle, this->commandStates[2].angle *
                              g_Supervisor.effectiveFramerateMultiplier);
         this->speed += this->commandStates[2].speed *
@@ -856,8 +855,8 @@ void Bullet::UpdateBulletDirChangeAimAtPlayer()
         {
             this->exFlags = this->exFlags & 0xffffff7f;
         }
-        this->angle = utils::AddNormalizeAngle(g_Player.AngleToPlayer(&this->pos),
-                                               this->commandStates[3].angle);
+        this->angle = AddNormalizeAngle(g_Player.AngleToPlayer(&this->pos),
+                                        this->commandStates[3].angle);
         this->speed = this->commandStates[3].speed;
         local_8 = this->speed;
         this->commandStates[3].timer = 0;
@@ -890,7 +889,7 @@ void Bullet::UpdateBulletBounce()
         if (this->pos.x < 0.0f || this->pos.x >= 384.0f)
         {
             this->angle = -this->angle - ZUN_PI;
-            this->angle = utils::AddNormalizeAngle(this->angle, 0.0f);
+            this->angle = AddNormalizeAngle(this->angle, 0.0f);
         }
         if (this->pos.y < 0.0f ||
             (this->pos.y >= 448.0f && (this->exFlags & 0x400U) != 0))
@@ -1287,7 +1286,7 @@ void Bullet::Draw()
     vm->color.color = (vm->color.color & 0xff000000) | 0xffffff;
     if (vm->autoRotate)
     {
-        vm->SetRotationZ(utils::AddNormalizeAngle(ZUN_PI / 2.0f + this->angle, 0.0f));
+        vm->SetRotationZ(AddNormalizeAngle(ZUN_PI / 2.0f + this->angle, 0.0f));
         vm->updateRotation = 1;
     }
     g_AnmManager->Draw(vm);

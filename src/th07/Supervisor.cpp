@@ -5,17 +5,13 @@
 
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
-#include "Chain.hpp"
-#include "Controller.hpp"
 #include "Ending.hpp"
-#include "FileSystem.hpp"
-#include "GameErrorContext.hpp"
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "MainMenu.hpp"
 #include "MidiOutput.hpp"
 #include "MusicRoom.hpp"
 #include "ResultScreen.hpp"
-#include "Rng.hpp"
 #include "SoundPlayer.hpp"
 #include "TextHelper.hpp"
 #include "ZunResult.hpp"
@@ -61,11 +57,6 @@ u32 g_NumFramesSinceLastTime;
 
 // GLOBAL: TH07 0x0135e298
 LARGE_INTEGER g_PerformanceCounter;
-
-// FUNCTION: TH07 0x00437903
-void Supervisor::DebugPrint2(const char *fmt, ...)
-{
-}
 
 // FUNCTION: TH07 0x00437908
 void Supervisor::CheckTiming()
@@ -125,7 +116,7 @@ void Supervisor::CheckTiming()
                 this->timingBadCount++;
                 this->timingSpikeAccumulator = 0;
             }
-            Supervisor::DebugPrint2(TH_LOG_ALQ_CHECK, timeDiff, perfDiff,
+            utils::DebugPrint2(TH_LOG_ALQ_CHECK, timeDiff, perfDiff,
                                     timeDiff / perfDiff);
         }
         else if (this->timingErrorCount != 0)
@@ -203,7 +194,7 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
     {
         arg->prevState = arg->wantedState;
         // STRING: TH07 0x00497230
-        Supervisor::DebugPrint2("scene %d -> %d\r\n", arg->wantedState,
+        utils::DebugPrint2("scene %d -> %d\r\n", arg->wantedState,
                                 arg->curState);
         switch (arg->wantedState)
         {
@@ -703,7 +694,7 @@ ZunResult Supervisor::AddedCallback(Supervisor *arg)
     arg->SetupDInput();
     if (!arg->midiOutput)
     {
-        arg->midiOutput = new MidiOutput;
+        arg->midiOutput = ZUN_NEW(MidiOutput, "MidiSysInf");
     }
     if (arg->midiOutput)
     {
@@ -759,10 +750,10 @@ ZunResult Supervisor::AddedCallback(Supervisor *arg)
     g_GameManager.plst.version = 1;
     ResultScreen::ParsePlst(scoreDat, &g_GameManager.plst);
     ResultScreen::ReleaseScoreDat(scoreDat);
-    g_Supervisor.midiTimer = new DummyMidiTimer;
+    g_Supervisor.midiTimer = ZUN_NEW(DummyMidiTimer, "DummyTimerSysInf");
     if (g_Supervisor.midiTimer)
     {
-        g_Supervisor.midiTimer->StartTimerDefault();
+        g_Supervisor.midiTimer->StartTimer();
     }
     return ZUN_SUCCESS;
 }
@@ -779,8 +770,7 @@ ZunResult Supervisor::DeletedCallback(Supervisor *arg)
     if (arg->midiOutput)
     {
         arg->midiOutput->StopPlayback();
-        delete arg->midiOutput;
-        arg->midiOutput = NULL;
+        ZUN_DELETE(arg->midiOutput);
     }
     ReplayManager::SaveReplay(NULL, NULL);
     TextHelper::ReleaseTextBuffer();
@@ -800,9 +790,8 @@ ZunResult Supervisor::DeletedCallback(Supervisor *arg)
     g_Pbg4Archive.Release();
     if (g_Supervisor.midiTimer)
     {
-        StopMidiTimer(g_Supervisor.midiTimer);
-        delete g_Supervisor.midiTimer;
-        g_Supervisor.midiTimer = NULL;
+        g_Supervisor.midiTimer->StopTimer();
+        ZUN_DELETE(g_Supervisor.midiTimer);
     }
     return ZUN_SUCCESS;
 }
@@ -1085,7 +1074,7 @@ i32 Supervisor::SnapshotScreen(const char *filename)
         g_GameErrorContext.Log(TH_LOG_16BIT_NOT_SUPPORTED);
         break;
     case D3DFMT_X8R8G8B8:
-        bitmapInfo = (BITMAPINFO *)ZunMemory::Alloc2(sizeof(BITMAPINFO));
+        bitmapInfo = (BITMAPINFO *)ZUN_ALLOC_WEIRD(sizeof(BITMAPINFO));
         if (!bitmapInfo)
         {
             g_GameErrorContext.Log(TH_LOG_BITMAP_ALLOC_FAIL);
@@ -1145,8 +1134,8 @@ i32 Supervisor::SnapshotScreen(const char *filename)
         return 1;
     }
     SAFE_RELEASE(backBuffer);
-    free(bitmapInfo);
-    free(bitmapData);
+    ZUN_FREE(bitmapInfo);
+    ZUN_FREE(bitmapData);
     return 0;
 }
 
@@ -1190,7 +1179,7 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
         else
         {
             g_Supervisor.cfg.musicMode = MUSIC_MIDI;
-            Supervisor::DebugPrint2(TH_LOG_WAV_UNAVAILABLE);
+            utils::DebugPrint2(TH_LOG_WAV_UNAVAILABLE);
         }
         g_Supervisor.cfg.playSounds = 1;
         g_Supervisor.cfg.defaultDifficulty = (u8)DIFF_NORMAL;
@@ -1204,7 +1193,7 @@ ZunResult Supervisor::LoadConfig(const char *configFilename)
     else
     {
         g_Supervisor.cfg = *(GameConfiguration *)configFile;
-        free(configFile);
+        ZUN_FREE(configFile);
 
         bgm = CreateFileA("./thbgm.dat", GENERIC_READ, 1, NULL, 3, FILE_FLAG_SEQUENTIAL_SCAN | FILE_ATTRIBUTE_NORMAL, NULL);
         if (bgm != INVALID_HANDLE_VALUE)

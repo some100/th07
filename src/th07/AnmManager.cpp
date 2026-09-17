@@ -7,16 +7,14 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "FileSystem.hpp"
-#include "GameErrorContext.hpp"
-#include "Rng.hpp"
+#include "Global.hpp"
 #include "Stage.hpp"
 #include "Supervisor.hpp"
 #include "TextHelper.hpp"
 #include "ZunMath.hpp"
 #include "dxutil.hpp"
-#include "utils.hpp"
 #include "i18n.hpp"
+#include "utils.hpp"
 
 // GLOBAL: TH07 0x004b9e44
 AnmManager *g_AnmManager;
@@ -186,7 +184,7 @@ ZunResult AnmManager::LoadTexture(i32 textureIdx, const char *texturePath,
             g_TextureFormatD3D8Mapping[formatIdx], D3DPOOL_MANAGED, 3, 0xffffffff,
             colorKey, NULL, NULL, this->textures + textureIdx))
     {
-        free(srcData);
+        ZUN_FREE(srcData);
         return ZUN_ERROR;
     }
     this->imageDataArray[textureIdx] = srcData;
@@ -375,11 +373,11 @@ ZunResult AnmManager::LoadTextureAlphaChannel(i32 textureIdx,
     textureSrc->UnlockRect(0);
     this->textures[textureIdx]->UnlockRect(0);
     SAFE_RELEASE(textureSrc);
-    free(data);
+    ZUN_FREE(data);
     return ZUN_SUCCESS;
 err:
     SAFE_RELEASE(textureSrc);
-    free(data);
+    ZUN_FREE(data);
     return ZUN_ERROR;
 }
 
@@ -598,7 +596,7 @@ void AnmManager::ReleaseAnm(i32 anmIdx)
         ReleaseTexture(rawEntry->textureIdx);
         if (rawEntry->ownsMemory)
         {
-            free(rawEntry);
+            ZUN_FREE(rawEntry);
         }
         this->anmFiles[anmIdx].raw = NULL;
         this->currentBlendMode = 255;
@@ -618,7 +616,7 @@ void AnmManager::ReleaseTexture(i32 textureIdx)
     }
 
     SAFE_RELEASE(this->textures[textureIdx]);
-    ZunMemory::Free(this->imageDataArray[textureIdx]);
+    ZUN_FREE(this->imageDataArray[textureIdx]);
     this->imageDataArray[textureIdx] = NULL;
 }
 
@@ -2030,7 +2028,7 @@ WHY_NOT_JUST_CONTINUE:
             *GET_FLOAT_PTR(0) = atanf(GET_FLOAT_VALUE(1));
             break;
         case ANM_NORMALIZE_ANGLE:
-            *GET_FLOAT_PTR(0) = utils::AddNormalizeAngle(GET_FLOAT_VALUE(0), 0.0f);
+            *GET_FLOAT_PTR(0) = AddNormalizeAngle(GET_FLOAT_VALUE(0), 0.0f);
             break;
         case ANM_JUMP_IF_EQ:
             if (GET_INT_VALUE(0) == GET_INT_VALUE(1))
@@ -2118,21 +2116,21 @@ WHY_NOT_JUST_CONTINUE:
 stop:
     if (vm->angleVel.x != 0.0f)
     {
-        vm->rotation.x = utils::AddNormalizeAngle(
+        vm->rotation.x = AddNormalizeAngle(
             vm->rotation.x,
             g_Supervisor.effectiveFramerateMultiplier * vm->angleVel.x);
         vm->updateRotation = 1;
     }
     if (vm->angleVel.y != 0.0f)
     {
-        vm->rotation.y = utils::AddNormalizeAngle(
+        vm->rotation.y = AddNormalizeAngle(
             vm->rotation.y,
             g_Supervisor.effectiveFramerateMultiplier * vm->angleVel.y);
         vm->updateRotation = 1;
     }
     if (vm->angleVel.z != 0.0f)
     {
-        vm->rotation.z = utils::AddNormalizeAngle(
+        vm->rotation.z = AddNormalizeAngle(
             vm->rotation.z,
             g_Supervisor.effectiveFramerateMultiplier * vm->angleVel.z);
         vm->updateRotation = 1;
@@ -2222,13 +2220,13 @@ stop:
                          (f32)vm->colorInterpInitialColor.bytes.a);
                 break;
             case 3:
-                vm->rotation.x = utils::AddNormalizeAngle(
+                vm->rotation.x = AddNormalizeAngle(
                     (vm->rotateInterpFinal.x - vm->rotateInterpInitial.x) * t,
                     vm->rotateInterpInitial.x);
-                vm->rotation.y = utils::AddNormalizeAngle(
+                vm->rotation.y = AddNormalizeAngle(
                     (vm->rotateInterpFinal.y - vm->rotateInterpInitial.y) * t,
                     vm->rotateInterpInitial.y);
-                vm->rotation.z = utils::AddNormalizeAngle(
+                vm->rotation.z = AddNormalizeAngle(
                     (vm->rotateInterpFinal.z - vm->rotateInterpInitial.z) * t,
                     vm->rotateInterpInitial.z);
                 vm->updateRotation = 1;
@@ -2459,12 +2457,12 @@ ZunResult AnmManager::LoadSurface(i32 surfaceIdx, const char *path)
     }
 
     SAFE_RELEASE(surface);
-    free(data);
+    ZUN_FREE(data);
     return ZUN_SUCCESS;
 
 err:
     SAFE_RELEASE(surface);
-    free(data);
+    ZUN_FREE(data);
     return ZUN_ERROR;
 }
 

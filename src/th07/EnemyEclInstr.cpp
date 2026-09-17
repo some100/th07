@@ -3,8 +3,8 @@
 #include "BulletManager.hpp"
 #include "EnemyManager.hpp"
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "Player.hpp"
-#include "Rng.hpp"
 #include "SoundPlayer.hpp"
 #include "Stage.hpp"
 #include "Supervisor.hpp"
@@ -262,7 +262,7 @@ void EnemyEclInstr::ExInsSplitBulletsOrShootBackwards(Enemy *enemy,
             bulletProps.pos = bullet->pos;
             bulletProps.sprite = 6;
             bulletProps.spriteOffset = 15;
-            bulletProps.angle1 = utils::AddNormalizeAngle(bullet->angle, ZUN_PI);
+            bulletProps.angle1 = AddNormalizeAngle(bullet->angle, ZUN_PI);
             bulletProps.angle2 = ZUN_PI / 6.0f;
             bulletProps.speed1 = bullet->speed * 1.1f;
             if (g_GameManager.difficulty < 3)
@@ -334,8 +334,8 @@ void EnemyEclInstr::ExInsSplitBulletsOrShootBackwards(Enemy *enemy,
 #pragma var_order(p, rot, d)
 // FUNCTION: TH07 0x004185d0
 ZunBool IsPointInRotatedRect(Float3 *point, Float3 *center,
-                         Float3 *size, Float3 *pivot,
-                         f32 sine, f32 cosine)
+                             Float3 *size, Float3 *pivot,
+                             f32 sine, f32 cosine)
 {
     Float3 d;
     Float3 rot;
@@ -425,12 +425,12 @@ void EnemyEclInstr::ExInsReflectBulletsFromLasers(Enemy *enemy,
                         if (dot >= 0.0f)
                         {
                             bullet->angle =
-                                utils::AddNormalizeAngle(laser->angle, ZUN_PI / 2.0f);
+                                AddNormalizeAngle(laser->angle, ZUN_PI / 2.0f);
                         }
                         else
                         {
                             bullet->angle =
-                                utils::AddNormalizeAngle(laser->angle, -ZUN_PI / 2.0f);
+                                AddNormalizeAngle(laser->angle, -ZUN_PI / 2.0f);
                         }
                         bullet->velocity.FromAngleMagnitude(bullet->angle,
                                                             g_Supervisor.effectiveFramerateMultiplier *
@@ -474,7 +474,7 @@ void EnemyEclInstr::ExInsShootBulletsAlongLaser(Enemy *enemy,
             continue;
         }
 
-        if (enemy->timer.GetCurrentMod3() != i % 3)
+        if (enemy->timer % 3 != i % 3)
         {
             continue;
         }
@@ -676,7 +676,7 @@ void EnemyEclInstr::ExInsBurstLargeBullets(Enemy *enemy, EclRawInstr *instr)
                 }
                 else
                 {
-                    bulletProps.angle1 = utils::AddNormalizeAngle(
+                    bulletProps.angle1 = AddNormalizeAngle(
                         g_Rng.GetRandomFloatInRange(ZUN_3PI / 2.0f), ZUN_PI / 4.0f);
                 }
                 bulletProps.speed1 = 0.1f;
@@ -779,7 +779,7 @@ void EnemyEclInstr::ExInsYuyukoTransformButterflyBullets(Enemy *enemy,
             bulletProps.pos = bullet->pos;
             bulletProps.sprite = 0;
             bulletProps.spriteOffset = 6;
-            bulletProps.angle1 = utils::AddNormalizeAngle(bullet->angle, ZUN_PI);
+            bulletProps.angle1 = AddNormalizeAngle(bullet->angle, ZUN_PI);
             bulletProps.angle2 = ZUN_PI / 8.0f;
             bulletProps.speed1 = enemy->currentContext.eclContextArgs.floatVars1[1];
             bulletProps.count1 = 5;
@@ -903,7 +903,7 @@ void EnemyEclInstr::ExInsBurstLargeBullets2(Enemy *enemy, EclRawInstr *instr)
                 }
                 else
                 {
-                    bulletProps.angle1 = utils::AddNormalizeAngle(
+                    bulletProps.angle1 = AddNormalizeAngle(
                         g_Rng.GetRandomFloatInRange(ZUN_3PI / 2.0f), ZUN_PI / 4.0f);
                 }
                 bulletProps.speed1 = 0.1f;

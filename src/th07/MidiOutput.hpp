@@ -21,11 +21,13 @@ struct MidiTimer
     MidiTimer();
     ~MidiTimer();
 
-    u32 StartTimer(u32 delay, LPTIMECALLBACK cb, DWORD_PTR data);
-    void StartTimerDefault();
-    i32 StopTimer();
+    u32 StartTimerImpl(u32 delay, LPTIMECALLBACK cb, DWORD_PTR data);
+    void StartTimer();
+    i32 StopTimerImpl();
+    void StopTimer();
 
-    virtual void OnTimerElapsed();
+    // FUNCTION: TH07 0x0044d620 FOLDED
+    virtual void OnTimerElapsed() {};
 
     static void CALLBACK DefaultTimerCallback(u32 delay, u32 wPeriodMin,
                                               DWORD_PTR dwUser, DWORD_PTR dw1,

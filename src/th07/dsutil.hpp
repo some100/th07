@@ -214,5 +214,3 @@ class CStreamingSound : public CSound
     }
 };
 C_ASSERT(sizeof(CStreamingSound) == 0x78);
-
-void DebugPrint(const char *fmt, ...);

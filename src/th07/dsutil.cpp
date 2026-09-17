@@ -213,7 +213,7 @@ HRESULT CSoundManager::CreateStreamingFromMemory(
     HRESULT hr;
 
     // STRING: TH07 0x0049548c
-    DebugPrint("StreamingSound Create \r\n");
+    utils::DebugPrint("StreamingSound Create \r\n");
     if (!this->pDS)
     {
         return CO_E_NOTINITIALIZED;
@@ -281,7 +281,7 @@ HRESULT CSoundManager::CreateStreamingFromMemory(
     (*ppStreamingSound)->m_hNotifyEvent = hNotifyEvent;
     (*ppStreamingSound)->m_bIsLocked = FALSE;
     // STRING: TH07 0x00495480
-    DebugPrint("Success \r\n");
+    utils::DebugPrint("Success \r\n");
 
     return S_OK;
 }
@@ -779,7 +779,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
              this->m_dwDSBufferSize - this->m_dwNotifySize))
     {
         // STRING: TH07 0x00495470
-        DebugPrint("Stream Skip\n");
+        utils::DebugPrint("Stream Skip\n");
         return CO_E_NOTINITIALIZED;
     }
 
@@ -787,7 +787,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
     if (FAILED(hr = RestoreBuffer(this->m_apDSBuffer[0], &bRestored)))
     {
         // STRING: TH07 0x00495438
-        DebugPrint("error : RestoreBuffer in HandleWaveStreamNotification\r\n");
+        utils::DebugPrint("error : RestoreBuffer in HandleWaveStreamNotification\r\n");
         return hr;
     }
 
@@ -796,7 +796,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
         if (FAILED(hr = FillBufferWithSound(this->m_apDSBuffer[0], FALSE)))
         {
             // STRING: TH07 0x004953f8
-            DebugPrint("error : FillBufferWithSound in HandleWaveStreamNotification\r\n");
+            utils::DebugPrint("error : FillBufferWithSound in HandleWaveStreamNotification\r\n");
             return hr;
         }
         return S_OK;
@@ -811,7 +811,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
                    &dwDSLockedBufferSize2, 0L)))
     {
         // STRING: TH07 0x004953c0
-        DebugPrint("error : Buffer->Lock in HandleWaveStreamNotification\r\n");
+        utils::DebugPrint("error : Buffer->Lock in HandleWaveStreamNotification\r\n");
         return hr;
     }
 
@@ -827,7 +827,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
                                                 &dwBytesWrittenToBuffer)))
         {
             // STRING: TH07 0x00495384
-            DebugPrint("error : m_pWaveFile->Read in HandleWaveStreamNotification\r\n");
+            utils::DebugPrint("error : m_pWaveFile->Read in HandleWaveStreamNotification\r\n");
             return hr;
         }
     }
@@ -859,7 +859,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
                 if (FAILED(hr = this->m_pWaveFile->ResetFile(true)))
                 {
                     // STRING: TH07 0x00495340
-                    DebugPrint("error : m_pWaveFile->ResetFile in HandleWaveStreamNotification\r\n");
+                    utils::DebugPrint("error : m_pWaveFile->ResetFile in HandleWaveStreamNotification\r\n");
                     return hr;
                 }
 
@@ -869,7 +869,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
                                &dwBytesWrittenToBuffer)))
                 {
                     // STRING: TH07 0x00495300
-                    DebugPrint("error : m_pWaveFile->Read(+) in HandleWaveStreamNotification\r\n");
+                    utils::DebugPrint("error : m_pWaveFile->Read(+) in HandleWaveStreamNotification\r\n");
                     return hr;
                 }
 
@@ -884,7 +884,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
                                                               NULL)))
     {
         // STRING: TH07 0x004952b0
-        DebugPrint("error : m_apDSBuffer[0]->GetCurrentPosition in HandleWaveStreamNotification\r\n");
+        utils::DebugPrint("error : m_apDSBuffer[0]->GetCurrentPosition in HandleWaveStreamNotification\r\n");
         return hr;
     }
     if (dwCurrentPlayPos2 < this->m_dwLastPlayPos)
@@ -991,7 +991,7 @@ HRESULT CWaveFile::Open(LPCSTR strFileName, ThBgmFormat *pzwf, DWORD dwFlags)
         }
 
         // STRING: TH07 0x00495294
-        DebugPrint("Streaming File Open %s\r\n", strFileName);
+        utils::DebugPrint("Streaming File Open %s\r\n", strFileName);
         this->m_hWaveFile = CreateFileA(
             strFileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
             FILE_FLAG_SEQUENTIAL_SCAN | FILE_ATTRIBUTE_NORMAL, NULL);
@@ -1190,8 +1190,3 @@ HRESULT CWaveFile::Close()
     }
     return S_OK;
 }
-
-// FUNCTION: TH07 0x0045e4f0
-void DebugPrint(const char *fmt, ...)
-{
-} // why is this here

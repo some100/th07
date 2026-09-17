@@ -2,8 +2,8 @@
 
 #include "AnmManager.hpp"
 #include "ScreenEffect.hpp"
+#include "Supervisor.hpp"
 #include "ZunResult.hpp"
-#include "ZunTimer.hpp"
 #include "utils.hpp"
 
 enum StageEaseMode

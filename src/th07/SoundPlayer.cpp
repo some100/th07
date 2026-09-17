@@ -1,7 +1,6 @@
 #include "SoundPlayer.hpp"
 
-#include "FileSystem.hpp"
-#include "GameErrorContext.hpp"
+#include "Global.hpp"
 #include "Supervisor.hpp"
 #include "dsutil.hpp"
 #include "dxutil.hpp"
@@ -95,7 +94,7 @@ ZunResult SoundPlayer::InitializeDSound(HWND gameWindow)
     {
         this->unusedSoundVolRelated[i] = -1;
     }
-    this->manager = new CSoundManager;
+    this->manager = ZUN_NEW(CSoundManager, "");
     if (FAILED(this->manager->Initialize(gameWindow, 2, 2, 44100, 16)))
     {
         g_GameErrorContext.Log(TH_ERR_DSOUND_INIT_FAIL);
@@ -169,7 +168,7 @@ ZunResult SoundPlayer::Release()
     }
     if (this->bgmFmtData)
     {
-        ZunMemory::Free(this->bgmFmtData);
+        ZUN_FREE(this->bgmFmtData);
     }
     return ZUN_SUCCESS;
 }
@@ -262,7 +261,7 @@ ZunResult SoundPlayer::LoadSound(i32 idx, const char *path)
     if (strncmp((char *)cursor, "RIFF", 4) != 0)
     {
         g_GameErrorContext.Log(TH_ERR_NOT_A_WAV, path);
-        free(soundFileDat);
+        ZUN_FREE(soundFileDat);
         return ZUN_ERROR;
     }
 
@@ -274,7 +273,7 @@ ZunResult SoundPlayer::LoadSound(i32 idx, const char *path)
     if (strncmp((char *)cursor, "WAVE", 4) != 0)
     {
         g_GameErrorContext.Log(TH_ERR_PROBABLY_NOT_A_WAV, path);
-        free(soundFileDat);
+        ZUN_FREE(soundFileDat);
         return ZUN_ERROR;
     }
 
@@ -285,7 +284,7 @@ ZunResult SoundPlayer::LoadSound(i32 idx, const char *path)
     if (!wavDataPtr)
     {
         g_GameErrorContext.Log(TH_ERR_PROBABLY_NOT_A_WAV, path);
-        free(soundFileDat);
+        ZUN_FREE(soundFileDat);
         return ZUN_ERROR;
     }
 
@@ -296,7 +295,7 @@ ZunResult SoundPlayer::LoadSound(i32 idx, const char *path)
     if (!wavDataPtr)
     {
         g_GameErrorContext.Log(TH_ERR_PROBABLY_NOT_A_WAV, path);
-        free(soundFileDat);
+        ZUN_FREE(soundFileDat);
         return ZUN_ERROR;
     }
 
@@ -308,7 +307,7 @@ ZunResult SoundPlayer::LoadSound(i32 idx, const char *path)
     if (FAILED(this->directSoundHdl->CreateSoundBuffer(
             &dsBuffer, &this->soundBuffers[idx], NULL)))
     {
-        free(soundFileDat);
+        ZUN_FREE(soundFileDat);
         return ZUN_ERROR;
     }
 
@@ -316,7 +315,7 @@ ZunResult SoundPlayer::LoadSound(i32 idx, const char *path)
             0, formatSize, (LPVOID *)&audioPtr1, &audioSize1,
             (LPVOID *)&audioPtr2, &audioSize2, 0)))
     {
-        free(soundFileDat);
+        ZUN_FREE(soundFileDat);
         return ZUN_ERROR;
     }
 
@@ -327,7 +326,7 @@ ZunResult SoundPlayer::LoadSound(i32 idx, const char *path)
     }
     this->soundBuffers[idx]->Unlock(audioPtr1, audioSize1, audioPtr2,
                                     audioSize2);
-    free(soundFileDat);
+    ZUN_FREE(soundFileDat);
     return ZUN_SUCCESS;
 }
 
@@ -360,7 +359,7 @@ ZunResult SoundPlayer::StartBGM(const char *path)
     }
 
     // STRING: TH07 0x00495fb4
-    DebugPrint("Streming BGM Start\r\n");
+    utils::DebugPrint("Streming BGM Start\r\n");
     StopBGM();
     pzwf = this->bgmFmtData;
     blockAlign = pzwf->format.nBlockAlign;
@@ -377,7 +376,7 @@ ZunResult SoundPlayer::StartBGM(const char *path)
                    GUID_NULL, 16,
                    notifySize, this->backgroundMusicUpdateEvent, pzwf)))
     {
-        DebugPrint(TH_ERR_STREAMING_SOUND_BUFFER_CREATE_FAIL);
+        utils::DebugPrint(TH_ERR_STREAMING_SOUND_BUFFER_CREATE_FAIL);
         return ZUN_ERROR;
     }
 
@@ -396,7 +395,7 @@ ZunResult SoundPlayer::ReopenBGM(const char *name)
 
     this->backgroundMusic->GetWaveFile()->Reopen(&this->bgmFmtData[fmtIdx]);
     // STRING: TH07 0x00495f54
-    DebugPrint("Streming BGM Reopen %d\r\n", fmtIdx);
+    utils::DebugPrint("Streming BGM Reopen %d\r\n", fmtIdx);
     return ZUN_SUCCESS;
 }
 
@@ -429,23 +428,23 @@ ZunResult SoundPlayer::PreloadBGM(i32 idx, const char *path)
 
     SAFE_FREE(this->bgmPreloadData[idx]);
     // STRING: TH07 0x00495f38
-    DebugPrint("Streming BGM PreLoad %d\r\n", idx);
+    utils::DebugPrint("Streming BGM PreLoad %d\r\n", idx);
     handle = CreateFileA(this->bgmArchivePath, GENERIC_READ, 1, NULL, 3,
                          FILE_FLAG_SEQUENTIAL_SCAN | FILE_ATTRIBUTE_NORMAL, NULL);
     if (handle == INVALID_HANDLE_VALUE)
     {
         // STRING: TH07 0x00495f14
-        DebugPrint("error : bgmfile is not find %s\r\n", this->bgmArchivePath);
+        utils::DebugPrint("error : bgmfile is not find %s\r\n", this->bgmArchivePath);
         return ZUN_ERROR;
     }
 
     fmtIdx = GetFmtIndexByName(path);
     SetFilePointer(handle, this->bgmFmtData[fmtIdx].startOffset, NULL, 0);
-    lpBuffer = (LPBYTE)ZunMemory::Alloc(this->bgmFmtData[fmtIdx].preloadAllocSize);
+    lpBuffer = (LPBYTE)ZUN_ALLOC(this->bgmFmtData[fmtIdx].preloadAllocSize);
     if (!lpBuffer)
     {
         CloseHandle(handle);
-        DebugPrint("error : bgmfile is not find %s\r\n", this->bgmArchivePath);
+        utils::DebugPrint("error : bgmfile is not find %s\r\n", this->bgmArchivePath);
         return ZUN_ERROR;
     }
 
@@ -495,7 +494,7 @@ ZunResult SoundPlayer::LoadBGM(i32 idx)
     }
 
     // STRING: TH07 0x00495ef8
-    DebugPrint("Streming BGM Load no %d\r\n", idx);
+    utils::DebugPrint("Streming BGM Load no %d\r\n", idx);
     blockAlign = this->bgmPreloadFmtData[idx]->format.nBlockAlign;
     samplesPerSec = this->bgmPreloadFmtData[idx]->format.nSamplesPerSec;
     notifySize = samplesPerSec * 4 * blockAlign >> 4;
@@ -510,12 +509,12 @@ ZunResult SoundPlayer::LoadBGM(i32 idx)
                    DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLPOSITIONNOTIFY,
                    GUID_NULL, 16, notifySize, this->backgroundMusicUpdateEvent)))
     {
-        DebugPrint(TH_ERR_STREAMING_SOUND_BUFFER_CREATE_FAIL);
+        utils::DebugPrint(TH_ERR_STREAMING_SOUND_BUFFER_CREATE_FAIL);
         return ZUN_ERROR;
     }
 
     // STRING: TH07 0x00495eec
-    DebugPrint("load comp\r\n");
+    utils::DebugPrint("load comp\r\n");
     this->curBgmIdx = idx;
     return ZUN_SUCCESS;
 }
@@ -526,20 +525,20 @@ void SoundPlayer::StopBGM()
     if (this->backgroundMusic)
     {
         // STRING: TH07 0x00495ed8
-        DebugPrint("Streming BGM stop\r\n");
+        utils::DebugPrint("Streming BGM stop\r\n");
         this->backgroundMusic->Stop();
         if (this->backgroundMusicThreadHandle)
         {
             PostThreadMessageA(this->backgroundMusicThreadId, WM_QUIT, 0, 0);
             // STRING: TH07 0x00495ebc
-            DebugPrint("stop m_dwNotifyThreadID\r\n");
+            utils::DebugPrint("stop m_dwNotifyThreadID\r\n");
             while (WaitForSingleObject(this->backgroundMusicThreadHandle, 256) !=
                    0)
             {
                 PostThreadMessageA(this->backgroundMusicThreadId, WM_QUIT, 0, 0);
             }
             // STRING: TH07 0x00495eb0
-            DebugPrint("stop comp\r\n");
+            utils::DebugPrint("stop comp\r\n");
             CloseHandle(this->backgroundMusicThreadHandle);
             CloseHandle(this->backgroundMusicUpdateEvent);
             this->backgroundMusicThreadHandle = NULL;
@@ -641,7 +640,7 @@ loop:
         if (g_Supervisor.cfg.preloadBgm)
         {
             // STRING: TH07 0x00495e60
-            DebugPrint("Sound : PreLoad Stage\r\n");
+            utils::DebugPrint("Sound : PreLoad Stage\r\n");
             if (!commandCursor->arg2)
             {
                 StopBGM();
@@ -652,7 +651,7 @@ loop:
         }
         else
         {
-            DebugPrint("Sound : PreLoad Stage\r\n");
+            utils::DebugPrint("Sound : PreLoad Stage\r\n");
             PreloadBGM(commandCursor->arg1, commandCursor->string);
             loopAgain = true;
             break;
@@ -665,7 +664,7 @@ loop:
             if (!commandCursor->arg2)
             {
                 // STRING: TH07 0x00495e48
-                DebugPrint("Sound : Load Stage\r\n");
+                utils::DebugPrint("Sound : Load Stage\r\n");
                 if (LoadBGM(commandCursor->arg1) != ZUN_SUCCESS)
                 {
                     break;
@@ -674,7 +673,7 @@ loop:
             else if (commandCursor->arg2 == 2)
             {
                 // STRING: TH07 0x00495e30
-                DebugPrint("Sound : Reset Stage\r\n");
+                utils::DebugPrint("Sound : Reset Stage\r\n");
                 if (this->backgroundMusic)
                 {
                     if (FAILED(this->backgroundMusic->Reset()))
@@ -685,7 +684,7 @@ loop:
             }
             else if (commandCursor->arg2 == 5)
             {
-                DebugPrint("Sound : Fill Buffer Stage\r\n");
+                utils::DebugPrint("Sound : Fill Buffer Stage\r\n");
                 buffer = this->backgroundMusic->GetBuffer(0);
                 commandCursor->arg1 = this->backgroundMusic->GetWaveFile()
                                           ->GetFormat()
@@ -698,7 +697,7 @@ loop:
             }
             else if (commandCursor->arg2 == 7)
             {
-                DebugPrint("Sound : Play Stage\r\n");
+                utils::DebugPrint("Sound : Play Stage\r\n");
                 this->backgroundMusic->Play(0, 1);
             }
             else if (commandCursor->arg2 >= 20)
@@ -713,7 +712,7 @@ loop:
         else if (!commandCursor->arg2)
         {
             // STRING: TH07 0x00495de4
-            DebugPrint("Sound : Stop Stage\r\n");
+            utils::DebugPrint("Sound : Stop Stage\r\n");
             this->backgroundMusic->Stop();
         }
         else if (commandCursor->arg2 == 1)
@@ -723,13 +722,13 @@ loop:
                 goto loop_breakout;
             }
             // STRING: TH07 0x00495dc8
-            DebugPrint("Sound : Recreate Stage\r\n");
+            utils::DebugPrint("Sound : Recreate Stage\r\n");
             this->backgroundMusic->InitSoundBuffers();
         }
         else if (commandCursor->arg2 == 2)
         {
             // STRING: TH07 0x00495db0
-            DebugPrint("Sound : ReOpen Stage\r\n");
+            utils::DebugPrint("Sound : ReOpen Stage\r\n");
             name = commandCursor->arg1 >= 0
                        ? &this->bgmFileNames[commandCursor->arg1]
                        : &commandCursor->string;
@@ -739,7 +738,7 @@ loop:
         else if (commandCursor->arg2 == 3)
         {
             // STRING: TH07 0x00495e14
-            DebugPrint("Sound : Fill Buffer Stage\r\n");
+            utils::DebugPrint("Sound : Fill Buffer Stage\r\n");
             buffer2 = this->backgroundMusic->GetBuffer(0);
             this->backgroundMusic->Reset();
             commandCursor->arg1 = this->backgroundMusic->GetWaveFile()
@@ -754,7 +753,7 @@ loop:
         else if (commandCursor->arg2 == 4)
         {
             // STRING: TH07 0x00495dfc
-            DebugPrint("Sound : Play Stage\r\n");
+            utils::DebugPrint("Sound : Play Stage\r\n");
             this->backgroundMusic->Play(0, 1);
         }
         else if (commandCursor->arg2 >= 7)
@@ -771,13 +770,13 @@ loop:
 
         if (!commandCursor->arg2)
         {
-            DebugPrint("Sound : Stop Stage\r\n");
+            utils::DebugPrint("Sound : Stop Stage\r\n");
             this->backgroundMusic->Stop();
         }
         else if (commandCursor->arg2 == 1)
         {
             // STRING: TH07 0x00495d94
-            DebugPrint("Sound : Thread Stop Stage\r\n");
+            utils::DebugPrint("Sound : Thread Stop Stage\r\n");
             if (!this->backgroundMusicThreadHandle)
             {
                 break;
@@ -789,7 +788,7 @@ loop:
             if (WaitForSingleObject(this->backgroundMusicThreadHandle, 256))
             {
                 // STRING: TH07 0x00495d70
-                DebugPrint("Sound : Thread Stop Wait Stage\r\n");
+                utils::DebugPrint("Sound : Thread Stop Wait Stage\r\n");
                 PostThreadMessageA(this->backgroundMusicThreadId, WM_QUIT, 0, 0);
                 commandCursor->arg2--;
             }
@@ -801,7 +800,7 @@ loop:
         else if (commandCursor->arg2 == 3)
         {
             // STRING: TH07 0x00495d50
-            DebugPrint("Sound : Handle Close Stage\r\n");
+            utils::DebugPrint("Sound : Handle Close Stage\r\n");
             CloseHandle(this->backgroundMusicThreadHandle);
             CloseHandle(this->backgroundMusicUpdateEvent);
             this->backgroundMusicThreadHandle = NULL;
@@ -821,7 +820,7 @@ loop:
 
         if (!commandCursor->arg2)
         {
-            DebugPrint("Sound : Stop Stage\r\n");
+            utils::DebugPrint("Sound : Stop Stage\r\n");
             this->backgroundMusic->Stop();
         }
         else if (commandCursor->arg2 == 1)
@@ -832,7 +831,7 @@ loop:
         goto loop_breakout;
     case AUDIO_FADEOUT: {
         // STRING: TH07 0x00495d34
-        DebugPrint("Sound : Fade Out Stage %d\r\n", commandCursor->arg1);
+        utils::DebugPrint("Sound : Fade Out Stage %d\r\n", commandCursor->arg1);
         g_SoundPlayer.FadeOut(commandCursor->arg1);
         break;
     }
@@ -842,7 +841,7 @@ loop:
             if (this->backgroundMusic->m_bIsLocked)
             {
                 // STRING: TH07 0x00495d2c
-                DebugPrint("locked\n");
+                utils::DebugPrint("locked\n");
                 goto loop_breakout;
             }
             if (this->backgroundMusic)
@@ -957,7 +956,7 @@ DWORD __stdcall SoundPlayer::BackgroundMusicPlayerThread(LPVOID lpThreadParamete
             break;
         }
     }
-    DebugPrint(TH_LOG_BGM_THREAD_EXIT);
+    utils::DebugPrint(TH_LOG_BGM_THREAD_EXIT);
     return 0;
 }
 
@@ -979,5 +978,5 @@ void SoundPlayer::PushCommand(AudioOpcode opcode, i32 arg1, const char *arg2)
         break;
     }
     // STRING: TH07 0x00495ce0
-    DebugPrint("Sound Que Add %d\r\n", opcode);
+    utils::DebugPrint("Sound Que Add %d\r\n", opcode);
 }

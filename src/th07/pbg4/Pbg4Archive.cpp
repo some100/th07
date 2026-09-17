@@ -9,9 +9,6 @@
 // GLOBAL: TH07 0x004b9e68
 Pbg4Archive g_UnusedPbg4ArchiveArray[20];
 
-// GLOBAL: TH07 0x00626258
-Pbg4Archive g_Pbg4Archive;
-
 // FUNCTION: TH07 0x0045f6b0
 Pbg4Archive::Pbg4Archive()
 {
@@ -32,7 +29,7 @@ bool Pbg4Archive::Load(const char *filename)
 {
     Release();
     // STRING: TH07 0x00495100
-    DebugPrint("info : %s open arcfile\r\n", filename);
+    utils::DebugPrint("info : %s open arcfile\r\n", filename);
 
     this->fileAbstraction = new Pbg4File();
 
@@ -50,7 +47,7 @@ bool Pbg4Archive::Load(const char *filename)
         }
     }
     // STRING: TH07 0x004950e8
-    DebugPrint("info : %s not found\r\n", filename);
+    utils::DebugPrint("info : %s not found\r\n", filename);
     Release();
     return false;
 }
@@ -59,7 +56,7 @@ bool Pbg4Archive::Load(const char *filename)
 void Pbg4Archive::Release()
 {
     // STRING: TH07 0x004950cc
-    DebugPrint("info : %s close arcfile\r\n", this->filename);
+    utils::DebugPrint("info : %s close arcfile\r\n", this->filename);
     if (this->filename)
     {
         GlobalFree(this->filename);
@@ -123,7 +120,7 @@ u8 *Pbg4Archive::ReadDecompressEntry(const char *filename, u8 *buf)
     return dstBuf;
 err:
     // STRING: TH07 0x004950b8
-    DebugPrint("info : %s error\r\n", this->filename);
+    utils::DebugPrint("info : %s error\r\n", this->filename);
     if (srcBuf)
     {
         GlobalFree(srcBuf);
@@ -272,7 +269,7 @@ err:
     }
     SAFE_DELETE(this->fileAbstraction);
     // STRING: TH07 0x00495084
-    DebugPrint(TH_ERR_PBG4_ARC_OPEN_FAIL, path);
+    utils::DebugPrint(TH_ERR_PBG4_ARC_OPEN_FAIL, path);
     while (false)
         ; // ZUN bloat: ??????
     return false;

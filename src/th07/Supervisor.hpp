@@ -5,30 +5,10 @@
 #include <d3dx8math.h>
 #include <dinput.h>
 
+#include "Global.hpp"
 #include "MidiOutput.hpp"
 #include "ZunBool.hpp"
 #include "inttypes.hpp"
-
-extern u16 g_CurFrameRawInput;
-extern u16 g_CurFrameGameInput;
-extern u16 g_LastFrameRawInput;
-extern u16 g_LastFrameGameInput;
-extern u16 g_IsEighthFrameOfHeldInput;
-extern u16 g_NumOfFramesInputsWereHeld;
-
-struct ControllerMapping
-{
-    i16 shootButton;
-    i16 bombButton;
-    i16 focusButton;
-    i16 menuButton;
-    i16 upButton;
-    i16 downButton;
-    i16 leftButton;
-    i16 rightButton;
-    i16 skipButton;
-};
-extern ControllerMapping g_ControllerMapping;
 
 enum MusicMode
 {
@@ -133,7 +113,6 @@ struct Supervisor
     static i32 CheckVSync();
     static void DrawFpsCounter(i32 param_1);
     i32 FadeOutMusic(f32 musicFadeFrames);
-    static void StopMidiTimer(MidiTimer *timer);
     HRESULT DisableFog();
     HRESULT EnableFog();
     i32 LoadAudio(i32 idx, const char *path);
@@ -246,6 +225,124 @@ C_ASSERT(sizeof(Supervisor) == 0x2d0);
 extern Supervisor g_Supervisor;
 
 #define NUKE_SUPERVISOR() memset(&g_Supervisor, -1, sizeof(g_Supervisor))
+
+struct ZunTimer
+{
+    i32 previous;
+    f32 subFrame;
+    i32 current;
+
+    ZunTimer()
+    {
+        this->Initialize();
+    }
+
+    void Initialize()
+    {
+        this->current = 0;
+        this->previous = -999;
+        this->subFrame = 0.0f;
+    }
+
+    void SetCurrent(i32 value)
+    {
+        this->current = value;
+        this->subFrame = 0.0f;
+        this->previous = -999;
+    }
+
+    i32 Tick()
+    {
+        this->previous = this->current;
+        g_Supervisor.TickTimer(&this->current, &this->subFrame);
+        return this->current;
+    }
+
+    i32 GetCurrent()
+    {
+        return this->current;
+    }
+
+    f32 AsFloat()
+    {
+        return (f32)this->current + this->subFrame;
+    }
+
+    void operator=(i32 current)
+    {
+        this->current = current;
+        this->subFrame = 0.0f;
+        this->previous = -999;
+    }
+
+    void operator++(int)
+    {
+        this->Tick();
+    }
+
+    void operator--(int)
+    {
+        this->Decrement(1);
+    }
+
+    void operator+=(i32 value)
+    {
+        this->Increment(value);
+    }
+
+    void operator-=(i32 value)
+    {
+        this->Decrement(value);
+    }
+
+    i32 operator==(i32 value)
+    {
+        return this->current == value;
+    }
+
+    i32 operator!=(i32 value)
+    {
+        return this->current != value;
+    }
+
+    i32 operator<(i32 value)
+    {
+        return this->current < value;
+    }
+
+    i32 operator<=(i32 value)
+    {
+        return this->current <= value;
+    }
+
+    i32 operator>(i32 value)
+    {
+        return this->current > value;
+    }
+
+    i32 operator>=(i32 value)
+    {
+        return this->current >= value;
+    }
+
+    i32 operator%(i32 value)
+    {
+        return this->current % value;
+    }
+
+    i32 HasTicked()
+    {
+        return this->current != this->previous;
+    }
+
+    i32 HasTickedAndIsEq(i32 value)
+    {
+        return this->current != this->previous && this->current == value;
+    }
+
+    void Decrement(i32 value);
+    void Increment(i32 value);
+};
 
 inline ZunBool IsInitialStageLoad()
 {

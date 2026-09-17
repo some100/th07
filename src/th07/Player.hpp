@@ -1,9 +1,9 @@
 #pragma once
 
 #include "AnmManager.hpp"
-#include "Chain.hpp"
 #include "EffectManager.hpp"
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "ZunMath.hpp"
 #include "inttypes.hpp"
 
@@ -122,26 +122,6 @@ struct PlayerBombInfo
 
 struct PlayerBullet
 {
-    f32 *GetPosX()
-    {
-        return &this->pos.x;
-    }
-
-    f32 *GetPosY()
-    {
-        return &this->pos.y;
-    }
-
-    f32 *GetVmPosX()
-    {
-        return &this->vm.pos.x;
-    }
-
-    f32 *GetVmPosY()
-    {
-        return &this->vm.pos.y;
-    }
-
     AnmVm vm;
     Float3 pos;
     Float3 posHistory[16];
@@ -236,16 +216,6 @@ struct Player
         topLeft->y = center->y - size->y * 0.5f;
         bottomRight->x = center->x + size->x * 0.5f;
         bottomRight->y = center->y + size->y * 0.5f;
-    }
-
-    f32 *GetPosX()
-    {
-        return &this->pos.x;
-    }
-
-    f32 *GetPosY()
-    {
-        return &this->pos.y;
     }
 
     void SetFocusEffect(Effect *effect)

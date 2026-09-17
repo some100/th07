@@ -4,18 +4,14 @@
 
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
-#include "Chain.hpp"
-#include "Controller.hpp"
 #include "EclManager.hpp"
 #include "EnemyManager.hpp"
-#include "GameErrorContext.hpp"
+#include "Global.hpp"
 #include "Gui.hpp"
 #include "Player.hpp"
-#include "Rng.hpp"
 #include "SoundPlayer.hpp"
 #include "Stage.hpp"
 #include "Supervisor.hpp"
-#include "ZunMemory.hpp"
 #include "ZunResult.hpp"
 #include "dxutil.hpp"
 #include "i18n.hpp"
@@ -506,11 +502,11 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
 
         size = g_Rng.GetRandomU32InRange(65535) + 16;
         arg->tmpBuffer = malloc(size);
-        arg->defaultCfg = new GameConfiguration;
-        arg->globals = new ZunGlobals;
+        arg->defaultCfg = ZUN_NEW(GameConfiguration, "");
+        arg->globals = ZUN_NEW(ZunGlobals, "");
         InitializeRngAndCsum();
         *arg->defaultCfg = g_Supervisor.cfg;
-        ZunMemory::Free(arg->tmpBuffer);
+        ZUN_FREE(arg->tmpBuffer);
         arg->powerItemCountForScore = 0;
         arg->cherry = arg->globals->cherryStart;
         arg->cherryPlus = arg->globals->cherryStart;
@@ -802,7 +798,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
     g_GameManager.slowModeSlowActive = 0;
     Supervisor::DrawFpsCounter(0);
     // STRING: TH07 0x00497e08
-    Supervisor::DebugPrint2("random seed %d %d\r\n", (u32)g_Rng.seed,
+    utils::DebugPrint2("random seed %d %d\r\n", (u32)g_Rng.seed,
                             g_Rng.GetGenCount());
     return ZUN_SUCCESS;
 }

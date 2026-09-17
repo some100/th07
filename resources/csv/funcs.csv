@@ -1,6 +1,6 @@
 address|name|type
 00401000|D3DXMatrixIdentity|function
-004010b0|ZunTimer::NextTick|function
+004010b0|ZunTimer::Tick|function
 004010f0|AnmVmBase::Initialize|function
 00401170|AnmVm::AnmVm|function
 004011b0|AnmVmBase::AnmVmBase|function
@@ -312,8 +312,8 @@ address|name|type
 00431870|Rng::GetRandomU16|function
 004318d0|Rng::GetRandomU32|function
 00431900|Rng::GetRandomFloat|function
-00431930|utils::AddNormalizeAngle|function
-004319b0|utils::Rotate|function
+00431930|AddNormalizeAngle|function
+004319b0|Rotate|function
 00431a0f|TextHelper::TextHelper|function
 00431a4b|TextHelper::~TextHelper|function
 00431a5c|TextHelper::ReleaseBuffer|function
@@ -381,9 +381,9 @@ address|name|type
 00436f50|MidiOutput::ProcessMsg|function
 004377f0|MidiOutput::FadeOutSetVolume|function
 004378b0|DummyMidiTimer::OnTimerElapsed|function
-004378d0|MidiTimer::StartTimerDefault|function
+004378d0|MidiTimer::StartTimer|function
 004378f0|Supervisor::StopMidiTimer|function
-00437903|Supervisor::DebugPrint2|function
+00437903|utils::DebugPrint2|function
 00437908|Supervisor::CheckTiming|function
 00437c39|AnmManager::ReleaseVertexBuffer|function
 00437c70|Supervisor::OnUpdate|function

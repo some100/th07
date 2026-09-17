@@ -6,9 +6,9 @@
 #include "EffectManager.hpp"
 #include "EnemyManager.hpp"
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "Gui.hpp"
 #include "Player.hpp"
-#include "Rng.hpp"
 #include "SoundPlayer.hpp"
 #include "utils.hpp"
 

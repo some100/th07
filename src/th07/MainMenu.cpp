@@ -5,16 +5,13 @@
 
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
-#include "Chain.hpp"
-#include "Controller.hpp"
-#include "FileSystem.hpp"
-#include "GameErrorContext.hpp"
+
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "ReplayManager.hpp"
 #include "ScreenEffect.hpp"
 #include "SoundPlayer.hpp"
 #include "Supervisor.hpp"
-#include "ZunMemory.hpp"
 #include "ZunResult.hpp"
 #include "dxutil.hpp"
 #include "i18n.hpp"
@@ -213,7 +210,7 @@ u32 MainMenu::OnUpdatePreInput()
         if (this->vmCount == 0)
         {
             this->vmCount = 164;
-            this->vms = new AnmVm[this->vmCount];
+            this->vms = ZUN_NEW_ARRAY(AnmVm, this->vmCount, "SprtInf");
             g_AnmManager->ExecuteVmsAnms(this->vms, ANM_OFFSET_TITLE, this->vmCount);
         }
         g_AnmManager->SetInterruptActiveVms(this->vms, this->vmCount, 2);
@@ -295,7 +292,7 @@ u32 MainMenu::OnUpdatePreInput()
                 ReplayManager::ValidateReplayData(this->currentReplay, g_LastFileSize);
             if (!this->currentReplay)
             {
-                Supervisor::DebugPrint2("error : Demo Play is not ready\r\n");
+                utils::DebugPrint2("error : Demo Play is not ready\r\n");
                 this->demoFramesCount = 0;
             }
             else
@@ -314,7 +311,7 @@ u32 MainMenu::OnUpdatePreInput()
                 }
 
                 g_GameManager.currentStage = i;
-                ZunMemory::Free(this->currentReplay);
+                ZUN_FREE(this->currentReplay);
                 this->currentReplay = NULL;
                 g_Supervisor.curState = SUPERVISOR_STATE_GAMEMANAGER;
                 g_GameManager.replayStage = 0;
@@ -590,7 +587,7 @@ u32 MainMenu::OnUpdateOptionsMenu()
         goto LAB_00456e08;
     }
 
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_LEFT))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_LEFT))
     {
         switch (this->cursor)
         {
@@ -674,7 +671,7 @@ u32 MainMenu::OnUpdateOptionsMenu()
     }
 
 skip_left_sound:
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_RIGHT))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_RIGHT))
     {
         switch (this->cursor)
         {
@@ -1990,7 +1987,7 @@ u32 MainMenu::OnUpdateSelectReplay()
                     // STRING: TH07 0x00496460
                     sprintf(this->replayLabels[local_10], "No.%.2d", i + 1);
                     local_10++;
-                    free(file);
+                    ZUN_FREE(file);
                 }
             }
             // STRING: TH07 0x00495674
@@ -2020,7 +2017,7 @@ u32 MainMenu::OnUpdateSelectReplay()
                                     local_194.cFileName);
                             // STRING: TH07 0x00495650
                             sprintf(this->replayLabels[local_10], "User ");
-                            free(file);
+                            ZUN_FREE(file);
                             local_10++;
                         }
                         if (FindNextFileA(local_c, &local_194) == 0)
@@ -2046,7 +2043,7 @@ u32 MainMenu::OnUpdateSelectReplay()
         MoveCursorVertical(this->replayFilesNum);
         if (this->replayFilesNum > 15)
         {
-            if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_LEFT))
+            if (WAS_PRESSED_SCROLLING(TH_BUTTON_LEFT))
             {
                 this->cursor = this->cursor - 15;
                 if (this->cursor < 0)
@@ -2055,7 +2052,7 @@ u32 MainMenu::OnUpdateSelectReplay()
                 }
                 g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
             }
-            if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_RIGHT))
+            if (WAS_PRESSED_SCROLLING(TH_BUTTON_RIGHT))
             {
                 this->cursor = this->cursor + 15;
                 if (this->cursor >= this->replayFilesNum)
@@ -2161,7 +2158,7 @@ u32 MainMenu::OnUpdateSelectReplay()
         }
         if (WAS_PRESSED_RAW(TH_BUTTON_RETURNMENU))
         {
-            ZunMemory::Free(this->currentReplay);
+            ZUN_FREE(this->currentReplay);
             this->currentReplay = NULL;
             this->menuSubState = 1;
             this->stateTimer = 0;
@@ -2188,7 +2185,7 @@ u32 MainMenu::OnUpdateSelectReplay()
             g_GameManager.character = this->currentReplay->data.shotType / 2;
             g_GameManager.shotType = this->currentReplay->data.shotType % 2;
             g_GameManager.shotTypeAndCharacter = this->currentReplay->data.shotType;
-            ZunMemory::Free(this->currentReplay);
+            ZUN_FREE(this->currentReplay);
             this->currentReplay = NULL;
             g_GameManager.currentStage =
                 g_GameManager.difficulty >= DIFF_PHANTASM ? EXTRASTAGE
@@ -2410,7 +2407,7 @@ i32 MainMenu::MoveCursorVertical(i32 max)
     {
         return 0;
     }
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_UP))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_UP))
     {
         this->cursor--;
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
@@ -2424,7 +2421,7 @@ i32 MainMenu::MoveCursorVertical(i32 max)
         }
         return -1;
     }
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_DOWN))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_DOWN))
     {
         this->cursor++;
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
@@ -2448,7 +2445,7 @@ i32 MainMenu::MoveCursorHorizontal(i32 max)
     {
         return 0;
     }
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_LEFT))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_LEFT))
     {
         this->cursor = this->cursor - 1;
         if (this->cursor < 0)
@@ -2458,7 +2455,7 @@ i32 MainMenu::MoveCursorHorizontal(i32 max)
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
         return -1;
     }
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_RIGHT))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_RIGHT))
     {
         this->cursor++;
         if (this->cursor >= max)
@@ -2528,9 +2525,9 @@ ZunResult MainMenu::ActualAddedCallback()
     ScoreDat *local_8;
 
     SAFE_DELETE(g_GameManager.defaultCfg);
-    g_GameManager.defaultCfg = new GameConfiguration;
+    g_GameManager.defaultCfg = ZUN_NEW(GameConfiguration, "");
     SAFE_DELETE(g_GameManager.globals);
-    g_GameManager.globals = new ZunGlobals;
+    g_GameManager.globals = ZUN_NEW(ZunGlobals, "");
     g_Supervisor.effectiveFramerateMultiplier = 1.0f;
     if (g_GameManager.replay)
     {
@@ -2713,8 +2710,7 @@ ZunResult MainMenu::DeletedCallback(MainMenu *arg)
     g_Chain.Cut(arg->drawChain);
     arg->drawChain = NULL;
     arg->Release();
-    delete arg;
-    arg = NULL;
+    ZUN_DELETE(arg);
 
     return ZUN_SUCCESS;
 }
@@ -2722,7 +2718,7 @@ ZunResult MainMenu::DeletedCallback(MainMenu *arg)
 // FUNCTION: TH07 0x0045c5d0
 ZunResult MainMenu::RegisterChain(u32 param_1)
 {
-    MainMenu *mgr = new MainMenu;
+    MainMenu *mgr = ZUN_NEW(MainMenu, "TitleInf");
 
     // ZUN bloat: memset it twice just to be nice
     memset(mgr, 0, sizeof(MainMenu));

@@ -15,14 +15,3 @@ union AnyArg {
     i8 c[4];
     u8 b[4];
 };
-
-namespace utils
-{
-f32 AddNormalizeAngle(f32 a, f32 b);
-void Rotate(Float3 *out, Float3 *point, f32 angle);
-
-inline f32 NormalizeAngle(f32 a)
-{
-    return AddNormalizeAngle(a, 0.0f);
-}
-} // namespace utils

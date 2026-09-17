@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Supervisor.hpp"
 #include "ZunResult.hpp"
-#include "ZunTimer.hpp"
 #include "inttypes.hpp"
 #include "utils.hpp"
 

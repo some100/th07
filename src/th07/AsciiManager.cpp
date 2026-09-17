@@ -5,8 +5,7 @@
 #include "AsciiManager.hpp"
 #include "AnmIdx.hpp"
 #include "AnmManager.hpp"
-#include "Chain.hpp"
-#include "Controller.hpp"
+#include "Global.hpp"
 #include "Gui.hpp"
 #include "Player.hpp"
 #include "SoundPlayer.hpp"
@@ -54,7 +53,7 @@ u32 AsciiManager::OnUpdate(AsciiManager *arg)
             }
 
             curPopup->pos.y -= 0.5f * g_Supervisor.effectiveFramerateMultiplier;
-            curPopup->timer.NextTick();
+            curPopup->timer++;
             if (curPopup->timer > 60)
             {
                 curPopup->isInUse = 0;

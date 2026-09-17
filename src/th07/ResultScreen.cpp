@@ -6,11 +6,8 @@
 
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
-#include "Chain.hpp"
-#include "Controller.hpp"
-#include "FileSystem.hpp"
 #include "GameManager.hpp"
-#include "Rng.hpp"
+#include "Global.hpp"
 #include "SoundPlayer.hpp"
 #include "ZunResult.hpp"
 #include "i18n.hpp"
@@ -84,7 +81,7 @@ i32 ResultScreen::LinkScore(ScoreListNode *prevNode, Hscr *hscr)
         scoresAmount++;
     }
     nextNode = prevNode->next;
-    prevNode->next = (ScoreListNode *)ZunMemory::Alloc2(sizeof(ScoreListNode));
+    prevNode->next = (ScoreListNode *)ZUN_ALLOC_WEIRD(sizeof(ScoreListNode));
     prevNode->next->prev = prevNode;
     prevNode = prevNode->next;
     prevNode->data = hscr;
@@ -101,7 +98,7 @@ void ResultScreen::FreeAllScores(ScoreListNode *scores)
     while (scores)
     {
         next = scores->next;
-        free(scores);
+        ZUN_FREE(scores);
         scores = next;
     }
 }
@@ -125,17 +122,17 @@ ScoreDat *ResultScreen::OpenScore(const char *path)
     i32 isTh7k;
     Vrsm *parsedVrsm;
 
-    Supervisor::DebugPrint2("info : score load\r\n");
+    utils::DebugPrint2("info : score load\r\n");
     scoreData = (ScoreDat *)FileSystem::OpenFile(path, 1);
     if (!scoreData)
     {
     RECREATE_SCORE:
-        Supervisor::DebugPrint2("info : score recreate\r\n");
+        utils::DebugPrint2("info : score recreate\r\n");
         if (scoreData)
         {
-            free(scoreData);
+            ZUN_FREE(scoreData);
         }
-        scoreData = (ScoreDat *)ZunMemory::Alloc2(sizeof(ScoreDat));
+        scoreData = (ScoreDat *)ZUN_ALLOC_WEIRD(sizeof(ScoreDat));
         scoreData->dataOffset = sizeof(ScoreDat);
         scoreData->fileLength = sizeof(ScoreDat);
         goto INIT_SCORES;
@@ -143,8 +140,8 @@ ScoreDat *ResultScreen::OpenScore(const char *path)
 
     if (g_LastFileSize < sizeof(ScoreDat))
     {
-        Supervisor::DebugPrint2("warning : score.dat size is short\r\n");
-        free(scoreData);
+        utils::DebugPrint2("warning : score.dat size is short\r\n");
+        ZUN_FREE(scoreData);
         goto RECREATE_SCORE;
     }
 
@@ -169,28 +166,28 @@ ScoreDat *ResultScreen::OpenScore(const char *path)
 
     if (scoreData->csum != checksum)
     {
-        Supervisor::DebugPrint2("warning : score.dat chksum error\r\n");
+        utils::DebugPrint2("warning : score.dat chksum error\r\n");
         goto RECREATE_SCORE;
     }
 
     if (scoreData->dataOffset != sizeof(ScoreDat))
     {
-        Supervisor::DebugPrint2("warning : header size is mismatch\r\n");
+        utils::DebugPrint2("warning : header size is mismatch\r\n");
         goto RECREATE_SCORE;
     }
 
     if (scoreData->magic != 11)
     {
-        Supervisor::DebugPrint2("warning : score.dat version mismatch\r\n");
+        utils::DebugPrint2("warning : score.dat version mismatch\r\n");
         goto RECREATE_SCORE;
     }
 
-    uncompressedData = (ScoreDat *)ZunMemory::Alloc2(0xa001c);
+    uncompressedData = (ScoreDat *)ZUN_ALLOC_WEIRD(0xa001c);
     memcpy(uncompressedData, scoreData, sizeof(ScoreDat));
     Lzss::Decompress(
         (u8 *)scoreData + sizeof(ScoreDat), scoreData->srcLen,
         (u8 *)uncompressedData + sizeof(ScoreDat), scoreData->dstLen);
-    free(scoreData);
+    ZUN_FREE(scoreData);
     scoreData = uncompressedData;
 
     cursor = scoreData->fileLength;
@@ -215,14 +212,14 @@ ScoreDat *ResultScreen::OpenScore(const char *path)
                         parsedVrsm->exeSize,
                         parsedVrsm->exeChecksum) != ZUN_SUCCESS)
                 {
-                    Supervisor::DebugPrint2("warning : score.dat exesumcheck error\r\n");
+                    utils::DebugPrint2("warning : score.dat exesumcheck error\r\n");
                     goto RECREATE_SCORE;
                 }
             }
         }
         if (chunk->th7kLen == 0)
         {
-            Supervisor::DebugPrint2("warning : score.dat chapter size is ZERO\r\n");
+            utils::DebugPrint2("warning : score.dat chapter size is ZERO\r\n");
             goto RECREATE_SCORE;
         }
         cursor -= chunk->th7kLen;
@@ -231,12 +228,12 @@ ScoreDat *ResultScreen::OpenScore(const char *path)
 
     if (!isTh7k || parsedTh7k->version != 1)
     {
-        Supervisor::DebugPrint2("warning : score.dat version mismatch\r\n");
+        utils::DebugPrint2("warning : score.dat version mismatch\r\n");
         goto RECREATE_SCORE;
     }
 
 INIT_SCORES:
-    scoreData->scores = (ScoreListNode *)ZunMemory::Alloc2(sizeof(ScoreListNode));
+    scoreData->scores = (ScoreListNode *)ZUN_ALLOC_WEIRD(sizeof(ScoreListNode));
     scoreData->scores->next = NULL;
     scoreData->scores->data = NULL;
     scoreData->scores->prev = NULL;
@@ -476,8 +473,8 @@ ZunResult ResultScreen::ParsePlst(ScoreDat *scoreDat, Plst *outPlst)
 void ResultScreen::ReleaseScoreDat(ScoreDat *scoreDat)
 {
     FreeAllScores(scoreDat->scores);
-    ZunMemory::Free(scoreDat->scores);
-    free(scoreDat);
+    ZUN_FREE(scoreDat->scores);
+    ZUN_FREE(scoreDat);
 }
 
 #pragma var_order(i, characterSlot, fileBuffer, sizeOfFile,                  \
@@ -509,7 +506,7 @@ void ResultScreen::WriteScore()
 
     sizeOfFile = 0;
 
-    fileBuffer = (u8 *)ZunMemory::Alloc2(0xa0000);
+    fileBuffer = (u8 *)ZUN_ALLOC_WEIRD(0xa0000);
 
     memcpy(fileBuffer + sizeOfFile, this->scoreDat, sizeof(ScoreDat));
     sizeOfFile += sizeof(ScoreDat);
@@ -665,13 +662,13 @@ void ResultScreen::WriteScore()
         remainingSize--;
     }
     FileSystem::WriteDataToFile("score.dat", fileBuffer, sizeOfFile);
-    free(fileBuffer);
+    ZUN_FREE(fileBuffer);
 }
 
 // FUNCTION: TH07 0x00445a57
 i32 ResultScreen::MoveCursor(ResultScreen *screen, i32 max)
 {
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_UP))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_UP))
     {
         screen->cursor--;
         if (screen->cursor < 0)
@@ -681,7 +678,7 @@ i32 ResultScreen::MoveCursor(ResultScreen *screen, i32 max)
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
         return -1;
     }
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_DOWN))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_DOWN))
     {
         screen->cursor = screen->cursor + 1;
         if (screen->cursor >= max)
@@ -697,7 +694,7 @@ i32 ResultScreen::MoveCursor(ResultScreen *screen, i32 max)
 // FUNCTION: TH07 0x00445b56
 i32 ResultScreen::MoveCursor2(ResultScreen *screen, i32 max)
 {
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_UP))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_UP))
     {
         screen->spellcardListPage--;
         if (screen->spellcardListPage < 0)
@@ -707,7 +704,7 @@ i32 ResultScreen::MoveCursor2(ResultScreen *screen, i32 max)
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
         return -1;
     }
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_DOWN))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_DOWN))
     {
         screen->spellcardListPage = screen->spellcardListPage + 1;
         if (screen->spellcardListPage >= max)
@@ -723,7 +720,7 @@ i32 ResultScreen::MoveCursor2(ResultScreen *screen, i32 max)
 // FUNCTION: TH07 0x00445c55
 i32 ResultScreen::MoveCursorHorizontally(ResultScreen *screen, i32 max)
 {
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_LEFT))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_LEFT))
     {
         screen->cursor--;
         if (screen->cursor < 0)
@@ -733,7 +730,7 @@ i32 ResultScreen::MoveCursorHorizontally(ResultScreen *screen, i32 max)
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
         return -1;
     }
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_RIGHT))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_RIGHT))
     {
         screen->cursor = screen->cursor + 1;
         if (screen->cursor >= max)
@@ -1201,7 +1198,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
     {
         return ZUN_SUCCESS;
     }
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_UP))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_UP))
     {
     WEIRD_ASS_LOOP_WITH_GOTO:
         this->selectedChar = this->selectedChar - 16;
@@ -1215,7 +1212,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
     }
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_DOWN))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_DOWN))
     {
     WEIRD_ASS_LOOP_WITH_GOTO_2:
         this->selectedChar = this->selectedChar + 16;
@@ -1229,7 +1226,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
     }
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_LEFT))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_LEFT))
     {
     WEIRD_ASS_LOOP_WITH_GOTO_3:
         this->selectedChar--;
@@ -1247,7 +1244,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
     }
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_RIGHT))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_RIGHT))
     {
     WEIRD_ASS_LOOP_WITH_GOTO_4:
         this->selectedChar = this->selectedChar + 1;
@@ -1261,7 +1258,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
     }
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_SELECTMENU))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_SELECTMENU))
     {
         cursor = this->cursor >= 8 ? 7 : this->cursor;
         if (this->selectedChar < 94)
@@ -1287,7 +1284,7 @@ ZunResult ResultScreen::HandleResultKeyboard()
         }
         g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
     }
-    if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_RETURNMENU))
+    if (WAS_PRESSED_SCROLLING(TH_BUTTON_RETURNMENU))
     {
         cursor2 = this->cursor >= 8 ? 7 : this->cursor;
         if (this->cursor > 0)
@@ -1465,7 +1462,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                 if (replayFile)
                 {
                     this->replays[i] = *replayFile;
-                    free(replayFile);
+                    ZUN_FREE(replayFile);
                 }
             }
         }
@@ -1531,7 +1528,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
         {
             return ZUN_SUCCESS;
         }
-        if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_UP))
+        if (WAS_PRESSED_SCROLLING(TH_BUTTON_UP))
         {
         WEIRD_ASS_LOOP_WITH_GOTO:
             this->selectedChar = this->selectedChar - 16;
@@ -1545,7 +1542,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
             }
             g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
         }
-        if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_DOWN))
+        if (WAS_PRESSED_SCROLLING(TH_BUTTON_DOWN))
         {
         WEIRD_ASS_LOOP_WITH_GOTO_2:
             this->selectedChar = this->selectedChar + 16;
@@ -1559,7 +1556,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
             }
             g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
         }
-        if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_LEFT))
+        if (WAS_PRESSED_SCROLLING(TH_BUTTON_LEFT))
         {
         WEIRD_ASS_LOOP_WITH_GOTO_3:
             this->selectedChar--;
@@ -1577,7 +1574,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
             }
             g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
         }
-        if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_RIGHT))
+        if (WAS_PRESSED_SCROLLING(TH_BUTTON_RIGHT))
         {
         WEIRD_ASS_LOOP_WITH_GOTO_4:
             this->selectedChar = this->selectedChar + 1;
@@ -1591,7 +1588,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
             }
             g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
         }
-        if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_SELECTMENU))
+        if (WAS_PRESSED_SCROLLING(TH_BUTTON_SELECTMENU))
         {
             cursor = this->cursor >= 8 ? 7 : this->cursor;
             if (this->selectedChar < 94)
@@ -1626,7 +1623,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
             }
             g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
         }
-        if (WAS_PRESSED_RAW_AND_IS_EIGHTH(TH_BUTTON_RETURNMENU))
+        if (WAS_PRESSED_SCROLLING(TH_BUTTON_RETURNMENU))
         {
             cursor2 = this->cursor >= 8 ? 7 : this->cursor;
             if (this->cursor > 0)
@@ -2671,8 +2668,7 @@ ZunResult ResultScreen::DeletedCallback(ResultScreen *arg)
     g_Chain.Cut(arg->drawChain);
     arg->drawChain = NULL;
 
-    delete arg;
-    arg = NULL;
+    ZUN_DELETE(arg);
 
     return ZUN_SUCCESS;
 }
@@ -2680,10 +2676,10 @@ ZunResult ResultScreen::DeletedCallback(ResultScreen *arg)
 // FUNCTION: TH07 0x0044a302
 ZunResult ResultScreen::RegisterChain(u32 type)
 {
-    ResultScreen *resultScreen = new ResultScreen;
+    ResultScreen *resultScreen = ZUN_NEW(ResultScreen, "ResultSysInf");
 
     // STRING: TH07 0x0049635c
-    Supervisor::DebugPrint2("Stg.PlayTimeAll = %d\r\n",
+    utils::DebugPrint2("Stg.PlayTimeAll = %d\r\n",
                             g_GameManager.playTimeAll);
     if (type == 1)
     {

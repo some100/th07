@@ -5,12 +5,9 @@
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
 #include "BulletManager.hpp"
-#include "Chain.hpp"
-#include "Controller.hpp"
 #include "EnemyManager.hpp"
-#include "FileSystem.hpp"
-#include "GameErrorContext.hpp"
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "ItemManager.hpp"
 #include "Player.hpp"
 #include "SoundPlayer.hpp"
@@ -1092,7 +1089,7 @@ ZunResult GuiImpl::RunMsg()
         this->msg.curInstr = (MsgRawInstr *)((u8 *)&this->msg.curInstr->args +
                                              this->msg.curInstr->argsize);
     }
-    this->msg.timer.NextTick();
+    this->msg.timer++;
 SKIP_TIME_INCREMENT:
     g_AnmManager->ExecuteScript(&this->msg.portraits[0]);
     g_AnmManager->ExecuteScript(&this->msg.portraits[1]);
@@ -1345,7 +1342,7 @@ void Gui::UpdateGui()
         {
             this->impl->bonusScore.displayArg = GUI_DISPLAY_HIDDEN;
         }
-        ++this->impl->bonusScore.timer;
+        this->impl->bonusScore.timer++;
     }
     if (this->impl->statusPopup.displayArg != GUI_DISPLAY_HIDDEN)
     {
@@ -1365,7 +1362,7 @@ void Gui::UpdateGui()
         {
             this->impl->statusPopup.displayArg = GUI_DISPLAY_HIDDEN;
         }
-        ++this->impl->statusPopup.timer;
+        this->impl->statusPopup.timer++;
     }
     if (this->impl->spellCardBonus.displayArg != GUI_DISPLAY_HIDDEN)
     {
@@ -1373,7 +1370,7 @@ void Gui::UpdateGui()
         {
             this->impl->spellCardBonus.displayArg = GUI_DISPLAY_HIDDEN;
         }
-        ++this->impl->spellCardBonus.timer;
+        this->impl->spellCardBonus.timer++;
     }
     if (this->impl->finishedStage == 1)
     {
@@ -1940,8 +1937,7 @@ ZunResult Gui::DeletedCallback(Gui *arg)
         g_AnmManager->ReleaseAnm(ANM_FILE_FACE_1);
         g_AnmManager->ReleaseAnm(ANM_FILE_FACE_2);
         g_AnmManager->ReleaseAnm(ANM_FILE_FRONT_1);
-        delete arg->impl;
-        arg->impl = NULL;
+        ZUN_DELETE(arg->impl);
     }
     return ZUN_SUCCESS;
 }
@@ -1954,7 +1950,7 @@ ZunResult Gui::RegisterChain()
     if (IsInitialStageLoad())
     {
         memset(mgr, 0, sizeof(Gui));
-        mgr->impl = new GuiImpl;
+        mgr->impl = ZUN_NEW(GuiImpl, "FRScreenImplInf");
     }
 
     g_GuiCalcChain.callback = (ChainCallback)OnUpdate;

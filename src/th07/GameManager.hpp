@@ -2,46 +2,11 @@
 
 #include <d3d8.h>
 
+#include "Global.hpp"
 #include "ResultScreen.hpp"
-#include "Rng.hpp"
 #include "Supervisor.hpp"
 #include "ZunResult.hpp"
 #include "inttypes.hpp"
-
-struct ZunGlobals
-{
-    u32 guiScore;
-    u32 score;
-    u32 guiScoreDifference;
-    u32 highScore;
-    u8 highScoreNumContinues;
-    // pad 3
-    i32 grazeInStage;
-    i32 grazeInTotal;
-    i32 spellCardsCaptured;
-    u8 numRetries;
-    // pad 3
-    i32 pointItemsCollectedThisStage;
-    i32 pointItemsCollectedForExtend;
-    i32 extendsFromPointItems;
-    i32 nextNeededPointItemsForExtend;
-    i32 rng1[7];
-    f32 deaths; // ZUN quirk: Why the fuck are these stored as floats
-    f32 rngFloat1[2];
-    f32 livesRemaining;
-    f32 rngFloat2[2];
-    f32 bombsRemaining;
-    f32 bombsUsed;
-    f32 rngFloat3[3];
-    f32 currentPower;
-    f32 rngFloat4[2];
-    i32 cherryStart;
-    i32 rng2[8];
-    u32 curCsum;
-    i32 csumAsSum;
-    i32 csumData[5];
-};
-C_ASSERT(sizeof(ZunGlobals) == 0xc8);
 
 struct Rank
 {

@@ -1,11 +1,9 @@
 #include "Stage.hpp"
 
 #include "AnmManager.hpp"
-#include "Chain.hpp"
 #include "EffectManager.hpp"
-#include "FileSystem.hpp"
-#include "GameErrorContext.hpp"
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "Gui.hpp"
 #include "ScreenEffect.hpp"
 #include "Supervisor.hpp"
@@ -878,7 +876,7 @@ ZunResult Stage::LoadStageData(const char *stdPath)
         this->objects[i] =
             (StdRawObject *)((i32)this->objects[i] + (i32)this->stdData);
     }
-    this->quadVms = (AnmVm *)ZunMemory::Alloc(this->quadCount * sizeof(AnmVm));
+    this->quadVms = (AnmVm *)ZUN_ALLOC(this->quadCount * sizeof(AnmVm));
     for (i = 0, vmIdx = 0; i < this->objectsCount; i++)
     {
         obj = this->objects[i];

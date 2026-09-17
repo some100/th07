@@ -3,10 +3,10 @@
 #include <windows.h>
 
 #include "AnmIdx.hpp"
+#include "Supervisor.hpp"
 #include "ZunColor.hpp"
 #include "ZunMath.hpp"
 #include "ZunResult.hpp"
-#include "ZunTimer.hpp"
 #include "dxutil.hpp"
 #include "utils.hpp"
 

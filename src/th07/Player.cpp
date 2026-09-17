@@ -3,14 +3,11 @@
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
 #include "BombData.hpp"
-#include "Chain.hpp"
-#include "Controller.hpp"
 #include "EffectManager.hpp"
 #include "EnemyManager.hpp"
-#include "FileSystem.hpp"
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "Gui.hpp"
-#include "Rng.hpp"
 #include "SoundPlayer.hpp"
 #include "Stage.hpp"
 #include "ZunMath.hpp"
@@ -98,8 +95,8 @@ void DefaultFireBulletCallback(Player *player, PlayerBullet *bullet,
     {
         bullet->pos = player->optionsPosition[shtEntry->option - 1];
     }
-    *bullet->GetPosX() += shtEntry->offset.x;
-    *bullet->GetPosY() += shtEntry->offset.y;
+    bullet->pos[0] += shtEntry->offset.x;
+    bullet->pos[1] += shtEntry->offset.y;
     bullet->pos.z = 0.495f;
     bullet->hitboxSize.x = shtEntry->hitboxSize.x;
     bullet->hitboxSize.y = shtEntry->hitboxSize.y;
@@ -213,12 +210,12 @@ i32 ShtData::FireHomingBullet(Player *player, PlayerBullet *bullet,
         DefaultFireBulletCallback(player, bullet, shtEntry);
         if (player->sakuyaTargetPosition.x > -100.0f)
         {
-            angle = utils::AddNormalizeAngle(
+            angle = AddNormalizeAngle(
                 atan2f(player->sakuyaTargetPosition.y - bullet->pos.y,
                        player->sakuyaTargetPosition.x - bullet->pos.x),
                 shtEntry->angle + ZUN_PI / 2.0f);
             speed = shtEntry->speed * 1.5f;
-            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, speed);
+            bullet->velocity.FromAngleMagnitude(angle, speed);
             bullet->angle = angle;
         }
         return 1;
@@ -238,10 +235,10 @@ i32 ShtData::FireRotatingOrbBullet(Player *player, PlayerBullet *bullet,
     if (fireTime % shtEntry->fireInterval == shtEntry->fireOffset)
     {
         DefaultFireBulletCallback(player, bullet, shtEntry);
-        angle = utils::AddNormalizeAngle(player->optionAngle,
-                                         shtEntry->angle + ZUN_PI / 2.0f);
+        angle = AddNormalizeAngle(player->optionAngle,
+                                  shtEntry->angle + ZUN_PI / 2.0f);
         speed = shtEntry->speed;
-        (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, speed);
+        bullet->velocity.FromAngleMagnitude(angle, speed);
         bullet->angle = angle;
 
         return 1;
@@ -480,8 +477,8 @@ i32 ShtData::DrawBulletWithTrail(Player *player, PlayerBullet *bullet)
 
         bullet->vm.color.bytes.a = origAlpha - origAlpha * i / bullet->trailLength;
 
-        *bullet->GetVmPosX() += g_GameManager.arcadeRegionTopLeftPos.x;
-        *bullet->GetVmPosY() += g_GameManager.arcadeRegionTopLeftPos.y;
+        bullet->vm.pos[0] += g_GameManager.arcadeRegionTopLeftPos.x;
+        bullet->vm.pos[1] += g_GameManager.arcadeRegionTopLeftPos.y;
 
         g_AnmManager->Draw(&bullet->vm);
     }
@@ -517,42 +514,42 @@ i32 ShtData::OnMissileHit(Player *player, PlayerBullet *bullet,
         case 1089:
             bullet->hitboxSize.x = 32.0f;
             bullet->hitboxSize.y = 32.0f;
-            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 4.0f);
+            bullet->velocity.FromAngleMagnitude(angle, 4.0f);
             break;
         case 1090:
             bullet->hitboxSize.x = 42.0;
             bullet->hitboxSize.y = 42.0;
-            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 4.0f);
+            bullet->velocity.FromAngleMagnitude(angle, 4.0f);
             break;
         case 1091:
             bullet->hitboxSize.x = 48.0f;
             bullet->hitboxSize.y = 48.0f;
-            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 4.0f);
+            bullet->velocity.FromAngleMagnitude(angle, 4.0f);
             break;
         case 1092:
             bullet->hitboxSize.x = 56.0f;
             bullet->hitboxSize.y = 56.0f;
-            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 4.0f);
+            bullet->velocity.FromAngleMagnitude(angle, 4.0f);
             break;
         case 1093:
             bullet->hitboxSize.x = 48.0f;
             bullet->hitboxSize.y = 48.0f;
-            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 6.0f);
+            bullet->velocity.FromAngleMagnitude(angle, 6.0f);
             break;
         case 1094:
             bullet->hitboxSize.x = 64.0f;
             bullet->hitboxSize.y = 64.0f;
-            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 6.0f);
+            bullet->velocity.FromAngleMagnitude(angle, 6.0f);
             break;
         case 1095:
             bullet->hitboxSize.x = 80.0f;
             bullet->hitboxSize.y = 80.0f;
-            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 6.0f);
+            bullet->velocity.FromAngleMagnitude(angle, 6.0f);
             break;
         case 1096:
             bullet->hitboxSize.x = 96.0f;
             bullet->hitboxSize.y = 96.0f;
-            (*(Float3 *)&bullet->velocity).FromAngleMagnitude(angle, 6.0f);
+            bullet->velocity.FromAngleMagnitude(angle, 6.0f);
         }
     }
     if (bullet->timer.GetCurrent() % 6 == 0)
@@ -707,9 +704,9 @@ void Player::UpdateShots()
             continue;
         }
 
-        *bullet->GetPosX() +=
+        bullet->pos[0] +=
             bullet->velocity.x * g_Supervisor.effectiveFramerateMultiplier;
-        *bullet->GetPosY() +=
+        bullet->pos[1] +=
             bullet->velocity.y * g_Supervisor.effectiveFramerateMultiplier;
         if (bullet->bulletState2 != 4 && bullet->bulletState2 != 5 &&
             !g_GameManager.IsInBounds(bullet->pos.x, bullet->pos.y,
@@ -743,7 +740,7 @@ void Player::DrawBullets()
 
         if (bullet->vm.autoRotate)
         {
-            f32 angle = utils::AddNormalizeAngle(bullet->angle, ZUN_PI / 2.0f);
+            f32 angle = AddNormalizeAngle(bullet->angle, ZUN_PI / 2.0f);
             bullet->vm.rotation.z = angle;
             bullet->vm.updateRotation = 1;
         }
@@ -774,7 +771,7 @@ void Player::DrawBulletExplosions()
 
         if (bullet->vm.autoRotate)
         {
-            f32 angle = utils::AddNormalizeAngle(bullet->angle, ZUN_PI / 2.0f);
+            f32 angle = AddNormalizeAngle(bullet->angle, ZUN_PI / 2.0f);
             bullet->vm.rotation.z = angle;
             bullet->vm.updateRotation = 1;
         }
@@ -1112,7 +1109,7 @@ i32 Player::CalcLaserHitbox(Float3 *center, Float3 *size,
     Float3 laserBottomRight;
 
     laserTopLeft = this->pos - *origin;
-    utils::Rotate(&laserBottomRight, &laserTopLeft, rotation);
+    Rotate(&laserBottomRight, &laserTopLeft, rotation);
     laserBottomRight.z = 0;
     laserTopLeft = laserBottomRight + *origin;
     playerRelativeTopLeft = laserTopLeft - this->hitboxSize;
@@ -1390,8 +1387,8 @@ i32 Player::HandlePlayerInputs()
     this->velocity.y = verticalSpeed *
                        this->verticalMovementSpeedMultiplierDuringBomb *
                        g_Supervisor.effectiveFramerateMultiplier;
-    *GetPosX() += this->velocity.x;
-    *GetPosY() += this->velocity.y;
+    this->pos[0] += this->velocity.x;
+    this->pos[1] += this->velocity.y;
 
     if (this->pos.x < g_GameManager.playerMovementAreaTopLeftPos.x)
     {

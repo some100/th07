@@ -2,8 +2,8 @@
 
 #include "AnmManager.hpp"
 #include "GameManager.hpp"
+#include "Global.hpp"
 #include "Player.hpp"
-#include "Rng.hpp"
 #include "Stage.hpp"
 #include "ZunMath.hpp"
 #include "ZunResult.hpp"
@@ -303,7 +303,7 @@ i32 EffectManager::UpdateWeatherPhysics(Effect *effect)
         return 0;
     }
 
-    effect->vm.SetRotationZ(utils::AddNormalizeAngle(effect->vm.rotation.z, effect->vm.rotation.x));
+    effect->vm.SetRotationZ(AddNormalizeAngle(effect->vm.rotation.z, effect->vm.rotation.x));
     effect->vm.updateRotation = 1;
     if (effect->pos.z >= 0.0f)
     {
@@ -472,7 +472,7 @@ i32 EffectManager::InitRandomDirWithSpeed(Effect *effect)
     // double intentionally used here, strangely
     if (effect->custom.x > -990.0)
     {
-        angle = utils::AddNormalizeAngle(effect->custom.x, 0.0f);
+        angle = AddNormalizeAngle(effect->custom.x, 0.0f);
     }
     else
     {

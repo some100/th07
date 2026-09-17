@@ -3,8 +3,8 @@
 #include <d3d8.h>
 
 #include "AnmManager.hpp"
+#include "Supervisor.hpp"
 #include "ZunResult.hpp"
-#include "ZunTimer.hpp"
 #include "inttypes.hpp"
 
 enum PauseMenuState
