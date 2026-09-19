@@ -544,7 +544,7 @@ void Player::SpawnBullets(Player *player, u32 timer)
 
     level = !player->isFocus ? player->shooterData->levels : player->shooterDataFocus->levels;
 
-    while ((i32)g_GameManager.globals->currentPower >= level->requiredPower)
+    while (g_GameManager.GetPower() >= level->requiredPower)
     {
         level++;
     }
@@ -1686,7 +1686,7 @@ i32 Player::UpdateDeath()
             g_GameManager.CheckGameIntegrityOnDeath(1);
             if ((i32)g_GameManager.globals->livesRemaining > 0)
             {
-                if ((i32)g_GameManager.globals->currentPower <= 16)
+                if (g_GameManager.GetPower() <= 16)
                 {
                     g_GameManager.globals->currentPower = 0.0f;
                     g_GameManager.RegenerateGameIntegrityCsum();
@@ -1695,12 +1695,12 @@ i32 Player::UpdateDeath()
                 {
                     g_GameManager.AddCurrentPower(-16);
                 }
-                g_ItemManager.SpawnItem(&this->pos, ITEM_POWER_BIG, 2);
-                g_ItemManager.SpawnItem(&this->pos, ITEM_POWER_SMALL, 2);
-                g_ItemManager.SpawnItem(&this->pos, ITEM_POWER_SMALL, 2);
-                g_ItemManager.SpawnItem(&this->pos, ITEM_POWER_SMALL, 2);
-                g_ItemManager.SpawnItem(&this->pos, ITEM_POWER_SMALL, 2);
-                g_ItemManager.SpawnItem(&this->pos, ITEM_POWER_SMALL, 2);
+                g_ItemManager.SpawnItem(&this->pos, ITEM_POWER_BIG, ITEM_STATE_MOVE_RANDOM);
+                g_ItemManager.SpawnItem(&this->pos, ITEM_POWER_SMALL, ITEM_STATE_MOVE_RANDOM);
+                g_ItemManager.SpawnItem(&this->pos, ITEM_POWER_SMALL, ITEM_STATE_MOVE_RANDOM);
+                g_ItemManager.SpawnItem(&this->pos, ITEM_POWER_SMALL, ITEM_STATE_MOVE_RANDOM);
+                g_ItemManager.SpawnItem(&this->pos, ITEM_POWER_SMALL, ITEM_STATE_MOVE_RANDOM);
+                g_ItemManager.SpawnItem(&this->pos, ITEM_POWER_SMALL, ITEM_STATE_MOVE_RANDOM);
                 g_Gui.powerDisplayUpdateFrames = 2;
                 cherryPenalty = (f32)(g_GameManager.cherry - g_GameManager.globals->cherryStart) *
                                 g_Player.shooterData->cherryPenaltyMultiplier;
@@ -1724,11 +1724,11 @@ i32 Player::UpdateDeath()
             {
                 g_GameManager.globals->currentPower = 0.0f;
                 g_GameManager.RegenerateGameIntegrityCsum();
-                g_ItemManager.SpawnItem(&this->pos, ITEM_FULL_POWER, 2);
-                g_ItemManager.SpawnItem(&this->pos, ITEM_FULL_POWER, 2);
-                g_ItemManager.SpawnItem(&this->pos, ITEM_FULL_POWER, 2);
-                g_ItemManager.SpawnItem(&this->pos, ITEM_FULL_POWER, 2);
-                g_ItemManager.SpawnItem(&this->pos, ITEM_FULL_POWER, 2);
+                g_ItemManager.SpawnItem(&this->pos, ITEM_FULL_POWER, ITEM_STATE_MOVE_RANDOM);
+                g_ItemManager.SpawnItem(&this->pos, ITEM_FULL_POWER, ITEM_STATE_MOVE_RANDOM);
+                g_ItemManager.SpawnItem(&this->pos, ITEM_FULL_POWER, ITEM_STATE_MOVE_RANDOM);
+                g_ItemManager.SpawnItem(&this->pos, ITEM_FULL_POWER, ITEM_STATE_MOVE_RANDOM);
+                g_ItemManager.SpawnItem(&this->pos, ITEM_FULL_POWER, ITEM_STATE_MOVE_RANDOM);
                 g_Gui.powerDisplayUpdateFrames = 2;
             }
             g_GameManager.DecreaseSubrank(1600);
@@ -1802,7 +1802,7 @@ void Player::UpdateState()
     if (this->bulletGracePeriod != 0)
     {
         this->bulletGracePeriod--;
-        g_BulletManager.RemoveAllBullets(0);
+        g_BulletManager.RemoveAllBullets(ITEM_STATE_DEFAULT);
     }
     if (this->playerState == PLAYER_STATE_INVULNERABLE)
     {

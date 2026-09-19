@@ -6,6 +6,7 @@
 #include "EclManager.hpp"
 #include "GameManager.hpp"
 #include "Gui.hpp"
+#include "ItemManager.hpp"
 #include "Player.hpp"
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
@@ -1431,7 +1432,7 @@ i32 EnemyManager::RemoveAllEnemies(i32 scoreMax, i32 scoreMin)
         enemy->life = 0;
         if (enemy->isProjectile)
         {
-            g_ItemManager.SpawnItem(&enemy->pos, ITEM_POINT_BULLET, 1);
+            g_ItemManager.SpawnItem(&enemy->pos, ITEM_POINT_BULLET, ITEM_STATE_AUTOCOLLECT);
             g_AsciiManager.CreatePopup1(&enemy->pos, popupScore,
                                         popupScore >= scoreMax ? 0xffffff00 : 0xffffffff);
             totalScore += popupScore;
@@ -1444,7 +1445,8 @@ i32 EnemyManager::RemoveAllEnemies(i32 scoreMax, i32 scoreMin)
             {
                 for (j = 0; j < enemy->trailCount; j += 6)
                 {
-                    g_ItemManager.SpawnItem(&enemy->enemyHistory[j].pos, ITEM_POINT_BULLET, 1);
+                    g_ItemManager.SpawnItem(&enemy->enemyHistory[j].pos, ITEM_POINT_BULLET,
+                                            ITEM_STATE_AUTOCOLLECT);
                     g_AsciiManager.CreatePopup1(&enemy->enemyHistory[j].pos, popupScore,
                                                 popupScore >= scoreMax ? 0xffffff00 : 0xffffffff);
                     totalScore += popupScore;
