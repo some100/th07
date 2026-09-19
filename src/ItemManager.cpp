@@ -13,9 +13,9 @@
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
 
-i32 g_FullPowerScoreBonus[30] = {10,   20,   30,   40,   50,   60,   70,   80,    90,    100,
-                                 200,  300,  400,  500,  600,  700,  800,  900,   1000,  2000,
-                                 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000};
+i32 g_FullPowerScoreBonus[31] = {
+    10,  20,  30,   40,   50,   60,   70,   80,   90,   100,  200,  300,   400,   500,   600,  700,
+    800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000, 51200};
 
 i32 g_PowerLevels[9] = {8, 16, 32, 48, 64, 80, 96, 128, 999};
 
@@ -54,7 +54,7 @@ Item *ItemManager::SpawnItem(ZunVec3 *heading, i32 itemType, i32 state)
     i32 i;
 
     item = &this->items[this->nextIndex];
-    if ((i32)g_GameManager.globals->currentPower >= 128)
+    if (g_GameManager.GetPower() >= 128)
     {
         if (itemType == ITEM_POWER_SMALL || itemType == ITEM_POWER_BIG)
         {
@@ -87,23 +87,23 @@ Item *ItemManager::SpawnItem(ZunVec3 *heading, i32 itemType, i32 state)
         item->velocity.x = 0.0f;
         item->velocity.y = -2.2f;
         item->velocity.z = 0.0f;
-        item->itemType = (u8)itemType;
-        item->state = (u8)state;
+        item->itemType = itemType;
+        item->state = state;
         item->timer = 0;
-        if (state == 2)
+        if (state == ITEM_STATE_MOVE_RANDOM)
         {
             item->targetPos.x = g_Rng.GetRandomFloatInRange(288.0f) + 48.0f;
             item->targetPos.y = g_Rng.GetRandomFloatInRange(192.0f) - 64.0f;
             item->targetPos.z = 0.0f;
             item->velocity = item->pos;
         }
-        else if (state == 3)
+        else if (state == ITEM_STATE_AUTOCOLLECT2)
         {
-            item->state = 1;
+            item->state = ITEM_STATE_AUTOCOLLECT;
         }
-        else if (state == 4)
+        else if (state == ITEM_STATE_DEFAULT2)
         {
-            item->state = 0;
+            item->state = ITEM_STATE_DEFAULT;
         }
         g_AnmManager->SetAnmIdxAndExecuteScript(&item->sprite,
                                                 itemType + ANM_SCRIPT_BULLETS_ITEM_SPAWN_ARRAY);
@@ -150,7 +150,7 @@ void ItemManager::OnUpdate()
         item->prevPos = item->pos;
 
         this->activeItemCount++;
-        if (item->state == 2)
+        if (item->state == ITEM_STATE_MOVE_RANDOM)
         {
             if (item->timer < 60)
             {
@@ -162,23 +162,22 @@ void ItemManager::OnUpdate()
             else if (item->timer == 60)
             {
                 item->velocity = ZunVec3(0.0f, 0.0f, 0.0f);
-                item->state = 0;
+                item->state = ITEM_STATE_DEFAULT;
             }
         }
         else
         {
-            if (item->state == 1 ||
-                ((128.0 <= (f64)(i32)g_GameManager.globals->currentPower ||
-                  g_GameManager.difficulty >= 4) &&
+            if (item->state == ITEM_STATE_AUTOCOLLECT ||
+                ((128.0 <= (f64)g_GameManager.GetPower() || g_GameManager.difficulty >= 4) &&
                  g_Player.pos.y < g_Player.shooterData->pocY) ||
                 g_Player.hasBorder == 1)
             {
                 if (g_Player.playerState != 1)
                 {
                     playerAngle = g_Player.AngleToPlayer(&item->pos);
-                    AngleToVector(&item->velocity, playerAngle,
-                                  g_Player.shooterData->itemCollectSpeed);
-                    item->state = 1;
+                    item->velocity.FromAngleMagnitude(playerAngle,
+                                                      g_Player.shooterData->itemCollectSpeed);
+                    item->state = ITEM_STATE_AUTOCOLLECT;
                     if (g_Player.hasBorder == 1)
                     {
                         item->autoCollect = 1;
@@ -187,7 +186,7 @@ void ItemManager::OnUpdate()
                 else
                 {
                     item->velocity.y = -0.5f;
-                    item->state = 0;
+                    item->state = ITEM_STATE_DEFAULT;
                 }
             }
             else
@@ -222,12 +221,13 @@ void ItemManager::OnUpdate()
             switch (item->itemType)
             {
             case ITEM_POWER_SMALL:
-                if ((i32)g_GameManager.globals->currentPower >= 128)
+                if (g_GameManager.GetPower() >= 128)
                 {
                     g_GameManager.powerItemCountForScore++;
-                    if ((u32)g_GameManager.powerItemCountForScore >= 31)
+                    if (g_GameManager.powerItemCountForScore >= ARRAY_SIZE(g_FullPowerScoreBonus))
                     {
-                        g_GameManager.powerItemCountForScore = 30;
+                        g_GameManager.powerItemCountForScore =
+                            ARRAY_SIZE(g_FullPowerScoreBonus) - 1;
                     }
                     itemScore = g_FullPowerScoreBonus[g_GameManager.powerItemCountForScore];
                     g_GameManager.AddScore(itemScore);
@@ -237,27 +237,27 @@ void ItemManager::OnUpdate()
                 else
                 {
                     j = 0;
-                    while ((i32)g_GameManager.globals->currentPower >= g_PowerLevels[j])
+                    while (g_GameManager.GetPower() >= g_PowerLevels[j])
                     {
                         j++;
                     }
                     prevPowerIdx = j;
                     g_GameManager.powerItemCountForScore = 0;
                     g_GameManager.AddCurrentPower(1);
-                    if ((i32)g_GameManager.globals->currentPower >= 128)
+                    if (g_GameManager.GetPower() >= 128)
                     {
                         g_GameManager.globals->currentPower = 128.0f;
                         g_GameManager.RegenerateGameIntegrityCsum();
                         if (!g_EnemyManager.spellcardInfo.isActive)
                         {
-                            g_BulletManager.RemoveAllBullets(1);
+                            g_BulletManager.RemoveAllBullets(ITEM_STATE_AUTOCOLLECT);
                         }
                         g_Gui.ShowStatusPopup(0, 1);
                         this->DespawnAllItems(i);
                     }
                     g_GameManager.AddScore(10);
                     g_Gui.powerDisplayUpdateFrames = 2;
-                    while ((i32)g_GameManager.globals->currentPower >= g_PowerLevels[j])
+                    while (g_GameManager.GetPower() >= g_PowerLevels[j])
                     {
                         j++;
                     }
@@ -357,7 +357,7 @@ void ItemManager::OnUpdate()
                 }
                 break;
             case ITEM_POWER_BIG:
-                if ((i32)g_GameManager.globals->currentPower >= 128)
+                if (g_GameManager.GetPower() >= 128)
                 {
                     g_AsciiManager.CreatePopup1(&item->pos, itemScore,
                                                 itemScore >= 1000 ? 0xffffff00 : 0xffffffff);
@@ -365,26 +365,26 @@ void ItemManager::OnUpdate()
                 else
                 {
                     k = 0;
-                    while ((i32)g_GameManager.globals->currentPower >= g_PowerLevels[k])
+                    while (g_GameManager.GetPower() >= g_PowerLevels[k])
                     {
                         k++;
                     }
                     prevPowerLevel2 = k;
                     g_GameManager.AddCurrentPower(8);
-                    if ((i32)g_GameManager.globals->currentPower >= 128)
+                    if (g_GameManager.GetPower() >= 128)
                     {
                         g_GameManager.globals->currentPower = 128.0f;
                         g_GameManager.RegenerateGameIntegrityCsum();
                         if (!g_EnemyManager.spellcardInfo.isActive)
                         {
-                            g_BulletManager.RemoveAllBullets(1);
+                            g_BulletManager.RemoveAllBullets(ITEM_STATE_AUTOCOLLECT);
                         }
                         g_Gui.ShowStatusPopup(0, 1);
                         this->DespawnAllItems(i);
                     }
                     g_Gui.powerDisplayUpdateFrames = 2;
                     g_GameManager.AddScore(10);
-                    while ((i32)g_GameManager.globals->currentPower >= g_PowerLevels[k])
+                    while (g_GameManager.GetPower() >= g_PowerLevels[k])
                     {
                         k++;
                     }
@@ -411,9 +411,9 @@ void ItemManager::OnUpdate()
                 g_GameManager.ExtendFromPoints();
                 break;
             case ITEM_FULL_POWER:
-                if ((i32)g_GameManager.globals->currentPower < 128)
+                if (g_GameManager.GetPower() < 128)
                 {
-                    g_BulletManager.RemoveAllBullets(1);
+                    g_BulletManager.RemoveAllBullets(ITEM_STATE_AUTOCOLLECT);
                     g_Gui.ShowStatusPopup(0, 1);
                     g_SoundPlayer.PlaySoundByIdx(SOUND_POWERUP, 0);
                     g_AsciiManager.CreatePopup1(&item->pos, -1, 0xffffc0a0);
@@ -531,7 +531,7 @@ void ItemManager::RemoveAllItems()
             continue;
         }
 
-        item->state = 1;
+        item->state = ITEM_STATE_AUTOCOLLECT;
         item->velocity = ZunVec3(0.0f, -0.5f, 0.0f);
     }
 }
@@ -577,9 +577,9 @@ void ItemManager::ActivateAllItems()
             continue;
         }
 
-        if (item->state == 1)
+        if (item->state == ITEM_STATE_AUTOCOLLECT)
         {
-            item->state = 0;
+            item->state = ITEM_STATE_DEFAULT;
             item->velocity.x = 0.0f;
             item->velocity.y = -0.9f;
             item->velocity.z = 0.0f;

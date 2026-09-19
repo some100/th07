@@ -720,7 +720,7 @@ void GuiImpl::MsgRead(i32 msgIdx)
     this->msg.textColorsB[0] = 0;
     this->msg.textColorsB[1] = 0;
     this->msg.dialogueSkippable = 1;
-    g_BulletManager.RemoveAllBullets(1);
+    g_BulletManager.RemoveAllBullets(ITEM_STATE_AUTOCOLLECT);
     g_EnemyManager.RemoveAllEnemies(0, 0);
     g_ItemManager.RemoveAllItems();
     if (msgIdx % 10 == 0)
@@ -1514,14 +1514,14 @@ void Gui::DrawGameScene()
     {
         VertexDiffuseXyzrhw powerBarVerts[4];
 
-        if ((i32)g_GameManager.globals->currentPower > 0)
+        if (g_GameManager.GetPower() > 0)
         {
             powerBarVerts[0].pos = ZunVec3(496.0f, 144.0f, 0.1f);
-            powerBarVerts[1].pos = ZunVec3(
-                (f32)((i32)g_GameManager.globals->currentPower + 0x1f0) + 0.0f, 144.0f, 0.1f);
+            powerBarVerts[1].pos =
+                ZunVec3((f32)(g_GameManager.GetPower() + 496) + 0.0f, 144.0f, 0.1f);
             powerBarVerts[2].pos = ZunVec3(496.0f, 160.0f, 0.1f);
-            powerBarVerts[3].pos = ZunVec3(
-                (f32)((i32)g_GameManager.globals->currentPower + 0x1f0) + 0.0f, 160.0f, 0.1f);
+            powerBarVerts[3].pos =
+                ZunVec3((f32)(g_GameManager.GetPower() + 496) + 0.0f, 160.0f, 0.1f);
             powerBarVerts[0].diffuse.color = powerBarVerts[2].diffuse.color = 0xe0e0e0ff;
             powerBarVerts[1].diffuse.color = powerBarVerts[3].diffuse.color = 0x80e0e0ff;
 
@@ -1544,11 +1544,10 @@ void Gui::DrawGameScene()
         }
 
         ZunVec3 pos;
-        if ((i32)g_GameManager.globals->currentPower < 128)
+        if (g_GameManager.GetPower() < 128)
         {
             pos = ZunVec3(496.0f, 144.0f, 0.0f);
-            AsciiManager::AddFormatText(&g_AsciiManager, &pos, "%d",
-                                        (i32)g_GameManager.globals->currentPower);
+            AsciiManager::AddFormatText(&g_AsciiManager, &pos, "%d", g_GameManager.GetPower());
         }
         else
         {
