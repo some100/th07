@@ -19,6 +19,15 @@ enum ItemType
     ITEM_NO_ITEM = 255,
 };
 
+enum ItemState
+{
+    ITEM_STATE_DEFAULT,
+    ITEM_STATE_AUTOCOLLECT,
+    ITEM_STATE_MOVE_RANDOM,
+    ITEM_STATE_AUTOCOLLECT2,
+    ITEM_STATE_DEFAULT2,
+};
+
 struct Item
 {
     ZunBool IsBelowPoc()
@@ -57,7 +66,7 @@ C_ASSERT(sizeof(Item) == 0x288);
 struct ItemManager
 {
     void ActivateAllItems();
-    void DespawnAllItems(i32 param_1);
+    void DespawnAllItems(i32 skipItemIdx);
     void OnUpdate();
     void OnDraw();
     void RemoveAllItems();

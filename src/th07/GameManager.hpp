@@ -78,6 +78,11 @@ struct GameManager
         this->globals->rngFloat3[2] = g_Rng.GetRandomFloatInRange(100000.0f) + 6543.0f;
     }
 
+    i32 GetPower()
+    {
+        return this->globals->currentPower;
+    }
+
     // FUNCTION: TH07 0x0043b750
     void CheckGameIntegrityOnDeath(i32 amount)
     {

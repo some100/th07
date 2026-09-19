@@ -98,6 +98,7 @@ skip_init:
     SendMessageA(GetDlgItem(hWnd, IDC_REDRAW_EVERY_FRAME), BM_SETCHECK, g_Config.redrawEveryFrame, 0);
     SendMessageA(GetDlgItem(hWnd, IDC_PRELOAD_BGM), BM_SETCHECK, g_Config.preloadBgm, 0);
     SendMessageA(GetDlgItem(hWnd, IDC_DISABLE_VSYNC), BM_SETCHECK, g_Config.disableVsync, 0);
+
     if (!g_Config.windowed)
     {
         SendMessageA(GetDlgItem(hWnd, IDC_FULLSCREEN), BM_SETCHECK, BST_CHECKED, 0);
@@ -106,6 +107,7 @@ skip_init:
     {
         SendMessageA(GetDlgItem(hWnd, IDC_WINDOWED), BM_SETCHECK, BST_CHECKED, 0);
     }
+
     if (g_Config.frameskipConfig == 0)
     {
         SendMessageA(GetDlgItem(hWnd, IDC_FRAMESKIP_NONE), BM_SETCHECK, BST_CHECKED, 0);
@@ -118,6 +120,7 @@ skip_init:
     {
         SendMessageA(GetDlgItem(hWnd, IDC_FRAMESKIP_THIRD), BM_SETCHECK, BST_CHECKED, 0);
     }
+
     if (!g_Config.colorMode16bit)
     {
         SendMessageA(GetDlgItem(hWnd, IDC_COLOR_MODE_32BIT), BM_SETCHECK, BST_CHECKED, 0);
@@ -126,6 +129,7 @@ skip_init:
     {
         SendMessageA(GetDlgItem(hWnd, IDC_COLOR_MODE_16BIT), BM_SETCHECK, BST_CHECKED, 0);
     }
+
     if (g_Config.effectQuality == QUALITY_WORST)
     {
         SendMessageA(GetDlgItem(hWnd, IDC_QUALITY_WORST), BM_SETCHECK, BST_CHECKED, 0);
@@ -138,6 +142,7 @@ skip_init:
     {
         SendMessageA(GetDlgItem(hWnd, IDC_QUALITY_BEAUTIFUL), BM_SETCHECK, BST_CHECKED, 0);
     }
+
     sprintf(text, "%d", (i32)g_Config.padAxisX);
     SetDlgItemTextA(hWnd, IDC_JOY_DEADZONE_X, text);
     sprintf(text, "%d", (i32)g_Config.padAxisY);
