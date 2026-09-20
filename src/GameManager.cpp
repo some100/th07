@@ -854,7 +854,7 @@ void GameManager::CutChain()
 {
     g_Chain.Cut(&g_GameManagerCalcChain);
     g_Chain.Cut(&g_GameManagerDrawChain);
-    if (1000000000 <= g_GameManager.globals->score)
+    if (g_GameManager.globals->score >= 1000000000)
     {
         g_GameManager.globals->score = 999999999;
     }
@@ -864,7 +864,7 @@ void GameManager::CutChain()
 void GameManager::IncreaseSubrank(i32 amount)
 {
     this->subrank += amount;
-    while (100 <= this->subrank)
+    while (this->subrank >= 100)
     {
         this->rank.rank++;
         this->subrank -= 100;
@@ -897,7 +897,7 @@ void GameManager::AddCherryPlus(i32 amount)
     {
         this->cherry = this->cherryMax;
     }
-    if (0 < amount && g_Player.hasBorder == BORDER_NONE)
+    if (amount > 0 && g_Player.borderState == BORDER_NONE)
     {
         this->cherryPlus = this->cherryPlus + amount;
         if (this->cherryPlus >= this->globals->cherryStart + 50000)

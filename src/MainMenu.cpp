@@ -2409,7 +2409,7 @@ ZunResult MainMenu::ActualAddedCallback()
             g_CurFrameRawInput = Controller::GetInput();
             g_Supervisor.gfxDevice->EndFrame();
             g_Supervisor.gfxDevice->SwapBuffers();
-            if (120 <= frameCount && frameCount < 840 &&
+            if (frameCount >= 120 && frameCount < 840 &&
                 WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU | TH_BUTTON_BOMB))
             {
                 frameCount = 840;
