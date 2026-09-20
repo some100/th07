@@ -175,8 +175,8 @@ u32 MidiOutput::SkipVariableLength(u8 **curTrackDataCursor)
 
 MidiOutput::MidiOutput()
 {
-    /*i32 local_18;
-    i32 local_14;
+    /*i32 headerIdx;
+    i32 fileDataIdx;
 
     this->tracks = NULL;
     this->divisions = 0;
@@ -190,13 +190,13 @@ MidiOutput::MidiOutput()
     this->unused_2d8 = 0;
     this->fadeOutState = 0;
     this->fadeOutFlag = FALSE;
-    for (local_14 = 0; local_14 < ARRAY_SIZE_SIGNED(this->midiFileData); local_14 = local_14 + 1)
+    for (fileDataIdx = 0; fileDataIdx < ARRAY_SIZE_SIGNED(this->midiFileData); fileDataIdx++)
     {
-        this->midiFileData[local_14] = NULL;
+        this->midiFileData[fileDataIdx] = NULL;
     }
-    for (local_18 = 0; local_18 < ARRAY_SIZE_SIGNED(this->midiHeaders); local_18 = local_18 + 1)
+    for (headerIdx = 0; headerIdx < ARRAY_SIZE_SIGNED(this->midiHeaders); headerIdx++)
     {
-        this->midiHeaders[local_18] = NULL;
+        this->midiHeaders[headerIdx] = NULL;
     }
     this->fileIdx = -1;
     this->midiHeadersCursor = 0;*/

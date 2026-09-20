@@ -132,8 +132,8 @@ void ItemManager::OnUpdate()
     i32 i;
 
     item = this->items;
-    ZunVec3 local_20(g_Player.shooterData->itemCollectRadius,
-                     g_Player.shooterData->itemCollectRadius, 16.0f);
+    ZunVec3 grabItemSize(g_Player.shooterData->itemCollectRadius,
+                         g_Player.shooterData->itemCollectRadius, 16.0f);
     itemAcquired = FALSE;
     this->activeItemCount = 0;
     this->listTail = &this->listHead;
@@ -215,7 +215,7 @@ void ItemManager::OnUpdate()
             item->velocity.y = 3.0f;
         }
     check_collision:
-        if (g_Player.CalcItemBoxCollision(&item->pos, &local_20) != PLAYER_COLLISION_NONE)
+        if (g_Player.CalcItemBoxCollision(&item->pos, &grabItemSize) != PLAYER_COLLISION_NONE)
         {
             g_ReplayManager->replayEventFlags |= 0x40;
             switch (item->itemType)
@@ -590,7 +590,7 @@ void ItemManager::ActivateAllItems()
 void ItemManager::OnDraw()
 {
     Item *item;
-    i32 local_8;
+    i32 itemAlpha;
 
     item = this->listHead.next;
     while (item)
@@ -609,12 +609,12 @@ void ItemManager::OnDraw()
                 item->isOnscreen = 0;
                 item->sprite.zWriteDisable = 1;
             }
-            local_8 = 255 - (i32)((8.0f - item->pos.y) * 255.0f / 128.0f);
-            if (local_8 < 64)
+            itemAlpha = 255 - (i32)((8.0f - item->pos.y) * 255.0f / 128.0f);
+            if (itemAlpha < 64)
             {
-                local_8 = 64;
+                itemAlpha = 64;
             }
-            item->sprite.color.color = (item->sprite.color.color & 0xffffff) | local_8 << 24;
+            item->sprite.color.color = (item->sprite.color.color & 0xffffff) | itemAlpha << 24;
         }
         else
         {

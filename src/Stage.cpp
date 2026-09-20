@@ -797,7 +797,7 @@ ZunResult Stage::RegisterChain(i32 stage)
     g_StageCalcChain.addedCallback = (ChainLifecycleCallback)AddedCallback;
     g_StageCalcChain.deletedCallback = (ChainLifecycleCallback)DeletedCallback;
     g_StageCalcChain.arg = mgr;
-    if (g_Chain.AddToCalcChain(&g_StageCalcChain, 7))
+    if (g_Chain.AddToCalcChain(&g_StageCalcChain, CHAIN_PRIO_CALC_STAGE))
     {
         return ZUN_ERROR;
     }
@@ -806,12 +806,12 @@ ZunResult Stage::RegisterChain(i32 stage)
     g_StageOnDrawHighPrioChain.addedCallback = NULL;
     g_StageOnDrawHighPrioChain.deletedCallback = NULL;
     g_StageOnDrawHighPrioChain.arg = mgr;
-    g_Chain.AddToDrawChain(&g_StageOnDrawHighPrioChain, 3);
+    g_Chain.AddToDrawChain(&g_StageOnDrawHighPrioChain, CHAIN_PRIO_DRAW_STAGE_HIGH_PRIO);
     g_StageOnDrawLowPrioChain.callback = (ChainCallback)OnDrawLowPrio;
     g_StageOnDrawLowPrioChain.addedCallback = NULL;
     g_StageOnDrawLowPrioChain.deletedCallback = NULL;
     g_StageOnDrawLowPrioChain.arg = mgr;
-    g_Chain.AddToDrawChain(&g_StageOnDrawLowPrioChain, 4);
+    g_Chain.AddToDrawChain(&g_StageOnDrawLowPrioChain, CHAIN_PRIO_DRAW_STAGE_LOW_PRIO);
     return ZUN_SUCCESS;
 }
 

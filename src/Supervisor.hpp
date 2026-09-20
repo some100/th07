@@ -140,7 +140,7 @@ struct Supervisor
     ZunResult PlayAudio(const char *path);
     ZunResult PlayLoadedAudio(i32 idx);
     ZunResult SetupInput();
-    i32 SnapshotScreen(const char *filename);
+    i32 TakeSnapshot(const char *filename);
     ZunResult StopAudio();
     void TickTimer(i32 *frames, f32 *subFrames);
     void UpdateStartupTime();
@@ -215,8 +215,8 @@ struct Supervisor
     ZunBool fogEnabled;
     i32 exeChecksum;
     i32 exeSize;
-    i32 versionTableSize;
-    char *version;
+    i32 versionDataSize;
+    char *versionData;
 };
 
 extern Supervisor g_Supervisor;

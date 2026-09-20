@@ -146,7 +146,7 @@ struct GameManager
     static u32 OnUpdate(GameManager *arg);
     static u32 OnDraw(GameManager *arg);
 
-    static i32 ByteCsumAccumulator(u8 *param_1, i32 param_2);
+    static i32 CalcChecksum(u8 *address, i32 size);
     i32 ComputeGameIntegrityCsum();
 
     ZunBool HasReachedMaxClearsAnyDifficulty(i32 shotType);
@@ -222,7 +222,7 @@ struct GameManager
     i32 cherry;
     i32 cherryPlus;
     ZunBool phantasmUnlocked;
-    i32 playTimeAll; // ZUN name: PlayTimeAll
+    i32 totalPlayTime; // ZUN name: PlayTimeAll
     u32 bulletLagTime;
     i32 maxRetries;
     Rank rank;

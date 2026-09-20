@@ -203,7 +203,7 @@ ZunResult AsciiManager::RegisterChain()
     g_AsciiManagerCalcChain.deletedCallback = (ChainLifecycleCallback)DeletedCallback;
     g_AsciiManagerCalcChain.arg = mgr;
 
-    if (g_Chain.AddToCalcChain(&g_AsciiManagerCalcChain, 1))
+    if (g_Chain.AddToCalcChain(&g_AsciiManagerCalcChain, CHAIN_PRIO_CALC_ASCIIMANAGER))
     {
         return ZUN_ERROR;
     }
@@ -212,12 +212,12 @@ ZunResult AsciiManager::RegisterChain()
     g_AsciiManagerOnDrawMenusChain.addedCallback = NULL;
     g_AsciiManagerOnDrawMenusChain.deletedCallback = NULL;
     g_AsciiManagerOnDrawMenusChain.arg = mgr;
-    g_Chain.AddToDrawChain(&g_AsciiManagerOnDrawMenusChain, 16);
+    g_Chain.AddToDrawChain(&g_AsciiManagerOnDrawMenusChain, CHAIN_PRIO_DRAW_ASCIIMANAGER_MENUS);
     g_AsciiManagerOnDrawPopupsChain.callback = (ChainCallback)OnDrawPopups;
     g_AsciiManagerOnDrawPopupsChain.addedCallback = NULL;
     g_AsciiManagerOnDrawPopupsChain.deletedCallback = NULL;
     g_AsciiManagerOnDrawPopupsChain.arg = mgr;
-    g_Chain.AddToDrawChain(&g_AsciiManagerOnDrawPopupsChain, 11);
+    g_Chain.AddToDrawChain(&g_AsciiManagerOnDrawPopupsChain, CHAIN_PRIO_DRAW_ASCIIMANAGER_POPUPS);
     return ZUN_SUCCESS;
 }
 
@@ -839,9 +839,10 @@ void PauseMenu::OnDraw()
         g_Supervisor.gfxDevice->SetViewport(g_Supervisor.viewport);
         if (g_Supervisor.hasLockableBackbuffer && this->curState != PAUSE_MENU_STATE_INIT)
         {
-            AnmVm local_25c = this->menuBackground;
-            local_25c.zWriteDisable = 1;
-            g_AnmManager->DrawNoRotation(&local_25c);
+            // This is indeed an entire AnmVm on the stack
+            AnmVm menuBg = this->menuBackground;
+            menuBg.zWriteDisable = 1;
+            g_AnmManager->DrawNoRotation(&menuBg);
         }
         for (i = 0; i < ARRAY_SIZE_SIGNED(this->menuSprites); i++)
         {

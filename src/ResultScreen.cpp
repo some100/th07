@@ -1934,9 +1934,9 @@ ZunResult ResultScreen::DrawFinalStats()
         rankingProbably = 0.0f;
 
         clearPercent =
-            g_GameManager.difficulty < DIFF_EXTRA    ? (f32)g_GameManager.playTimeAll / 180621.0f
-            : g_GameManager.difficulty == DIFF_EXTRA ? (f32)g_GameManager.playTimeAll / 80000.0f
-                                                     : (f32)g_GameManager.playTimeAll / 85000.0f;
+            g_GameManager.difficulty < DIFF_EXTRA    ? (f32)g_GameManager.totalPlayTime / 180621.0f
+            : g_GameManager.difficulty == DIFF_EXTRA ? (f32)g_GameManager.totalPlayTime / 80000.0f
+                                                     : (f32)g_GameManager.totalPlayTime / 85000.0f;
 
         pos = vm->pos;
         pos.x += 210.0f;
@@ -2548,7 +2548,7 @@ ZunResult ResultScreen::DeletedCallback(ResultScreen *arg)
 ZunResult ResultScreen::RegisterChain(u32 type)
 {
     ResultScreen *resultScreen = new ResultScreen;
-    Supervisor::DebugPrint("Stg.PlayTimeAll = %d\r\n", g_GameManager.playTimeAll);
+    Supervisor::DebugPrint("Stg.PlayTimeAll = %d\r\n", g_GameManager.totalPlayTime);
     if (type == 1)
     {
         if (!g_GameManager.practice)
@@ -2570,14 +2570,14 @@ ZunResult ResultScreen::RegisterChain(u32 type)
     resultScreen->calcChain->addedCallback = (ChainLifecycleCallback)AddedCallback;
     resultScreen->calcChain->deletedCallback = (ChainLifecycleCallback)DeletedCallback;
     resultScreen->calcChain->arg = resultScreen;
-    if (g_Chain.AddToCalcChain(resultScreen->calcChain, 14))
+    if (g_Chain.AddToCalcChain(resultScreen->calcChain, CHAIN_PRIO_CALC_RESULTSCREEN))
     {
         return ZUN_ERROR;
     }
 
     resultScreen->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     resultScreen->drawChain->arg = resultScreen;
-    g_Chain.AddToDrawChain(resultScreen->drawChain, 13);
+    g_Chain.AddToDrawChain(resultScreen->drawChain, CHAIN_PRIO_DRAW_RESULTSCREEN);
 
     return ZUN_SUCCESS;
 }
