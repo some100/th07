@@ -203,9 +203,9 @@ ZunResult ReplayManager::AddedCallbackRecord(ReplayManager *arg)
         ZUN_FREE(arg->data->head.stageEndData[i].data);
     }
     arg->data->head.stageReplayData[i].data =
-        (StageReplayData *)ZUN_ALLOC_WEIRD(sizeof(StageReplayData));
+        (StageReplayData *)ZUN_ALLOC(sizeof(StageReplayData));
     arg->data->head.stageEndData[i].data =
-        (StageReplayData *)ZUN_ALLOC_WEIRD(sizeof(StageReplayData));
+        (StageReplayData *)ZUN_ALLOC(sizeof(StageReplayData));
 
     replayData = arg->data->head.stageReplayData[i].data;
     endData = arg->data->head.stageEndData[i].data;
@@ -588,7 +588,7 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
             {
                 // STRING: TH07 0x00496a80
                 utils::DebugPrint("info : Replay File write %s\r\n", filename);
-                replayData = (u8 *)ZUN_ALLOC_WEIRD(0x100000);
+                replayData = (u8 *)ZUN_ALLOC(0x100000);
                 replayCopy = *mgr->data;
                 StopRecording();
                 i = g_GameManager.currentStage - 1;
@@ -756,7 +756,7 @@ void ReplayManager::SaveReplay2(const char *filename)
         {
             // STRING: TH07 0x00496a2c
             utils::DebugPrint("info : Replay File rewrite %s\r\n", filename);
-            replayData = (u8 *)ZUN_ALLOC_WEIRD(0x100000);
+            replayData = (u8 *)ZUN_ALLOC(0x100000);
             replayCopy = *mgr->data;
             i = g_GameManager.currentStage - 1;
             if (i >= REPLAY_STAGE_COUNT) // PHANTASMSTAGE

@@ -537,7 +537,7 @@ void MidiOutput::ProcessMsg(MidiTrack *track)
                 UnprepareHeader(this->midiHeaders[this->midiHeadersCursor]);
             }
             pmh = this->midiHeaders[this->midiHeadersCursor] =
-                (MIDIHDR *)ZUN_ALLOC_WEIRD(sizeof(MIDIHDR));
+                (MIDIHDR *)ZUN_ALLOC(sizeof(MIDIHDR));
             curTrackLength = SkipVariableLength(&track->curTrackDataCursor);
             memset(pmh, 0, sizeof(MIDIHDR));
             pmh->lpData = (LPSTR)malloc(curTrackLength + 1);

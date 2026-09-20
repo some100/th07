@@ -81,7 +81,7 @@ i32 ResultScreen::LinkScore(ScoreListNode *prevNode, Hscr *hscr)
         scoresAmount++;
     }
     nextNode = prevNode->next;
-    prevNode->next = (ScoreListNode *)ZUN_ALLOC_WEIRD(sizeof(ScoreListNode));
+    prevNode->next = (ScoreListNode *)ZUN_ALLOC(sizeof(ScoreListNode));
     prevNode->next->prev = prevNode;
     prevNode = prevNode->next;
     prevNode->data = hscr;
@@ -132,7 +132,7 @@ ScoreDat *ResultScreen::OpenScore(const char *path)
         {
             ZUN_FREE(scoreData);
         }
-        scoreData = (ScoreDat *)ZUN_ALLOC_WEIRD(sizeof(ScoreDat));
+        scoreData = (ScoreDat *)ZUN_ALLOC(sizeof(ScoreDat));
         scoreData->dataOffset = sizeof(ScoreDat);
         scoreData->fileLength = sizeof(ScoreDat);
         goto INIT_SCORES;
@@ -182,7 +182,7 @@ ScoreDat *ResultScreen::OpenScore(const char *path)
         goto RECREATE_SCORE;
     }
 
-    uncompressedData = (ScoreDat *)ZUN_ALLOC_WEIRD(0xa001c);
+    uncompressedData = (ScoreDat *)ZUN_ALLOC(0xa001c);
     memcpy(uncompressedData, scoreData, sizeof(ScoreDat));
     Lzss::Decompress(
         (u8 *)scoreData + sizeof(ScoreDat), scoreData->srcLen,
@@ -233,7 +233,7 @@ ScoreDat *ResultScreen::OpenScore(const char *path)
     }
 
 INIT_SCORES:
-    scoreData->scores = (ScoreListNode *)ZUN_ALLOC_WEIRD(sizeof(ScoreListNode));
+    scoreData->scores = (ScoreListNode *)ZUN_ALLOC(sizeof(ScoreListNode));
     scoreData->scores->next = NULL;
     scoreData->scores->data = NULL;
     scoreData->scores->prev = NULL;
@@ -506,7 +506,7 @@ void ResultScreen::WriteScore()
 
     sizeOfFile = 0;
 
-    fileBuffer = (u8 *)ZUN_ALLOC_WEIRD(0xa0000);
+    fileBuffer = (u8 *)ZUN_ALLOC(0xa0000);
 
     memcpy(fileBuffer + sizeOfFile, this->scoreDat, sizeof(ScoreDat));
     sizeOfFile += sizeof(ScoreDat);

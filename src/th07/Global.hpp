@@ -27,7 +27,6 @@
     p = NULL;
 
 #define ZUN_ALLOC(size) g_ZunMemory.Alloc(size)
-#define ZUN_ALLOC_WEIRD(size) g_ZunMemory.AllocEvilFakeMatch(size)
 #define ZUN_FREE(p) g_ZunMemory.Free(p);
 
 namespace utils
@@ -284,15 +283,9 @@ class ZunMemory
     {
     }
 
-    void *Alloc(size_t size)
+    void *Alloc(i32 size)
     {
         return malloc(size);
-    }
-
-    void *AllocEvilFakeMatch(size_t size)
-    {
-        size_t ok = size;
-        return malloc(ok);
     }
 
     void Free(void *ptr)

@@ -1074,7 +1074,7 @@ i32 Supervisor::TakeSnapshot(const char *filename)
         g_GameErrorContext.Log(TH_LOG_16BIT_NOT_SUPPORTED);
         break;
     case D3DFMT_X8R8G8B8:
-        bitmapInfo = (BITMAPINFO *)ZUN_ALLOC_WEIRD(sizeof(BITMAPINFO));
+        bitmapInfo = (BITMAPINFO *)ZUN_ALLOC(sizeof(BITMAPINFO));
         if (!bitmapInfo)
         {
             g_GameErrorContext.Log(TH_LOG_BITMAP_ALLOC_FAIL);
