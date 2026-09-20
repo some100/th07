@@ -1097,7 +1097,7 @@ void Player::ScoreGraze(ZunVec3 *param_1)
         }
     }
     grazePos = (this->pos + *param_1) / 2.0f;
-    if (this->hasBorder == BORDER_ACTIVE)
+    if (this->borderState == BORDER_ACTIVE)
     {
         if (this->isFocus)
         {
@@ -1119,7 +1119,7 @@ void Player::ScoreGraze(ZunVec3 *param_1)
         g_EnemyManager.spellcardInfo.grazeBonusScore + 2500 +
         (g_GameManager.cherry - g_GameManager.globals->cherryStart) / 1500 * 20;
     g_GameManager.AddScore(2000);
-    if (this->hasBorder == BORDER_ACTIVE)
+    if (this->borderState == BORDER_ACTIVE)
     {
         if (this->isFocus)
         {
@@ -1590,7 +1590,7 @@ void Player::UpdateBombProjectiles()
 
 void Player::UpdateBorderAndBombState()
 {
-    if (this->hasBorder != BORDER_NONE && !this->bombInfo.isInUse &&
+    if (this->borderState != BORDER_NONE && !this->bombInfo.isInUse &&
         IS_PRESSED_GAME(TH_BUTTON_BOMB))
     {
         BreakBorder();
@@ -1599,7 +1599,7 @@ void Player::UpdateBorderAndBombState()
     }
     else
     {
-        if (this->hasBorder == BORDER_READY)
+        if (this->borderState == BORDER_READY)
         {
             ActivateBorder();
         }
@@ -1671,7 +1671,7 @@ i32 Player::UpdateDeath()
 
     if (this->respawnTimer != 0)
     {
-        if (this->hasBorder == BORDER_ACTIVE)
+        if (this->borderState == BORDER_ACTIVE)
         {
             BreakBorder();
             return 0;
@@ -1911,7 +1911,7 @@ void Player::BreakBorderNaturally()
     this->playerState = PLAYER_STATE_INVULNERABLE;
     this->invulnerabilityTimer = 40;
     this->borderInvulnerabilityTime = 40;
-    this->hasBorder = BORDER_NONE;
+    this->borderState = BORDER_NONE;
     if (this->borderEffect)
     {
         this->borderEffect->inUseFlag = 0;
@@ -1971,7 +1971,7 @@ void Player::ActivateBorder()
 
     if (this->bombInfo.isInUse || g_Gui.HasCurrentMsgIdx())
     {
-        this->hasBorder = BORDER_READY;
+        this->borderState = BORDER_READY;
         return;
     }
 
@@ -1979,7 +1979,7 @@ void Player::ActivateBorder()
     {
     case PLAYER_STATE_SPAWNING:
     case PLAYER_STATE_INVULNERABLE:
-        this->hasBorder = BORDER_READY;
+        this->borderState = BORDER_READY;
         break;
     case PLAYER_STATE_DEAD:
         if (this->respawnTimer != 0)
@@ -1988,12 +1988,12 @@ void Player::ActivateBorder()
             return;
         }
 
-        this->hasBorder = BORDER_READY;
+        this->borderState = BORDER_READY;
         break;
     default:
         this->invulnerabilityTimer = 540;
         this->borderTimer = this->invulnerabilityTimer;
-        this->hasBorder = BORDER_ACTIVE;
+        this->borderState = BORDER_ACTIVE;
         this->playerState = PLAYER_STATE_BORDER;
         if (this->borderEffect)
         {
@@ -2051,7 +2051,7 @@ void Player::BreakBorder()
     this->borderEffect = effect;
     g_EnemyManager.spellcardInfo.captureScore = 0;
     g_EnemyManager.spellcardInfo.isCapturing = 0;
-    this->hasBorder = BORDER_NONE;
+    this->borderState = BORDER_NONE;
     this->playerState = PLAYER_STATE_INVULNERABLE;
     this->invulnerabilityTimer = 40;
     this->borderInvulnerabilityTime = 40;

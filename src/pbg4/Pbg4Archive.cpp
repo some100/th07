@@ -141,7 +141,7 @@ Pbg4Entry *Pbg4Archive::FindEntry(const char *filename)
     }
 
     Pbg4Entry *entry = this->entries;
-    for (i32 i = this->numOfEntries; 0 < i; --i, ++entry)
+    for (i32 i = this->numOfEntries; i > 0; --i, ++entry)
     {
         if (SDL_strcasecmp(filename, entry->filename) == 0)
         {

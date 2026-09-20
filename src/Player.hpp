@@ -285,7 +285,7 @@ struct Player
     i8 optionState;
     i8 isFocus;
     u8 bombParticleTime;
-    i8 hasBorder;
+    i8 borderState;
     // pad 2
     ZunTimer focusMovementTimer;
     PlayerDirection playerDirection;

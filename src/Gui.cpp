@@ -772,7 +772,7 @@ ZunResult GuiImpl::RunMsg()
     {
         this->msg.timer = (u32)this->msg.curInstr->time;
     }
-    if (g_Player.hasBorder != BORDER_NONE)
+    if (g_Player.borderState != BORDER_NONE)
     {
         g_Player.BreakBorderNaturally();
     }
