@@ -1239,7 +1239,7 @@ void AsciiManager::DrawPopups()
 
         cherry = g_GameManager.cherryPlus - g_GameManager.globals->cherryStart;
 
-        if (g_Player.hasBorder)
+        if (g_Player.borderState != BORDER_NONE)
         {
             this->cherryDigit.color.bytes.r = 255;
             divisor = cherry % 4000;
@@ -1285,7 +1285,7 @@ void AsciiManager::DrawPopups()
         this->cherryDigit.scale.x = 1.0f;
         this->cherryDigit.scale.y = 1.0f;
 
-        if (g_Player.hasBorder == BORDER_ACTIVE)
+        if (g_Player.borderState == BORDER_ACTIVE)
         {
             this->cherryBorderActive.pos = this->cherryGauge.pos;
             this->cherryBorderActive.pos.x += 24.0f;

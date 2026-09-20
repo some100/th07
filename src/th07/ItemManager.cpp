@@ -149,14 +149,14 @@ void ItemManager::OnUpdate()
         }
         else
         {
-            if (item->state == ITEM_STATE_AUTOCOLLECT || ((128.0 <= (f64)g_GameManager.GetPower() || g_GameManager.difficulty >= 4) && g_Player.pos.y < g_Player.shooterData->pocY) || g_Player.hasBorder == 1)
+            if (item->state == ITEM_STATE_AUTOCOLLECT || ((128.0 <= (f64)g_GameManager.GetPower() || g_GameManager.difficulty >= 4) && g_Player.pos.y < g_Player.shooterData->pocY) || g_Player.borderState == 1)
             {
-                if (g_Player.playerState != 1)
+                if (g_Player.playerState != PLAYER_STATE_SPAWNING)
                 {
                     playerAngle = g_Player.AngleToPlayer(&item->pos);
                     item->velocity.FromAngleMagnitude(playerAngle, g_Player.shooterData->itemCollectSpeed);
                     item->state = ITEM_STATE_AUTOCOLLECT;
-                    if (g_Player.hasBorder == 1)
+                    if (g_Player.borderState == BORDER_ACTIVE)
                     {
                         item->autoCollect = 1;
                     }

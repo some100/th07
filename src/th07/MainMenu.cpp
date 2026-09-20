@@ -2600,7 +2600,7 @@ ZunResult MainMenu::ActualAddedCallback()
             {
                 g_Supervisor.d3dDevice->Reset(&g_Supervisor.presentParameters);
             }
-            if (120 <= frameCount && frameCount < 840 &&
+            if (frameCount >= 120 && frameCount < 840 &&
                 WAS_PRESSED_RAW(TH_BUTTON_SELECTMENU | TH_BUTTON_BOMB))
             {
                 frameCount = 840;
