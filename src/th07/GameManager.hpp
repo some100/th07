@@ -28,7 +28,6 @@ struct GameManager
         this->phantasmUnlocked = TRUE;
     }
 
-#pragma var_order(local_10, local_c)
     // FUNCTION: TH07 0x004012b0
     void RegenerateGameIntegrityCsum()
     {
@@ -183,7 +182,7 @@ struct GameManager
     static u32 OnUpdate(GameManager *arg);
     static u32 OnDraw(GameManager *arg);
 
-    static i32 ByteCsumAccumulator(u8 *param_1, i32 param_2);
+    static i32 CalcChecksum(u8 *address, i32 size);
     i32 ComputeGameIntegrityCsum();
 
     ZunBool HasReachedMaxClearsAnyDifficulty(i32 shotType);

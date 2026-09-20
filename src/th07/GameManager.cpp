@@ -62,32 +62,32 @@ i32 GameManager::IsInBounds(f32 x, f32 y, f32 widthPx, f32 heightPx)
     return 1;
 }
 
-#pragma var_order(i, local_c)
+#pragma var_order(i, sum)
 // FUNCTION: TH07 0x0042d75a
-i32 GameManager::ByteCsumAccumulator(u8 *param_1, i32 param_2)
+i32 GameManager::CalcChecksum(u8 *address, i32 size)
 {
-    i32 local_c;
+    i32 sum;
     i32 i;
 
-    local_c = 0;
-    for (i = 0; i < param_2; i++, param_1++)
+    sum = 0;
+    for (i = 0; i < size; i++, address++)
     {
-        local_c += (u32)*param_1;
+        sum += (u32)*address;
         g_GameManager.globals->curCsum += g_GameManager.globals->csumData[2];
     }
-    return local_c;
+    return sum;
 }
 
 // FUNCTION: TH07 0x0042d7be
 i32 GameManager::ComputeGameIntegrityCsum()
 {
-    i32 csum = ByteCsumAccumulator((u8 *)g_GameManager.globals->rng1,
+    i32 csum = CalcChecksum((u8 *)g_GameManager.globals->rng1,
                                    (i32) & this->globals->curCsum - (i32)this->globals->rng1);
-    csum += ByteCsumAccumulator((u8 *)g_GameManager.globals->csumData,
+    csum += CalcChecksum((u8 *)g_GameManager.globals->csumData,
                                 sizeof(g_GameManager.globals->csumData));
-    csum += ByteCsumAccumulator((u8 *)g_GameManager.defaultCfg,
+    csum += CalcChecksum((u8 *)g_GameManager.defaultCfg,
                                 sizeof(GameConfiguration));
-    csum += ByteCsumAccumulator((u8 *)&g_Supervisor.cfg,
+    csum += CalcChecksum((u8 *)&g_Supervisor.cfg,
                                 sizeof(GameConfiguration));
     return csum;
 }
@@ -799,7 +799,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
     Supervisor::DrawFpsCounter(0);
     // STRING: TH07 0x00497e08
     utils::DebugPrint2("random seed %d %d\r\n", (u32)g_Rng.seed,
-                            g_Rng.GetGenCount());
+                       g_Rng.GetGenCount());
     return ZUN_SUCCESS;
 }
 
@@ -847,7 +847,7 @@ ZunResult GameManager::RegisterChain()
         (ChainLifecycleCallback)DeletedCallback;
     g_GameManagerCalcChain.arg = mgr;
     mgr->framesThisStage = 0;
-    if (g_Chain.AddToCalcChain(&g_GameManagerCalcChain, 2))
+    if (g_Chain.AddToCalcChain(&g_GameManagerCalcChain, CHAIN_PRIO_CALC_GAMEMANAGER))
     {
         return ZUN_ERROR;
     }
@@ -856,7 +856,7 @@ ZunResult GameManager::RegisterChain()
     g_GameManagerDrawChain.addedCallback = NULL;
     g_GameManagerDrawChain.deletedCallback = NULL;
     g_GameManagerDrawChain.arg = mgr;
-    g_Chain.AddToDrawChain(&g_GameManagerDrawChain, 2);
+    g_Chain.AddToDrawChain(&g_GameManagerDrawChain, CHAIN_PRIO_DRAW_GAMEMANAGER);
     return ZUN_SUCCESS;
 }
 

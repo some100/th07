@@ -99,7 +99,7 @@ Item *ItemManager::SpawnItem(Float3 *heading, i32 itemType, i32 state)
     return i < MAX_ITEMS ? item : &this->items[MAX_ITEMS];
 }
 
-#pragma var_order(i, itemTimerSecs, itemScore, playerAngle, local_20, itemAcquired, \
+#pragma var_order(i, itemTimerSecs, itemScore, playerAngle, grabItemSize, itemAcquired, \
                   item, j, prevPowerIdx, k, prevPowerLevel2)
 // FUNCTION: TH07 0x00432990
 void ItemManager::OnUpdate()
@@ -116,7 +116,7 @@ void ItemManager::OnUpdate()
     i32 i;
 
     item = this->items;
-    Float3 local_20(g_Player.shooterData->itemCollectRadius,
+    Float3 grabItemSize(g_Player.shooterData->itemCollectRadius,
                     g_Player.shooterData->itemCollectRadius, 16.0f);
     itemAcquired = FALSE;
     this->activeItemCount = 0;
@@ -193,7 +193,7 @@ void ItemManager::OnUpdate()
             item->velocity.y = 3.0f;
         }
     check_collision:
-        if (g_Player.CalcItemBoxCollision(&item->pos, &local_20) != PLAYER_COLLISION_NONE)
+        if (g_Player.CalcItemBoxCollision(&item->pos, &grabItemSize) != PLAYER_COLLISION_NONE)
         {
             g_ReplayManager->replayEventFlags |= 0x40;
             switch (item->itemType)
@@ -559,12 +559,12 @@ void ItemManager::ActivateAllItems()
     }
 }
 
-#pragma var_order(local_8, item)
+#pragma var_order(itemAlpha, item)
 // FUNCTION: TH07 0x00433cd0
 void ItemManager::OnDraw()
 {
     Item *item;
-    i32 local_8;
+    i32 itemAlpha;
 
     item = this->listHead.next;
     while (item)
@@ -585,13 +585,13 @@ void ItemManager::OnDraw()
                 item->isOnscreen = 0;
                 item->sprite.zWriteDisable = 1;
             }
-            local_8 = 255 - (i32)((8.0f - item->pos.y) * 255.0f / 128.0f);
-            if (local_8 < 64)
+            itemAlpha = 255 - (i32)((8.0f - item->pos.y) * 255.0f / 128.0f);
+            if (itemAlpha < 64)
             {
-                local_8 = 64;
+                itemAlpha = 64;
             }
             item->sprite.color.color =
-                (item->sprite.color.color & 0xffffff) | local_8 << 24;
+                (item->sprite.color.color & 0xffffff) | itemAlpha << 24;
         }
         else
         {

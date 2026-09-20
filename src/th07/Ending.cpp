@@ -34,6 +34,7 @@ const char *g_NormalEndingPaths[6] = {
     "data/end21.end",
 };
 
+#pragma var_order(framesSkipPressed, i)
 // FUNCTION: TH07 0x0041d2f0
 u32 Ending::OnUpdate(Ending *arg)
 {
@@ -163,7 +164,7 @@ void Ending::FadingEffect()
     }
 }
 
-#pragma var_order(lineDisplayed, buf, local_58, i, anmScriptIdx, vmIdx,        \
+#pragma var_order(lineDisplayed, buf, index, i, anmScriptIdx, vmIdx,        \
                   anmSpriteIdx, scrollBGDistance, scrollBGDuration, execOuter, \
                   execInner, j, musicFadeFrames)
 // FUNCTION: TH07 0x0041d700
@@ -179,12 +180,12 @@ ZunResult Ending::ParseEndFile()
     i32 vmIdx;
     i32 anmScriptIdx;
     i32 i;
-    i32 local_58;
+    i32 index;
     char buf[68];
     i32 lineDisplayed;
 
     lineDisplayed = 0;
-    local_58 = 0;
+    index = 0;
     memset(buf, 0, sizeof(buf));
     if (this->timer3 > 0)
     {
@@ -272,7 +273,7 @@ ZunResult Ending::ParseEndFile()
                 {
                     return ZUN_ERROR;
                 }
-                local_58 = 0;
+                index = 0;
                 lineDisplayed = 0;
                 for (execOuter = 0; execOuter < ARRAY_SIZE_SIGNED(g_GameManager.clrd); execOuter++)
                 {
@@ -383,7 +384,7 @@ ZunResult Ending::ParseEndFile()
         case '\0':
         case '\n':
         case '\r':
-            if (local_58 != 0)
+            if (index != 0)
             {
                 AnmManager::DrawVmTextFmt(g_AnmManager,
                                           &this->sprites[this->timesFileParsed],
@@ -408,9 +409,9 @@ ZunResult Ending::ParseEndFile()
             this->timesFileParsed++;
             goto stop;
         default:
-            buf[local_58] = *this->endFileDataPtr;
-            buf[local_58 + 1] = this->endFileDataPtr[1];
-            local_58 += 2;
+            buf[index] = *this->endFileDataPtr;
+            buf[index + 1] = this->endFileDataPtr[1];
+            index += 2;
             this->endFileDataPtr = this->endFileDataPtr + 2;
             break;
         }
@@ -534,13 +535,13 @@ ZunResult Ending::RegisterChain()
     ending->calcChain->arg = ending;
     ending->calcChain->addedCallback = (ChainLifecycleCallback)AddedCallback;
     ending->calcChain->deletedCallback = (ChainLifecycleCallback)DeletedCallback;
-    if (g_Chain.AddToCalcChain(ending->calcChain, 4))
+    if (g_Chain.AddToCalcChain(ending->calcChain, CHAIN_PRIO_CALC_ENDING))
     {
         return ZUN_ERROR;
     }
 
     ending->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     ending->drawChain->arg = ending;
-    g_Chain.AddToDrawChain(ending->drawChain, 1);
+    g_Chain.AddToDrawChain(ending->drawChain, CHAIN_PRIO_DRAW_ENDING);
     return ZUN_SUCCESS;
 }

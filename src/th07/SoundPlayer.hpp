@@ -74,7 +74,7 @@ struct SoundPlayer
     }
 
     static DWORD __stdcall BackgroundMusicPlayerThread(LPVOID lpThreadParameter);
-    i32 GetFmtIndexByName(const char *param_1);
+    i32 GetFmtIndexByName(const char *name);
     static WAVEFORMATEX *GetWavFormatData(u8 *soundData, const char *formatString,
                                           i32 *formatSize, u32 fileSizeExcludingFormat);
     ZunResult InitializeDSound(HWND gameWindow);
@@ -82,7 +82,7 @@ struct SoundPlayer
     ZunResult LoadBGM(i32 idx);
     ZunResult LoadFmt(const char *path);
     ZunResult LoadSound(i32 idx, const char *path);
-    void PlaySoundByIdx(i32 idx, u32 param_2);
+    void PlaySoundByIdx(i32 idx, u32 unused);
     ZunResult PreloadBGM(i32 idx, const char *path);
     i32 ProcessQueues();
     void PushCommand(AudioOpcode opcode, i32 arg1, const char *arg2);

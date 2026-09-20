@@ -143,46 +143,46 @@ i32 EffectManager::Init2dEffect(Effect *effect)
     return 0;
 }
 
-#pragma var_order(local_10, sinAngle, local_50, cosAngle, local_64, fadeOutRatio)
+#pragma var_order(orbitOffset, sinAngle, rot, cosAngle, orbitAxis, fadeOutRatio)
 // FUNCTION: TH07 0x0041a750
 i32 EffectManager::UpdateOrbitEffect(Effect *effect)
 {
     f32 fadeOutRatio;
-    Float3 local_64;
+    Float3 orbitAxis;
     f32 cosAngle;
-    D3DXMATRIX local_50;
+    D3DXMATRIX rot;
     f32 sinAngle;
-    Float3 local_10;
+    Float3 orbitOffset;
 
-    D3DXVec3Normalize(local_64.asD3DX(), effect->direction.asD3DX());
+    D3DXVec3Normalize(orbitAxis.asD3DX(), effect->direction.asD3DX());
     sinAngle = sinf(effect->angleVel);
     cosAngle = cosf(effect->angleVel);
 
-    effect->rotationQuat.x = local_64.x * sinAngle;
-    effect->rotationQuat.y = local_64.y * sinAngle;
-    effect->rotationQuat.z = local_64.z * sinAngle;
+    effect->rotationQuat.x = orbitAxis.x * sinAngle;
+    effect->rotationQuat.y = orbitAxis.y * sinAngle;
+    effect->rotationQuat.z = orbitAxis.z * sinAngle;
     effect->rotationQuat.w = cosAngle;
 
-    D3DXMatrixRotationQuaternion(&local_50, &effect->rotationQuat);
+    D3DXMatrixRotationQuaternion(&rot, &effect->rotationQuat);
 
-    local_10.x = local_64.y * 1.0f - local_64.z * 0.0f;
-    local_10.y = local_64.z * 0.0f - local_64.x * 1.0f;
-    local_10.z = local_64.x * 0.0f - local_64.y * 0.0f;
+    orbitOffset.x = orbitAxis.y * 1.0f - orbitAxis.z * 0.0f;
+    orbitOffset.y = orbitAxis.z * 0.0f - orbitAxis.x * 1.0f;
+    orbitOffset.z = orbitAxis.x * 0.0f - orbitAxis.y * 0.0f;
 
-    if (D3DXVec3LengthSq(local_10.asD3DX()) < 0.00001f)
+    if (D3DXVec3LengthSq(orbitOffset.asD3DX()) < 0.00001f)
     {
-        local_64 = Float3(1.0f, 0.0f, 0.0f);
+        orbitAxis = Float3(1.0f, 0.0f, 0.0f);
     }
     else
     {
-        D3DXVec3Normalize(local_10.asD3DX(), local_10.asD3DX());
+        D3DXVec3Normalize(orbitOffset.asD3DX(), orbitOffset.asD3DX());
     }
 
-    local_10 *= effect->radius;
-    D3DXVec3TransformCoord(local_10.asD3DX(), local_10.asD3DX(), &local_50);
-    local_10.z *= 6.0f;
+    orbitOffset *= effect->radius;
+    D3DXVec3TransformCoord(orbitOffset.asD3DX(), orbitOffset.asD3DX(), &rot);
+    orbitOffset.z *= 6.0f;
 
-    effect->pos = local_10 + effect->emitterPos;
+    effect->pos = orbitOffset + effect->emitterPos;
 
     if ((char)effect->isFadingOut)
     {
@@ -285,19 +285,19 @@ void EffectManager::ModifyEffect1eAcceleration()
     }
 }
 
-#pragma var_order(local_10, dot)
+#pragma var_order(effectDir, dot)
 // FUNCTION: TH07 0x0041aef0
 i32 EffectManager::UpdateWeatherPhysics(Effect *effect)
 {
-    Float3 local_10;
+    Float3 effectDir;
 
     effect->velocity += effect->accel;
     effect->basePos += effect->velocity;
     effect->pos = effect->basePos;
 
-    local_10 = effect->pos - g_Stage.cam.pos;
-    D3DXVec3Normalize(local_10.asD3DX(), local_10.asD3DX());
-    f32 dot = D3DXVec3Dot(g_Stage.cam.lookAtDir.asD3DX(), local_10.asD3DX());
+    effectDir = effect->pos - g_Stage.cam.pos;
+    D3DXVec3Normalize(effectDir.asD3DX(), effectDir.asD3DX());
+    f32 dot = D3DXVec3Dot(g_Stage.cam.lookAtDir.asD3DX(), effectDir.asD3DX());
     if (dot < 0.94f)
     {
         return 0;
@@ -963,7 +963,7 @@ ZunResult EffectManager::RegisterChain()
     g_EffectManagerCalcChain.deletedCallback =
         (ChainLifecycleCallback)DeletedCallback;
     g_EffectManagerCalcChain.arg = mgr;
-    if (g_Chain.AddToCalcChain(&g_EffectManagerCalcChain, 11))
+    if (g_Chain.AddToCalcChain(&g_EffectManagerCalcChain, CHAIN_PRIO_CALC_EFFECTMANAGER))
     {
         return ZUN_ERROR;
     }
@@ -972,7 +972,7 @@ ZunResult EffectManager::RegisterChain()
     g_EffectManagerDrawChain.addedCallback = NULL;
     g_EffectManagerDrawChain.deletedCallback = NULL;
     g_EffectManagerDrawChain.arg = mgr;
-    g_Chain.AddToDrawChain(&g_EffectManagerDrawChain, 9);
+    g_Chain.AddToDrawChain(&g_EffectManagerDrawChain, CHAIN_PRIO_DRAW_EFFECTMANAGER);
     return ZUN_SUCCESS;
 }
 

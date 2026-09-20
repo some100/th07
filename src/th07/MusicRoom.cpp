@@ -37,11 +37,11 @@ ZunResult MusicRoom::CheckInputEnable()
     return ZUN_SUCCESS;
 }
 
-#pragma var_order(unusedListingOffset, i, local_54)
+#pragma var_order(unusedListingOffset, i, descBuf)
 // FUNCTION: TH07 0x0043a801
 i32 MusicRoom::ProcessInput()
 {
-    char local_54[66];
+    char descBuf[66];
     i32 i;
     i32 unusedListingOffset;
 
@@ -111,16 +111,16 @@ i32 MusicRoom::ProcessInput()
         g_Supervisor.PlayAudio(this->trackDescriptors[this->selectedIdx].path);
         for (i = 0; i < ARRAY_SIZE_SIGNED(this->descriptionSprites); i++)
         {
-            memset(local_54, 0, sizeof(local_54));
-            memcpy(local_54,
+            memset(descBuf, 0, sizeof(descBuf));
+            memcpy(descBuf,
                    this->trackDescriptors[this->selectedIdx].description[i],
                    64);
-            if (local_54[0] != '\0')
+            if (descBuf[0] != '\0')
             {
                 this->descriptionSprites[i].active = 1;
                 AnmManager::DrawVmTextFmt(g_AnmManager,
                                           this->descriptionSprites + i, 0xffe0c0,
-                                          0x300000, local_54);
+                                          0x300000, descBuf);
             }
             else
             {
@@ -182,16 +182,16 @@ recheck:
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
-#pragma var_order(i, local_c, local_18)
+#pragma var_order(i, arrowText, stringPos)
 // FUNCTION: TH07 0x0043ac4c
 u32 MusicRoom::OnDraw(MusicRoom *arg)
 {
-    Float3 local_18;
-    char local_c[4];
+    Float3 stringPos;
+    char arrowText[4];
     i32 i;
 
-    local_c[0] = 127;
-    local_c[1] = 0;
+    arrowText[0] = 127;
+    arrowText[1] = '\0';
     g_AnmManager->SetTexture(NULL);
     g_AnmManager->CopySurfaceToBackBuffer(0, 0, 0, 0, 0);
     g_AnmManager->DrawNoRotation(&arg->vm[0]);
@@ -207,15 +207,15 @@ u32 MusicRoom::OnDraw(MusicRoom *arg)
             (f32)((i + 1 - arg->listingOffset) * 18) + 104.0f - 20.0f;
         arg->titleSprites[i].pos.z = 0.0f;
         g_AnmManager->DrawNoRotation(arg->titleSprites + i);
-        local_18 = arg->titleSprites[i].pos;
-        local_18.x -= 60.0f;
+        stringPos = arg->titleSprites[i].pos;
+        stringPos.x -= 60.0f;
         if (arg->cursor == i)
         {
-            g_AsciiManager.AddString(&local_18, local_c);
+            g_AsciiManager.AddString(&stringPos, arrowText);
         }
-        local_18.x += 15.0f;
+        stringPos.x += 15.0f;
         // STRING: TH07 0x00496c04
-        AsciiManager::AddFormatText(&g_AsciiManager, &local_18, "%2d.", i + 1);
+        AsciiManager::AddFormatText(&g_AsciiManager, &stringPos, "%2d.", i + 1);
     }
     i++;
     for (i = 0; i < ARRAY_SIZE_SIGNED(arg->descriptionSprites); i++)
@@ -409,14 +409,14 @@ ZunResult MusicRoom::RegisterChain()
     musicRoom->calcChain->addedCallback = (ChainLifecycleCallback)AddedCallback;
     musicRoom->calcChain->deletedCallback =
         (ChainLifecycleCallback)DeletedCallback;
-    if (g_Chain.AddToCalcChain(musicRoom->calcChain, 3))
+    if (g_Chain.AddToCalcChain(musicRoom->calcChain, CHAIN_PRIO_CALC_MUSICROOM))
     {
         return ZUN_ERROR;
     }
 
     musicRoom->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     musicRoom->drawChain->arg = musicRoom;
-    g_Chain.AddToDrawChain(musicRoom->drawChain, 0);
+    g_Chain.AddToDrawChain(musicRoom->drawChain, CHAIN_PRIO_DRAW_MUSICROOM);
 
     return ZUN_SUCCESS;
 }

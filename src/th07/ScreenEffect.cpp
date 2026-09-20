@@ -353,7 +353,7 @@ ScreenEffect *ScreenEffect::RegisterChain(i32 type, i32 duration, u32 arg1,
     mgr->args[0] = arg1;
     mgr->args[1] = arg2;
     mgr->args[2] = arg3;
-    if (g_Chain.AddToCalcChain(calcChain, 15))
+    if (g_Chain.AddToCalcChain(calcChain, CHAIN_PRIO_CALC_SCREENEFFECT))
     {
         return NULL;
     }
@@ -361,7 +361,7 @@ ScreenEffect *ScreenEffect::RegisterChain(i32 type, i32 duration, u32 arg1,
     if (drawChain)
     {
         drawChain->arg = mgr;
-        g_Chain.AddToDrawChain(drawChain, 17);
+        g_Chain.AddToDrawChain(drawChain, CHAIN_PRIO_DRAW_SCREENEFFECT);
     }
     mgr->calcChain = calcChain;
     mgr->drawChain = drawChain;

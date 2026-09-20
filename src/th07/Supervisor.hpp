@@ -218,8 +218,8 @@ struct Supervisor
     ZunBool fogEnabled;
     i32 exeChecksum;
     i32 exeSize;
-    i32 versionTableSize;
-    char *version;
+    i32 versionDataSize;
+    char *versionData;
 };
 C_ASSERT(sizeof(Supervisor) == 0x2d0);
 extern Supervisor g_Supervisor;

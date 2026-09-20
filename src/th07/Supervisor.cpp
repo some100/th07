@@ -117,7 +117,7 @@ void Supervisor::CheckTiming()
                 this->timingSpikeAccumulator = 0;
             }
             utils::DebugPrint2(TH_LOG_ALQ_CHECK, timeDiff, perfDiff,
-                                    timeDiff / perfDiff);
+                               timeDiff / perfDiff);
         }
         else if (this->timingErrorCount != 0)
         {
@@ -195,7 +195,7 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
         arg->prevState = arg->wantedState;
         // STRING: TH07 0x00497230
         utils::DebugPrint2("scene %d -> %d\r\n", arg->wantedState,
-                                arg->curState);
+                           arg->curState);
         switch (arg->wantedState)
         {
         case SUPERVISOR_STATE_INIT:
@@ -524,9 +524,9 @@ ZunResult Supervisor::LoadGameData()
     {
         // STRING: TH07 0x00497140
         sprintf(verFile, "th07_%.4x%c.ver", 256, 98);
-        g_Supervisor.version = (char *)FileSystem::OpenFile(verFile, 0);
-        g_Supervisor.versionTableSize = g_LastFileSize;
-        if (!g_Supervisor.version)
+        g_Supervisor.versionData = (char *)FileSystem::OpenFile(verFile, 0);
+        g_Supervisor.versionDataSize = g_LastFileSize;
+        if (!g_Supervisor.versionData)
         {
             g_GameErrorContext.Fatal(TH_ERR_DATA_VER_MISMATCH);
             return ZUN_ERROR;
@@ -761,7 +761,7 @@ ZunResult Supervisor::AddedCallback(Supervisor *arg)
 // FUNCTION: TH07 0x00438de2
 ZunResult Supervisor::DeletedCallback(Supervisor *arg)
 {
-    SAFE_FREE(g_Supervisor.version);
+    SAFE_FREE(g_Supervisor.versionData);
     g_AnmManager->ReleaseVertexBuffer();
     g_AnmManager->ReleaseAnm(ANM_FILE_TEXT);
     AsciiManager::CutChain();
@@ -810,7 +810,7 @@ ZunResult Supervisor::RegisterChain()
     chain->arg = mgr;
     chain->addedCallback = (ChainLifecycleCallback)AddedCallback;
     chain->deletedCallback = (ChainLifecycleCallback)DeletedCallback;
-    res = g_Chain.AddToCalcChain(chain, 0);
+    res = g_Chain.AddToCalcChain(chain, CHAIN_PRIO_CALC_SUPERVISOR);
     if (res)
     {
         return res;
@@ -818,7 +818,7 @@ ZunResult Supervisor::RegisterChain()
 
     chain = g_Chain.CreateElem((ChainCallback)OnDraw);
     chain->arg = mgr;
-    g_Chain.AddToDrawChain(chain, 15);
+    g_Chain.AddToDrawChain(chain, CHAIN_PRIO_DRAW_SUPERVISOR);
     return ZUN_SUCCESS;
 }
 
@@ -1039,7 +1039,7 @@ void Supervisor::TickTimer(i32 *frames, f32 *subframes)
 }
 
 // ZUN name: snapShotScreen
-#pragma var_order(bmfh, local_18, local_1c, backBuffer, stride,                    \
+#pragma var_order(bmfh, versionDataExeSize, local_1c, backBuffer, stride,          \
                   srcPixel, dstPixel, y, x, bytesPerRow, lockedRect, bytesWritten, \
                   bitmapFile)
 // FUNCTION: TH07 0x004395fb
@@ -1573,7 +1573,7 @@ void Supervisor::UpdateTime()
     this->currentTime = time;
 }
 
-#pragma var_order(local_8, local_c, local_10, local_14, local_18)
+#pragma var_order(versionData, versionDataExeChecksum, versionDataSize, oldPos, versionDataExeSize)
 // FUNCTION: TH07 0x0043a569
 ZunResult Supervisor::CheckIntegrity(const char *version, i32 exeSize,
                                      i32 exeChecksum)
@@ -1581,53 +1581,47 @@ ZunResult Supervisor::CheckIntegrity(const char *version, i32 exeSize,
 #ifdef NON_MATCHING
     return ZUN_SUCCESS;
 #else
-    i32 local_18;
-    char *local_14;
-    i32 local_10;
-    i32 local_c;
-    char *local_8;
+    i32 versionDataExeSize;
+    char *oldPos;
+    i32 versionDataSize;
+    i32 versionDataExeChecksum;
+    char *versionData;
 
-    if (!this->version)
+    if (!this->versionData)
     {
         return ZUN_SUCCESS;
     }
-    else
+
+    versionData = this->versionData;
+    versionDataSize = this->versionDataSize;
+    // STRING: TH07 0x00496c18
+    if (strncmp(version, "debug", 5) == 0)
     {
-        local_8 = this->version;
-        local_10 = this->versionTableSize;
-        // STRING: TH07 0x00496c18
-        if (strncmp(version, "debug", 5) == 0)
+        return ZUN_SUCCESS;
+    }
+
+    if (strcmp("0100b", "debug") == 0)
+    {
+        return ZUN_SUCCESS;
+    }
+
+    while ((u32)versionDataSize > 0)
+    {
+        if (strncmp(version, versionData, 5) == 0)
         {
-            return ZUN_SUCCESS;
-        }
-        else
-        {
-            if (strcmp("0100b", "debug") == 0)
+            versionData = versionData + 6;
+            // STRING: TH07 0x00496c10
+            sscanf(versionData, "%d %d", &versionDataExeSize, &versionDataExeChecksum);
+            if (versionDataExeSize == exeSize && versionDataExeChecksum == exeChecksum)
             {
                 return ZUN_SUCCESS;
             }
-            else
-            {
-                while ((u32)local_10 > 0)
-                {
-                    if (strncmp(version, local_8, 5) == 0)
-                    {
-                        local_8 = local_8 + 6;
-                        // STRING: TH07 0x00496c10
-                        sscanf(local_8, "%d %d", &local_18, &local_c);
-                        if (local_18 == exeSize && local_c == exeChecksum)
-                        {
-                            return ZUN_SUCCESS;
-                        }
-                        return ZUN_ERROR;
-                    }
-                    local_14 = local_8;
-                    local_8 = strchr(local_8, 10) + 1;
-                    local_10 -= (u8 *)local_8 - (u8 *)local_14;
-                }
-                return ZUN_ERROR;
-            }
+            return ZUN_ERROR;
         }
+        oldPos = versionData;
+        versionData = strchr(versionData, 10) + 1;
+        versionDataSize -= (u8 *)versionData - (u8 *)oldPos;
     }
+    return ZUN_ERROR;
 #endif
 }

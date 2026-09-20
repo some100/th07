@@ -7,7 +7,6 @@
 #include "Gui.hpp"
 #include "Player.hpp"
 #include "Supervisor.hpp"
-#include "dsutil.hpp"
 #include "pbg4/Lzss.hpp"
 
 // GLOBAL: TH07 0x004b9e48
@@ -28,7 +27,7 @@ u32 ReplayManager::OnUpdateRng(ReplayManager *arg)
 }
 
 // FUNCTION: TH07 0x00442cd0
-u32 ReplayManager::OnUpdate(ReplayManager *arg)
+u32 ReplayManager::OnUpdateRecord(ReplayManager *arg)
 {
     u16 curInput;
     i32 stage;
@@ -75,7 +74,7 @@ u32 ReplayManager::OnUpdate(ReplayManager *arg)
 }
 
 // FUNCTION: TH07 0x00442e50
-u32 ReplayManager::OnUpdateDemoLowPrio(ReplayManager *arg)
+u32 ReplayManager::OnUpdatePlaybackLowPrio(ReplayManager *arg)
 {
     if (!g_GameManager.notInMenu)
     {
@@ -99,7 +98,7 @@ u32 ReplayManager::OnUpdateDemoLowPrio(ReplayManager *arg)
 }
 
 // FUNCTION: TH07 0x00442ee0
-u32 ReplayManager::OnUpdateDemoHighPrio(ReplayManager *arg)
+u32 ReplayManager::OnUpdatePlayback(ReplayManager *arg)
 {
     if (!g_GameManager.notInMenu)
     {
@@ -150,7 +149,7 @@ u32 ReplayManager::OnUpdateDemoHighPrio(ReplayManager *arg)
 
 #pragma var_order(replayData, i, endData, prevData)
 // FUNCTION: TH07 0x00443040
-ZunResult ReplayManager::AddedCallback(ReplayManager *arg)
+ZunResult ReplayManager::AddedCallbackRecord(ReplayManager *arg)
 {
     StageReplayData *prevData;
     StageReplayData *endData;
@@ -280,7 +279,7 @@ ReplayManager::ValidateReplayData(ReplayFile *data, i32 size)
         goto bad;
     }
     dataDecompressed = (ReplayFile *)ZUN_ALLOC(curData->head.sizeWithoutHeader +
-                                                     sizeof(ReplayHeader));
+                                               sizeof(ReplayHeader));
     memcpy(dataDecompressed, data, sizeof(ReplayHeader));
     Lzss::Decompress(&curData->data.rngValue3, curData->head.compressedSize,
                      &dataDecompressed->data.rngValue3, curData->head.sizeWithoutHeader);
@@ -308,7 +307,7 @@ bad:
 
 #pragma var_order(replayData, i, endData)
 // FUNCTION: TH07 0x00443550
-ZunResult ReplayManager::AddedCallbackDemo(ReplayManager *arg)
+ZunResult ReplayManager::AddedCallbackPlayback(ReplayManager *arg)
 {
     StageReplayData *endData;
     i32 i;
@@ -435,10 +434,10 @@ ZunResult ReplayManager::DeletedCallback(ReplayManager *arg)
 {
     g_Chain.Cut(arg->drawChain);
     arg->drawChain = NULL;
-    if (arg->demoCalcChain)
+    if (arg->calcChain2)
     {
-        g_Chain.Cut(arg->demoCalcChain);
-        arg->demoCalcChain = NULL;
+        g_Chain.Cut(arg->calcChain2);
+        arg->calcChain2 = NULL;
     }
     if (arg->rngCalcChain)
     {
@@ -459,7 +458,7 @@ ZunResult ReplayManager::DeletedCallback(ReplayManager *arg)
 }
 
 // FUNCTION: TH07 0x00443aa0
-ZunResult ReplayManager::RegisterChain(ZunBool isDemo, const char *replayFilename)
+ZunResult ReplayManager::RegisterChain(i32 action, const char *replayFilename)
 {
     g_LastFrameGameInput = 0;
     g_CurFrameGameInput = 0;
@@ -468,13 +467,13 @@ ZunResult ReplayManager::RegisterChain(ZunBool isDemo, const char *replayFilenam
         ReplayManager *mgr = ZUN_NEW(ReplayManager, "ReplayInf");
         g_ReplayManager = mgr;
         mgr->data = NULL;
-        mgr->isDemo = isDemo;
+        mgr->action = action;
         mgr->replayFilename = replayFilename;
-        switch (isDemo)
+        switch (action)
         {
-        case 0:
-            mgr->calcChain = g_Chain.CreateElem((ChainCallback)OnUpdate);
-            mgr->calcChain->addedCallback = (ChainLifecycleCallback)AddedCallback;
+        case REPLAY_MANAGER_ACTION_RECORD:
+            mgr->calcChain = g_Chain.CreateElem((ChainCallback)OnUpdateRecord);
+            mgr->calcChain->addedCallback = (ChainLifecycleCallback)AddedCallbackRecord;
             mgr->calcChain->deletedCallback = (ChainLifecycleCallback)DeletedCallback;
             // ReplayManager::OnDraw is almost certainly folded with
             // EffectManager::UpdateNoOp, but I couldn't get it to fold
@@ -483,47 +482,47 @@ ZunResult ReplayManager::RegisterChain(ZunBool isDemo, const char *replayFilenam
             mgr->drawChain = g_Chain.CreateElem(
                 (ChainCallback)EffectManager::UpdateNoOp);
             mgr->calcChain->arg = mgr;
-            if (g_Chain.AddToCalcChain(mgr->calcChain, 16))
+            if (g_Chain.AddToCalcChain(mgr->calcChain, CHAIN_PRIO_CALC_REPLAYMANAGER_RECORD_HIGH_PRIO))
             {
                 return ZUN_ERROR;
             }
 
-            mgr->demoCalcChain = NULL;
+            mgr->calcChain2 = NULL;
             mgr->rngCalcChain = g_Chain.CreateElem((ChainCallback)OnUpdateRng);
             mgr->rngCalcChain->arg = mgr;
-            g_Chain.AddToCalcChain(mgr->rngCalcChain, 6);
+            g_Chain.AddToCalcChain(mgr->rngCalcChain, CHAIN_PRIO_CALC_REPLAYMANAGER_PLAYBACK_LOW_PRIO);
             break;
-        case 1:
-            mgr->calcChain = g_Chain.CreateElem((ChainCallback)OnUpdateDemoHighPrio);
-            mgr->calcChain->addedCallback = (ChainLifecycleCallback)AddedCallbackDemo;
+        case REPLAY_MANAGER_ACTION_PLAY:
+            mgr->calcChain = g_Chain.CreateElem((ChainCallback)OnUpdatePlayback);
+            mgr->calcChain->addedCallback = (ChainLifecycleCallback)AddedCallbackPlayback;
             mgr->calcChain->deletedCallback = (ChainLifecycleCallback)DeletedCallback;
             mgr->drawChain =
                 g_Chain.CreateElem((ChainCallback)EffectManager::UpdateNoOp);
             mgr->calcChain->arg = mgr;
-            if (g_Chain.AddToCalcChain(mgr->calcChain, 5))
+            if (g_Chain.AddToCalcChain(mgr->calcChain, CHAIN_PRIO_CALC_REPLAYMANAGER_PLAYBACK_HIGH_PRIO))
             {
                 return ZUN_ERROR;
             }
 
-            mgr->demoCalcChain =
-                g_Chain.CreateElem((ChainCallback)OnUpdateDemoLowPrio);
-            mgr->demoCalcChain->arg = mgr;
-            g_Chain.AddToCalcChain(mgr->demoCalcChain, 17);
+            mgr->calcChain2 =
+                g_Chain.CreateElem((ChainCallback)OnUpdatePlaybackLowPrio);
+            mgr->calcChain2->arg = mgr;
+            g_Chain.AddToCalcChain(mgr->calcChain2, CHAIN_PRIO_CALC_REPLAYMANAGER_LOW_PRIO);
             mgr->rngCalcChain = NULL;
             break;
         }
         mgr->drawChain->arg = mgr;
-        g_Chain.AddToDrawChain(mgr->drawChain, 14);
+        g_Chain.AddToDrawChain(mgr->drawChain, CHAIN_PRIO_DRAW_REPLAYMANAGER);
     }
     else
     {
-        switch (isDemo)
+        switch (action)
         {
-        case 0:
-            AddedCallback(g_ReplayManager);
+        case REPLAY_MANAGER_ACTION_RECORD:
+            AddedCallbackRecord(g_ReplayManager);
             break;
-        case 1:
-            AddedCallbackDemo(g_ReplayManager);
+        case REPLAY_MANAGER_ACTION_PLAY:
+            AddedCallbackPlayback(g_ReplayManager);
             break;
         }
     }
@@ -573,7 +572,7 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
     if (g_ReplayManager)
     {
         mgr = g_ReplayManager;
-        if (!mgr->IsDemo())
+        if (mgr->GetAction() == REPLAY_MANAGER_ACTION_RECORD)
         {
             if (!g_GameManager.practice &&
                 g_GameManager.difficulty < 4 &&
@@ -698,7 +697,7 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
                     CloseHandle(hFile);
                     // STRING: TH07 0x00496a4c
                     utils::DebugPrint("info : Size %d -> %d\r\n", replaySize,
-                               compressedSize + sizeof(ReplayHeader));
+                                      compressedSize + sizeof(ReplayHeader));
                     GlobalFree(lpBuffer);
                 }
             }
@@ -847,7 +846,7 @@ void ReplayManager::SaveReplay2(const char *filename)
                 WriteFile(hFile, lpBuffer, compressedSize, &bytesWritten, NULL);
                 CloseHandle(hFile);
                 utils::DebugPrint("info : Size %d -> %d\r\n", replaySize,
-                           compressedSize + sizeof(ReplayHeader));
+                                  compressedSize + sizeof(ReplayHeader));
                 GlobalFree(lpBuffer);
             }
         }

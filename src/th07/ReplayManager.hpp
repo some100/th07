@@ -87,6 +87,12 @@ struct ReplayFile
 };
 C_ASSERT(sizeof(ReplayFile) == 0xe8);
 
+enum ReplayManagerAction
+{
+    REPLAY_MANAGER_ACTION_RECORD,
+    REPLAY_MANAGER_ACTION_PLAY,
+};
+
 struct ReplayManager
 {
     ReplayManager()
@@ -95,12 +101,12 @@ struct ReplayManager
 
     static ZunResult RegisterChain(ZunBool isDemo, const char *replayFilename);
 
-    static ZunResult AddedCallback(ReplayManager *arg);
-    static ZunResult AddedCallbackDemo(ReplayManager *arg);
+    static ZunResult AddedCallbackRecord(ReplayManager *arg);
+    static ZunResult AddedCallbackPlayback(ReplayManager *arg);
     static ZunResult DeletedCallback(ReplayManager *arg);
-    static u32 OnUpdate(ReplayManager *arg);
-    static u32 OnUpdateDemoHighPrio(ReplayManager *arg);
-    static u32 OnUpdateDemoLowPrio(ReplayManager *arg);
+    static u32 OnUpdateRecord(ReplayManager *arg);
+    static u32 OnUpdatePlayback(ReplayManager *arg);
+    static u32 OnUpdatePlaybackLowPrio(ReplayManager *arg);
     static u32 OnUpdateRng(ReplayManager *arg);
 
     static void SaveReplay(const char *filename, char *replayName);
@@ -114,9 +120,9 @@ struct ReplayManager
         return this->data->head.stageReplayData[stage].data != NULL;
     }
 
-    ZunBool IsDemo()
+    i32 GetAction()
     {
-        return this->isDemo;
+        return this->action;
     }
 
     i32 frameId;
@@ -124,7 +130,7 @@ struct ReplayManager
     i32 stageReplayDataSize[REPLAY_STAGE_COUNT];
     i32 stageEndDataSize[REPLAY_STAGE_COUNT];
     void *unused_40;
-    ZunBool isDemo;
+    i32 action;
     const char *replayFilename;
     u8 unused_4c[54];
     i16 unused_82;
@@ -134,7 +140,7 @@ struct ReplayManager
     i32 replayDataEndPointers[REPLAY_STAGE_COUNT];
     ChainElem *calcChain;
     ChainElem *drawChain;
-    ChainElem *demoCalcChain;
+    ChainElem *calcChain2;
     ChainElem *rngCalcChain;
     u16 rngSeed;
     u16 replayEventFlags;

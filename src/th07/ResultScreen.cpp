@@ -2680,7 +2680,7 @@ ZunResult ResultScreen::RegisterChain(u32 type)
 
     // STRING: TH07 0x0049635c
     utils::DebugPrint2("Stg.PlayTimeAll = %d\r\n",
-                            g_GameManager.totalPlayTime);
+                       g_GameManager.totalPlayTime);
     if (type == 1)
     {
         if (!g_GameManager.practice)
@@ -2704,14 +2704,14 @@ ZunResult ResultScreen::RegisterChain(u32 type)
     resultScreen->calcChain->deletedCallback =
         (ChainLifecycleCallback)DeletedCallback;
     resultScreen->calcChain->arg = resultScreen;
-    if (g_Chain.AddToCalcChain(resultScreen->calcChain, 14))
+    if (g_Chain.AddToCalcChain(resultScreen->calcChain, CHAIN_PRIO_CALC_RESULTSCREEN))
     {
         return ZUN_ERROR;
     }
 
     resultScreen->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     resultScreen->drawChain->arg = resultScreen;
-    g_Chain.AddToDrawChain(resultScreen->drawChain, 13);
+    g_Chain.AddToDrawChain(resultScreen->drawChain, CHAIN_PRIO_DRAW_RESULTSCREEN);
 
     return ZUN_SUCCESS;
 }

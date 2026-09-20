@@ -261,7 +261,7 @@ address|name|type
 0042d612|GameManager::AddBombsRemaining|function
 0042d657|GameManager::ResetRegionsPos|function
 0042d6d8|GameManager::IsInBounds|function
-0042d75a|GameManager::ByteCsumAccumulator|function
+0042d75a|GameManager::CalcChecksum|function
 0042d7be|GameManager::ComputeGameIntegrityCsum|function
 0042d83a|GameManager::ExtendFromPoints|function
 0042d8d5|GameManager::OnUpdate|function

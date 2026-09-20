@@ -1939,15 +1939,15 @@ u32 MainMenu::OnUpdateSelectPracticeStage()
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
-#pragma var_order(i, local_c, local_10, file, local_54, local_194)
+#pragma var_order(i, file, replayIdx, replayFile, buf, data)
 // FUNCTION: TH07 0x0045a924
 u32 MainMenu::OnUpdateSelectReplay()
 {
-    _WIN32_FIND_DATAA local_194;
-    char local_54[64];
-    ReplayFile *file;
-    i32 local_10;
-    HANDLE local_c;
+    WIN32_FIND_DATAA data;
+    char buf[64];
+    ReplayFile *replayFile;
+    i32 replayIdx;
+    HANDLE file;
     i32 i;
 
     switch (this->menuSubState)
@@ -1967,70 +1967,70 @@ u32 MainMenu::OnUpdateSelectReplay()
             this->menuSubState = MENU_SUBSTATE_SELECT_INIT;
             this->inputDelayTimer = 0;
             this->curDescriptionVm = NULL;
-            local_10 = 0;
+            replayIdx = 0;
             for (i = 0; i < 15; i++)
             {
                 // STRING: TH07 0x004967bc
-                sprintf(local_54, "./replay/th7_%.2d.rpy", i + 1);
-                file = (ReplayFile *)FileSystem::OpenFile(local_54, 1);
-                if (!file)
+                sprintf(buf, "./replay/th7_%.2d.rpy", i + 1);
+                replayFile = (ReplayFile *)FileSystem::OpenFile(buf, 1);
+                if (!replayFile)
                 {
                     continue;
                 }
 
-                file =
-                    ReplayManager::ValidateReplayData(file, g_LastFileSize);
-                if (file)
+                replayFile =
+                    ReplayManager::ValidateReplayData(replayFile, g_LastFileSize);
+                if (replayFile)
                 {
-                    this->replays[local_10] = *file;
-                    strcpy(this->replayFilenames[local_10], local_54);
+                    this->replays[replayIdx] = *replayFile;
+                    strcpy(this->replayFilenames[replayIdx], buf);
                     // STRING: TH07 0x00496460
-                    sprintf(this->replayLabels[local_10], "No.%.2d", i + 1);
-                    local_10++;
-                    ZUN_FREE(file);
+                    sprintf(this->replayLabels[replayIdx], "No.%.2d", i + 1);
+                    replayIdx++;
+                    ZUN_FREE(replayFile);
                 }
             }
             // STRING: TH07 0x00495674
             _mkdir("./replay");
             _chdir("./replay");
             // STRING: TH07 0x00495664
-            local_c = FindFirstFileA("th7_ud????.rpy", &local_194);
-            if (local_c != INVALID_HANDLE_VALUE)
+            file = FindFirstFileA("th7_ud????.rpy", &data);
+            if (file != INVALID_HANDLE_VALUE)
             {
                 for (i = 0; i < 45; i++)
                 {
-                    file = (ReplayFile *)FileSystem::OpenFile(
-                        local_194.cFileName, 1);
-                    if (!file)
+                    replayFile = (ReplayFile *)FileSystem::OpenFile(
+                        data.cFileName, 1);
+                    if (!replayFile)
                     {
                         continue;
                     }
                     else
                     {
-                        file =
-                            ReplayManager::ValidateReplayData(file, g_LastFileSize);
-                        if (file)
+                        replayFile =
+                            ReplayManager::ValidateReplayData(replayFile, g_LastFileSize);
+                        if (replayFile)
                         {
-                            this->replays[local_10] = *file;
+                            this->replays[replayIdx] = *replayFile;
                             // STRING: TH07 0x00495658
-                            sprintf(this->replayFilenames[local_10], "./replay/%s",
-                                    local_194.cFileName);
+                            sprintf(this->replayFilenames[replayIdx], "./replay/%s",
+                                    data.cFileName);
                             // STRING: TH07 0x00495650
-                            sprintf(this->replayLabels[local_10], "User ");
-                            ZUN_FREE(file);
-                            local_10++;
+                            sprintf(this->replayLabels[replayIdx], "User ");
+                            ZUN_FREE(replayFile);
+                            replayIdx++;
                         }
-                        if (FindNextFileA(local_c, &local_194) == 0)
+                        if (FindNextFileA(file, &data) == 0)
                         {
                             break;
                         }
                     }
                 }
             }
-            FindClose(local_c);
+            FindClose(file);
             // STRING: TH07 0x0049564c
             _chdir("../");
-            this->replayFilesNum = local_10;
+            this->replayFilesNum = replayIdx;
             this->replayPage = 0;
         }
         if (this->stateTimer >= 30)
@@ -2340,12 +2340,12 @@ i32 MainMenu::DrawReplayMenu()
     return 1;
 }
 
-#pragma var_order(vm, i, local_10, local_1c)
+#pragma var_order(vm, i, cleared, textPos)
 // FUNCTION: TH07 0x0045b9ad
 i32 MainMenu::DrawPracticeMenu()
 {
-    Float3 local_1c;
-    i32 local_10;
+    Float3 textPos;
+    i32 cleared;
     i32 i;
     AnmVm *vm;
 
@@ -2355,16 +2355,16 @@ i32 MainMenu::DrawPracticeMenu()
     AsciiManager::AddFormatText(&g_AsciiManager, &vm->pos,
                                 // STRING: TH07 0x004954e4
                                 "Stage    HI-Score");
-    local_1c = vm->pos;
-    local_1c.y += 16.0f;
-    local_10 =
+    textPos = vm->pos;
+    textPos.y += 16.0f;
+    cleared =
         g_GameManager.clrd[g_GameManager.character * 2 + g_GameManager.shotType]
             .difficultyClearedWithoutRetries[g_Supervisor.cfg.defaultDifficulty];
 
     // ZUN bloat: this is always false, since difficultyClearedWithoutRetries is unsigned
-    if (local_10 < 0)
+    if (cleared < 0)
     {
-        local_10 = 1;
+        cleared = 1;
     }
     for (i = 0; i < ARRAY_SIZE_SIGNED(g_StagePracticeStrings); i++)
     {
@@ -2373,7 +2373,7 @@ i32 MainMenu::DrawPracticeMenu()
         {
             g_AsciiManager.color = 0xffffffff;
         }
-        else if (i < local_10)
+        else if (i < cleared)
         {
             g_AsciiManager.color = 0xffa0a0a0;
         }
@@ -2383,7 +2383,7 @@ i32 MainMenu::DrawPracticeMenu()
         }
         AsciiManager::AddFormatText(
             // STRING: TH07 0x004954d4
-            &g_AsciiManager, &local_1c, "%s %9d0 (%3d)",
+            &g_AsciiManager, &textPos, "%s %9d0 (%3d)",
             g_StagePracticeStrings[i],
             g_GameManager
                 .pscr[g_GameManager.character * 2 + g_GameManager.shotType][i]
@@ -2393,7 +2393,7 @@ i32 MainMenu::DrawPracticeMenu()
                 .pscr[g_GameManager.character * 2 + g_GameManager.shotType][i]
                      [g_Supervisor.cfg.defaultDifficulty]
                 .playCount);
-        local_1c.y += 16.0f;
+        textPos.y += 16.0f;
     }
     g_AsciiManager.color = 0xffffffff;
     g_AsciiManager.isSelected = FALSE;
@@ -2468,12 +2468,12 @@ i32 MainMenu::MoveCursorHorizontal(i32 max)
     return 0;
 }
 
-#pragma var_order(i, local_c, savedPos)
+#pragma var_order(i, vm, savedPos)
 // FUNCTION: TH07 0x0045bd6c
 u32 MainMenu::OnDraw(MainMenu *arg)
 {
     Float3 savedPos;
-    AnmVm *local_c;
+    AnmVm *vm;
     i32 i;
 
     g_AnmManager->SetTexture(NULL);
@@ -2487,22 +2487,22 @@ u32 MainMenu::OnDraw(MainMenu *arg)
         arg->DrawPracticeMenu();
         break;
     }
-    local_c = arg->vms;
-    for (i = 0; i < arg->vmCount; i++, local_c++)
+    vm = arg->vms;
+    for (i = 0; i < arg->vmCount; i++, vm++)
     {
-        if (g_AnmManager->ShouldDraw(local_c))
+        if (g_AnmManager->ShouldDraw(vm))
         {
-            savedPos = local_c->pos;
-            local_c->pos += local_c->offset;
-            if (local_c->rotation.z != 0.0f)
+            savedPos = vm->pos;
+            vm->pos += vm->offset;
+            if (vm->rotation.z != 0.0f)
             {
-                g_AnmManager->Draw(local_c);
+                g_AnmManager->Draw(vm);
             }
             else
             {
-                g_AnmManager->DrawNoRotation(local_c);
+                g_AnmManager->DrawNoRotation(vm);
             }
-            local_c->pos = savedPos;
+            vm->pos = savedPos;
         }
     }
     if (arg->curDescriptionVm)
@@ -2512,17 +2512,17 @@ u32 MainMenu::OnDraw(MainMenu *arg)
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
-#pragma var_order(local_8, frameCount, local_1c, local_20, local_24, local_34, i)
+#pragma var_order(scoreDat, frameCount, fadeInRect, fadeInColor, fadeOutColor, fadeOutRect, i)
 // FUNCTION: TH07 0x0045bf15
 ZunResult MainMenu::ActualAddedCallback()
 {
     i32 i;
-    ZunRect local_34;
-    ZunColor local_24;
-    ZunColor local_20;
-    ZunRect local_1c;
+    ZunRect fadeOutRect;
+    ZunColor fadeOutColor;
+    ZunColor fadeInColor;
+    ZunRect fadeInRect;
     i32 frameCount;
-    ScoreDat *local_8;
+    ScoreDat *scoreDat;
 
     SAFE_DELETE(g_GameManager.defaultCfg);
     g_GameManager.defaultCfg = ZUN_NEW(GameConfiguration, "");
@@ -2538,11 +2538,11 @@ ZunResult MainMenu::ActualAddedCallback()
     {
         g_GameManager.replay = 0;
     }
-    local_8 = ResultScreen::OpenScore("score.dat");
-    ResultScreen::ParseClrd(local_8, g_GameManager.clrd);
-    ResultScreen::ParsePscr(local_8, &g_GameManager.pscr[0][0][0]);
-    ResultScreen::ParseCatk(local_8, g_GameManager.catk);
-    ResultScreen::ReleaseScoreDat(local_8);
+    scoreDat = ResultScreen::OpenScore("score.dat");
+    ResultScreen::ParseClrd(scoreDat, g_GameManager.clrd);
+    ResultScreen::ParsePscr(scoreDat, &g_GameManager.pscr[0][0][0]);
+    ResultScreen::ParseCatk(scoreDat, g_GameManager.catk);
+    ResultScreen::ReleaseScoreDat(scoreDat);
     if (g_GameManager.plst.gameHours < 7)
     {
         g_GameManager.maxRetries = 3;
@@ -2576,23 +2576,23 @@ ZunResult MainMenu::ActualAddedCallback()
             g_AnmManager->CopySurfaceToBackBuffer(0, 0, 0, 0, 0);
             if (frameCount < 60)
             {
-                local_1c.left = 0.0f;
-                local_1c.top = 0.0f;
-                local_1c.right = 639.0f;
-                local_1c.bottom = 479.0f;
-                local_20.bytes.a = (60 - frameCount) * 255 / 60;
-                local_20.bytes.r = local_20.bytes.g = local_20.bytes.b = 0;
-                ScreenEffect::DrawSquare(&local_1c, local_20.color);
+                fadeInRect.left = 0.0f;
+                fadeInRect.top = 0.0f;
+                fadeInRect.right = 639.0f;
+                fadeInRect.bottom = 479.0f;
+                fadeInColor.bytes.a = (60 - frameCount) * 255 / 60;
+                fadeInColor.bytes.r = fadeInColor.bytes.g = fadeInColor.bytes.b = 0;
+                ScreenEffect::DrawSquare(&fadeInRect, fadeInColor.color);
             }
             else if (frameCount > 840)
             {
-                local_34.left = 0.0f;
-                local_34.top = 0.0f;
-                local_34.right = 639.0f;
-                local_34.bottom = 479.0f;
-                local_24.bytes.a = (frameCount - 840) * 255 / 60;
-                local_24.bytes.r = local_24.bytes.g = local_24.bytes.b = 0;
-                ScreenEffect::DrawSquare(&local_34, local_24.color);
+                fadeOutRect.left = 0.0f;
+                fadeOutRect.top = 0.0f;
+                fadeOutRect.right = 639.0f;
+                fadeOutRect.bottom = 479.0f;
+                fadeOutColor.bytes.a = (frameCount - 840) * 255 / 60;
+                fadeOutColor.bytes.r = fadeOutColor.bytes.g = fadeOutColor.bytes.b = 0;
+                ScreenEffect::DrawSquare(&fadeOutRect, fadeOutColor.color);
             }
             g_CurFrameRawInput = Controller::GetInput();
             g_Supervisor.d3dDevice->EndScene();
@@ -2729,14 +2729,14 @@ ZunResult MainMenu::RegisterChain(u32 param_1)
     mgr->calcChain->addedCallback = (ChainLifecycleCallback)AddedCallback;
     mgr->calcChain->deletedCallback =
         (ChainLifecycleCallback)DeletedCallback;
-    if (g_Chain.AddToCalcChain(mgr->calcChain, 3))
+    if (g_Chain.AddToCalcChain(mgr->calcChain, CHAIN_PRIO_CALC_MAINMENU))
     {
         return ZUN_ERROR;
     }
 
     mgr->drawChain = g_Chain.CreateElem((ChainCallback)OnDraw);
     mgr->drawChain->arg = mgr;
-    g_Chain.AddToDrawChain(mgr->drawChain, 0);
+    g_Chain.AddToDrawChain(mgr->drawChain, CHAIN_PRIO_DRAW_MAINMENU);
 
     return ZUN_SUCCESS;
 }

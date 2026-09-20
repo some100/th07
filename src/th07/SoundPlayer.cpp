@@ -192,41 +192,41 @@ WAVEFORMATEX *SoundPlayer::GetWavFormatData(u8 *soundData,
     return NULL;
 }
 
-#pragma var_order(local_8, local_c, local_8c)
+#pragma var_order(slashPos, fmtIdx, nameBuf)
 // FUNCTION: TH07 0x0044baf0
-i32 SoundPlayer::GetFmtIndexByName(const char *param_1)
+i32 SoundPlayer::GetFmtIndexByName(const char *name)
 {
-    char local_8c[128];
-    i32 local_c;
-    const char *local_8;
+    char nameBuf[128];
+    i32 fmtIdx;
+    const char *slashPos;
 
-    local_c = 0;
-    local_8 = strrchr(param_1, '/');
-    if (!local_8)
+    fmtIdx = 0;
+    slashPos = strrchr(name, '/');
+    if (!slashPos)
     {
-        local_8 = strrchr(param_1, '\\');
+        slashPos = strrchr(name, '\\');
     }
-    if (!local_8)
+    if (!slashPos)
     {
-        strcpy(local_8c, param_1);
+        strcpy(nameBuf, name);
     }
     else
     {
-        strcpy(local_8c, local_8 + 1);
+        strcpy(nameBuf, slashPos + 1);
     }
-    while (this->bgmFmtData[local_c].name[0] != '\0')
+    while (this->bgmFmtData[fmtIdx].name[0] != '\0')
     {
-        if (strcmp(this->bgmFmtData[local_c].name, local_8c) == 0)
+        if (strcmp(this->bgmFmtData[fmtIdx].name, nameBuf) == 0)
         {
             break;
         }
-        local_c++;
+        fmtIdx++;
     }
-    if (this->bgmFmtData[local_c].name[0] == '\0')
+    if (this->bgmFmtData[fmtIdx].name[0] == '\0')
     {
-        local_c = 0;
+        fmtIdx = 0;
     }
-    return local_c;
+    return fmtIdx;
 }
 
 #pragma var_order(cursor, dsBuffer, wavDataPtr, formatSize, audioPtr2, audioSize2, \
@@ -331,9 +331,9 @@ ZunResult SoundPlayer::LoadSound(i32 idx, const char *path)
 }
 
 // FUNCTION: TH07 0x0044bff0
-ZunResult SoundPlayer::LoadFmt(const char *param_1)
+ZunResult SoundPlayer::LoadFmt(const char *path)
 {
-    this->bgmFmtData = (ThBgmFormat *)FileSystem::OpenFile(param_1, 0);
+    this->bgmFmtData = (ThBgmFormat *)FileSystem::OpenFile(path, 0);
     return this->bgmFmtData != NULL ? ZUN_SUCCESS : ZUN_ERROR;
 }
 
@@ -586,7 +586,7 @@ ZunResult SoundPlayer::InitSoundBuffers()
 }
 
 // FUNCTION: TH07 0x0044c930
-void SoundPlayer::PlaySoundByIdx(i32 idx, u32 param_2)
+void SoundPlayer::PlaySoundByIdx(i32 idx, u32 unused)
 {
     i32 iVar1;
     i32 i;
