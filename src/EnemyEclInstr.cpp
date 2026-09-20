@@ -57,7 +57,7 @@ void EnemyEclInstr::ExInsAliceCurveBullets(Enemy *enemy, EclRawInstr *instr)
 {
     (void)enemy;
 
-    f32 local_10;
+    f32 angle;
     Bullet *bullet;
     i32 i;
 
@@ -85,29 +85,29 @@ void EnemyEclInstr::ExInsAliceCurveBullets(Enemy *enemy, EclRawInstr *instr)
 
             if (bullet->spriteOffset == 2)
             {
-                local_10 = -ZUN_PI / (g_Rng.GetRandomFloatInRange(60.0f) + 180.0f);
+                angle = -ZUN_PI / (g_Rng.GetRandomFloatInRange(60.0f) + 180.0f);
             }
             else if (bullet->spriteOffset == 6)
             {
-                local_10 = ZUN_PI / (g_Rng.GetRandomFloatInRange(60.0f) + 180.0f);
+                angle = ZUN_PI / (g_Rng.GetRandomFloatInRange(60.0f) + 180.0f);
             }
             else if (bullet->spriteOffset == 8)
             {
-                local_10 = ZUN_PI / (g_Rng.GetRandomFloatInRange(60.0f) + 180.0f);
+                angle = ZUN_PI / (g_Rng.GetRandomFloatInRange(60.0f) + 180.0f);
             }
             else if (bullet->spriteOffset == 4)
             {
-                local_10 = -ZUN_PI / (g_Rng.GetRandomFloatInRange(60.0f) + 180.0f);
+                angle = -ZUN_PI / (g_Rng.GetRandomFloatInRange(60.0f) + 180.0f);
             }
             bullet->speed = 0.3f;
             memset(bullet->commands, 0, sizeof(bullet->commands));
             if (g_GameManager.difficulty < 3)
             {
-                bullet->AddAngleAccelCommand(0, 0, 60, local_10, 1.0f / 60.0f);
+                bullet->AddAngleAccelCommand(0, 0, 60, angle, 1.0f / 60.0f);
             }
             else
             {
-                bullet->AddAngleAccelCommand(0, 0, 240, local_10, 1.0f / 190.0f);
+                bullet->AddAngleAccelCommand(0, 0, 240, angle, 1.0f / 190.0f);
             }
             bullet->state2 = 1;
         }
@@ -118,7 +118,7 @@ void EnemyEclInstr::ExInsTurnBulletsIntoOtherBullets(Enemy *enemy, EclRawInstr *
 {
     Bullet *bullet = g_BulletManager.bullets;
     f32 distance;
-    f32 local_e4;
+    f32 maxDistance;
     i32 i;
     EnemyBulletShooter bulletProps;
 
@@ -127,16 +127,16 @@ void EnemyEclInstr::ExInsTurnBulletsIntoOtherBullets(Enemy *enemy, EclRawInstr *
     case 0:
         ScreenEffect::RegisterChain(SCREEN_EFFECT_SHAKE, 32, 12, 0, 0);
         ScreenEffect::RegisterChain(SCREEN_EFFECT_PULSE, 4, 1, 0x80cfcfff, 0);
-        local_e4 = 128.0f;
+        maxDistance = 128.0f;
         break;
     case 1:
-        local_e4 = 192.0f;
+        maxDistance = 192.0f;
         break;
     case 2:
-        local_e4 = 256.0f;
+        maxDistance = 256.0f;
         break;
     case 3:
-        local_e4 = 999.0;
+        maxDistance = 999.0;
     }
     for (i = 0; i < MAX_BULLETS; i++, bullet++)
     {
@@ -149,7 +149,7 @@ void EnemyEclInstr::ExInsTurnBulletsIntoOtherBullets(Enemy *enemy, EclRawInstr *
         {
             distance = sqrtf((enemy->pos.x - bullet->pos.x) * (enemy->pos.x - bullet->pos.x) +
                              (enemy->pos.y - bullet->pos.y) * (enemy->pos.y - bullet->pos.y));
-            if (distance < local_e4)
+            if (distance < maxDistance)
             {
                 bulletProps.pos = bullet->pos;
                 bulletProps.sprite = 0;

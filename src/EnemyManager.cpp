@@ -610,7 +610,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
         {
             g_GameManager.IncreaseSubrank(100);
         }
-        g_GameManager.playTimeAll++;
+        g_GameManager.totalPlayTime++;
     }
     for (i = 0; i < ARRAY_SIZE_SIGNED(arg->enemyHead); i++)
     {
@@ -1373,7 +1373,7 @@ ZunResult EnemyManager::RegisterChain(const char *stgEnm1, const char *stgEnm2)
     g_EnemyManagerCalcChain.addedCallback = (ChainLifecycleCallback)AddedCallback;
     g_EnemyManagerCalcChain.deletedCallback = (ChainLifecycleCallback)DeletedCallback;
     g_EnemyManagerCalcChain.arg = mgr;
-    if (g_Chain.AddToCalcChain(&g_EnemyManagerCalcChain, 10))
+    if (g_Chain.AddToCalcChain(&g_EnemyManagerCalcChain, CHAIN_PRIO_CALC_ENEMYMANAGER))
     {
         return ZUN_ERROR;
     }
@@ -1382,7 +1382,8 @@ ZunResult EnemyManager::RegisterChain(const char *stgEnm1, const char *stgEnm2)
     g_EnemyManagerDrawChain1.addedCallback = NULL;
     g_EnemyManagerDrawChain1.deletedCallback = NULL;
     g_EnemyManagerDrawChain1.arg = mgr;
-    if (g_Chain.AddToDrawChain(&g_EnemyManagerDrawChain1, 5) != ZUN_SUCCESS)
+    if (g_Chain.AddToDrawChain(&g_EnemyManagerDrawChain1, CHAIN_PRIO_DRAW_ENEMYMANAGER_HIGH_PRIO) !=
+        ZUN_SUCCESS)
     {
         return ZUN_ERROR;
     }
@@ -1391,7 +1392,8 @@ ZunResult EnemyManager::RegisterChain(const char *stgEnm1, const char *stgEnm2)
     g_EnemyManagerDrawChain2.addedCallback = NULL;
     g_EnemyManagerDrawChain2.deletedCallback = NULL;
     g_EnemyManagerDrawChain2.arg = mgr;
-    if (g_Chain.AddToDrawChain(&g_EnemyManagerDrawChain2, 7) != ZUN_SUCCESS)
+    if (g_Chain.AddToDrawChain(&g_EnemyManagerDrawChain2, CHAIN_PRIO_DRAW_ENEMYMANAGER_LOW_PRIO) !=
+        ZUN_SUCCESS)
     {
         return ZUN_ERROR;
     }

@@ -1717,7 +1717,7 @@ restart:
                 break;
             case ECL_SET_NUM_BOSS_LIFE_MARKERS:
                 g_Gui.bossLifeMarkers = GET_INT_VALUE(enemy, 0);
-                g_GameManager.playTimeAll += 1800;
+                g_GameManager.totalPlayTime += 1800;
                 break;
             case ECL_SPAWN_ENEMY_ABS:
                 if (enemy->life > 0)

@@ -380,9 +380,9 @@ ZunResult Supervisor::LoadGameData()
     if (g_Pbg4Archive.Load("th07.dat"))
     {
         sprintf(verFile, "th07_%.4x%c.ver", 256, 98);
-        g_Supervisor.version = (char *)FileSystem::OpenFile(verFile, 0);
-        g_Supervisor.versionTableSize = g_LastFileSize;
-        if (!g_Supervisor.version)
+        g_Supervisor.versionData = (char *)FileSystem::OpenFile(verFile, 0);
+        g_Supervisor.versionDataSize = g_LastFileSize;
+        if (!g_Supervisor.versionData)
         {
             g_GameErrorContext.Fatal("error : データのバージョンが違います\n");
             return ZUN_ERROR;
@@ -584,7 +584,7 @@ ZunResult Supervisor::AddedCallback(Supervisor *arg)
 
 ZunResult Supervisor::DeletedCallback(Supervisor *arg)
 {
-    SAFE_FREE(g_Supervisor.version);
+    SAFE_FREE(g_Supervisor.versionData);
     g_AnmManager->ReleaseVertexBuffer();
     g_AnmManager->ReleaseAnm(ANM_FILE_TEXT);
     AsciiManager::CutChain();
@@ -625,7 +625,7 @@ ZunResult Supervisor::RegisterChain()
     chain->arg = mgr;
     chain->addedCallback = (ChainLifecycleCallback)AddedCallback;
     chain->deletedCallback = (ChainLifecycleCallback)DeletedCallback;
-    res = g_Chain.AddToCalcChain(chain, 0);
+    res = g_Chain.AddToCalcChain(chain, CHAIN_PRIO_CALC_SUPERVISOR);
     if (res)
     {
         return res;
@@ -633,7 +633,7 @@ ZunResult Supervisor::RegisterChain()
 
     chain = g_Chain.CreateElem((ChainCallback)OnDraw);
     chain->arg = mgr;
-    g_Chain.AddToDrawChain(chain, 15);
+    g_Chain.AddToDrawChain(chain, CHAIN_PRIO_DRAW_SUPERVISOR);
     return ZUN_SUCCESS;
 }
 
@@ -839,8 +839,7 @@ void Supervisor::TickTimer(i32 *frames, f32 *subframes)
     }
 }
 
-// ZUN name: snapShotScreen
-i32 Supervisor::SnapshotScreen(const char *param_1)
+i32 Supervisor::TakeSnapshot(const char *filename)
 {
     u8 *pixels = new u8[640 * 480 * 4];
     this->gfxDevice->ReadPixels(0, 0, 640, 480, pixels);
@@ -848,7 +847,7 @@ i32 Supervisor::SnapshotScreen(const char *param_1)
     SDL_Surface *surf =
         SDL_CreateRGBSurfaceWithFormatFrom(pixels, 640, 480, 32, 640 * 4, SDL_PIXELFORMAT_RGBA32);
 
-    SDL_SaveBMP(surf, param_1);
+    SDL_SaveBMP(surf, filename);
     SDL_FreeSurface(surf);
     delete[] pixels;
     return 0;

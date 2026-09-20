@@ -105,13 +105,13 @@ struct SoundPlayer
 {
     SoundPlayer();
 
-    i32 GetFmtIndexByName(const char *param_1);
+    i32 GetFmtIndexByName(const char *name);
     ZunResult InitializeSound();
     ZunResult InitSoundBuffers();
     ZunResult LoadBGM(i32 idx);
     ZunResult LoadFmt(const char *path);
     ZunResult LoadSound(i32 idx, const char *path);
-    void PlaySoundByIdx(i32 idx, u32 param_2);
+    void PlaySoundByIdx(i32 idx, u32 unused);
     ZunResult PreloadBGM(i32 idx, const char *path);
     i32 ProcessQueues();
     void PushCommand(AudioOpcode opcode, i32 arg1, const char *arg2);

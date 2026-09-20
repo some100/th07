@@ -466,7 +466,7 @@ void BulletManager::RemoveAllBullets(i32 itemState)
     this->screenClearTime = 10;
 }
 
-i32 BulletManager::DespawnBullets(i32 param_1, ZunBool turnIntoItem)
+i32 BulletManager::DespawnBullets(i32 maxScore, ZunBool turnIntoItem)
 {
     f32 offset;
     f32 cosine;
@@ -490,12 +490,12 @@ i32 BulletManager::DespawnBullets(i32 param_1, ZunBool turnIntoItem)
 
         g_ItemManager.SpawnItem(&bullet->pos, this->itemType, ITEM_STATE_AUTOCOLLECT);
         g_AsciiManager.CreatePopup1(&bullet->pos, scoreBonus,
-                                    scoreBonus >= param_1 ? 0xFFFFFF00 : 0xFFFFFFFF);
+                                    scoreBonus >= maxScore ? 0xFFFFFF00 : 0xFFFFFFFF);
         score += scoreBonus;
         scoreBonus += 20;
-        if (scoreBonus > param_1)
+        if (scoreBonus > maxScore)
         {
-            scoreBonus = param_1;
+            scoreBonus = maxScore;
         }
         bullet->state = BULLET_DESPAWN;
     }
@@ -652,9 +652,9 @@ void Bullet::UpdateBulletBurstSpeed()
 {
     if (this->commandStates[0].timer <= 16)
     {
-        f32 local_8 = 5.0f - this->commandStates[0].timer.AsFloat() * 5.0f / 16.0f;
+        f32 speed = 5.0f - this->commandStates[0].timer.AsFloat() * 5.0f / 16.0f;
         this->velocity.FromAngleMagnitude(
-            this->angle, (local_8 + this->speed) * g_Supervisor.effectiveFramerateMultiplier);
+            this->angle, (speed + this->speed) * g_Supervisor.effectiveFramerateMultiplier);
     }
     else
     {
@@ -1395,7 +1395,7 @@ ZunResult BulletManager::RegisterChain(const char *etamaAnmPath)
     g_BulletManagerCalcChain.addedCallback = (ChainLifecycleCallback)AddedCallback;
     g_BulletManagerCalcChain.deletedCallback = (ChainLifecycleCallback)DeletedCallback;
     g_BulletManagerCalcChain.arg = mgr;
-    if (g_Chain.AddToCalcChain(&g_BulletManagerCalcChain, 12))
+    if (g_Chain.AddToCalcChain(&g_BulletManagerCalcChain, CHAIN_PRIO_CALC_BULLETMANAGER))
     {
         return ZUN_ERROR;
     }
@@ -1404,7 +1404,7 @@ ZunResult BulletManager::RegisterChain(const char *etamaAnmPath)
     g_BulletManagerDrawChain.addedCallback = NULL;
     g_BulletManagerDrawChain.deletedCallback = NULL;
     g_BulletManagerDrawChain.arg = mgr;
-    g_Chain.AddToDrawChain(&g_BulletManagerDrawChain, 10);
+    g_Chain.AddToDrawChain(&g_BulletManagerDrawChain, CHAIN_PRIO_DRAW_BULLETMANAGER);
     return ZUN_SUCCESS;
 }
 

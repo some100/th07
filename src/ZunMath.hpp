@@ -58,7 +58,7 @@ struct ZunVec3
     }
 
     inline void Project(ZunVec3 *pV, ZunViewport *pViewport, struct ZunMatrix *pProjection,
-                            struct ZunMatrix *pView, struct ZunMatrix *pWorld);
+                        struct ZunMatrix *pView, struct ZunMatrix *pWorld);
 
     void Normalize(ZunVec3 *pV)
     {
@@ -354,7 +354,7 @@ struct ZunMatrix
 };
 
 inline void ZunVec3::Project(ZunVec3 *pV, ZunViewport *pViewport, ZunMatrix *pProjection,
-                                 ZunMatrix *pView, ZunMatrix *pWorld)
+                             ZunMatrix *pView, ZunMatrix *pWorld)
 {
     ZunMatrix temp;
     ZunMatrix wvp;

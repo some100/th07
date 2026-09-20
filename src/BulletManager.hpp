@@ -267,7 +267,7 @@ struct BulletManager
     static u32 OnUpdate(BulletManager *arg);
     static u32 OnDraw(BulletManager *arg);
 
-    i32 DespawnBullets(i32 param_1, ZunBool turnIntoItem);
+    i32 DespawnBullets(i32 maxScore, ZunBool turnIntoItem);
     void RemoveAllBullets(i32 itemState);
     void RemoveBulletsInRadius(ZunVec3 *centerPos, f32 radius);
     static void SetActiveSpriteByResolution(AnmVm *sprite, AnmVm *bulletTypeTemplate,

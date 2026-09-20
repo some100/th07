@@ -128,41 +128,41 @@ i32 EffectManager::Init2dEffect(Effect *effect)
 i32 EffectManager::UpdateOrbitEffect(Effect *effect)
 {
     f32 fadeOutRatio;
-    ZunVec3 local_64;
+    ZunVec3 orbitAxis;
     f32 cosAngle;
-    ZunMatrix local_50;
+    ZunMatrix rot;
     f32 sinAngle;
-    ZunVec3 local_10;
+    ZunVec3 orbitOffset;
 
-    local_64.Normalize(&effect->direction);
+    orbitAxis.Normalize(&effect->direction);
     sinAngle = sinf(effect->angleVel);
     cosAngle = cosf(effect->angleVel);
 
-    effect->rotationQuat.x = local_64.x * sinAngle;
-    effect->rotationQuat.y = local_64.y * sinAngle;
-    effect->rotationQuat.z = local_64.z * sinAngle;
+    effect->rotationQuat.x = orbitAxis.x * sinAngle;
+    effect->rotationQuat.y = orbitAxis.y * sinAngle;
+    effect->rotationQuat.z = orbitAxis.z * sinAngle;
     effect->rotationQuat.w = cosAngle;
 
-    local_50.RotationQuaternion(&effect->rotationQuat);
+    rot.RotationQuaternion(&effect->rotationQuat);
 
-    local_10.x = local_64.y * 1.0f - local_64.z * 0.0f;
-    local_10.y = local_64.z * 0.0f - local_64.x * 1.0f;
-    local_10.z = local_64.x * 0.0f - local_64.y * 0.0f;
+    orbitOffset.x = orbitAxis.y * 1.0f - orbitAxis.z * 0.0f;
+    orbitOffset.y = orbitAxis.z * 0.0f - orbitAxis.x * 1.0f;
+    orbitOffset.z = orbitAxis.x * 0.0f - orbitAxis.y * 0.0f;
 
-    if (local_10.LengthSq() < 0.00001f)
+    if (orbitOffset.LengthSq() < 0.00001f)
     {
-        local_64 = ZunVec3(1.0f, 0.0f, 0.0f);
+        orbitAxis = ZunVec3(1.0f, 0.0f, 0.0f);
     }
     else
     {
-        local_10.Normalize(&local_10);
+        orbitOffset.Normalize(&orbitOffset);
     }
 
-    local_10 *= effect->radius;
-    local_10.TransformCoord(&local_10, &local_50);
-    local_10.z *= 6.0f;
+    orbitOffset *= effect->radius;
+    orbitOffset.TransformCoord(&orbitOffset, &rot);
+    orbitOffset.z *= 6.0f;
 
-    effect->pos = local_10 + effect->emitterPos;
+    effect->pos = orbitOffset + effect->emitterPos;
 
     if ((char)effect->isFadingOut)
     {
@@ -258,15 +258,15 @@ void EffectManager::ModifyEffect1eAcceleration()
 
 i32 EffectManager::UpdateWeatherPhysics(Effect *effect)
 {
-    ZunVec3 local_10;
+    ZunVec3 effectDir;
 
     effect->velocity += effect->accel;
     effect->basePos += effect->velocity;
     effect->pos = effect->basePos;
 
-    local_10 = effect->pos - g_Stage.cam.pos;
-    local_10.Normalize(&local_10);
-    f32 dot = g_Stage.cam.lookAtDir.Dot(&local_10);
+    effectDir = effect->pos - g_Stage.cam.pos;
+    effectDir.Normalize(&effectDir);
+    f32 dot = g_Stage.cam.lookAtDir.Dot(&effectDir);
     if (dot < 0.94f)
     {
         return 0;
@@ -914,7 +914,7 @@ ZunResult EffectManager::RegisterChain()
     g_EffectManagerCalcChain.addedCallback = (ChainLifecycleCallback)AddedCallback;
     g_EffectManagerCalcChain.deletedCallback = (ChainLifecycleCallback)DeletedCallback;
     g_EffectManagerCalcChain.arg = mgr;
-    if (g_Chain.AddToCalcChain(&g_EffectManagerCalcChain, 11))
+    if (g_Chain.AddToCalcChain(&g_EffectManagerCalcChain, CHAIN_PRIO_CALC_EFFECTMANAGER))
     {
         return ZUN_ERROR;
     }
@@ -923,7 +923,7 @@ ZunResult EffectManager::RegisterChain()
     g_EffectManagerDrawChain.addedCallback = NULL;
     g_EffectManagerDrawChain.deletedCallback = NULL;
     g_EffectManagerDrawChain.arg = mgr;
-    g_Chain.AddToDrawChain(&g_EffectManagerDrawChain, 9);
+    g_Chain.AddToDrawChain(&g_EffectManagerDrawChain, CHAIN_PRIO_DRAW_EFFECTMANAGER);
     return ZUN_SUCCESS;
 }
 

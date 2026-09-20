@@ -2368,13 +2368,13 @@ ZunResult Player::RegisterChain(u32 param_1)
     mgr->drawChain2->arg = mgr;
     mgr->calcChain->addedCallback = (ChainLifecycleCallback)AddedCallback;
     mgr->calcChain->deletedCallback = (ChainLifecycleCallback)DeletedCallback;
-    if (g_Chain.AddToCalcChain(mgr->calcChain, 8))
+    if (g_Chain.AddToCalcChain(mgr->calcChain, CHAIN_PRIO_CALC_PLAYER))
     {
         return ZUN_ERROR;
     }
 
-    g_Chain.AddToDrawChain(mgr->drawChain1, 6);
-    g_Chain.AddToDrawChain(mgr->drawChain2, 8);
+    g_Chain.AddToDrawChain(mgr->drawChain1, CHAIN_PRIO_DRAW_PLAYER_HIGH_PRIO);
+    g_Chain.AddToDrawChain(mgr->drawChain2, CHAIN_PRIO_DRAW_PLAYER_LOW_PRIO);
     return ZUN_SUCCESS;
 }
 

@@ -1803,7 +1803,7 @@ ZunResult Gui::RegisterChain()
     g_GuiCalcChain.addedCallback = (ChainLifecycleCallback)AddedCallback;
     g_GuiCalcChain.deletedCallback = (ChainLifecycleCallback)DeletedCallback;
     g_GuiCalcChain.arg = mgr;
-    if (g_Chain.AddToCalcChain(&g_GuiCalcChain, 13))
+    if (g_Chain.AddToCalcChain(&g_GuiCalcChain, CHAIN_PRIO_CALC_GUI))
     {
         return ZUN_ERROR;
     }
@@ -1812,7 +1812,7 @@ ZunResult Gui::RegisterChain()
     g_GuiDrawChain.addedCallback = NULL;
     g_GuiDrawChain.deletedCallback = NULL;
     g_GuiDrawChain.arg = mgr;
-    g_Chain.AddToDrawChain(&g_GuiDrawChain, 12);
+    g_Chain.AddToDrawChain(&g_GuiDrawChain, CHAIN_PRIO_DRAW_GUI);
     return ZUN_SUCCESS;
 }
 

@@ -23,7 +23,7 @@ struct TextHelper
     static void RenderTextToTextureBold(i32 xPos, i32 yPos, i32 spriteWidth, i32 spriteHeight,
                                         i32 fontHeight, i32 fontWidth, u32 textColor,
                                         u32 outlineType, char *string, GfxTextureHandle outTexture);
-    static i32 GetLogicalStringWidth(const char* str);
+    static i32 GetLogicalStringWidth(const char *str);
 
     SDL_Surface *buffer;
     i32 width;
