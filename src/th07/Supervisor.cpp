@@ -406,25 +406,26 @@ u32 Supervisor::OnDraw(Supervisor *arg)
 }
 
 // FUNCTION: TH07 0x0043832f
-i32 __stdcall Supervisor::EnumGameControllersCb(LPCDIDEVICEINSTANCEA param_1,
-                                                void *param_2)
+BOOL CALLBACK Supervisor::EnumGameControllersCb(LPCDIDEVICEINSTANCEA pdidInstance,
+                                                void *pvRef)
 {
     HRESULT hr;
     if (!g_Supervisor.controller)
     {
-        hr = g_Supervisor.directInput->CreateDevice(param_1->guidInstance,
+        hr = g_Supervisor.directInput->CreateDevice(pdidInstance->guidInstance,
                                                     &g_Supervisor.controller, NULL);
         if (FAILED(hr))
         {
-            return 1;
+            return TRUE;
         }
     }
-    return 0;
+
+    return FALSE;
 }
 
 #pragma var_order(dipr, idk)
 // FUNCTION: TH07 0x0043836e
-i32 __stdcall Supervisor::ControllerCallback(LPCDIDEVICEOBJECTINSTANCE lpddoi,
+BOOL CALLBACK Supervisor::ControllerCallback(LPCDIDEVICEOBJECTINSTANCE lpddoi,
                                              LPVOID pvRef)
 {
     DIPROPRANGE dipr;
@@ -441,10 +442,11 @@ i32 __stdcall Supervisor::ControllerCallback(LPCDIDEVICEOBJECTINSTANCE lpddoi,
         if (g_Supervisor.controller->SetProperty(DIPROP_RANGE, &dipr.diph) <
             0)
         {
-            return 0;
+            return FALSE;
         }
     }
-    return 1;
+
+    return TRUE;
 }
 
 // FUNCTION: TH07 0x004383d8
@@ -463,55 +465,47 @@ ZunResult Supervisor::SetupDInput()
         g_GameErrorContext.Log(TH_ERR_DINPUT_INIT_FAIL);
         return ZUN_ERROR;
     }
-    else
+
+    if (FAILED(this->directInput->CreateDevice(GUID_SysKeyboard,
+                                               &this->keyboard, NULL)))
     {
-        if (FAILED(this->directInput->CreateDevice(GUID_SysKeyboard,
-                                                   &this->keyboard, NULL)))
-        {
-            SAFE_RELEASE(this->directInput);
-            g_GameErrorContext.Log(TH_ERR_DINPUT_INIT_FAIL);
-            return ZUN_ERROR;
-        }
-        else
-        {
-            if (FAILED(this->keyboard->SetDataFormat(&c_dfDIKeyboard)))
-            {
-                SAFE_RELEASE(this->keyboard);
-                SAFE_RELEASE(this->directInput);
-                // STRING: TH07 0x004971d8
-                g_GameErrorContext.Log(TH_ERR_DINPUT_SETDATAFORMAT_FAIL);
-                return ZUN_ERROR;
-            }
-            else
-            {
-                if (FAILED(this->keyboard->SetCooperativeLevel(
-                        this->hwndGameWindow,
-                        DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY)))
-                {
-                    SAFE_RELEASE(this->keyboard);
-                    SAFE_RELEASE(this->directInput);
-                    g_GameErrorContext.Log(TH_ERR_DINPUT_SETCOOPERATIVELEVEL_FAIL);
-                    return ZUN_ERROR;
-                }
-                else
-                {
-                    this->keyboard->Acquire();
-                    g_GameErrorContext.Log(TH_LOG_DINPUT_INIT_SUCCESS);
-                    this->directInput->EnumDevices(4, EnumGameControllersCb, NULL, 1);
-                    if (this->controller)
-                    {
-                        this->controller->SetDataFormat(&c_dfDIJoystick2);
-                        this->controller->SetCooperativeLevel(this->hwndGameWindow, 10);
-                        g_Supervisor.controllerCaps.dwSize = sizeof(DIDEVCAPS);
-                        this->controller->GetCapabilities(&g_Supervisor.controllerCaps);
-                        this->controller->EnumObjects(ControllerCallback, NULL, 0);
-                        g_GameErrorContext.Log(TH_LOG_FOUND_PAD);
-                    }
-                    return ZUN_SUCCESS;
-                }
-            }
-        }
+        SAFE_RELEASE(this->directInput);
+        g_GameErrorContext.Log(TH_ERR_DINPUT_INIT_FAIL);
+        return ZUN_ERROR;
     }
+
+    if (FAILED(this->keyboard->SetDataFormat(&c_dfDIKeyboard)))
+    {
+        SAFE_RELEASE(this->keyboard);
+        SAFE_RELEASE(this->directInput);
+        // STRING: TH07 0x004971d8
+        g_GameErrorContext.Log(TH_ERR_DINPUT_SETDATAFORMAT_FAIL);
+        return ZUN_ERROR;
+    }
+
+    if (FAILED(this->keyboard->SetCooperativeLevel(
+            this->hwndGameWindow,
+            DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY)))
+    {
+        SAFE_RELEASE(this->keyboard);
+        SAFE_RELEASE(this->directInput);
+        g_GameErrorContext.Log(TH_ERR_DINPUT_SETCOOPERATIVELEVEL_FAIL);
+        return ZUN_ERROR;
+    }
+
+    this->keyboard->Acquire();
+    g_GameErrorContext.Log(TH_LOG_DINPUT_INIT_SUCCESS);
+    this->directInput->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumGameControllersCb, NULL, DIEDFL_ATTACHEDONLY);
+    if (this->controller)
+    {
+        this->controller->SetDataFormat(&c_dfDIJoystick2);
+        this->controller->SetCooperativeLevel(this->hwndGameWindow, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
+        g_Supervisor.controllerCaps.dwSize = sizeof(DIDEVCAPS);
+        this->controller->GetCapabilities(&g_Supervisor.controllerCaps);
+        this->controller->EnumObjects(ControllerCallback, NULL, DIDFT_ALL);
+        g_GameErrorContext.Log(TH_LOG_FOUND_PAD);
+    }
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x00438668
@@ -825,7 +819,7 @@ ZunResult Supervisor::RegisterChain()
 #pragma var_order(fps, elapsedTimeInSecs, curTime, targetFps, curPerfCounter, \
                   fpsCounterPos, replayFpsCounterPos)
 // FUNCTION: TH07 0x004390a5
-void Supervisor::DrawFpsCounter(i32 param_1)
+void Supervisor::DrawFpsCounter(i32 showFps)
 {
     Float3 replayFpsCounterPos;
     Float3 fpsCounterPos;
@@ -860,7 +854,7 @@ void Supervisor::DrawFpsCounter(i32 param_1)
                 g_NumFramesSinceLastTime = 0;
                 // STRING: TH07 0x00496fa0
                 sprintf(g_FpsCounterBuffer, "%.02ffps", (f64)fps);
-                if (g_GameManager.notInMenu && param_1 != 0)
+                if (g_GameManager.notInMenu && showFps)
                 {
                     targetFps = 60.0f;
                     g_Supervisor.fpsAccumulator = g_Supervisor.fpsAccumulator + targetFps;
@@ -928,7 +922,7 @@ void Supervisor::DrawFpsCounter(i32 param_1)
     }
 
 LAB_00439350:
-    if (!g_Supervisor.isInEnding && param_1 != 0)
+    if (!g_Supervisor.isInEnding && showFps)
     {
         fpsCounterPos.x = 512.0f;
         fpsCounterPos.y = 464.0f;
@@ -1043,7 +1037,7 @@ void Supervisor::TickTimer(i32 *frames, f32 *subframes)
                   srcPixel, dstPixel, y, x, bytesPerRow, lockedRect, bytesWritten, \
                   bitmapFile)
 // FUNCTION: TH07 0x004395fb
-i32 Supervisor::TakeSnapshot(const char *filename)
+ZunBool Supervisor::TakeSnapshot(const char *filename)
 {
     HANDLE bitmapFile;
     DWORD bytesWritten;
@@ -1099,7 +1093,7 @@ i32 Supervisor::TakeSnapshot(const char *filename)
         bitmapInfo->bmiHeader.biCompression = 0;
         backBuffer->LockRect(&lockedRect, NULL, 0);
         bytesPerRow = 0;
-        for (y = 479; -1 < y; y--, bytesPerRow++)
+        for (y = GAME_WINDOW_HEIGHT - 1; y > -1; y--, bytesPerRow++)
         {
             dstPixel = (u8 *)((u8 *)bitmapData + stride * bytesPerRow);
             srcPixel = (u8 *)((u8 *)lockedRect.pBits + lockedRect.Pitch * y);
@@ -1117,26 +1111,26 @@ i32 Supervisor::TakeSnapshot(const char *filename)
             }
         }
         backBuffer->UnlockRect();
-        bitmapFile = CreateFileA(filename, GENERIC_WRITE, 0, NULL, 2, FILE_ATTRIBUTE_NORMAL, NULL);
+        bitmapFile = CreateFileA(filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
         if (bitmapFile == INVALID_HANDLE_VALUE)
         {
             break;
         }
 
-        WriteFile(bitmapFile, &bmfh, 14, &bytesWritten, NULL);
-        WriteFile(bitmapFile, bitmapInfo, 40, &bytesWritten, NULL);
+        WriteFile(bitmapFile, &bmfh, sizeof(bmfh), &bytesWritten, NULL);
+        WriteFile(bitmapFile, bitmapInfo, sizeof(bitmapInfo->bmiHeader), &bytesWritten, NULL);
         WriteFile(bitmapFile, bitmapData, stride * GAME_WINDOW_HEIGHT, &bytesWritten, NULL);
         CloseHandle(bitmapFile);
         break;
     default:
         // STRING: TH07 0x00496f48
         g_GameErrorContext.Log("error ? mother.cpp\r\n");
-        return 1;
+        return TRUE;
     }
     SAFE_RELEASE(backBuffer);
     ZUN_FREE(bitmapInfo);
     ZUN_FREE(bitmapData);
-    return 0;
+    return FALSE;
 }
 
 #pragma var_order(configFile, bgm2, bytesRead2, bgm2Data, bgm, bytesRead, bgmData)
@@ -1489,10 +1483,10 @@ HRESULT Supervisor::DisableFog()
 }
 
 // FUNCTION: TH07 0x0043a24e
-void Supervisor::SetRenderState(D3DRENDERSTATETYPE stateType, DWORD param_2)
+void Supervisor::SetRenderState(D3DRENDERSTATETYPE stateType, DWORD state)
 {
     g_AnmManager->Flush();
-    this->d3dDevice->SetRenderState(stateType, param_2);
+    this->d3dDevice->SetRenderState(stateType, state);
 }
 
 #pragma var_order(time, timeSinceStartup)

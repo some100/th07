@@ -763,7 +763,7 @@ u32 EnemyManager::OnUpdate(EnemyManager *arg)
                             currentHitbox = enemy->hitboxSize -
                                             enemy->hitboxSize *
                                                 (f32)j /
-                                                (f32)(i32)enemy->trailInterval;
+                                                (f32)enemy->trailInterval;
                         }
                         enemy->CheckBulletPlayerCollision(
                             &enemy->enemyHistory[j].pos, &currentHitbox);

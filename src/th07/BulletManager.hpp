@@ -269,6 +269,14 @@ struct BulletManager
         Initialize();
     }
 
+    static void CopyBulletSpriteData(AnmVm *out, AnmVm *vm)
+    {
+        if (out->anmFileIdx != vm->anmFileIdx || vm->currentInstruction)
+        {
+            *out = *vm;
+        }
+    }
+
     static ZunResult RegisterChain(const char *etamaAnmPath);
     static void CutChain();
 
@@ -280,9 +288,9 @@ struct BulletManager
     i32 DespawnBullets(i32 maxScore, ZunBool turnIntoItem);
     void RemoveAllBullets(i32 itemState);
     void RemoveBulletsInRadius(Float3 *centerPos, f32 radius);
-    static void SetActiveSpriteByResolution(AnmVm *sprite,
-                                            AnmVm *bulletTypeTemplate,
-                                            Bullet *bullet, i32 spriteOffset);
+    static void SetSpawnEffect(AnmVm *sprite,
+                               AnmVm *bulletTypeTemplate,
+                               Bullet *bullet, i32 spriteOffset);
     i32 SpawnBulletPattern(struct EnemyBulletShooter *bulletProps);
     Laser *SpawnLaserPattern(struct EnemyLaserShooter *laserProps);
     i32 SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x, i32 y,

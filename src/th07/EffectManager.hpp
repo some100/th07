@@ -82,7 +82,7 @@ struct EffectManager
 
     Effect *SpawnEffect(i32 effectId, Float3 *pos, i32 numParticles,
                         D3DCOLOR color);
-    Effect *SpawnSpecialEffect(i32 effectId, Float3 *pos, i32 effectIdx, i32 param_4,
+    Effect *SpawnSpecialEffect(i32 effectId, Float3 *pos, i32 effectIdx, i32 unused,
                                D3DCOLOR color);
     Effect *SpawnMovingParticles(i32 effectId, Float3 *pos,
                                  Float3 *velocity, i32 numParticles,

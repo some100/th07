@@ -203,13 +203,13 @@ i32 EffectManager::UpdateOrbitEffect(Effect *effect)
 // FUNCTION: TH07 0x0041aa60
 i32 EffectManager::InitRandomDir(Effect *effect)
 {
-    f32 fVar1;
+    f32 angle;
 
     effect->emitterPos = effect->pos;
     effect->emitterPos.z = 0.0f;
-    fVar1 = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
-    effect->direction.x = cosf(fVar1);
-    effect->direction.y = sinf(fVar1);
+    angle = g_Rng.GetRandomFloatInRange(ZUN_2PI) - ZUN_PI;
+    effect->direction.x = cosf(angle);
+    effect->direction.y = sinf(angle);
     effect->direction.z = 0.0f;
     return 0;
 }
@@ -490,11 +490,11 @@ i32 EffectManager::InitRandomDirWithSpeed(Effect *effect)
 // FUNCTION: TH07 0x0041bfd0
 i32 EffectManager::UpdateBurstEaseOut30Frames(Effect *effect)
 {
-    f32 fVar1;
+    f32 t;
 
-    fVar1 = effect->timer.AsFloat() / 90.0f;
-    fVar1 = 1.0f - (1.0f - fVar1) * (1.0f - fVar1);
-    effect->pos = fVar1 * effect->direction * 128.0f + effect->emitterPos;
+    t = effect->timer.AsFloat() / 90.0f;
+    t = 1.0f - (1.0f - t) * (1.0f - t);
+    effect->pos = t * effect->direction * 128.0f + effect->emitterPos;
     effect->pos.z = 0.0f;
     return 1;
 }
@@ -647,7 +647,7 @@ Effect *EffectManager::SpawnMovingParticles(i32 effectId, Float3 *pos,
 
 // FUNCTION: TH07 0x0041c610
 Effect *EffectManager::SpawnSpecialEffect(i32 effectId, Float3 *pos, i32 effectIdx,
-                                          i32 param_4, D3DCOLOR color)
+                                          i32 unused, D3DCOLOR color)
 {
     Effect *effect;
 

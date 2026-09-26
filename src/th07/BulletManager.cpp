@@ -106,10 +106,10 @@ BulletManager g_BulletManager;
 ChainElem g_BulletManagerCalcChain;
 
 // FUNCTION: TH07 0x00423660
-void BulletManager::SetActiveSpriteByResolution(AnmVm *sprite,
-                                                AnmVm *bulletTypeTemplate,
-                                                Bullet *bullet,
-                                                i32 spriteOffset)
+void BulletManager::SetSpawnEffect(AnmVm *sprite,
+                                   AnmVm *bulletTypeTemplate,
+                                   Bullet *bullet,
+                                   i32 spriteOffset)
 {
     if (sprite->activeSpriteIdx != bulletTypeTemplate->activeSpriteIdx + spriteOffset)
     {
@@ -171,7 +171,7 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x,
     {
         bulletSpeed = bulletProps->speed1 -
                       (bulletProps->speed1 - bulletProps->speed2) * (f32)y /
-                          (f32)(i32)bulletProps->count2;
+                          (f32)bulletProps->count2;
     }
     else
     {
@@ -181,7 +181,7 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x,
     {
     case BULLET_AIM_SPREAD_AIMED:
     case BULLET_AIM_SPREAD_ABSOLUTE:
-        if ((bulletProps->count1 & 1U) != 0)
+        if (bulletProps->count1 & 1)
         {
             bulletAngle += bulletProps->angle2 * (f32)((x + 1) / 2);
         }
@@ -189,27 +189,30 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x,
         {
             bulletAngle += (f32)(x / 2) * bulletProps->angle2 + bulletProps->angle2 * 0.5f;
         }
-        if ((x & 1U) != 0)
+
+        if (x & 1)
         {
             bulletAngle *= -1.0f;
         }
+
         if (bulletProps->aimMode == BULLET_AIM_SPREAD_AIMED)
         {
             bulletAngle += angle;
         }
+
         bulletAngle += bulletProps->angle1;
         break;
     case BULLET_AIM_RING_AIMED:
         bulletAngle += angle;
     case BULLET_AIM_RING_ABSOLUTE:
-        bulletAngle += (f32)x * ZUN_2PI / (f32)(i32)bulletProps->count1;
+        bulletAngle += (f32)x * ZUN_2PI / (f32)bulletProps->count1;
         bulletAngle += (f32)y * bulletProps->angle2 + bulletProps->angle1;
         break;
     case BULLET_AIM_RING_SHIFTED_AIMED:
         bulletAngle += angle;
     case BULLET_AIM_RING_SHIFTED_ABSOLUTE:
-        bulletAngle += ZUN_PI / (f32)(i32)bulletProps->count1;
-        bulletAngle += (f32)x * ZUN_2PI / (f32)(i32)bulletProps->count1;
+        bulletAngle += ZUN_PI / (f32)bulletProps->count1;
+        bulletAngle += (f32)x * ZUN_2PI / (f32)bulletProps->count1;
         bulletAngle += bulletProps->angle1;
         break;
     case BULLET_AIM_ANGLE_RANDOM:
@@ -219,7 +222,7 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x,
         break;
     case BULLET_AIM_RING_SPEED_RANDOM:
         bulletSpeed = g_Rng.GetRandomFloatInRange(bulletProps->speed1 - bulletProps->speed2) + bulletProps->speed2;
-        bulletAngle += (f32)x * ZUN_2PI / (f32)(i32)bulletProps->count1;
+        bulletAngle += (f32)x * ZUN_2PI / (f32)bulletProps->count1;
         bulletAngle += (f32)y * bulletProps->angle2 + bulletProps->angle1;
         break;
     case BULLET_AIM_RANDOM:
@@ -244,8 +247,8 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x,
     bullet->exFlags = (i16)bulletProps->flags;
     bullet->spriteOffset = bulletProps->spriteOffset;
     bullet->state2 = 0;
-    AnmVm::AssignVm(&bullet->sprites.spriteBullet, &bulletProps->sprites->spriteBullet);
-    AnmVm::AssignVm(&bullet->sprites.spriteSpawnEffectDonut, &bulletProps->sprites->spriteSpawnEffectDonut);
+    CopyBulletSpriteData(&bullet->sprites.spriteBullet, &bulletProps->sprites->spriteBullet);
+    CopyBulletSpriteData(&bullet->sprites.spriteSpawnEffectDonut, &bulletProps->sprites->spriteSpawnEffectDonut);
     bullet->sprites.grazeSize = bulletProps->sprites->grazeSize;
     bullet->sprites.unused_b88 = bulletProps->sprites->unused_b88;
     bullet->sprites.bulletHeight = bulletProps->sprites->bulletHeight;
@@ -297,17 +300,17 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x,
     unused = bulletProps->flags;
     if (bulletProps->flags & 2)
     {
-        AnmVm::AssignVm(&bullet->sprites.spriteSpawnEffectFast, &bulletProps->sprites->spriteSpawnEffectFast);
-        SetActiveSpriteByResolution(&bullet->sprites.spriteSpawnEffectFast,
-                                    &bulletProps->sprites->spriteSpawnEffectFast,
-                                    bullet, bulletProps->spriteOffset);
+        CopyBulletSpriteData(&bullet->sprites.spriteSpawnEffectFast, &bulletProps->sprites->spriteSpawnEffectFast);
+        SetSpawnEffect(&bullet->sprites.spriteSpawnEffectFast,
+                       &bulletProps->sprites->spriteSpawnEffectFast,
+                       bullet, bulletProps->spriteOffset);
         bullet->state = BULLET_SPAWNING_FAST;
         bullet->pos -= bullet->velocity * 4.0f;
     }
     else if (bulletProps->flags & 4)
     {
-        AnmVm::AssignVm(&bullet->sprites.spriteSpawnEffectNormal, &bulletProps->sprites->spriteSpawnEffectNormal);
-        SetActiveSpriteByResolution(
+        CopyBulletSpriteData(&bullet->sprites.spriteSpawnEffectNormal, &bulletProps->sprites->spriteSpawnEffectNormal);
+        SetSpawnEffect(
             &bullet->sprites.spriteSpawnEffectNormal,
             &bulletProps->sprites->spriteSpawnEffectNormal, bullet,
             (i32)bulletProps->spriteOffset);
@@ -316,8 +319,8 @@ i32 BulletManager::SpawnSingleBullet(EnemyBulletShooter *bulletProps, i32 x,
     }
     else if (bulletProps->flags & 8)
     {
-        AnmVm::AssignVm(&bullet->sprites.spriteSpawnEffectSlow, &bulletProps->sprites->spriteSpawnEffectSlow);
-        SetActiveSpriteByResolution(
+        CopyBulletSpriteData(&bullet->sprites.spriteSpawnEffectSlow, &bulletProps->sprites->spriteSpawnEffectSlow);
+        SetSpawnEffect(
             &bullet->sprites.spriteSpawnEffectSlow,
             &bulletProps->sprites->spriteSpawnEffectSlow, bullet,
             (i32)bulletProps->spriteOffset);

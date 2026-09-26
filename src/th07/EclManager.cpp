@@ -574,12 +574,12 @@ f32 *EclManager::GetFloatVar(Enemy *enemy, f32 *eclVar, u16 paramMask,
 // FUNCTION: TH07 0x0040f6b0
 void EclManager::MoveDirTime(Enemy *enemy, EclRawInstr *instr)
 {
-    f32 fVar2;
+    f32 angle;
 
-    fVar2 = AddNormalizeAngle(GET_FLOAT_VALUE(enemy, 2), 0.0f);
-    enemy->moveInterp.x = cosf(fVar2) * GET_FLOAT_VALUE(enemy, 3) *
+    angle = AddNormalizeAngle(GET_FLOAT_VALUE(enemy, 2), 0.0f);
+    enemy->moveInterp.x = cosf(angle) * GET_FLOAT_VALUE(enemy, 3) *
                           (f32)GET_INT_VALUE(enemy, 0);
-    enemy->moveInterp.y = sinf(fVar2) * GET_FLOAT_VALUE(enemy, 3) *
+    enemy->moveInterp.y = sinf(angle) * GET_FLOAT_VALUE(enemy, 3) *
                           (f32)GET_INT_VALUE(enemy, 0);
     enemy->moveInterp.z = 0.0f;
     enemy->moveInterpStartPos = enemy->pos;
@@ -2247,7 +2247,7 @@ restart:
                 if (!enemy->isSurvivalSpellcard)
                 {
                     g_EnemyManager.spellcardInfo.captureScore =
-                        (i32)((f32)(i32)
+                        (i32)((f32)
                                   g_SpellcardScore[g_EnemyManager.spellcardInfo.spellcardIdx] -
                               g_EnemyManager.timer.AsFloat() *
                                   (f32)g_EnemyManager.spellcardInfo.scoreDrainRate /

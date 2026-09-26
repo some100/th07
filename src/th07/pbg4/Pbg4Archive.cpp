@@ -320,12 +320,12 @@ err:
 // FUNCTION: TH07 0x0045ffc0
 char *Pbg4Archive::CopyFileName(const char *filename)
 {
-    char *pcVar2;
+    char *filenameBuf;
 
-    pcVar2 = (char *)GlobalAlloc(0, strlen(filename) + 1);
-    if (pcVar2)
+    filenameBuf = (char *)GlobalAlloc(0, strlen(filename) + 1);
+    if (filenameBuf)
     {
-        strcpy(pcVar2, filename);
+        strcpy(filenameBuf, filename);
     }
-    return pcVar2;
+    return filenameBuf;
 }

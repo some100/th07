@@ -40,8 +40,9 @@ struct ScreenEffect
 
     static void Clear(D3DCOLOR color);
     static void DrawSquare(ZunRect *rect, D3DCOLOR color);
-    static void DrawColoredQuad(ZunRect *rect, D3DCOLOR param_2, D3DCOLOR param_3,
-                                D3DCOLOR param_4, D3DCOLOR param_5);
+    static void DrawColoredQuad(ZunRect *rect, D3DCOLOR topLeft,
+                                D3DCOLOR topRight, D3DCOLOR bottomLeft,
+                                D3DCOLOR bottomRight);
     static void SetViewport(D3DCOLOR color);
 
     i32 type;
@@ -50,7 +51,9 @@ struct ScreenEffect
     i32 field3_0xc;
     i32 alpha;
     i32 duration;
-    u32 args[3];
+    i32 effectArg1;
+    i32 effectArg2;
+    u32 effectArg3;
     ZunTimer timer;
 };
 C_ASSERT(sizeof(ScreenEffect) == 0x30);

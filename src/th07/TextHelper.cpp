@@ -307,7 +307,7 @@ bool TextHelper::InvertAlpha(i32 x, i32 y, i32 spriteWidth, i32 fontHeight,
     case D3DFMT_A4R4G4B4:
         for (i = 1; i < doubleArea; i += 2)
         {
-            bufferRegion[i] ^= 0xf0;
+            bufferRegion[i] ^= 240;
         }
         break;
     default:

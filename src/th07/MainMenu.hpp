@@ -120,7 +120,7 @@ struct MainMenu
         memset(this, 0, sizeof(MainMenu));
     }
 
-    static ZunResult RegisterChain(u32 param_1);
+    static ZunResult RegisterChain(u32 unused);
 
     static ZunResult AddedCallback(MainMenu *arg);
     static ZunResult DeletedCallback(MainMenu *arg);

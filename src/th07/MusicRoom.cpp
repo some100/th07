@@ -141,10 +141,10 @@ i32 MusicRoom::ProcessInput()
 // FUNCTION: TH07 0x0043ab60
 u32 MusicRoom::OnUpdate(MusicRoom *arg)
 {
-    i32 iVar1;
+    i32 prevInputEnable;
     i32 i;
 
-    iVar1 = arg->enableInput;
+    prevInputEnable = arg->enableInput;
 recheck:
     switch (arg->enableInput)
     {
@@ -162,7 +162,7 @@ recheck:
     default:
         break;
     }
-    if (iVar1 != arg->enableInput)
+    if (prevInputEnable != arg->enableInput)
     {
         arg->waitFramesCounter = 0;
     }

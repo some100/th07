@@ -35,7 +35,7 @@ void ExInsSpawnBulletsWithDirChange(Enemy *enemy, EclRawInstr *instr);
 void ExInsSpawnBulletsWithDirChange2(Enemy *enemy, EclRawInstr *instr);
 } // namespace EnemyEclInstr
 
-ZunBool IsPointInRotatedRect(Float3 *param_1, Float3 *param_2,
-                         Float3 *param_3, Float3 *param_4,
-                         f32 param_5, f32 param_6);
+ZunBool IsPointInRotatedRect(Float3 *point, Float3 *center,
+                             Float3 *size, Float3 *pivot,
+                             f32 sine, f32 cosine);
 void ModifyEffect1eAcceleration();

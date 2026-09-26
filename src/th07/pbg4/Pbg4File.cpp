@@ -222,12 +222,12 @@ void Pbg4File::GetFullPath(char *out, const char *filename)
     else
     {
         GetModuleFileNameA(NULL, out, 0x104);
-        char *pcVar2 = strrchr(out, '\\');
-        if (!pcVar2)
+        char *backslashPos = strrchr(out, '\\');
+        if (!backslashPos)
         {
             strcpy(out, "");
         }
-        pcVar2[1] = '\0';
+        backslashPos[1] = '\0';
         strcat(out, filename);
     }
 }

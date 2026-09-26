@@ -2716,7 +2716,7 @@ ZunResult MainMenu::DeletedCallback(MainMenu *arg)
 }
 
 // FUNCTION: TH07 0x0045c5d0
-ZunResult MainMenu::RegisterChain(u32 param_1)
+ZunResult MainMenu::RegisterChain(u32 unused)
 {
     MainMenu *mgr = ZUN_NEW(MainMenu, "TitleInf");
 

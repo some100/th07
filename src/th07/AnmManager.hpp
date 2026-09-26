@@ -341,14 +341,6 @@ struct AnmVm : AnmVmBase
         this->activeSpriteIdx = -1;
     }
 
-    static void AssignVm(AnmVm *out, AnmVm *vm)
-    {
-        if (out->anmFileIdx != vm->anmFileIdx || vm->currentInstruction)
-        {
-            *out = *vm;
-        }
-    }
-
     i32 *GetVar(i32 *paramId, u16 mask, u32 idx);
     f32 *GetFloatVar(f32 *paramId, u16 mask, u32 idx);
     f32 GetFloatVarValue(f32 arg);

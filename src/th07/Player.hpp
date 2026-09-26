@@ -152,7 +152,7 @@ struct PlayerBulletTimer
 
 struct Player
 {
-    static ZunResult RegisterChain(u32 param_1);
+    static ZunResult RegisterChain(u32 param);
     static void CutChain();
 
     static ZunResult AddedCallback(Player *arg);
@@ -182,14 +182,14 @@ struct Player
     i32 CalcLaserHitbox(Float3 *center, Float3 *size,
                         Float3 *origin, f32 rotation, ZunBool canGraze);
     i32 CalcBombCollision(Float3 *center, Float3 *size);
-    i32 CalcDamageToEnemy(Float3 *param_1, Float3 *param_2,
-                          i32 *param_3);
+    i32 CalcDamageToEnemy(Float3 *center, Float3 *size,
+                          i32 *enemyHitByBomb);
     i32 CheckGraze(Float3 *center, Float3 *size);
 
     void Die();
     i32 HandlePlayerInputs();
     void Respawn();
-    void ScoreGraze(Float3 *param_1);
+    void ScoreGraze(Float3 *pos);
     BombCancelRegion *SpawnCancelRegionCircle(Float3 *pos, f32 radius, f32 radiusGrowth,
                                               i32 lifetime, i32 itemType);
     BombCancelRegion *SpawnCancelRegionRect(Float3 *centerPosition, f32 sizeX,

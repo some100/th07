@@ -588,10 +588,10 @@ ZunResult SoundPlayer::InitSoundBuffers()
 // FUNCTION: TH07 0x0044c930
 void SoundPlayer::PlaySoundByIdx(i32 idx, u32 unused)
 {
-    i32 iVar1;
+    i32 unk;
     i32 i;
 
-    iVar1 = SOUND_BUFFER_IDX_VOL[idx].field2_0x6;
+    unk = SOUND_BUFFER_IDX_VOL[idx].field2_0x6;
     for (i = 0; i < ARRAY_SIZE_SIGNED(this->soundQueue); i++)
     {
         if (this->soundQueue[i] < 0)
@@ -610,7 +610,7 @@ void SoundPlayer::PlaySoundByIdx(i32 idx, u32 unused)
     }
 
     this->soundQueue[i] = idx;
-    this->unusedSoundVolRelated[idx] = iVar1;
+    this->unusedSoundVolRelated[idx] = unk;
 }
 
 #pragma var_order(loopAgain, i, commandCursor, curSound, buffer, name, fmtIdx, buffer2)

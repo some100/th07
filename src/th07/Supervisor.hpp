@@ -111,7 +111,7 @@ struct Supervisor
     ZunResult CheckIntegrity(const char *version, i32 exeSize, i32 exeChecksum);
     void CheckTiming();
     static i32 CheckVSync();
-    static void DrawFpsCounter(i32 param_1);
+    static void DrawFpsCounter(i32 showFps);
     i32 FadeOutMusic(f32 musicFadeFrames);
     HRESULT DisableFog();
     HRESULT EnableFog();
@@ -120,9 +120,9 @@ struct Supervisor
     static ZunResult LoadGameData();
     ZunResult PlayAudio(const char *path);
     ZunResult PlayLoadedAudio(i32 idx);
-    void SetRenderState(D3DRENDERSTATETYPE stateType, DWORD param_2);
+    void SetRenderState(D3DRENDERSTATETYPE stateType, DWORD state);
     ZunResult SetupDInput();
-    i32 TakeSnapshot(const char *filename);
+    ZunBool TakeSnapshot(const char *filename);
     ZunResult StopAudio();
     void TickTimer(i32 *frames, f32 *subFrames);
     void UpdateStartupTime();
@@ -130,10 +130,10 @@ struct Supervisor
 
     i32 IsSlowMode();
 
-    static i32 __stdcall ControllerCallback(LPCDIDEVICEOBJECTINSTANCE param_1,
-                                            void *param_2);
-    static i32 __stdcall EnumGameControllersCb(LPCDIDEVICEINSTANCEA param_1,
-                                               void *param_2);
+    static BOOL CALLBACK ControllerCallback(LPCDIDEVICEOBJECTINSTANCE lpddoi,
+                                            LPVOID pvRef);
+    static BOOL CALLBACK EnumGameControllersCb(LPCDIDEVICEINSTANCEA pdidInstance,
+                                               LPVOID pvRef);
 
     void InitializeTimingVars()
     {

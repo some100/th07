@@ -361,13 +361,13 @@ struct EnemyManager
     static u32 OnDraw1(EnemyManager *arg);
     static u32 OnDraw2(EnemyManager *arg);
 
-    static u32 ActualOnDraw(EnemyManager *arg, i32 param_2, i32 param_3);
+    static u32 ActualOnDraw(EnemyManager *arg, i32 first, i32 last);
 
     ZunBool HasActiveBoss();
     i32 RemoveAllEnemies(i32 scoreMax, i32 scoreMin);
     static void RunEclTimeline(EclTimeline *timeline);
     Enemy *SpawnEnemy(i32 eclSubId, Float3 *pos, i32 life, i32 itemDrop,
-                      i32 score, u8 param_6);
+                      i32 score, u8 mirror);
     Enemy *SpawnEnemyEx(i32 eclSubId, Float3 *pos, i32 life, i32 itemDrop,
                         i32 score, EclContextArgs *args);
 

@@ -94,26 +94,26 @@ f32 InterpCubic(f32 p0, f32 p1, f32 p2, f32 p3, f32 t)
 }
 
 // FUNCTION: TH07 0x00405370
-void Stage::UpdateScriptAndCamera(Stage *stage, i32 param_2,
-                                  Float3 *param_3, Float3 *param_4,
-                                  Float3 *param_5, Float3 *param_6,
-                                  Float3 *param_7)
+void Stage::UpdateScriptAndCamera(Stage *stage, i32 camIdx,
+                                  Float3 *output, Float3 *start,
+                                  Float3 *end, Float3 *control1,
+                                  Float3 *control2)
 {
     f32 t;
 
-    if (stage->timers[param_2] < stage->timersMax[param_2])
+    if (stage->timers[camIdx] < stage->timersMax[camIdx])
     {
-        stage->timers[param_2]++;
-        t = stage->timers[param_2].AsFloat() /
-            (f32)stage->timersMax[param_2];
+        stage->timers[camIdx]++;
+        t = stage->timers[camIdx].AsFloat() /
+            (f32)stage->timersMax[camIdx];
     }
     else
     {
-        stage->timers[param_2] = stage->timersMax[param_2];
+        stage->timers[camIdx] = stage->timersMax[camIdx];
         t = 1.0f;
-        stage->timersMax[param_2] = 0;
+        stage->timersMax[camIdx] = 0;
     }
-    switch (stage->easeModes[param_2])
+    switch (stage->easeModes[camIdx])
     {
     case STAGE_EASE_OUT_QUAD:
         t = 1.0f - t;
@@ -136,19 +136,19 @@ void Stage::UpdateScriptAndCamera(Stage *stage, i32 param_2,
     case STAGE_EASE_IN_QUART:
         t = t * t * t * t;
     }
-    if (stage->easeModes[param_2] != STAGE_EASE_CUBIC_INTERP)
+    if (stage->easeModes[camIdx] != STAGE_EASE_CUBIC_INTERP)
     {
-        *param_3 = *param_5 - *param_4;
-        *param_3 = t * *param_3 + *param_4;
+        *output = *end - *start;
+        *output = t * *output + *start;
     }
     else
     {
-        param_3->x =
-            InterpCubic(param_4->x, param_5->x, param_6->x, param_7->x, t);
-        param_3->y =
-            InterpCubic(param_4->y, param_5->y, param_6->y, param_7->y, t);
-        param_3->z =
-            InterpCubic(param_4->z, param_5->z, param_6->z, param_7->z, t);
+        output->x =
+            InterpCubic(start->x, end->x, control1->x, control2->x, t);
+        output->y =
+            InterpCubic(start->y, end->y, control1->y, control2->y, t);
+        output->z =
+            InterpCubic(start->z, end->z, control1->z, control2->z, t);
     }
 }
 
@@ -508,25 +508,25 @@ LAB_004061aa: {
 }
 
 // FUNCTION: TH07 0x00406930
-void Stage::SmoothBlendColor(ZunColor param_1)
+void Stage::SmoothBlendColor(ZunColor color)
 {
-    ZunColor color;
+    ZunColor tmpColor;
 
     if (!this->color2.bytes.a)
     {
-        this->color2 = param_1;
+        this->color2 = color;
     }
     else
     {
-        color = param_1;
+        tmpColor = color;
         this->color2.bytes.r =
-            (u8)((color.bytes.r + (u32)this->color2.bytes.r) >> 1);
+            (u8)((tmpColor.bytes.r + (u32)this->color2.bytes.r) >> 1);
         this->color2.bytes.g =
-            (u8)((color.bytes.g + (u32)this->color2.bytes.g) >> 1);
+            (u8)((tmpColor.bytes.g + (u32)this->color2.bytes.g) >> 1);
         this->color2.bytes.b =
-            (u8)((color.bytes.b + (u32)this->color2.bytes.b) >> 1);
+            (u8)((tmpColor.bytes.b + (u32)this->color2.bytes.b) >> 1);
         this->color2.bytes.a =
-            (u8)((color.bytes.a + (u32)this->color2.bytes.a) >> 1);
+            (u8)((tmpColor.bytes.a + (u32)this->color2.bytes.a) >> 1);
     }
 }
 

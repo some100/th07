@@ -819,7 +819,7 @@ void Player::StartFireBulletTimer()
 #pragma var_order(bullet, i, enemyBottomRight, bulletBottomRight, enemyTopLeft, damage, bulletTopLeft)
 // FUNCTION: TH07 0x0043d9e0
 i32 Player::CalcDamageToEnemy(Float3 *center, Float3 *size,
-                              i32 *param_3)
+                              i32 *enemyHitByBomb)
 {
     Float3 bulletTopLeft;
     i32 damage;
@@ -841,9 +841,9 @@ i32 Player::CalcDamageToEnemy(Float3 *center, Float3 *size,
     enemyBottomRight.y = center->y + size->y * 0.5f;
 
     bullet = this->bullets;
-    if (param_3)
+    if (enemyHitByBomb)
     {
-        *param_3 = 0;
+        *enemyHitByBomb = 0;
     }
     for (i = 0; i < ARRAY_SIZE_SIGNED(this->bullets); i++, bullet++)
     {
@@ -932,9 +932,9 @@ i32 Player::CalcDamageToEnemy(Float3 *center, Float3 *size,
                 g_EffectManager.SpawnEffect(5, center, 1, 0xffffffff);
             }
         }
-        if (this->bombInfo.isInUse && param_3)
+        if (this->bombInfo.isInUse && enemyHitByBomb)
         {
-            *param_3 = 1;
+            *enemyHitByBomb = 1;
         }
     }
     return damage;
@@ -1170,7 +1170,7 @@ LASER_COLLISION:
 }
 
 // FUNCTION: TH07 0x0043eb90
-void Player::ScoreGraze(Float3 *param_1)
+void Player::ScoreGraze(Float3 *pos)
 {
     Float3 grazePos;
 
@@ -1185,7 +1185,7 @@ void Player::ScoreGraze(Float3 *param_1)
             g_GameManager.globals->grazeInTotal++;
         }
     }
-    grazePos = (this->pos + *param_1) / 2.0f;
+    grazePos = (this->pos + *pos) / 2.0f;
     if (this->borderState == BORDER_ACTIVE)
     {
         if (this->isFocus)
@@ -2497,12 +2497,12 @@ ZunResult Player::DeletedCallback(Player *arg)
 }
 
 // FUNCTION: TH07 0x004429d0
-ZunResult Player::RegisterChain(u32 param_1)
+ZunResult Player::RegisterChain(u32 param)
 {
     Player *mgr = &g_Player;
     memset(mgr, 0, sizeof(Player));
     mgr->invulnerabilityTimer = 0;
-    mgr->initParam = param_1;
+    mgr->initParam = param;
     mgr->calcChain = g_Chain.CreateElem((ChainCallback)OnUpdate);
     mgr->drawChain1 = g_Chain.CreateElem((ChainCallback)OnDrawHighPrio);
     mgr->drawChain2 = g_Chain.CreateElem((ChainCallback)OnDrawLowPrio);

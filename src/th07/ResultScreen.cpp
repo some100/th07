@@ -2092,12 +2092,12 @@ ZunResult ResultScreen::DrawFinalStats()
         pos.y += 22.0f;
         AsciiManager::AddFormatText(&g_AsciiManager, &pos, "%9d",
                                     (i32)g_GameManager.globals->deaths);
-        rankingProbably -= (f32)(i32)g_GameManager.globals->deaths * 5.0f - 10.0f;
+        rankingProbably -= (f32)g_GameManager.globals->deaths * 5.0f - 10.0f;
 
         pos.y += 22.0f;
         AsciiManager::AddFormatText(&g_AsciiManager, &pos, "%9d",
                                     (i32)g_GameManager.globals->bombsUsed);
-        rankingProbably -= (f32)(i32)g_GameManager.globals->bombsUsed * 2.0f - 10.0f;
+        rankingProbably -= (f32)g_GameManager.globals->bombsUsed * 2.0f - 10.0f;
 
         pos.y += 22.0f;
         AsciiManager::AddFormatText(&g_AsciiManager, &pos, "%9d",

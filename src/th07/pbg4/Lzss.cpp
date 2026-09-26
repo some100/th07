@@ -391,9 +391,9 @@ void Lzss::DeleteString(i32 node)
     }
     else
     {
-        i32 iVar1 = FindNextNode(node);
-        DeleteString(iVar1);
-        ReplaceNode(node, iVar1);
+        i32 nextNode = FindNextNode(node);
+        DeleteString(nextNode);
+        ReplaceNode(node, nextNode);
     }
 }
 

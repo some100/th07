@@ -43,20 +43,21 @@ u32 ScreenEffect::OnUpdateFadeOut(ScreenEffect *arg)
 {
     if (arg->duration != 0)
     {
-        arg->alpha = (i32)(255.0f - arg->timer.AsFloat() * 255.0f /
-                                        (f32)arg->duration);
+        arg->alpha = 255.0f - arg->timer.AsFloat() * 255.0f /
+                                  (f32)arg->duration;
         if (arg->alpha < 0)
         {
-            arg->alpha = (i32)0.0f;
+            arg->alpha = 0;
         }
     }
+
     if (arg->timer >= arg->duration)
     {
-        return 0;
+        return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
     }
 
     arg->timer++;
-    return 1;
+    return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
 // FUNCTION: TH07 0x0044a650
@@ -106,9 +107,9 @@ void ScreenEffect::DrawSquare(ZunRect *rect, D3DCOLOR color)
 }
 
 // FUNCTION: TH07 0x0044aa20
-void ScreenEffect::DrawColoredQuad(ZunRect *rect, D3DCOLOR param_2,
-                                   D3DCOLOR param_3, D3DCOLOR param_4,
-                                   D3DCOLOR param_5)
+void ScreenEffect::DrawColoredQuad(ZunRect *rect, D3DCOLOR topLeft,
+                                   D3DCOLOR topRight, D3DCOLOR bottomLeft,
+                                   D3DCOLOR bottomRight)
 {
     g_AnmManager->Flush();
 
@@ -119,10 +120,10 @@ void ScreenEffect::DrawColoredQuad(ZunRect *rect, D3DCOLOR param_2,
     vertices[2].pos = Float3(rect->left, rect->bottom, 0.0f);
     vertices[3].pos = Float3(rect->right, rect->bottom, 0.0f);
     vertices[0].w = vertices[1].w = vertices[2].w = vertices[3].w = 1.0f;
-    vertices[0].diffuse.color = param_2;
-    vertices[1].diffuse.color = param_3;
-    vertices[2].diffuse.color = param_4;
-    vertices[3].diffuse.color = param_5;
+    vertices[0].diffuse.color = topLeft;
+    vertices[1].diffuse.color = topRight;
+    vertices[2].diffuse.color = bottomLeft;
+    vertices[3].diffuse.color = bottomRight;
     if (!g_Supervisor.cfg.disableTextureBlend)
     {
         g_Supervisor.d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
@@ -160,16 +161,16 @@ u32 ScreenEffect::OnDrawFullScreenColor(ScreenEffect *arg)
 
     rect.left = 0.0f;
     rect.top = 0.0f;
-    rect.right = (f32)GAME_WINDOW_WIDTH;
-    rect.bottom = (f32)GAME_WINDOW_HEIGHT;
+    rect.right = GAME_WINDOW_WIDTH;
+    rect.bottom = GAME_WINDOW_HEIGHT;
     g_AnmManager->Flush();
     g_Supervisor.viewport.X = 0;
     g_Supervisor.viewport.Y = 0;
     g_Supervisor.viewport.Width = GAME_WINDOW_WIDTH;
     g_Supervisor.viewport.Height = GAME_WINDOW_HEIGHT;
     g_Supervisor.d3dDevice->SetViewport(&g_Supervisor.viewport);
-    ScreenEffect::DrawSquare(&rect, arg->alpha << 24 | arg->args[0]);
-    return 1;
+    ScreenEffect::DrawSquare(&rect, arg->alpha << 24 | arg->effectArg1);
+    return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
 // FUNCTION: TH07 0x0044ae90
@@ -177,19 +178,19 @@ u32 ScreenEffect::OnUpdateFadeIn(ScreenEffect *arg)
 {
     if (arg->duration != 0)
     {
-        arg->alpha = (i32)(arg->timer.AsFloat() * 255.0f / (f32)arg->duration);
+        arg->alpha = arg->timer.AsFloat() * 255.0f / (f32)arg->duration;
         if (arg->alpha < 0)
         {
-            arg->alpha = (i32)0.0f;
+            arg->alpha = 0;
         }
     }
     if (arg->timer >= arg->duration)
     {
-        return 0;
+        return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
     }
 
     arg->timer++;
-    return 1;
+    return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
 // FUNCTION: TH07 0x0044af30
@@ -201,8 +202,8 @@ u32 ScreenEffect::OnDrawPlayAreaColor(ScreenEffect *arg)
     rect.top = 16.0f;
     rect.right = 416.0f;
     rect.bottom = 464.0f;
-    ScreenEffect::DrawSquare(&rect, arg->alpha << 24 | arg->args[0]);
-    return 1;
+    ScreenEffect::DrawSquare(&rect, arg->alpha << 24 | arg->effectArg1);
+    return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
 // FUNCTION: TH07 0x0044af80
@@ -210,8 +211,8 @@ u32 ScreenEffect::OnUpdatePulse(ScreenEffect *arg)
 {
     if (arg->timer < arg->duration)
     {
-        arg->alpha = ((arg->args[1] >> 24) & 255) -
-                     (i32)(((arg->args[1] >> 24) & 255) * arg->timer.AsFloat() / arg->duration);
+        arg->alpha = (((u32)arg->effectArg2 >> 24) & 255) -
+                     (i32)((((u32)arg->effectArg2 >> 24) & 255) * arg->timer.AsFloat() / arg->duration);
         if (arg->alpha < 0)
         {
             arg->alpha = 0;
@@ -220,15 +221,15 @@ u32 ScreenEffect::OnUpdatePulse(ScreenEffect *arg)
     else
     {
         arg->alpha = 0;
-        arg->args[0]--;
-        if ((i32)arg->args[0] <= 0)
+        arg->effectArg1--;
+        if (arg->effectArg1 <= 0)
         {
-            return 0;
+            return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
         }
         arg->timer = 0;
     }
     arg->timer++;
-    return 1;
+    return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
 // FUNCTION: TH07 0x0044b090
@@ -241,8 +242,8 @@ u32 ScreenEffect::OnDrawPlayAreaPulseColor(ScreenEffect *arg)
     rect.right = 416.0f;
     rect.bottom = 464.0f;
     ScreenEffect::DrawSquare(&rect,
-                             arg->alpha << 24 | (arg->args[1] & 0xffffff));
-    return 1;
+                             arg->alpha << 24 | (arg->effectArg2 & 0xffffff));
+    return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
 // FUNCTION: TH07 0x0044b0e0
@@ -250,33 +251,33 @@ u32 ScreenEffect::OnUpdateScreenShake(ScreenEffect *arg)
 {
     if (g_GameManager.isTimeStopped)
     {
-        return 1;
+        return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
 
     if (g_GameManager.framesThisStage <= 1)
     {
-        return 0;
+        return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
     }
 
     arg->timer++;
     if (arg->timer >= arg->duration)
     {
-        return 0;
+        return CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB;
     }
 
-    f32 fVar1 = (f32)(i32)(arg->args[1] - arg->args[0]) * arg->timer.AsFloat();
-    fVar1 /= (f32)arg->duration;
-    fVar1 += (f32)(i32)arg->args[0];
+    f32 offset = (f32)(arg->effectArg2 - arg->effectArg1) * arg->timer.AsFloat();
+    offset /= (f32)arg->duration;
+    offset += (f32)arg->effectArg1;
     switch (g_Rng.GetRandomU32InRange(3))
     {
     case 0:
         g_AnmManager->offset.x = 0.0f;
         break;
     case 1:
-        g_AnmManager->offset.x = fVar1;
+        g_AnmManager->offset.x = offset;
         break;
     case 2:
-        g_AnmManager->offset.x = -fVar1;
+        g_AnmManager->offset.x = -offset;
     }
     switch (g_Rng.GetRandomU32InRange(3))
     {
@@ -284,12 +285,12 @@ u32 ScreenEffect::OnUpdateScreenShake(ScreenEffect *arg)
         g_AnmManager->offset.y = 0.0f;
         break;
     case 1:
-        g_AnmManager->offset.y = fVar1;
+        g_AnmManager->offset.y = offset;
         break;
     case 2:
-        g_AnmManager->offset.y = -fVar1;
+        g_AnmManager->offset.y = -offset;
     }
-    return 1;
+    return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
 // FUNCTION: TH07 0x0044b280
@@ -350,9 +351,9 @@ ScreenEffect *ScreenEffect::RegisterChain(i32 type, i32 duration, u32 arg1,
     calcChain->arg = mgr;
     mgr->type = type;
     mgr->duration = duration;
-    mgr->args[0] = arg1;
-    mgr->args[1] = arg2;
-    mgr->args[2] = arg3;
+    mgr->effectArg1 = arg1;
+    mgr->effectArg2 = arg2;
+    mgr->effectArg3 = arg3;
     if (g_Chain.AddToCalcChain(calcChain, CHAIN_PRIO_CALC_SCREENEFFECT))
     {
         return NULL;

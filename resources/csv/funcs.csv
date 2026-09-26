@@ -194,7 +194,7 @@ address|name|type
 00423420|BulletTypeSprites::BulletTypeSprites|function
 00423510|Bullet::Bullet|function
 004235d0|Laser::Laser|function
-00423660|BulletManager::SetActiveSpriteByResolution|function
+00423660|BulletManager::SetSpawnEffect|function
 00423730|BulletManager::SpawnSingleBullet|function
 00424290|Bullet::RunCommands|function
 00424740|BulletManager::RemoveAllBullets|function

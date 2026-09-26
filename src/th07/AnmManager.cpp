@@ -2710,13 +2710,13 @@ void AnmManager::ExecuteVmsAnms(AnmVm *vm, i32 idx, i32 vmCount)
     }
 }
 
-#pragma var_order(uvY, i, vertex, startuvX, uvX, fVar4, num)
+#pragma var_order(uvY, i, vertex, startuvX, uvX, uvStepX, num)
 // FUNCTION: TH07 0x00455170
 ZunResult AnmManager::UpdateTrail(AnmVm *vm, VertexTex1DiffuseXyzrhw *vertices,
                                   i32 count)
 {
     f32 num;
-    f32 fVar4;
+    f32 uvStepX;
     f32 uvX;
     f32 startuvX;
     VertexTex1DiffuseXyzrhw *vertex;
@@ -2731,9 +2731,9 @@ ZunResult AnmManager::UpdateTrail(AnmVm *vm, VertexTex1DiffuseXyzrhw *vertices,
     num = vm->sprite->uvEnd.x - vm->sprite->uvStart.x;
     uvY = vm->sprite->uvStart.y + vm->uvScrollPos.y;
     vertex = vertices;
-    fVar4 = num / (float)((count + 1) / 2 - 1);
+    uvStepX = num / (float)((count + 1) / 2 - 1);
 
-    for (i = 0, uvX = startuvX; i < count; i += 2, vertex += 2, uvX = uvX - fVar4)
+    for (i = 0, uvX = startuvX; i < count; i += 2, vertex += 2, uvX -= uvStepX)
     {
         vertex->textureUV.x = uvX;
         vertex->textureUV.y = uvY;
@@ -2744,7 +2744,7 @@ ZunResult AnmManager::UpdateTrail(AnmVm *vm, VertexTex1DiffuseXyzrhw *vertices,
     uvY = vm->sprite->uvEnd.y + vm->uvScrollPos.y;
     vertex = vertices + 1;
 
-    for (i = 1, uvX = startuvX; i < count; i += 2, vertex += 2, uvX = uvX - fVar4)
+    for (i = 1, uvX = startuvX; i < count; i += 2, vertex += 2, uvX -= uvStepX)
     {
         vertex->textureUV.x = uvX;
         vertex->textureUV.y = uvY;

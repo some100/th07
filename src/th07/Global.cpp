@@ -73,7 +73,7 @@ Chain::Chain()
 // FUNCTION: TH07 0x0042fbd0
 ZunResult Chain::AddToCalcChain(ChainElem *elem, i32 priority)
 {
-    ZunResult uVar1;
+    ZunResult result;
     ChainElem *curElem;
 
     curElem = &this->calcChain;
@@ -86,6 +86,7 @@ ZunResult Chain::AddToCalcChain(ChainElem *elem, i32 priority)
         }
         curElem = curElem->next;
     }
+
     if (curElem->priority > priority)
     {
         elem->next = curElem;
@@ -102,16 +103,15 @@ ZunResult Chain::AddToCalcChain(ChainElem *elem, i32 priority)
         elem->prev = curElem;
         curElem->next = elem;
     }
+
     if (elem->addedCallback)
     {
-        uVar1 = elem->addedCallback(elem->arg);
+        result = elem->addedCallback(elem->arg);
         elem->addedCallback = NULL;
-        return uVar1;
+        return result;
     }
-    else
-    {
-        return ZUN_SUCCESS;
-    }
+
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x0042fca0
@@ -129,6 +129,7 @@ ZunResult Chain::AddToDrawChain(ChainElem *elem, i32 priority)
         }
         curElem = curElem->next;
     }
+
     if (curElem->priority > priority)
     {
         elem->next = curElem;
@@ -145,6 +146,7 @@ ZunResult Chain::AddToDrawChain(ChainElem *elem, i32 priority)
         elem->prev = curElem;
         curElem->next = elem;
     }
+
     if (elem->addedCallback)
     {
         return elem->addedCallback(elem->arg);
@@ -405,15 +407,15 @@ u32 Controller::SetButtonFromControllerInputs(u16 *outButtons,
     return (inputButtons & mask) != 0 ? (u16)touhouButton : 0;
 }
 
-#pragma var_order(pji, distance, DVar1, DVar2, hr, js, retryCount)
+#pragma var_order(pji, distance, shootPressed, shootPressed2, hr, js, retryCount)
 // FUNCTION: TH07 0x004303f0
 u16 Controller::GetControllerInput(u16 buttons)
 {
     i32 retryCount;
     DIJOYSTATE2 js;
     i32 hr;
-    u32 DVar2;
-    u32 DVar1;
+    u32 shootPressed2;
+    u32 shootPressed;
     u32 distance;
     JOYINFOEX pji;
 
@@ -427,12 +429,12 @@ u16 Controller::GetControllerInput(u16 buttons)
             return buttons;
         }
 
-        DVar1 = SetButtonFromControllerInputs(
+        shootPressed = SetButtonFromControllerInputs(
             &buttons, g_Supervisor.cfg.controllerMapping.shootButton,
             TH_BUTTON_SHOOT, pji.dwButtons);
         if (g_Supervisor.cfg.shotSlow)
         {
-            if (DVar1 != 0)
+            if (shootPressed != 0)
             {
                 if (g_AutoFocusTimer < 20)
                 {
@@ -533,12 +535,12 @@ u16 Controller::GetControllerInput(u16 buttons)
                 return buttons;
             }
 
-            DVar2 = SetButtonFromDirectInputJoystate(
+            shootPressed2 = SetButtonFromDirectInputJoystate(
                 &buttons, g_Supervisor.cfg.controllerMapping.shootButton, 1,
                 js.rgbButtons);
             if (g_Supervisor.cfg.shotSlow)
             {
-                if (DVar2 != 0)
+                if (shootPressed2 != 0)
                 {
                     if (g_AutoFocusTimer < 20)
                     {
@@ -922,10 +924,10 @@ const char *GameErrorContext::Fatal(const char *fmt, ...)
 // FUNCTION: TH07 0x00431870
 u16 Rng::GetRandomU16()
 {
-    u16 uVar1;
+    u16 tmp;
 
-    uVar1 = (this->seed ^ 0x9630) - 0x6553;
-    this->seed = ((uVar1 & 0xc000) >> 14) + uVar1 * 4 & 0xFFFF;
+    tmp = (this->seed ^ 0x9630) - 0x6553;
+    this->seed = ((tmp & 0xc000) >> 14) + tmp * 4 & 0xFFFF;
     this->generationCount++;
     return this->seed;
 }
