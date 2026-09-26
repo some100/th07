@@ -107,10 +107,8 @@ bool TextHelper::ReleaseBuffer()
         this->buffer = NULL;
         return true;
     }
-    else
-    {
-        return false;
-    }
+
+    return false;
 }
 
 // FUNCTION: TH07 0x00431ace
@@ -121,18 +119,18 @@ bool TextHelper::AllocateBufferWithFallback(i32 width, i32 height,
     {
         return true;
     }
-    else if (format == D3DFMT_A1R5G5B5 || format == D3DFMT_A4R4G4B4)
+
+    if (format == D3DFMT_A1R5G5B5 || format == D3DFMT_A4R4G4B4)
     {
         return TryAllocateBuffer(width, height, D3DFMT_A8R8G8B8);
     }
-    else if (format == D3DFMT_R5G6B5)
+
+    if (format == D3DFMT_R5G6B5)
     {
         return TryAllocateBuffer(width, height, D3DFMT_X8R8G8B8);
     }
-    else
-    {
-        return false;
-    }
+
+    return false;
 }
 
 struct ThBitmapInfo

@@ -885,28 +885,26 @@ loop_breakout:
     {
         return this->commandQueue[0].opcode;
     }
-    else
+
+    for (i = 0; i < ARRAY_SIZE_SIGNED(this->soundQueue); i++)
     {
-        for (i = 0; i < ARRAY_SIZE_SIGNED(this->soundQueue); i++)
+        if (this->soundQueue[i] < 0)
         {
-            if (this->soundQueue[i] < 0)
-            {
-                break;
-            }
-
-            curSound = this->soundQueue[i];
-            this->soundQueue[i] = -1;
-            if (!this->duplicateSoundBuffers[curSound])
-            {
-                continue;
-            }
-
-            this->duplicateSoundBuffers[curSound]->Stop();
-            this->duplicateSoundBuffers[curSound]->SetCurrentPosition(0);
-            this->duplicateSoundBuffers[curSound]->Play(0, 0, 0);
+            break;
         }
-        return this->commandQueue[0].opcode;
+
+        curSound = this->soundQueue[i];
+        this->soundQueue[i] = -1;
+        if (!this->duplicateSoundBuffers[curSound])
+        {
+            continue;
+        }
+
+        this->duplicateSoundBuffers[curSound]->Stop();
+        this->duplicateSoundBuffers[curSound]->SetCurrentPosition(0);
+        this->duplicateSoundBuffers[curSound]->Play(0, 0, 0);
     }
+    return this->commandQueue[0].opcode;
 }
 
 #pragma var_order(msg, looped, lpThreadParameterCopy, waitObj, hr, stopped)

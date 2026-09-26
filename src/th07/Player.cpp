@@ -391,13 +391,11 @@ i32 ShtData::UpdateOrbLaser(Player *player, PlayerBullet *bullet)
     {
         return 1;
     }
-    else
-    {
-        bullet->vm.scale.y = bullet->pos.y / 14.0f;
-        bullet->hitboxSize.y = bullet->pos.y;
-        bullet->pos.y = bullet->pos.y / 2.0f;
-        return 0;
-    }
+
+    bullet->vm.scale.y = bullet->pos.y / 14.0f;
+    bullet->hitboxSize.y = bullet->pos.y;
+    bullet->pos.y = bullet->pos.y / 2.0f;
+    return 0;
 }
 
 // FUNCTION: TH07 0x0043c940
@@ -445,16 +443,14 @@ i32 ShtData::UpdatePlayerLaser(Player *player, PlayerBullet *bullet)
     {
         return 1;
     }
-    else
-    {
-        bullet->pos = player->pos;
-        bullet->pos.x += bullet->offset.x;
-        bullet->pos.z = 0.44f;
-        bullet->vm.scale.y = (bullet->pos.y + 64.0f) / 14.0f;
-        bullet->hitboxSize.y = player->pos.y + 64.0f;
-        bullet->pos.y = bullet->pos.y / 2.0f - 32.0f;
-        return 0;
-    }
+
+    bullet->pos = player->pos;
+    bullet->pos.x += bullet->offset.x;
+    bullet->pos.z = 0.44f;
+    bullet->vm.scale.y = (bullet->pos.y + 64.0f) / 14.0f;
+    bullet->hitboxSize.y = player->pos.y + 64.0f;
+    bullet->pos.y = bullet->pos.y / 2.0f - 32.0f;
+    return 0;
 }
 
 // FUNCTION: TH07 0x0043ccb0

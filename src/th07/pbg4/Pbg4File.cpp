@@ -64,28 +64,25 @@ bool Pbg4File::Open(const char *path, const char *mode)
             break;
         }
     }
+
     if (*curModeChar == '\0')
     {
         return false;
     }
-    else
+
+    GetFullPath(pathBuf, path);
+    this->handle = CreateFileA(pathBuf, this->access, 1, NULL, actionOnExistingFile,
+                               FILE_FLAG_SEQUENTIAL_SCAN | FILE_ATTRIBUTE_NORMAL, NULL);
+    if (this->handle == INVALID_HANDLE_VALUE)
     {
-        GetFullPath(pathBuf, path);
-        this->handle = CreateFileA(pathBuf, this->access, 1, NULL, actionOnExistingFile,
-                                   FILE_FLAG_SEQUENTIAL_SCAN | FILE_ATTRIBUTE_NORMAL, NULL);
-        if (this->handle == INVALID_HANDLE_VALUE)
-        {
-            return false;
-        }
-        else
-        {
-            if (seekToEnd)
-            {
-                SetFilePointer(this->handle, 0, NULL, FILE_END);
-            }
-            return true;
-        }
+        return false;
     }
+
+    if (seekToEnd)
+    {
+        SetFilePointer(this->handle, 0, NULL, FILE_END);
+    }
+    return true;
 }
 
 // FUNCTION: TH07 0x0045e770

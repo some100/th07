@@ -488,26 +488,24 @@ struct AnmManager
         this->SetActiveSprite(vm, spriteIdx);
     }
 
-    i32 CreateScreenshotTexture(i32 x, i32 y, i32 width, i32 height)
+    ZunResult CreateScreenshotTexture(i32 x, i32 y, i32 width, i32 height)
     {
         if (this->screenshotTextureId >= 0)
         {
-            return -1;
+            return ZUN_ERROR;
         }
-        else
-        {
-            this->screenshotTextureId = 4;
-            this->screenshotSrcLeft = 32;
-            this->screenshotSrcTop = 16;
-            this->screenshotSrcWidth = 384;
-            this->screenshotSrcHeight = 448;
-            this->screenshotDstLeft = x;
-            this->screenshotDstTop = y;
 
-            this->screenshotDstWidth = width;
-            this->screenshotDstHeight = height;
-            return 0;
-        }
+        this->screenshotTextureId = 4;
+        this->screenshotSrcLeft = 32;
+        this->screenshotSrcTop = 16;
+        this->screenshotSrcWidth = 384;
+        this->screenshotSrcHeight = 448;
+        this->screenshotDstLeft = x;
+        this->screenshotDstTop = y;
+
+        this->screenshotDstWidth = width;
+        this->screenshotDstHeight = height;
+        return ZUN_SUCCESS;
     }
 
     void TakeScreenshotIfRequested()
@@ -529,14 +527,13 @@ struct AnmManager
         {
             return false;
         }
-        else if (vm->sprite->sourceFileIndex < 0)
+
+        if (vm->sprite->sourceFileIndex < 0)
         {
             return false;
         }
-        else
-        {
-            return this->textures[vm->sprite->sourceFileIndex] != NULL;
-        }
+
+        return this->textures[vm->sprite->sourceFileIndex] != NULL;
     }
 
     void SetVertexShader(u8 value)

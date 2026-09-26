@@ -144,7 +144,7 @@ address|name|type
 0041c100|EffectManager::UpdateAttachToCamera|function
 0041c1b0|EffectManager::UpdateNoOp|function
 0041c1c0|EffectManager::SpawnEffect|function
-0041c400|EffectManager::SpawnMovingParticles|function
+0041c400|EffectManager::SpawnEffectEx|function
 0041c610|EffectManager::SpawnSpecialEffect|function
 0041c790|EffectManager::OnUpdate|function
 0041ca10|EffectManager::OnDraw|function

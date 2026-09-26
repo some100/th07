@@ -84,9 +84,9 @@ struct EffectManager
                         D3DCOLOR color);
     Effect *SpawnSpecialEffect(i32 effectId, Float3 *pos, i32 effectIdx, i32 unused,
                                D3DCOLOR color);
-    Effect *SpawnMovingParticles(i32 effectId, Float3 *pos,
-                                 Float3 *velocity, i32 numParticles,
-                                 D3DCOLOR color);
+    Effect *SpawnEffectEx(i32 effectId, Float3 *pos,
+                          Float3 *velocity, i32 numParticles,
+                          D3DCOLOR color);
     i32 DrawLayer1Effects();
 
     i32 nextIndex;

@@ -582,9 +582,9 @@ Effect *EffectManager::SpawnEffect(i32 effectId, Float3 *pos,
 
 #pragma var_order(effect, i)
 // FUNCTION: TH07 0x0041c400
-Effect *EffectManager::SpawnMovingParticles(i32 effectId, Float3 *pos,
-                                            Float3 *velocity,
-                                            i32 numParticles, D3DCOLOR color)
+Effect *EffectManager::SpawnEffectEx(i32 effectId, Float3 *pos,
+                                     Float3 *custom,
+                                     i32 numParticles, D3DCOLOR color)
 {
     i32 i;
     Effect *effect;
@@ -621,7 +621,7 @@ Effect *EffectManager::SpawnMovingParticles(i32 effectId, Float3 *pos,
         effect->timer = 0;
         effect->isFadingOut = 0;
         effect->fadeOutTime = 0;
-        effect->custom = *velocity;
+        effect->custom = *custom;
         if (g_EffectMapping[effectId].initCallback &&
             g_EffectMapping[effectId].initCallback(effect))
         {
@@ -743,10 +743,8 @@ u32 EffectManager::OnUpdate(EffectManager *arg)
     {
         return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
     }
-    else
-    {
-        return CHAIN_CALLBACK_RESULT_CONTINUE;
-    }
+
+    return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
 // FUNCTION: TH07 0x0041ca10

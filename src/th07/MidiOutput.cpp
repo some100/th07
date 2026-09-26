@@ -238,10 +238,8 @@ ZunResult MidiOutput::ReadFileData(i32 fileIdx, const char *path)
         g_GameErrorContext.Log(TH_ERR_MIDI_LOAD_FAIL, path);
         return ZUN_ERROR;
     }
-    else
-    {
-        return ZUN_SUCCESS;
-    }
+
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x004366c0

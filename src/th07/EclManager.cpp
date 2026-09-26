@@ -1757,7 +1757,7 @@ restart:
                 particleVel.x = GET_FLOAT_VALUE(enemy, 3);
                 particleVel.y = GET_FLOAT_VALUE(enemy, 4);
                 particleVel.z = GET_FLOAT_VALUE(enemy, 5);
-                g_EffectManager.SpawnMovingParticles(
+                g_EffectManager.SpawnEffectEx(
                     GET_INT_VALUE(enemy, 0),
                     &enemy->pos,
                     &particleVel,

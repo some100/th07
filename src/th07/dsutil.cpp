@@ -1149,31 +1149,30 @@ HRESULT CWaveFile::Read(u8 *pBuffer, DWORD dwSizeToRead, DWORD *pdwSizeRead)
         }
         return S_OK;
     }
-    else
+
+    if (!this->m_hWaveFile)
     {
-        if (!this->m_hWaveFile)
-        {
-            return CO_E_NOTINITIALIZED;
-        }
-        if (!pBuffer || !pdwSizeRead)
-        {
-            return E_INVALIDARG;
-        }
-
-        sizeToRead = dwSizeToRead;
-        if (sizeToRead > this->m_ck.cksize)
-        {
-            sizeToRead = this->m_ck.cksize;
-        }
-        this->m_ck.cksize -= sizeToRead;
-
-        ReadFile(this->m_hWaveFile, pBuffer, sizeToRead, &bytesRead, NULL);
-        if (pdwSizeRead)
-        {
-            *pdwSizeRead = bytesRead;
-        }
-        return S_OK;
+        return CO_E_NOTINITIALIZED;
     }
+
+    if (!pBuffer || !pdwSizeRead)
+    {
+        return E_INVALIDARG;
+    }
+
+    sizeToRead = dwSizeToRead;
+    if (sizeToRead > this->m_ck.cksize)
+    {
+        sizeToRead = this->m_ck.cksize;
+    }
+    this->m_ck.cksize -= sizeToRead;
+
+    ReadFile(this->m_hWaveFile, pBuffer, sizeToRead, &bytesRead, NULL);
+    if (pdwSizeRead)
+    {
+        *pdwSizeRead = bytesRead;
+    }
+    return S_OK;
 }
 
 //-----------------------------------------------------------------------------

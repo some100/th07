@@ -392,10 +392,8 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
     {
         return CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS;
     }
-    else
-    {
-        return CHAIN_CALLBACK_RESULT_CONTINUE;
-    }
+
+    return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
 // FUNCTION: TH07 0x0043831b
@@ -1306,21 +1304,20 @@ i32 Supervisor::LoadAudio(i32 idx, const char *path)
         }
         return 0;
     }
-    else
-    {
-        if (g_Supervisor.cfg.musicMode == MUSIC_WAV)
-        {
-            strcpy(pathbuf, path);
 
-            // ZUN landmine: the result of strrchr is not checked for NULL.
-            pathext = strrchr(pathbuf, '.');
-            pathext[1] = 'w';
-            pathext[2] = 'a';
-            pathext[3] = 'v';
-            g_SoundPlayer.PushCommand(AUDIO_PRELOAD, idx, pathbuf);
-        }
-        return 1;
+    if (g_Supervisor.cfg.musicMode == MUSIC_WAV)
+    {
+        strcpy(pathbuf, path);
+
+        // ZUN landmine: the result of strrchr is not checked for NULL.
+        pathext = strrchr(pathbuf, '.');
+        pathext[1] = 'w';
+        pathext[2] = 'a';
+        pathext[3] = 'v';
+        g_SoundPlayer.PushCommand(AUDIO_PRELOAD, idx, pathbuf);
     }
+
+    return 1;
 }
 
 // FUNCTION: TH07 0x00439ec1

@@ -522,7 +522,7 @@ i32 PauseMenu::OnUpdate()
             if (g_AnmManager->CreateScreenshotTexture(this->menuBackground.sprite->startPixelInclusive.x,
                                                       this->menuBackground.sprite->startPixelInclusive.y,
                                                       this->menuBackground.sprite->heightPx,
-                                                      this->menuBackground.sprite->widthPx))
+                                                      this->menuBackground.sprite->widthPx) != ZUN_SUCCESS)
             {
                 this->curState = PAUSE_MENU_STATE_INIT;
                 return 0;
@@ -873,7 +873,7 @@ i32 RetryMenu::OnUpdate()
                 g_AnmManager->SetAnmIdxAndExecuteScript(&this->menuBackground, ANM_OFFSET_MENU_BG);
                 if (g_AnmManager->CreateScreenshotTexture(this->menuBackground.sprite->startPixelInclusive.x,
                                                           this->menuBackground.sprite->startPixelInclusive.y,
-                                                          this->menuBackground.sprite->heightPx, this->menuBackground.sprite->widthPx))
+                                                          this->menuBackground.sprite->heightPx, this->menuBackground.sprite->widthPx) != ZUN_SUCCESS)
                 {
                     this->curState = RETRY_MENU_STATE_INIT;
                     return 0;

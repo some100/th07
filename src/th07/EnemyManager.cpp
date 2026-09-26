@@ -530,14 +530,17 @@ void Enemy::Despawn()
     {
         this->canDie = 0;
     }
+
     if (this->isBoss && this->bossId < 4)
     {
         g_Gui.bossPresent = 0;
     }
+
     if (this->effectsNum != 0)
     {
         ResetEffectArray();
     }
+
     if (this->isBoss)
     {
         g_EnemyManager.bosses[this->bossId] = NULL;

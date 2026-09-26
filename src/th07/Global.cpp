@@ -151,10 +151,8 @@ ZunResult Chain::AddToDrawChain(ChainElem *elem, i32 priority)
     {
         return elem->addedCallback(elem->arg);
     }
-    else
-    {
-        return ZUN_SUCCESS;
-    }
+
+    return ZUN_SUCCESS;
 }
 
 // FUNCTION: TH07 0x0042fd60
@@ -506,95 +504,91 @@ u16 Controller::GetControllerInput(u16 buttons)
                        : 0;
         return buttons;
     }
-    else
+
+    if (FAILED(hr = g_Supervisor.controller->Poll()))
     {
-        if (FAILED(hr = g_Supervisor.controller->Poll()))
+        retryCount = 0;
+        // STRING: TH07 0x00497d80
+        utils::DebugPrint("error : DIERR_INPUTLOST\r\n");
+        hr = g_Supervisor.controller->Acquire();
+        while (hr == DIERR_INPUTLOST)
         {
-            retryCount = 0;
-            // STRING: TH07 0x00497d80
-            utils::DebugPrint("error : DIERR_INPUTLOST\r\n");
             hr = g_Supervisor.controller->Acquire();
-            while (hr == DIERR_INPUTLOST)
-            {
-                hr = g_Supervisor.controller->Acquire();
-                // STRING: TH07 0x00497d60
-                utils::DebugPrint("error : DIERR_INPUTLOST %d\r\n", retryCount);
-                retryCount++;
-                if (retryCount >= 400)
-                {
-                    return buttons;
-                }
-            }
-            return buttons;
-        }
-        else
-        {
-            memset(&js, 0, sizeof(DIJOYSTATE2));
-            if (FAILED(hr = g_Supervisor.controller->GetDeviceState(0x110, &js)))
+            // STRING: TH07 0x00497d60
+            utils::DebugPrint("error : DIERR_INPUTLOST %d\r\n", retryCount);
+            retryCount++;
+            if (retryCount >= 400)
             {
                 return buttons;
             }
+        }
+        return buttons;
+    }
 
-            shootPressed2 = SetButtonFromDirectInputJoystate(
-                &buttons, g_Supervisor.cfg.controllerMapping.shootButton, 1,
-                js.rgbButtons);
-            if (g_Supervisor.cfg.shotSlow)
+    memset(&js, 0, sizeof(DIJOYSTATE2));
+    if (FAILED(hr = g_Supervisor.controller->GetDeviceState(0x110, &js)))
+    {
+        return buttons;
+    }
+
+    shootPressed2 = SetButtonFromDirectInputJoystate(
+        &buttons, g_Supervisor.cfg.controllerMapping.shootButton, 1,
+        js.rgbButtons);
+    if (g_Supervisor.cfg.shotSlow)
+    {
+        if (shootPressed2 != 0)
+        {
+            if (g_AutoFocusTimer < 20)
             {
-                if (shootPressed2 != 0)
-                {
-                    if (g_AutoFocusTimer < 20)
-                    {
-                        g_AutoFocusTimer++;
-                    }
-                    if (g_AutoFocusTimer >= 10)
-                    {
-                        buttons |= TH_BUTTON_FOCUS;
-                    }
-                }
-                else
-                {
-                    if (g_AutoFocusTimer > 10)
-                    {
-                        g_AutoFocusTimer -= 10;
-                        buttons |= TH_BUTTON_FOCUS;
-                    }
-                    else
-                    {
-                        g_AutoFocusTimer = 0;
-                    }
-                }
+                g_AutoFocusTimer++;
             }
-            SetButtonFromDirectInputJoystate(
-                &buttons, g_Supervisor.cfg.controllerMapping.bombButton,
-                TH_BUTTON_BOMB, js.rgbButtons);
-            SetButtonFromDirectInputJoystate(
-                &buttons, g_Supervisor.cfg.controllerMapping.focusButton,
-                TH_BUTTON_FOCUS, js.rgbButtons);
-            SetButtonFromDirectInputJoystate(
-                &buttons, g_Supervisor.cfg.controllerMapping.menuButton,
-                TH_BUTTON_MENU, js.rgbButtons);
-            SetButtonFromDirectInputJoystate(
-                &buttons, g_Supervisor.cfg.controllerMapping.upButton, TH_BUTTON_UP,
-                js.rgbButtons);
-            SetButtonFromDirectInputJoystate(
-                &buttons, g_Supervisor.cfg.controllerMapping.downButton,
-                TH_BUTTON_DOWN, js.rgbButtons);
-            SetButtonFromDirectInputJoystate(
-                &buttons, g_Supervisor.cfg.controllerMapping.leftButton,
-                TH_BUTTON_LEFT, js.rgbButtons);
-            SetButtonFromDirectInputJoystate(
-                &buttons, g_Supervisor.cfg.controllerMapping.rightButton,
-                TH_BUTTON_RIGHT, js.rgbButtons);
-            SetButtonFromDirectInputJoystate(
-                &buttons, g_Supervisor.cfg.controllerMapping.skipButton,
-                TH_BUTTON_SKIP, js.rgbButtons);
-            SetButtonFromDirectInputJoystate(&buttons, 7, TH_BUTTON_D, js.rgbButtons);
-            buttons |= js.lX > g_Supervisor.cfg.padAxisX ? TH_BUTTON_RIGHT : 0;
-            buttons |= js.lX < -g_Supervisor.cfg.padAxisX ? TH_BUTTON_LEFT : 0;
-            buttons |= js.lY > g_Supervisor.cfg.padAxisY ? TH_BUTTON_DOWN : 0;
-            buttons |= js.lY < -g_Supervisor.cfg.padAxisY ? TH_BUTTON_UP : 0;
+            if (g_AutoFocusTimer >= 10)
+            {
+                buttons |= TH_BUTTON_FOCUS;
+            }
+        }
+        else
+        {
+            if (g_AutoFocusTimer > 10)
+            {
+                g_AutoFocusTimer -= 10;
+                buttons |= TH_BUTTON_FOCUS;
+            }
+            else
+            {
+                g_AutoFocusTimer = 0;
+            }
         }
     }
+    SetButtonFromDirectInputJoystate(
+        &buttons, g_Supervisor.cfg.controllerMapping.bombButton,
+        TH_BUTTON_BOMB, js.rgbButtons);
+    SetButtonFromDirectInputJoystate(
+        &buttons, g_Supervisor.cfg.controllerMapping.focusButton,
+        TH_BUTTON_FOCUS, js.rgbButtons);
+    SetButtonFromDirectInputJoystate(
+        &buttons, g_Supervisor.cfg.controllerMapping.menuButton,
+        TH_BUTTON_MENU, js.rgbButtons);
+    SetButtonFromDirectInputJoystate(
+        &buttons, g_Supervisor.cfg.controllerMapping.upButton, TH_BUTTON_UP,
+        js.rgbButtons);
+    SetButtonFromDirectInputJoystate(
+        &buttons, g_Supervisor.cfg.controllerMapping.downButton,
+        TH_BUTTON_DOWN, js.rgbButtons);
+    SetButtonFromDirectInputJoystate(
+        &buttons, g_Supervisor.cfg.controllerMapping.leftButton,
+        TH_BUTTON_LEFT, js.rgbButtons);
+    SetButtonFromDirectInputJoystate(
+        &buttons, g_Supervisor.cfg.controllerMapping.rightButton,
+        TH_BUTTON_RIGHT, js.rgbButtons);
+    SetButtonFromDirectInputJoystate(
+        &buttons, g_Supervisor.cfg.controllerMapping.skipButton,
+        TH_BUTTON_SKIP, js.rgbButtons);
+    SetButtonFromDirectInputJoystate(&buttons, 7, TH_BUTTON_D, js.rgbButtons);
+    buttons |= js.lX > g_Supervisor.cfg.padAxisX ? TH_BUTTON_RIGHT : 0;
+    buttons |= js.lX < -g_Supervisor.cfg.padAxisX ? TH_BUTTON_LEFT : 0;
+    buttons |= js.lY > g_Supervisor.cfg.padAxisY ? TH_BUTTON_DOWN : 0;
+    buttons |= js.lY < -g_Supervisor.cfg.padAxisY ? TH_BUTTON_UP : 0;
     return buttons;
 }
 
@@ -634,40 +628,36 @@ u8 *Controller::GetControllerState()
         }
         return g_ControllerData;
     }
-    else
+
+    if (FAILED(hr = g_Supervisor.controller->Poll()))
     {
-        if (FAILED(hr = g_Supervisor.controller->Poll()))
+        diRetryCount = 0;
+        utils::DebugPrint("error : DIERR_INPUTLOST\r\n");
+        hr = g_Supervisor.controller->Acquire();
+        while (hr == DIERR_INPUTLOST)
         {
-            diRetryCount = 0;
-            utils::DebugPrint("error : DIERR_INPUTLOST\r\n");
             hr = g_Supervisor.controller->Acquire();
-            while (hr == DIERR_INPUTLOST)
+            diRetryCount++;
+            if (diRetryCount >= 400)
             {
-                hr = g_Supervisor.controller->Acquire();
-                diRetryCount++;
-                if (diRetryCount >= 400)
-                {
-                    utils::DebugPrint("error : DIERR_INPUTLOST %d\r\n", diRetryCount);
-                    return g_ControllerData;
-                }
-            }
-            return g_ControllerData;
-        }
-        else
-        {
-            g_Supervisor.controller->GetDeviceState(sizeof(DIJOYSTATE2),
-                                                    &dijoystate2);
-            // ZUN landmine: hr holds the result of Poll, not GetDeviceState
-            if (FAILED(hr))
-            {
+                utils::DebugPrint("error : DIERR_INPUTLOST %d\r\n", diRetryCount);
                 return g_ControllerData;
             }
-
-            memcpy(g_ControllerData, dijoystate2.rgbButtons,
-                   sizeof(g_ControllerData));
-            return g_ControllerData;
         }
+        return g_ControllerData;
     }
+
+    g_Supervisor.controller->GetDeviceState(sizeof(DIJOYSTATE2),
+                                            &dijoystate2);
+    // ZUN landmine: hr holds the result of Poll, not GetDeviceState
+    if (FAILED(hr))
+    {
+        return g_ControllerData;
+    }
+
+    memcpy(g_ControllerData, dijoystate2.rgbButtons,
+           sizeof(g_ControllerData));
+    return g_ControllerData;
 }
 
 // FUNCTION: TH07 0x00430b50
