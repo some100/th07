@@ -4,6 +4,11 @@
 #include "Supervisor.hpp"
 #include "inttypes.hpp"
 
+#define REPLAY_MAGIC *(u32 *)&"T7RP"
+#define REPLAY_VERSION 0x1100
+#define REPLAY_VERSION_MAJOR 0x100
+#define REPLAY_VERSION_MINOR 98
+
 struct ReplayDataInput
 {
     u16 frameNum;
@@ -55,12 +60,12 @@ static_assert(sizeof(ReplayHeader) == 0x54);
 struct ReplayData
 {
     u8 rngValue3;
-    char versionChar1;
+    char minorVersion;
     u8 shotType;
     u8 difficulty;
     char date[6];
     char name[12];
-    u16 replayVersion;
+    u16 majorVersion;
     i32 score;
     GameConfiguration cfg;
     i32 unused_a8[8];
@@ -72,6 +77,7 @@ struct ReplayData
     i32 exeChecksum;
     char replayStr[4];
     i16 versionChar2;
+    // pad 3
 };
 static_assert(sizeof(ReplayData) == 0x94);
 

@@ -1394,8 +1394,8 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
             this->frameTimer = 0;
             GetDate(this->defaultReplay.data.date);
             this->defaultReplay.data.score = g_GameManager.globals->score;
-            if (*(i32 *)&this->replays[this->cursor].head.magic != *(i32 *)&"T7RP" ||
-                (this->replays[this->cursor].head.version & 0xfff) != 256)
+            if (*(i32 *)&this->replays[this->cursor].head.magic != REPLAY_MAGIC ||
+                (this->replays[this->cursor].head.version & 0xfff) != REPLAY_VERSION_MAJOR)
             {
                 vm = this->vms;
                 for (i = 0; i < ARRAY_SIZE_SIGNED(this->vms); i++, vm++)
@@ -2335,8 +2335,8 @@ u32 ResultScreen::OnDraw(ResultScreen *arg)
                 name[arg->cursor >= 8 ? 7 : arg->cursor] = '_';
                 AsciiManager::AddFormatText(&g_AsciiManager, &pos, "      %8s", name);
             }
-            else if (*(i32 *)&arg->replays[i].head.magic != *(i32 *)&"T7RP" ||
-                     (arg->replays[i].head.version & 0xfff) != 256)
+            else if (*(i32 *)&arg->replays[i].head.magic != REPLAY_MAGIC ||
+                     (arg->replays[i].head.version & 0xfff) != REPLAY_VERSION_MAJOR)
             {
                 AsciiManager::AddFormatText(&g_AsciiManager, &pos,
                                             "No.%.2d -------- --/--  -------          0", i + 1);
