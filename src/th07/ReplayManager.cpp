@@ -60,14 +60,11 @@ u32 ReplayManager::OnUpdateRecord(ReplayManager *arg)
     arg->replayInputs->inputKey = arg->replayEventFlags;
     if (arg->frameId % 30 == 0)
     {
-        *(u8 *)&arg->stageReplayData->score =
-            (u8)g_Supervisor.curFps |
-            ((g_Supervisor.timingErrorCount != 0) ? 128 : 0);
-        *((u8 *)&arg->stageReplayData->score + 1) = (u8)g_Supervisor.curFps;
-        arg->replayDataEndPointers[stage] =
-            (i32)((i32)&arg->stageReplayData->score + 2);
-        arg->stageReplayData =
-            (StageReplayData *)((i32)&arg->stageReplayData->score + 1);
+        arg->fpsCursor[0] = (u8)g_Supervisor.curFps |
+                            ((g_Supervisor.timingErrorCount != 0) ? 128 : 0);
+        arg->fpsCursor[1] = g_Supervisor.curFps;
+        arg->replayDataEndPointers[stage] = &arg->fpsCursor[2];
+        arg->fpsCursor++;
     }
     arg->frameId++;
     return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -136,12 +133,9 @@ u32 ReplayManager::OnUpdatePlayback(ReplayManager *arg)
     }
     if (arg->frameId % 30 == 0)
     {
-        g_Supervisor.curFps =
-            (i16) * (char *)((i32)&arg->stageReplayData->score + 1) & 0x7f;
-        g_Supervisor.isFpsBad =
-            (i32) * (char *)((i32)&arg->stageReplayData->score + 1) >> 7;
-        arg->stageReplayData =
-            (StageReplayData *)((i32)&arg->stageReplayData->score + 1);
+        g_Supervisor.curFps = arg->fpsCursor[1] & 0x7f;
+        g_Supervisor.isFpsBad = arg->fpsCursor[1] >> 7;
+        arg->fpsCursor++;
     }
     arg->frameId = arg->frameId + 1;
     return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -602,8 +596,8 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
                 {
                     if (mgr->data->head.stageReplayData[i].data)
                     {
-                        stageSize = (u32)mgr->replayInputsByStage[i] -
-                                    (u32)mgr->data->head.stageReplayData[i].data;
+                        stageSize = (u8 *)mgr->replayInputsByStage[i] -
+                                    (u8 *)mgr->data->head.stageReplayData[i].data;
                         memcpy((StageReplayData *)(replayData + replaySize -
                                                    sizeof(ReplayHeader)),
                                mgr->data->head.stageReplayData[i].data,
@@ -616,8 +610,8 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
                 {
                     if (mgr->data->head.stageEndData[i].data)
                     {
-                        stageSize = (u32)mgr->replayDataEndPointers[i] -
-                                    (u32)mgr->data->head.stageEndData[i].data;
+                        stageSize = (u8 *)mgr->replayDataEndPointers[i] -
+                                    (u8 *)mgr->data->head.stageEndData[i].data;
                         memcpy((StageReplayData *)(replayData + replaySize -
                                                    sizeof(ReplayHeader)),
                                mgr->data->head.stageEndData[i].data,

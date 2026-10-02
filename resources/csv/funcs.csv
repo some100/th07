@@ -481,8 +481,8 @@ address|name|type
 00442b70|ShtData::LoadShtData|function
 00442c60|ReplayManager::OnUpdateRng|function
 00442cd0|ReplayManager::OnUpdate|function
-00442e50|ReplayManager::OnUpdateDemoLowPrio|function
-00442ee0|ReplayManager::OnUpdateDemoHighPrio|function
+00442e50|ReplayManager::OnUpdatePlaybackLowPrio|function
+00442ee0|ReplayManager::OnUpdatePlayback|function
 00443040|ReplayManager::AddedCallbackRecord|function
 004433b0|ReplayManager::ValidateReplayData|function
 00443550|ReplayManager::AddedCallbackDemo|function

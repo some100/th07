@@ -141,8 +141,11 @@ struct ReplayManager
     i16 unused_82;
     ReplayDataInput *replayInputs;
     ReplayDataInput *replayInputsByStage[REPLAY_STAGE_COUNT];
-    StageReplayData *stageReplayData;
-    i32 replayDataEndPointers[REPLAY_STAGE_COUNT];
+    union {
+        i8 *fpsCursor;
+        StageReplayData *stageReplayData;
+    };
+    i8 *replayDataEndPointers[REPLAY_STAGE_COUNT];
     ChainElem *calcChain;
     ChainElem *drawChain;
     ChainElem *calcChain2;
