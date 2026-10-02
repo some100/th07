@@ -61,10 +61,10 @@ u32 ReplayManager::OnUpdateRecord(ReplayManager *arg)
     arg->replayInputs->inputKey = arg->replayEventFlags;
     if (arg->frameId % 30 == 0)
     {
-        *arg->fpsCursor =
+        arg->fpsCursor[0] =
             (u8)g_Supervisor.curFps | ((g_Supervisor.timingErrorCount != 0) ? 128 : 0);
-        *(arg->fpsCursor + 1) = (u8)g_Supervisor.curFps;
-        arg->replayDataEndPointers[stage] = (uintptr_t)(arg->fpsCursor + 2);
+        arg->fpsCursor[1] = g_Supervisor.curFps;
+        arg->replayDataEndPointers[stage] = &arg->fpsCursor[2];
         arg->fpsCursor++;
     }
     arg->frameId++;
@@ -127,8 +127,8 @@ u32 ReplayManager::OnUpdatePlayback(ReplayManager *arg)
     }
     if (arg->frameId % 30 == 0)
     {
-        g_Supervisor.curFps = (i16) * (arg->fpsCursor + 1) & 0x7f;
-        g_Supervisor.isFpsBad = (i32) * (arg->fpsCursor + 1) >> 7;
+        g_Supervisor.curFps = arg->fpsCursor[1] & 0x7f;
+        g_Supervisor.isFpsBad = arg->fpsCursor[1] >> 7;
         arg->fpsCursor++;
     }
     arg->frameId = arg->frameId + 1;
@@ -204,8 +204,7 @@ ZunResult ReplayManager::AddedCallbackRecord(ReplayManager *arg)
         g_GameManager.globals->nextNeededPointItemsForExtend;
 
     arg->replayInputs = replayData->replayInputs;
-    arg->stageReplayData = endData;
-    arg->fpsCursor = (u8 *)&endData->score;
+    arg->fpsCursor = (i8 *)endData;
     arg->replayInputs->frameNum = 0;
     arg->unused_82 = 0;
     return ZUN_SUCCESS;
@@ -418,7 +417,7 @@ ZunResult ReplayManager::AddedCallbackPlayback(ReplayManager *arg)
     g_GameManager.globals->nextNeededPointItemsForExtend =
         replayData->nextNeededPointItemsForExtend;
     arg->stageReplayData = endData;
-    arg->fpsCursor = (u8 *)&endData->score;
+    arg->fpsCursor = (i8 *)endData;
     if (g_GameManager.currentStage >= STAGE2 && g_GameManager.currentStage <= STAGE6 &&
         arg->data->stageReplayData[g_GameManager.currentStage - 2])
     {
