@@ -681,18 +681,16 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
                 hFile = CreateFileA(filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
                 if (hFile == INVALID_HANDLE_VALUE)
                 {
-                    // empty branch
+                    goto SKIP_WRITE;
                 }
-                else
-                {
-                    WriteFile(hFile, &replayCopy, sizeof(ReplayHeader), &bytesWritten, NULL);
-                    WriteFile(hFile, lpBuffer, compressedSize, &bytesWritten, NULL);
-                    CloseHandle(hFile);
-                    // STRING: TH07 0x00496a4c
-                    utils::DebugPrint("info : Size %d -> %d\r\n", replaySize,
-                                      compressedSize + sizeof(ReplayHeader));
-                    GlobalFree(lpBuffer);
-                }
+
+                WriteFile(hFile, &replayCopy, sizeof(ReplayHeader), &bytesWritten, NULL);
+                WriteFile(hFile, lpBuffer, compressedSize, &bytesWritten, NULL);
+                CloseHandle(hFile);
+                // STRING: TH07 0x00496a4c
+                utils::DebugPrint("info : Size %d -> %d\r\n", replaySize,
+                                  compressedSize + sizeof(ReplayHeader));
+                GlobalFree(lpBuffer);
             }
         SKIP_WRITE:
             for (i = 0; i < REPLAY_STAGE_COUNT; i++)
