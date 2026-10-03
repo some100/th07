@@ -63,7 +63,7 @@ u32 ReplayManager::OnUpdateRecord(ReplayManager *arg)
         arg->fpsCursor[0] = (u8)g_Supervisor.curFps |
                             ((g_Supervisor.timingErrorCount != 0) ? 128 : 0);
         arg->fpsCursor[1] = g_Supervisor.curFps;
-        arg->replayDataEndPointers[stage] = &arg->fpsCursor[2];
+        arg->stageFpsDataPointers[stage] = &arg->fpsCursor[2];
         arg->fpsCursor++;
     }
     arg->frameId++;
@@ -141,12 +141,12 @@ u32 ReplayManager::OnUpdatePlayback(ReplayManager *arg)
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
-#pragma var_order(replayData, i, endData, prevData)
+#pragma var_order(replayData, i, fpsData, prevData)
 // FUNCTION: TH07 0x00443040
 ZunResult ReplayManager::AddedCallbackRecord(ReplayManager *arg)
 {
     StageReplayData *prevData;
-    StageReplayData *endData;
+    i8 *fpsData;
     i32 i;
     StageReplayData *replayData;
 
@@ -172,7 +172,7 @@ ZunResult ReplayManager::AddedCallbackRecord(ReplayManager *arg)
         for (i = 0; i < REPLAY_STAGE_COUNT; i++)
         {
             arg->data->head.stageReplayData[i].data = NULL;
-            arg->data->head.stageEndData[i].data = NULL;
+            arg->data->head.stageFpsData[i].data = NULL;
         }
     }
     else if (g_GameManager.currentStage - 2 >= 0)
@@ -192,17 +192,17 @@ ZunResult ReplayManager::AddedCallbackRecord(ReplayManager *arg)
     {
         ZUN_FREE(arg->data->head.stageReplayData[i].data);
     }
-    if (arg->data->head.stageEndData[i].data)
+    if (arg->data->head.stageFpsData[i].data)
     {
-        ZUN_FREE(arg->data->head.stageEndData[i].data);
+        ZUN_FREE(arg->data->head.stageFpsData[i].data);
     }
     arg->data->head.stageReplayData[i].data =
         (StageReplayData *)ZUN_ALLOC(sizeof(StageReplayData));
-    arg->data->head.stageEndData[i].data =
+    arg->data->head.stageFpsData[i].data =
         (StageReplayData *)ZUN_ALLOC(sizeof(StageReplayData));
 
     replayData = arg->data->head.stageReplayData[i].data;
-    endData = arg->data->head.stageEndData[i].data;
+    fpsData = arg->data->head.stageFpsData[i].fpsData;
 
     replayData->grazeInTotal = g_GameManager.globals->grazeInTotal;
     replayData->bombsRemaining = g_GameManager.globals->bombsRemaining;
@@ -220,7 +220,8 @@ ZunResult ReplayManager::AddedCallbackRecord(ReplayManager *arg)
     replayData->nextNeededPointItemsForExtend = g_GameManager.globals->nextNeededPointItemsForExtend;
 
     arg->replayInputs = replayData->replayInputs;
-    arg->stageReplayData = endData;
+
+    arg->fpsCursor = fpsData;
     arg->replayInputs->frameNum = 0;
     arg->unused_82 = 0;
     return ZUN_SUCCESS;
@@ -299,11 +300,11 @@ bad:
     return NULL;
 }
 
-#pragma var_order(replayData, i, endData)
+#pragma var_order(replayData, i, fpsData)
 // FUNCTION: TH07 0x00443550
 ZunResult ReplayManager::AddedCallbackPlayback(ReplayManager *arg)
 {
-    StageReplayData *endData;
+    i8 *fpsData;
     i32 i;
     StageReplayData *replayData;
 
@@ -321,7 +322,7 @@ ZunResult ReplayManager::AddedCallbackPlayback(ReplayManager *arg)
         for (i = 0; i < REPLAY_STAGE_COUNT; i++)
         {
             arg->stageReplayDataSize[i] = 0;
-            arg->stageEndDataSize[i] = 0;
+            arg->stageFpsDataSize[i] = 0;
             if (arg->data->head.stageReplayData[i].offset != 0)
             {
                 if (i < 6 && arg->data->head.stageReplayData[i + 1].offset != 0)
@@ -333,20 +334,20 @@ ZunResult ReplayManager::AddedCallbackPlayback(ReplayManager *arg)
                 else
                 {
                     arg->stageReplayDataSize[i] =
-                        arg->data->head.stageEndData[i].offset -
+                        arg->data->head.stageFpsData[i].offset -
                         arg->data->head.stageReplayData[i].offset;
                 }
-                if (i < 6 && arg->data->head.stageEndData[i + 1].offset != 0)
+                if (i < 6 && arg->data->head.stageFpsData[i + 1].offset != 0)
                 {
-                    arg->stageEndDataSize[i] =
-                        arg->data->head.stageEndData[i + 1].offset -
-                        arg->data->head.stageEndData[i].offset;
+                    arg->stageFpsDataSize[i] =
+                        arg->data->head.stageFpsData[i + 1].offset -
+                        arg->data->head.stageFpsData[i].offset;
                 }
                 else
                 {
-                    arg->stageEndDataSize[i] =
+                    arg->stageFpsDataSize[i] =
                         arg->data->head.sizeWithoutHeader + sizeof(ReplayHeader) -
-                        arg->data->head.stageEndData[i].offset;
+                        arg->data->head.stageFpsData[i].offset;
                 }
             }
 
@@ -356,11 +357,11 @@ ZunResult ReplayManager::AddedCallbackPlayback(ReplayManager *arg)
                     (StageReplayData *)(arg->data->head.stageReplayData[i].offset +
                                         (i32)arg->data);
             }
-            if (arg->data->head.stageEndData[i].offset != 0)
+            if (arg->data->head.stageFpsData[i].offset != 0)
             {
-                arg->data->head.stageEndData[i].data =
-                    (StageReplayData *)(arg->data->head.stageEndData[i].offset +
-                                        (i32)arg->data);
+                arg->data->head.stageFpsData[i].fpsData =
+                    (i8 *)(arg->data->head.stageFpsData[i].offset +
+                           (i32)arg->data);
             }
         }
     }
@@ -375,7 +376,7 @@ ZunResult ReplayManager::AddedCallbackPlayback(ReplayManager *arg)
     }
 
     replayData = arg->data->head.stageReplayData[i].data;
-    endData = arg->data->head.stageEndData[i].data;
+    fpsData = arg->data->head.stageFpsData[i].fpsData;
 
     g_GameManager.character = arg->data->data.shotType / 2;
     g_GameManager.shotType = arg->data->data.shotType % 2;
@@ -409,7 +410,7 @@ ZunResult ReplayManager::AddedCallbackPlayback(ReplayManager *arg)
         replayData->extendsFromPointItems;
     g_GameManager.globals->nextNeededPointItemsForExtend =
         replayData->nextNeededPointItemsForExtend;
-    arg->stageReplayData = endData;
+    arg->fpsCursor = fpsData;
     if (g_GameManager.currentStage >= STAGE2 &&
         g_GameManager.currentStage <= STAGE6 &&
         arg->data->head.stageReplayData[g_GameManager.currentStage - 2].data)
@@ -608,15 +609,15 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
                 }
                 for (i = 0; i < REPLAY_STAGE_COUNT; i++)
                 {
-                    if (mgr->data->head.stageEndData[i].data)
+                    if (mgr->data->head.stageFpsData[i].data)
                     {
-                        stageSize = (u8 *)mgr->replayDataEndPointers[i] -
-                                    (u8 *)mgr->data->head.stageEndData[i].data;
+                        stageSize = (u8 *)mgr->stageFpsDataPointers[i] -
+                                    (u8 *)mgr->data->head.stageFpsData[i].data;
                         memcpy((StageReplayData *)(replayData + replaySize -
                                                    sizeof(ReplayHeader)),
-                               mgr->data->head.stageEndData[i].data,
+                               mgr->data->head.stageFpsData[i].data,
                                stageSize);
-                        replayCopy.head.stageEndData[i].offset = replaySize;
+                        replayCopy.head.stageFpsData[i].offset = replaySize;
                         replaySize += stageSize;
                     }
                 }
@@ -700,9 +701,9 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
                 {
                     ZUN_FREE(g_ReplayManager->data->head.stageReplayData[i].data);
                 }
-                if (mgr->data->head.stageEndData[i].data)
+                if (mgr->data->head.stageFpsData[i].data)
                 {
-                    ZUN_FREE(g_ReplayManager->data->head.stageEndData[i].data);
+                    ZUN_FREE(g_ReplayManager->data->head.stageFpsData[i].data);
                 }
             }
         }
@@ -775,15 +776,15 @@ void ReplayManager::SaveReplay2(const char *filename)
             }
             for (i = 0; i < REPLAY_STAGE_COUNT; i++)
             {
-                if (mgr->data->head.stageEndData[i].data)
+                if (mgr->data->head.stageFpsData[i].data)
                 {
-                    stageSize = mgr->stageEndDataSize[i];
+                    stageSize = mgr->stageFpsDataSize[i];
                     memcpy((StageReplayData *)(replayData +
                                                replaySize -
                                                sizeof(ReplayHeader)),
-                           mgr->data->head.stageEndData[i].data,
+                           mgr->data->head.stageFpsData[i].data,
                            stageSize);
-                    replayCopy.head.stageEndData[i].offset = replaySize;
+                    replayCopy.head.stageFpsData[i].offset = replaySize;
                     replaySize += stageSize;
                 }
             }
@@ -830,17 +831,15 @@ void ReplayManager::SaveReplay2(const char *filename)
             hFile = CreateFileA(filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
             if (hFile == INVALID_HANDLE_VALUE)
             {
-                // empty branch
+                goto SKIP_WRITE;
             }
-            else
-            {
-                WriteFile(hFile, &replayCopy, sizeof(ReplayHeader), &bytesWritten, NULL);
-                WriteFile(hFile, lpBuffer, compressedSize, &bytesWritten, NULL);
-                CloseHandle(hFile);
-                utils::DebugPrint("info : Size %d -> %d\r\n", replaySize,
-                                  compressedSize + sizeof(ReplayHeader));
-                GlobalFree(lpBuffer);
-            }
+
+            WriteFile(hFile, &replayCopy, sizeof(ReplayHeader), &bytesWritten, NULL);
+            WriteFile(hFile, lpBuffer, compressedSize, &bytesWritten, NULL);
+            CloseHandle(hFile);
+            utils::DebugPrint("info : Size %d -> %d\r\n", replaySize,
+                              compressedSize + sizeof(ReplayHeader));
+            GlobalFree(lpBuffer);
         }
     SKIP_WRITE:
         g_Chain.Cut(g_ReplayManager->calcChain);
