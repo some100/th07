@@ -53,7 +53,7 @@ struct ReplayHeader
     i32 compressedSize;
     i32 sizeWithoutHeader;
     u32 stageReplayDataOffsets[REPLAY_STAGE_COUNT];
-    u32 stageEndDataOffsets[REPLAY_STAGE_COUNT];
+    u32 stageFpsDataOffsets[REPLAY_STAGE_COUNT];
 };
 static_assert(sizeof(ReplayHeader) == 0x54);
 
@@ -86,7 +86,7 @@ struct ReplayFile
     ReplayHeader head;
     ReplayData data;
     StageReplayData *stageReplayData[7];
-    StageReplayData *stageEndData[7];
+    i8 *stageFpsData[7];
     u8 *rawData;
 };
 
@@ -131,7 +131,7 @@ struct ReplayManager
     i32 frameId;
     ReplayFile *data;
     i32 stageReplayDataSize[REPLAY_STAGE_COUNT];
-    i32 stageEndDataSize[REPLAY_STAGE_COUNT];
+    i32 stageFpsDataSize[REPLAY_STAGE_COUNT];
     void *unused_40;
     i32 action;
     const char *replayFilename;
@@ -139,9 +139,8 @@ struct ReplayManager
     i16 unused_82;
     ReplayDataInput *replayInputs;
     ReplayDataInput *replayInputsByStage[REPLAY_STAGE_COUNT];
-    u8 *fpsCursor;
-    StageReplayData *stageReplayData;
-    uintptr_t replayDataEndPointers[REPLAY_STAGE_COUNT];
+    i8 *fpsCursor;
+    i8 *stageFpsDataPointers[REPLAY_STAGE_COUNT];
     ChainElem *calcChain;
     ChainElem *drawChain;
     ChainElem *calcChain2;
