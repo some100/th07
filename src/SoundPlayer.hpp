@@ -130,6 +130,7 @@ struct SoundPlayer
     }
 
     ma_engine *engine;
+    ma_device *device;
     ma_audio_buffer *duplicateSfxData[128];
     ma_audio_buffer *sfxData[128];
     void *sfxPCMData[128];

@@ -345,6 +345,7 @@ SoundPlayer::SoundPlayer()
 ZunResult SoundPlayer::InitializeSound()
 {
     ma_engine_config engineConfig;
+    ma_device_config deviceConfig;
 
     memset(this, 0, sizeof(SoundPlayer));
     for (i32 i = 0; i < ARRAY_SIZE_SIGNED(this->unusedSoundVolRelated); i++)
@@ -353,14 +354,35 @@ ZunResult SoundPlayer::InitializeSound()
     }
 
     this->engine = new ma_engine;
+    this->device = new ma_device;
+
+    deviceConfig = ma_device_config_init(ma_device_type_playback);
+    deviceConfig.playback.format = ma_format_f32;
+    deviceConfig.playback.channels = 2;
+    deviceConfig.sampleRate = 44100;
+    deviceConfig.periods = 3;
+    deviceConfig.periodSizeInMilliseconds = 10;
+    deviceConfig.dataCallback = ma_engine_data_callback_internal;
+    deviceConfig.pUserData = this->engine;
+    deviceConfig.noPreSilencedOutputBuffer = MA_TRUE;
+    deviceConfig.noClip = MA_TRUE;
+
+    if (ma_device_init(NULL, &deviceConfig, this->device) != MA_SUCCESS)
+    {
+        g_GameErrorContext.Log("DirectSound オブジェクトの初期化が失敗したよ\n");
+        SAFE_DELETE(this->device);
+        SAFE_DELETE(this->engine);
+        return ZUN_ERROR;
+    }
 
     engineConfig = ma_engine_config_init();
-    engineConfig.sampleRate = 44100;
-    engineConfig.channels = 2;
+    engineConfig.pDevice = this->device;
 
     if (ma_engine_init(&engineConfig, this->engine) != MA_SUCCESS)
     {
         g_GameErrorContext.Log("DirectSound オブジェクトの初期化が失敗したよ\n");
+        ma_device_uninit(this->device);
+        SAFE_DELETE(this->device);
         SAFE_DELETE(this->engine);
         return ZUN_ERROR;
     }
@@ -368,6 +390,9 @@ ZunResult SoundPlayer::InitializeSound()
     if (ma_engine_start(this->engine) != MA_SUCCESS)
     {
         g_GameErrorContext.Log("DirectSound オブジェクトの初期化が失敗したよ\n");
+        ma_engine_uninit(this->engine);
+        ma_device_uninit(this->device);
+        SAFE_DELETE(this->device);
         SAFE_DELETE(this->engine);
         return ZUN_ERROR;
     }
@@ -406,6 +431,8 @@ ZunResult SoundPlayer::Release()
 
     StopBGM();
 
+    ma_device_uninit(this->device);
+    SAFE_DELETE(this->device);
     ma_engine_uninit(this->engine);
     SAFE_DELETE(this->engine);
     for (i = 0; i < ARRAY_SIZE_SIGNED(this->bgmPreloadData); i++)
