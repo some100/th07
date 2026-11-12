@@ -1388,7 +1388,7 @@ ZunResult ResultScreen::HandleReplaySaveKeyboard()
                 if (replayFile)
                 {
                     this->replays[i] = *replayFile;
-                    free(replayFile);
+                    delete replayFile;
                 }
             }
         }

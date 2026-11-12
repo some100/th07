@@ -433,8 +433,6 @@ ZunResult SoundPlayer::Release()
 
     ma_device_uninit(this->device);
     SAFE_DELETE(this->device);
-    ma_engine_uninit(this->engine);
-    SAFE_DELETE(this->engine);
     for (i = 0; i < ARRAY_SIZE_SIGNED(this->bgmPreloadData); i++)
     {
         SAFE_FREE(this->bgmPreloadData[i]);
